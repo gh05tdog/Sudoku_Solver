@@ -7,17 +7,20 @@ public class Board {
     private final int n;
     private final int k;
 
+    private final int gridSize;
+
     private ArrayList<ArrayList<Integer>> board;
 
     public Board(int n, int k) throws Exception {
         this.n = n;
         this.k = k;
+        this.gridSize = (n*k) * (n*k);
 
-        if (boardIsPossible(k, n)) {
+        if (!boardIsPossible(k, n)) {
             throw new Exception("This board is not possible to create");
         }
         this.board = new ArrayList<>();
-        int numRows = n * n;
+        int numRows = n * k;
         // Initialize the board with zeros
         for (int i = 0; i < numRows; i++) {
             ArrayList<Integer> row = new ArrayList<>(numRows);
@@ -28,20 +31,16 @@ public class Board {
         }
     }
 
-    public ArrayList<ArrayList<Integer>> getBoard() {
-        return this.board;
-    }
-
     public void setBoard(ArrayList<ArrayList<Integer>> board) {
         this.board = board;
     }
 
     public int totalNoOfSquares() {
-        return (int) (Math.pow(k, 2) * (n * n));
+        return gridSize;
     }
 
     private boolean boardIsPossible(int k, int n) {
-        return Math.pow(k, 2) != n * n;
+        return (k * n) <= (n * n);
     }
 
     public void setNumber(int x, int y, int num) {
@@ -50,13 +49,18 @@ public class Board {
 
     public boolean validPlace(int x, int y, int num) {
 
+
+
         // Check rows
-        if( getRow(x).contains(num) || !getColumn(y).contains(num)){
+        if( getRow(x).contains(num) || getColumn(y).contains(num)){
+            System.out.println("Found in rows");
             return false;
-        }else{
+        }else if(getSquare(x, y).contains(num)){
             //Check square
-            return !getSquare(x, y).contains(num);
+            System.out.println("Found in square");
+            return false;
         }
+        return true;
     }
 
     private ArrayList<Integer> getRow(int i) {
@@ -84,5 +88,18 @@ public class Board {
             }
         }
         return square;
+    }
+
+    public void printBoard() {
+        for (ArrayList<Integer> row : board) {
+            for (int cell : row) {
+                System.out.print(cell + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public int getDimensions(){
+        return n * k;
     }
 }
