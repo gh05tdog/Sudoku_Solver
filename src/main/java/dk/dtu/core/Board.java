@@ -41,11 +41,11 @@
             return !getRow(x).contains(num) && !getColumn(y).contains(num) && !getSquare(x, y).contains(num);
         }
 
-        private ArrayList<Integer> getRow(int i) {
+        public ArrayList<Integer> getRow(int i) {
             return this.board.get(i);
         }
 
-        private ArrayList<Integer> getColumn(int i) {
+        ArrayList<Integer> getColumn(int i) {
             ArrayList<Integer> column = new ArrayList<>(this.board.size()); //
             for (ArrayList<Integer> row : board) {
                 column.add(row.get(i));
@@ -53,7 +53,7 @@
             return column;
         }
 
-        private ArrayList<Integer> getSquare(int x, int y) {
+        public ArrayList<Integer> getSquare(int x, int y) {
             ArrayList<Integer> square = new ArrayList<>();
             int squareRowStart = (x / n) * n;
             int squareColStart = (y / n) * n;
