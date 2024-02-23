@@ -18,7 +18,7 @@ class CreateTest {
         Board board = null;
 
         try {
-            board = new Board(3,3);
+            board = new Board(3, 3);
         } catch (Exception e) {
             exception = e;
         }
@@ -26,11 +26,11 @@ class CreateTest {
         // Ensure no exceptions were thrown during board creation
         assertNull(exception, "Board creation should not throw an exception.");
 
-        // Ensure board is not null
+        // Ensure the board is not null
         assertNotNull(board, "Board should be created successfully.");
 
-        // Ensure board is correctly initialized with zeros and has the correct size
-        int expectedDimension = 3 * 3; // Since it's a 3x3 board, we expect 9x9 cells
+        // Ensure the board is correctly initialized with zeros and has the correct size
+        int expectedDimension = 3 * 3;
         assertEquals(expectedDimension, board.getDimensions(), "Board should have correct dimensions.");
 
         // Verify that all cells are initialized to zero
@@ -51,9 +51,10 @@ class CreateTest {
     @DisplayName("Test creating a filled board adheres to Sudoku rules")
     void testBoardFilling() {
         Board board = null;
+        Creater creater = new Creater();
         try {
-            board = new Board(3, 3); // For a standard 9x9 Sudoku board
-            Creater.createSudoku(board); // Assuming this method exists and fills the board
+            board = new Board(3, 3);
+            creater.fillBoard(board);
         } catch (Exception e) {
             fail("Creating or filling the board should not throw an exception.");
         }
@@ -61,12 +62,41 @@ class CreateTest {
         // Ensure the board is completely filled
         for (int x = 0; x < board.getDimensions(); x++) {
             for (int y = 0; y < board.getDimensions(); y++) {
-                assertTrue(board.getNumber(x, y) > 0, "All cells in the board should be filled.");
+                assertTrue(board.getNumber(x, y) != 0, "All cells in the board should be filled.");
             }
         }
 
         // Ensure the board adheres to Sudoku rules
         assertTrue(isValidSudoku(board), "The board should adhere to Sudoku rules.");
+    }
+
+    @Test
+    @DisplayName("Test Sudoku puzzle is unique")
+    void testSudokuUniqueness() {
+        Board board = null;
+        Creater creater = new Creater();
+
+        try {
+            board = new Board(3, 3);
+            creater.createSudoku(board);
+        } catch (Exception e) {
+            fail("Creating the Sudoku puzzle should not throw an exception.");
+        }
+
+        // Check if the created Sudoku puzzle has a unique solution
+        assertTrue(creater.hasUniqueSolution(board), "The Sudoku puzzle should have a unique solution.");
+    }
+
+    @Test
+    @DisplayName("Test invalid sudoku board")
+    void invalidSudokuBoard() {
+        Exception exception = null;
+        try {
+            new Board(2, 3);
+        } catch (Exception e) {
+            exception = e;
+        }
+        assertNotNull(exception, "This board should not be able to be created");
     }
 
     private boolean isValidSudoku(Board board) {
@@ -77,7 +107,7 @@ class CreateTest {
             }
         }
 
-        // Check all 3x3 subgrids for duplicates
+        // Check all 3x3 sub grids for duplicates
         for (int row = 0; row < board.getDimensions(); row += 3) {
             for (int col = 0; col < board.getDimensions(); col += 3) {
                 if (isUnique(board.getSquare(row, col))) {

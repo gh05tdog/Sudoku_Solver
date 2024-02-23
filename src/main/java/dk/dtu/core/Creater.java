@@ -4,14 +4,14 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class Creater {
-    public static void fillBoard(Board board) {
+    public void fillBoard(Board board) {
         ArrayList<Integer> numbers = new ArrayList<>(IntStream.rangeClosed(1, board.getDimensions()).boxed().toList());
         // Shuffle the numbers
         Collections.shuffle(numbers);
         fillBoardRecursive(board, numbers);
     }
 
-    private static boolean fillBoardRecursive(Board board, ArrayList<Integer> numbers) {
+    private boolean fillBoardRecursive(Board board, ArrayList<Integer> numbers) {
         for (int x = 0; x < board.getDimensions(); x++) {
             for (int y = 0; y < board.getDimensions(); y++) {
                 // Find the next empty cell
@@ -40,7 +40,7 @@ public class Creater {
         return true;
     }
 
-    public static void createSudoku(Board board) {
+    public void createSudoku(Board board) {
         fillBoard(board);
 
         //Create list of possible places
@@ -67,10 +67,35 @@ public class Creater {
         }
     }
 
-    private static boolean hasUniqueSolution(Board board) {
-        // Implement a method that attempts to solve the board and stops
-        // if it finds more than one solution, indicating it's not unique.
+    public boolean hasUniqueSolution(Board board) {
+        //Check if it only has one Solution
+        return backtraceSolve(board, 0) == 1;
+    }
 
-        return false;
+    private int backtraceSolve(Board board, int count) {
+        if (count > 1) {
+            // If we've found more than one solution, stop searching
+            return count;
+        }
+        for (int x = 0; x < board.getDimensions(); x++) {
+            for (int y = 0; y < board.getDimensions(); y++) {
+                // Find the next empty cell
+                if (board.getNumber(x, y) == 0) {
+                    for (int number = 1; number <= board.getDimensions(); number++) {
+                        if (board.validPlace(x, y, number)) {
+                            // Attempt to place a number
+                            board.setNumber(x, y, number);
+                            count = backtraceSolve(board, count);
+                            // Backtrack, remove the number
+                            board.setNumber(x, y, 0);
+                        }
+                    }
+                    // If no number is valid, return count as is
+                    return count;
+                }
+            }
+        }
+        // Found a solution, increment count and return it
+        return count + 1;
     }
 }
