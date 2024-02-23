@@ -1,5 +1,6 @@
 package dk.dtu;
 
+import dk.dtu.core.Board;
 import dk.dtu.core.Game;
 import dk.dtu.gui.SudokuBoardCanvas;
 import dk.dtu.gui.WindowManager;
@@ -10,11 +11,17 @@ import java.awt.event.*;
 import java.awt.*;
 
 class SudokuSolverApp {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         WindowManager windowManager = new WindowManager(800, 800);
-        Game game = new Game(windowManager);
+        int n = 3;
+        int k = 3;
+        Game game = new Game(windowManager, n, k);
         KeyboardListener keyboardListener = new KeyboardListener(game);
         MouseActionListener mouseActionListener = new MouseActionListener(game);
+
+
+        game.createBoard(3,3,50);
+
 
         windowManager.display(); // Show the window
 

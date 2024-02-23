@@ -3,11 +3,11 @@ package dk.dtu.gui;
 import java.awt.*;
 
 public class SudokuBoardCanvas extends Component {
-    private int gridSize; // The number of cells in a row/column
-    private int cellSize; // The size of each cell in pixels
+    private final int gridSize; // The number of cells in a row/column
+    private final int cellSize; // The size of each cell in pixels
 
-    public SudokuBoardCanvas(int gridSize, int cellSize) {
-        this.gridSize = gridSize;
+    public SudokuBoardCanvas(int n,int k, int cellSize) {
+        this.gridSize = n * k;
         this.cellSize = cellSize;
         // Assuming a square board, set the preferred size to accommodate the grid
         setSize(gridSize * cellSize, gridSize * cellSize);

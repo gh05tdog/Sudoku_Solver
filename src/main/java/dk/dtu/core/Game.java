@@ -14,15 +14,19 @@ public class Game implements Runnable {
     private boolean running = true;
     int gridSize = 9; // or 9 for a standard Sudoku
     int cellSize = 50; // Adjust based on your window size and desired grid size
+    private final Board gameboard;
+    MouseActionListener mouseActionListener = new MouseActionListener(this);
 
 
-    public Game(WindowManager windowManager) {
+
+    public Game(WindowManager windowManager,int n, int k) throws Exception {
         this.windowManager = windowManager;
+        gameboard = new Board(n, k);
     }
 
     @Override
     public void run() {
-        MouseActionListener mouseActionListener = new MouseActionListener(this);
+
         windowManager.addMouseListener(mouseActionListener);
 
         Button button = new Button("Click me");
@@ -36,10 +40,7 @@ public class Game implements Runnable {
         windowManager.drawComponent(button);
 
 
-        SudokuBoardCanvas board = new SudokuBoardCanvas(gridSize, cellSize);
-        board.setLocation(50, 50); // Position the board within the white panel as needed
-        board.addMouseListener(mouseActionListener);
-        windowManager.drawComponent(board);
+
 
         while (running) {
             // Game loop logic:
@@ -89,5 +90,14 @@ public class Game implements Runnable {
         System.out.println("Mouse clicked at: " + x + ", " + y);
     }
 
+    public void createBoard(int n, int k, int cellSize) {
+        SudokuBoardCanvas board = new SudokuBoardCanvas(n, k, cellSize);
+        board.setLocation(50, 50); // Position the board within the white panel as needed
+        board.addMouseListener(mouseActionListener);
+        windowManager.drawComponent(board);
+        gameboard.printBoard();
+
+
+    }
     // ... other methods for game logic ...
 }

@@ -26,6 +26,7 @@
                 }
                 board.add(row);
             }
+
         }
 
         private boolean boardIsPossible(int k, int n) {
@@ -84,4 +85,5 @@
         public int getNumber(int x, int y) {
             return board.get(x).get(y);
         }
+
     }
