@@ -55,11 +55,11 @@
 
         public ArrayList<Integer> getSquare(int x, int y) {
             ArrayList<Integer> square = new ArrayList<>();
-            int squareRowStart = (x / n) * n;
-            int squareColStart = (y / n) * n;
+            int squareRowStart = (x / this.n) * this.n;
+            int squareColStart = (y / this.n) * this.n;
 
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
+            for (int i = 0; i < this.n; i++) {
+                for (int j = 0; j < this.n; j++) {
                     int currentX = squareRowStart + i;
                     int currentY = squareColStart + j;
                     square.add(this.board.get(currentX).get(currentY));

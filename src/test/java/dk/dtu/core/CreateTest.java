@@ -51,9 +51,10 @@ class CreateTest {
     @DisplayName("Test creating a filled board adheres to Sudoku rules")
     void testBoardFilling() {
         Board board = null;
+        Creater creater = new Creater();
         try {
             board = new Board(3, 3); // For a standard 9x9 Sudoku board
-            Creater.createSudoku(board); // Assuming this method exists and fills the board
+            creater.createSudoku(board); // Assuming this method exists and fills the board
         } catch (Exception e) {
             fail("Creating or filling the board should not throw an exception.");
         }

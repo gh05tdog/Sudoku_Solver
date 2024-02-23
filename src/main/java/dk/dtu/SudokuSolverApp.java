@@ -6,7 +6,8 @@ import dk.dtu.core.Creater;
 class SudokuSolverApp {
     public static void main(String[] args) throws Exception {
         Board board = new Board(3,3);
-        Creater.createSudoku(board);
+        Creater creater = new Creater();
+        creater.createSudoku(board);
         board.printBoard();
     }
 }
