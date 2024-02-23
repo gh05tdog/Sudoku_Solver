@@ -67,7 +67,7 @@ public class Creater {
         }
     }
 
-    private boolean hasUniqueSolution(Board board) {
+    public boolean hasUniqueSolution(Board board) {
         //Check if it only has one Solution
         return backtraceSolve(board, 0) == 1;
     }
