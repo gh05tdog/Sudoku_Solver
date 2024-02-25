@@ -13,16 +13,18 @@ public class KeyboardListener implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        //game.onKeyTyped(e);
+        System.out.println("Key Typed: "+e.getKeyChar());
+        game.typeNumber(e);
+
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        //game.onKeyPressed(e);
+        System.out.println("Key Typed: "+e.getKeyChar());
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        //game.onKeyReleased(e);
+        System.out.println("Key Typed: "+e.getKeyChar());
     }
 }

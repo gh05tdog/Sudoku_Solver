@@ -15,12 +15,11 @@ class SudokuSolverApp {
         WindowManager windowManager = new WindowManager(800, 800);
         int n = 3;
         int k = 3;
-        Game game = new Game(windowManager, n, k);
-        KeyboardListener keyboardListener = new KeyboardListener(game);
-        MouseActionListener mouseActionListener = new MouseActionListener(game);
+        int cellSize = 50;
+        Game game = new Game(windowManager, n, k, cellSize);
 
 
-        game.createBoard(3,3,50);
+        game.createBoard(n,k,cellSize);
 
 
         windowManager.display(); // Show the window

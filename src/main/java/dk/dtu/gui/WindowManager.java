@@ -48,4 +48,7 @@ public class WindowManager{
         whitePanel.addMouseListener(listener);
     }
 
+    public Component getFrame() {
+        return frame;
+    }
 }
