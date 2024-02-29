@@ -1,4 +1,4 @@
-    package dk.dtu.core;
+    package dk.dtu.game.core;
 
     import java.util.ArrayList;
 
@@ -46,7 +46,7 @@
             return this.board.get(i);
         }
 
-        ArrayList<Integer> getColumn(int i) {
+        public ArrayList<Integer> getColumn(int i) {
             ArrayList<Integer> column = new ArrayList<>(this.board.size()); //
             for (ArrayList<Integer> row : board) {
                 column.add(row.get(i));
@@ -98,4 +98,11 @@
             return board.get(x).get(y);
         }
 
+        public ArrayList<ArrayList<Integer>> getBoard() {
+            return board;
+        }
+
+        public void setBoard(ArrayList<ArrayList<Integer>> arrayLists) {
+            this.board = arrayLists;
+        }
     }

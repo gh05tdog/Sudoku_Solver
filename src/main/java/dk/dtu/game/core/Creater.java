@@ -1,4 +1,6 @@
-package dk.dtu.core;
+package dk.dtu.game.core;
+
+import dk.dtu.game.core.Board;
 
 import java.util.*;
 import java.util.stream.IntStream;

@@ -1,6 +1,6 @@
-package dk.dtu.listener;
+package dk.dtu.engine.listener;
 
-import dk.dtu.core.Game;
+import dk.dtu.game.core.Game;
 
 import java.awt.event.*;
 
@@ -14,7 +14,7 @@ public class KeyboardListener implements KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {
         System.out.println("Key Typed: "+e.getKeyChar());
-        game.typeNumber(e);
+        game.typeNumberWithKeyboard(e);
 
     }
 

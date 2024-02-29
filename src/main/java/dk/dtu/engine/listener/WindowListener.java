@@ -1,5 +1,4 @@
-package dk.dtu.listener;
-import dk.dtu.core.Game;
+package dk.dtu.engine.listener;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

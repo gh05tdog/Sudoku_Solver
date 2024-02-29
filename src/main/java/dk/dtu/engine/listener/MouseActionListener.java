@@ -1,7 +1,7 @@
-package dk.dtu.listener;
+package dk.dtu.engine.listener;
 
-import dk.dtu.core.Game;
-import dk.dtu.gui.SudokuBoardCanvas;
+import dk.dtu.game.core.Game;
+import dk.dtu.engine.gui.SudokuBoardCanvas;
 
 import java.awt.event.*;
 

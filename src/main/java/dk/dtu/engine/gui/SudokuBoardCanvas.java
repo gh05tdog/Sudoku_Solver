@@ -1,4 +1,4 @@
-package dk.dtu.gui;
+package dk.dtu.engine.gui;
 
 import java.awt.*;
 
@@ -59,8 +59,6 @@ public class SudokuBoardCanvas extends Component {
         // Set the stroke for internal sub-square lines to gray
         g2.setStroke(new BasicStroke((float)1/2));
 
-
-
         // Draw each cell and thin lines
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -89,8 +87,7 @@ public class SudokuBoardCanvas extends Component {
             g2.drawLine(0, pos, gridSize * cellSize, pos); // Horizontal lines
         }
 
-        // Right and bottom border
-        int offset = 2; // Adjust the offset if needed
+        int offset = 1; // Adjust the offset if needed
         g2.drawLine(gridSize * cellSize - offset, 0, gridSize * cellSize - offset, gridSize * cellSize); // Right border
         g2.drawLine(0, gridSize * cellSize - offset, gridSize * cellSize, gridSize * cellSize - offset); // Bottom border
 
@@ -184,7 +181,6 @@ public class SudokuBoardCanvas extends Component {
         // Calculate the x and y position to make the text centered in the cell
         int xPos = x * cellSize + (cellSize - textWidth) / 2;
         int yPos = y * cellSize + ((cellSize - textHeight) / 2) + metrics.getAscent();
-
 
 
         g.drawString(text, xPos, yPos);
