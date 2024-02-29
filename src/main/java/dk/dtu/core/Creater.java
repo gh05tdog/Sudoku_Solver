@@ -5,6 +5,8 @@ import java.util.stream.IntStream;
 
 public class Creater {
     public void fillBoard(Board board) {
+        //Clear the board
+        board.clear();
         ArrayList<Integer> numbers = new ArrayList<>(IntStream.rangeClosed(1, board.getDimensions()).boxed().toList());
         // Shuffle the numbers
         Collections.shuffle(numbers);
@@ -40,7 +42,7 @@ public class Creater {
         return true;
     }
 
-    public void createSudoku(Board board) {
+    public void createSudoku(Board board) throws Exception {
         fillBoard(board);
 
         //Create list of possible places

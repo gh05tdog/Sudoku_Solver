@@ -7,7 +7,7 @@
         private final int n;
         private final int k;
 
-        private final ArrayList<ArrayList<Integer>> board;
+        private ArrayList<ArrayList<Integer>> board;
 
         public Board(int n, int k) throws Exception {
             this.n = n;
@@ -80,6 +80,18 @@
 
         public int getDimensions(){
             return n * k;
+        }
+
+        public void clear() {
+            this.board = new ArrayList<>();
+            int numRows = n * k;
+            for (int i = 0; i < numRows; i++) {
+                ArrayList<Integer> row = new ArrayList<>(numRows);
+                for (int j = 0; j < numRows; j++) {
+                    row.add(0);
+                }
+                board.add(row);
+            }
         }
 
         public int getNumber(int x, int y) {
