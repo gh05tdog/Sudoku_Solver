@@ -1,17 +1,16 @@
 package dk.dtu.game.core;
 
-import dk.dtu.engine.gui.SudokuBoardCanvas;
-import dk.dtu.engine.gui.WindowManager;
-import dk.dtu.engine.listener.KeyboardListener;
-import dk.dtu.engine.listener.MouseActionListener;
+import dk.dtu.engine.graphics.SudokuBoardCanvas;
+import dk.dtu.engine.core.WindowManager;
+import dk.dtu.engine.input.KeyboardListener;
+import dk.dtu.engine.input.MouseActionListener;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Game implements Runnable {
+public class SudokuGame {
     private final WindowManager windowManager;
     private boolean running = true;
     int gridSize; // or 9 for a standard Sudoku
@@ -25,39 +24,17 @@ public class Game implements Runnable {
 
     private ArrayList<ArrayList<Integer>> initialBoard;
 
-
-    public Game(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
+    public SudokuGame(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
         this.windowManager = windowManager;
         gameboard = new Board(n, k);
         this.gridSize = n * k;
         this.cellSize = cellSize;
     }
 
-    @Override
-    public void run() {
-        EventQueue.invokeLater(this::initializeUI);
-
-        while (running) {
-            if (gameIsStarted) {
-                displayNumbersVisually();
-            }
-
-            // Sleep for a short duration to control the loop timing
-            try {
-                Thread.sleep(16); // For a roughly 60Hz game loop
-            } catch (InterruptedException e) {
-                running = false;
-            }
-        }
-    }
-
-
-
     public void onSudokuBoardClicked(int x, int y) {
         // Calculate the column and row based on the adjusted click location
-        int column = x / cellSize;
-        int row = y / cellSize;
-        printInitialBoard();
+        int column = x / (board.getWidth() / gridSize); // Adjust for variable cell size
+        int row = y / (board.getHeight() / gridSize); // Adjust for variable cell size
 
         // Check if the adjusted click is within the bounds of the Sudoku board
         if (column >= 0 && column < gridSize && row >= 0 && row < gridSize) {
@@ -124,16 +101,8 @@ public class Game implements Runnable {
 
     }
 
-    private void printInitialBoard(){
-        for (ArrayList<Integer> row : initialBoard) {
-            for (int cell : row) {
-                System.out.print(cell + " ");
-            }
-            System.out.println();
-        }
-    }
-
-    private void initializeUI(){
+    public void initialize(int n, int k, int cellSize) throws Exception {
+        createBoard(n, k, cellSize);
         displayButtons();
         windowManager.drawComponent(board);
     }
@@ -142,6 +111,7 @@ public class Game implements Runnable {
         gameboard.clear();
         creater.createSudoku(gameboard);
         initialBoard = deepCopyBoard(gameboard.getBoard());
+        gameIsStarted = true;
     }
 
     private JButton createButton(String text, int x, int y, int width, int height){
@@ -186,7 +156,7 @@ public class Game implements Runnable {
                 throw new RuntimeException(ex);
             }
             board.requestFocusInWindow();
-            gameIsStarted = true;
+
             windowManager.updateBoard();
         });
 
@@ -215,9 +185,16 @@ public class Game implements Runnable {
         System.out.println("Mouse clicked at: " + x + ", " + y);
     }
 
-    public void start() {
-        new Thread(this).start();
+    public void render() {
+        if(gameIsStarted){
+            displayNumbersVisually();
+        }
+
     }
 
-
+    public void update() {
+        if (running) {
+            render();
+        }
+    }
 }

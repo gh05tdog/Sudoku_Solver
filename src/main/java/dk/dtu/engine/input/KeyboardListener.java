@@ -1,20 +1,20 @@
-package dk.dtu.engine.listener;
+package dk.dtu.engine.input;
 
-import dk.dtu.game.core.Game;
+import dk.dtu.game.core.SudokuGame;
 
 import java.awt.event.*;
 
 public class KeyboardListener implements KeyListener {
-    private Game game; // Reference to the Game class
+    private SudokuGame sudokuGame; // Reference to the Game class
 
-    public KeyboardListener(Game game) {
-        this.game = game;
+    public KeyboardListener(SudokuGame sudokuGame) {
+        this.sudokuGame = sudokuGame;
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
         System.out.println("Key Typed: "+e.getKeyChar());
-        game.typeNumberWithKeyboard(e);
+        sudokuGame.typeNumberWithKeyboard(e);
 
     }
 

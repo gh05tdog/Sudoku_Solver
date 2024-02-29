@@ -1,4 +1,4 @@
-package dk.dtu.engine.listener;
+package dk.dtu.engine.input;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

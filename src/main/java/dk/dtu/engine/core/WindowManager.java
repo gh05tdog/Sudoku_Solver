@@ -1,6 +1,6 @@
-package dk.dtu.engine.gui;
+package dk.dtu.engine.core;
 
-import dk.dtu.engine.listener.MouseActionListener;
+import dk.dtu.engine.input.MouseActionListener;
 
 import javax.swing.*;
 import java.awt.*;

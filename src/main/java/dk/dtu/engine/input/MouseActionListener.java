@@ -1,16 +1,16 @@
-package dk.dtu.engine.listener;
+package dk.dtu.engine.input;
 
-import dk.dtu.game.core.Game;
-import dk.dtu.engine.gui.SudokuBoardCanvas;
+import dk.dtu.game.core.SudokuGame;
+import dk.dtu.engine.graphics.SudokuBoardCanvas;
 
 import java.awt.event.*;
 
 public class MouseActionListener implements MouseListener {
     private boolean isInsideSudokuBoard = false;
-    private Game game; // Reference to the Game class
+    private SudokuGame sudokuGame; // Reference to the Game class
 
-    public MouseActionListener(Game game) {
-        this.game = game;
+    public MouseActionListener(SudokuGame sudokuGame) {
+        this.sudokuGame = sudokuGame;
     }
 
 
@@ -18,10 +18,10 @@ public class MouseActionListener implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (isInsideSudokuBoard) {
-            game.onSudokuBoardClicked(e.getX(), e.getY());
+            sudokuGame.onSudokuBoardClicked(e.getX(), e.getY());
         }
         else {
-            game.onMouseClicked(e.getX(), e.getY());
+            sudokuGame.onMouseClicked(e.getX(), e.getY());
         }
     }
 

@@ -1,4 +1,4 @@
-package dk.dtu.engine.gui;
+package dk.dtu.engine.graphics;
 
 import java.awt.*;
 
