@@ -1,12 +1,9 @@
 package dk.dtu.game.core;
 
-import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
+import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
-import dk.dtu.game.core.Board;
-import dk.dtu.game.core.Creater;
-import dk.dtu.game.solver.solverAlgorithm;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -46,7 +43,6 @@ public class SudokuGame {
             board.removeNumber(row, column);
             board.highlightCell(row, column);
             System.out.println("highlighted cell: " + Arrays.toString(board.getHightligtedCell()));
-            gameboard.printBoard(gameboard.getBoard());
 
         } else {
             System.out.println("Click outside the Sudoku board or on another component");
@@ -149,13 +145,6 @@ public class SudokuGame {
 
         solveButton.addActionListener(e -> {
             // Your solve logic
-            solverAlgorithm solver = new solverAlgorithm();
-            ArrayList<ArrayList<Integer>> boardArray = gameboard.getBoard();
-            gameboard.printBoard(boardArray);
-            boardArray = solver.solve(boardArray);
-            gameboard.printBoard(boardArray);
-            gameboard.setBoard(boardArray);
-
             board.requestFocusInWindow();
         });
 

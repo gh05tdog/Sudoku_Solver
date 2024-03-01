@@ -69,8 +69,8 @@
             return square;
         }
 
-        public void printBoard(ArrayList <ArrayList<Integer>> gameboard) {
-            for (ArrayList<Integer> row : gameboard) {
+        public void printBoard() {
+            for (ArrayList<Integer> row : board) {
                 for (int cell : row) {
                     System.out.print(cell + " ");
                 }

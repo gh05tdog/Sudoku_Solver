@@ -2,9 +2,7 @@ package dk.dtu.game.core;
 
 import dk.dtu.game.core.Board;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class Creater {
