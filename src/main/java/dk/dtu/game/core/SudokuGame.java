@@ -4,6 +4,7 @@ import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
+import dk.dtu.game.solver.solverAlgorithm;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -144,7 +145,11 @@ public class SudokuGame {
 
 
         solveButton.addActionListener(e -> {
-            // Your solve logic
+            ArrayList<ArrayList<Integer>> boardArray = deepCopyBoard(gameboard.getBoard());
+            solverAlgorithm solver = new solverAlgorithm();
+            boardArray = solver.solve(boardArray);
+            gameboard.setBoard(boardArray);
+
             board.requestFocusInWindow();
         });
 
