@@ -7,8 +7,8 @@ class SudokuSolverApp {
     public static void main(String[] args) throws Exception {
         // Set up the window manager and game parameters.
         WindowManager windowManager = new WindowManager(800, 800);
-        int n = 3;
-        int k = 3;
+        int n = 4;
+        int k = 4;
         int cellSize = 50;
         // Initialize the GameEngine with the window manager.
         GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);

@@ -1,10 +1,16 @@
 package dk.dtu.game.solver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static java.lang.Math.sqrt;
 
 public class solverAlgorithm {
+
+    public static void main(String[] args) {
+        createBoard(3);
+    }
+
     public ArrayList<ArrayList<Integer>> solve(ArrayList<ArrayList<Integer>> gameboard) {
         gameboard = convertToArrayList(runSolver((convertTo2DArray(gameboard))));
         printboard(gameboard);
@@ -34,7 +40,14 @@ public class solverAlgorithm {
 
     static int [][] runSolver(int[][] board) {
         long startTime = System.nanoTime();
-        if (sudoku(board)) {
+
+        int[] randCol = fisherYatesShuffle(new int[board.length]);
+        int[] randRow = fisherYatesShuffle(new int[board.length]);
+
+        System.out.println("Random row: " + Arrays.toString(randRow));
+        System.out.println("Random col: " + Arrays.toString(randCol));
+
+        if (sudoku(board, randRow, randCol)) {
             long endTime = System.nanoTime();
             long duration = (endTime - startTime);
             System.out.println("Time taken: " + duration / 1000 + " microseconds");
@@ -44,18 +57,19 @@ public class solverAlgorithm {
         return board;
     }
 
-    static boolean sudoku(int[][] board) {
+    static boolean sudoku(int[][] board, int[] randRow, int[] randCol) {
         int constant = (int) sqrt(board.length);
         for (int row = 0; row < board.length; row++) {
             for (int col = 0; col < board.length; col++) {
-                if (board[row][col] == 0) {
+                if (board[randRow[row]][randCol[col]] == 0) {
                     for (int c = 1; c <= board.length; c++) {
-                        if (checkBoard(board, row, col, c, constant)) {
-                            board[row][col] = c;
-                            if (sudoku(board)) {
+                        if (checkBoard(board, randRow[row], randCol[col], c, constant)) {
+                            board[randRow[row]][randCol[col]] = c;
+                            if (sudoku(board, randRow, randCol)) {
                                 return true;
                             } else {
-                                board[row][col] = 0;
+                                board[randRow[row]][randCol[col]] = 0;
+
                             }
                         }
                     }
@@ -98,5 +112,58 @@ public class solverAlgorithm {
         System.out.println("End of solved board");
     }
 
-}
+    public static void createBoard(int size) {
 
+        int [][] board = new int[size*size][size*size];
+        runSolver(board);
+
+        int [] randCol = fisherYatesShuffle(new int[size*size]);
+        int [] randRow = fisherYatesShuffle(new int[size*size]);
+
+        int numRemoved =0;
+
+        outerLoop:
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                int solveCount = 0;
+                int [][] board1 = board.clone();
+                for (int k = 0; k < size*size; k++) {
+                    board1[randRow[i]][randCol[j]] = k;
+                     if (sudoku(board, randRow, randCol)) {
+                         solveCount++;
+                     }
+
+                    }
+                if (solveCount == 1) {
+                    numRemoved++;
+                    board[randRow[i]][randCol[j]] = 0;
+                    System.out.println("Number removed: " + numRemoved);
+                } else if (numRemoved > 15) {
+                    break outerLoop;
+            }
+        }
+        }
+        System.out.println("Number removed: " + numRemoved);
+        printboard(convertToArrayList(board));
+
+
+
+    }
+
+    public static int [] fisherYatesShuffle(int[] arr) {
+        for (int i = 0; i<arr.length; i++) {
+            arr[i] = i;
+        }
+
+        for (int i = arr.length - 1; i > 0; i--) {
+            int index = (int) (Math.random() * (i + 1));
+            int a = arr[index];
+            arr[index] = arr[i];
+            arr[i] = a;
+        }
+        return arr;
+    }
+
+
+
+}
