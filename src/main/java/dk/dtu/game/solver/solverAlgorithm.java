@@ -7,10 +7,6 @@ import static java.lang.Math.sqrt;
 
 public class solverAlgorithm {
 
-    public static void main(String[] args) {
-        createBoard(3);
-    }
-
     public ArrayList<ArrayList<Integer>> solve(ArrayList<ArrayList<Integer>> gameboard) {
         gameboard = convertToArrayList(runSolver((convertTo2DArray(gameboard))));
         printboard(gameboard);
@@ -43,9 +39,6 @@ public class solverAlgorithm {
 
         int[] randCol = fisherYatesShuffle(new int[board.length]);
         int[] randRow = fisherYatesShuffle(new int[board.length]);
-
-        System.out.println("Random row: " + Arrays.toString(randRow));
-        System.out.println("Random col: " + Arrays.toString(randCol));
 
         if (sudoku(board, randRow, randCol)) {
             long endTime = System.nanoTime();
@@ -112,44 +105,6 @@ public class solverAlgorithm {
         System.out.println("End of solved board");
     }
 
-    public static void createBoard(int size) {
-
-        int [][] board = new int[size*size][size*size];
-        runSolver(board);
-
-        int [] randCol = fisherYatesShuffle(new int[size*size]);
-        int [] randRow = fisherYatesShuffle(new int[size*size]);
-
-        int numRemoved =0;
-
-        outerLoop:
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                int solveCount = 0;
-                int [][] board1 = board.clone();
-                for (int k = 0; k < size*size; k++) {
-                    board1[randRow[i]][randCol[j]] = k;
-                     if (sudoku(board, randRow, randCol)) {
-                         solveCount++;
-                     }
-
-                    }
-                if (solveCount == 1) {
-                    numRemoved++;
-                    board[randRow[i]][randCol[j]] = 0;
-                    System.out.println("Number removed: " + numRemoved);
-                } else if (numRemoved > 15) {
-                    break outerLoop;
-            }
-        }
-        }
-        System.out.println("Number removed: " + numRemoved);
-        printboard(convertToArrayList(board));
-
-
-
-    }
-
     public static int [] fisherYatesShuffle(int[] arr) {
         for (int i = 0; i<arr.length; i++) {
             arr[i] = i;
@@ -163,7 +118,6 @@ public class solverAlgorithm {
         }
         return arr;
     }
-
 
 
 }
