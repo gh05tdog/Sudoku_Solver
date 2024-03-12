@@ -161,6 +161,7 @@ public class solverAlgorithm {
 
     public static void removeNumsRecursive(Board board) throws Exception {
         int[][] tempBoard = deepCopy(board.getBoard());
+        int[][] initialBoard;
         int numRemoved = 0;
         while (numRemoved < 30) {
             System.out.println("Num removed: " + numRemoved);
@@ -169,7 +170,7 @@ public class solverAlgorithm {
 
             int tempNumber = tempBoard[randRow][randCol];
             tempBoard[randRow][randCol] = 0;
-            int[][] initialBoard = deepCopy(tempBoard);
+            initialBoard = deepCopy(tempBoard);
 
             if (sudoku(initialBoard)) {
                 numRemoved++;
@@ -182,9 +183,12 @@ public class solverAlgorithm {
         }
     }
     public static int [][] deepCopy (int [][] arr) {
+        int [][] copy = new int [arr.length][arr.length];
         for (int i = 0; i < arr.length; i++) {
-            System.arraycopy(arr[i], 0, arr[i], 0, arr.length);
+            for (int j = 0; j < arr.length; j++) {
+                copy[i][j] = arr[i][j];
+            }
         }
-        return arr;
+        return copy;
     }
 }
