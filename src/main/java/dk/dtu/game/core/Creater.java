@@ -1,18 +1,21 @@
 package dk.dtu.game.core;
 
 import dk.dtu.game.core.Board;
+import dk.dtu.game.solver.solverAlgorithm;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
 public class Creater {
-    public void fillBoard(Board board) {
-        //Clear the board
+
+    public void fillBoard(Board board) throws Exception {
+       //Clear the board
         board.clear();
         ArrayList<Integer> numbers = new ArrayList<>(IntStream.rangeClosed(1, board.getDimensions()).boxed().toList());
         // Shuffle the numbers
         Collections.shuffle(numbers);
         fillBoardRecursive(board, numbers);
+
     }
 
     private boolean fillBoardRecursive(Board board, ArrayList<Integer> numbers) {
@@ -69,6 +72,11 @@ public class Creater {
                 board.setNumber(pos[0], pos[1], tempNumber);
             }
         }
+    }
+
+    public void createSudoku2 (Board board) throws Exception {
+        solverAlgorithm.fillBoard(board);
+        solverAlgorithm.removeNumsRecursive(board);
     }
 
     public boolean hasUniqueSolution(Board board) {

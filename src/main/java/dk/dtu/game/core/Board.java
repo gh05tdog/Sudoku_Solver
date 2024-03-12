@@ -7,25 +7,22 @@
         private final int n;
         private final int k;
 
-        private ArrayList<ArrayList<Integer>> board;
+        private final int size;
+
+        private int [][] board;
 
         public Board(int n, int k) throws Exception {
             this.n = n;
             this.k = k;
+            this.size = n*k;
 
             if (!boardIsPossible(k, n)) {
                 throw new Exception("This board is not possible to create");
             }
-            this.board = new ArrayList<>();
+            this.board = new int [n*k][n*k];
             int numRows = n * k;
             // Initialize the board with zeros
-            for (int i = 0; i < numRows; i++) {
-                ArrayList<Integer> row = new ArrayList<>(numRows);
-                for (int j = 0; j < numRows; j++) {
-                    row.add(0);
-                }
-                board.add(row);
-            }
+            fillZeros(board);
 
         }
 
@@ -34,45 +31,75 @@
         }
 
         public void setNumber(int x, int y, int num) {
-            this.board.get(x).set(y, num);
+            board[x][y] = num;
         }
 
         public boolean validPlace(int x, int y, int num) {
             // Check rows and check square
-            return !getRow(x).contains(num) && !getColumn(y).contains(num) && !getSquare(x, y).contains(num);
+            return !contains(getRow(x),num) && !contains(getRow(y),num) && !squareContains(getSquare(x,y),num);
         }
 
-        public ArrayList<Integer> getRow(int i) {
-            return this.board.get(i);
+        public int[] getRow(int i) {
+            int [] row = new int[size];
+            for (int j = 0; j < size; j++) {
+                row[i] = board[i][j];
+
+            }
+            return row;
         }
 
-        public ArrayList<Integer> getColumn(int i) {
-            ArrayList<Integer> column = new ArrayList<>(this.board.size()); //
-            for (ArrayList<Integer> row : board) {
-                column.add(row.get(i));
+        public boolean contains (int [] arr, int num) {
+            for (int j : arr) {
+                if (j == num) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public boolean squareContains(int [][] square, int num) {
+            for (int[] ints : square) {
+                for (int anInt : ints) {
+                    if (anInt == num) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public int[] getColumn(int i) {
+            int [] column = new int[size];
+            for (int j = 0; j < size; j++) {
+                column[i] = board[j][i];
+
             }
             return column;
         }
 
-        public ArrayList<Integer> getSquare(int x, int y) {
-            ArrayList<Integer> square = new ArrayList<>();
-            int squareRowStart = (x / this.n) * this.n;
-            int squareColStart = (y / this.n) * this.n;
+        public void fillZeros(int[][] board) {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    board[i][j] = 0;
+                }
+            }
+        }
 
-            for (int i = 0; i < this.n; i++) {
-                for (int j = 0; j < this.n; j++) {
-                    int currentX = squareRowStart + i;
-                    int currentY = squareColStart + j;
-                    square.add(this.board.get(currentX).get(currentY));
+        public int[][] getSquare(int x, int y) {
+            int [][] square = new int [n][n];
+
+            for(int i = 0; i < n; i++) {
+                for(int j = 0; j < n; j++) {
+                    square[i][j] = board[(x / n) * n + i][(y / n) * n + j];
                 }
             }
             return square;
         }
 
         public void printBoard() {
-            for (ArrayList<Integer> row : board) {
-                for (int cell : row) {
-                    System.out.print(cell + " ");
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    System.out.print(board[i][j] + " ");
                 }
                 System.out.println();
             }
@@ -83,26 +110,22 @@
         }
 
         public void clear() {
-            this.board = new ArrayList<>();
+            this.board = new int[size][size];
             int numRows = n * k;
             for (int i = 0; i < numRows; i++) {
-                ArrayList<Integer> row = new ArrayList<>(numRows);
-                for (int j = 0; j < numRows; j++) {
-                    row.add(0);
-                }
-                board.add(row);
+
             }
         }
 
         public int getNumber(int x, int y) {
-            return board.get(x).get(y);
+            return board[x][y];
         }
 
-        public ArrayList<ArrayList<Integer>> getBoard() {
+        public int[][] getBoard() {
             return board;
         }
 
-        public void setBoard(ArrayList<ArrayList<Integer>> arrayLists) {
-            this.board = arrayLists;
+        public void setBoard(int[][] tempBoard) {
+            this.board = tempBoard;
         }
     }

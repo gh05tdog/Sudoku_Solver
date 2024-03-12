@@ -23,7 +23,7 @@ public class SudokuGame {
     private SudokuBoardCanvas board;
     private boolean gameIsStarted = false;
 
-    private ArrayList<ArrayList<Integer>> initialBoard;
+    private int [][] initialBoard;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
         this.windowManager = windowManager;
@@ -60,7 +60,7 @@ public class SudokuGame {
                 int[] cell = board.getHightligtedCell();
                 int row = cell[0];
                 int col = cell[1];
-                if(gameboard.validPlace(row, col, number) && initialBoard.get(row).get(col) == 0){
+                if(gameboard.validPlace(row, col, number) && initialBoard[row][col] == 0){
                     board.removeNumber(row, col); // Assuming (col, row) are the correct order for your logic
                     gameboard.setNumber(row, col, number); // Update the cell with the new number
                 }
@@ -73,7 +73,7 @@ public class SudokuGame {
             int[] cell = board.getHightligtedCell();
             int row = cell[0];
             int col = cell[1];
-            if(initialBoard.get(row).get(col) == 0){
+            if(initialBoard[row][col] == 0){
                 board.removeNumber(row, col); // Assuming (col, row) are the correct order for your logic
                 gameboard.setNumber(row, col, 0); // Update the cell with the new number
             }
@@ -83,7 +83,7 @@ public class SudokuGame {
     public void displayNumbersVisually(){
         for (int i = 0; i < gameboard.getDimensions(); i++) {
             for (int j = 0; j < gameboard.getDimensions(); j++) {
-                int number = gameboard.getRow(i).get(j);
+                int number = gameboard.getNumber(j, i);
                 board.drawNumber(j, i, number, board.getGraphics());
             }
         }
@@ -97,7 +97,7 @@ public class SudokuGame {
         board.addMouseListener(mouseActionListener);
 
         board.addKeyListener(keyboardListener);
-        creater.createSudoku(gameboard);
+        creater.createSudoku2(gameboard);
         initialBoard = deepCopyBoard(gameboard.getBoard());
 
     }
@@ -145,7 +145,7 @@ public class SudokuGame {
 
 
         solveButton.addActionListener(e -> {
-            ArrayList<ArrayList<Integer>> boardArray = deepCopyBoard(gameboard.getBoard());
+            int [][] boardArray = deepCopyBoard(gameboard.getBoard());
             solverAlgorithm solver = new solverAlgorithm();
             boardArray = solver.solve(boardArray);
             gameboard.setBoard(boardArray);
@@ -177,11 +177,10 @@ public class SudokuGame {
         windowManager.drawComponent(eraseButton);
     }
 
-    private ArrayList<ArrayList<Integer>> deepCopyBoard(ArrayList<ArrayList<Integer>> original) {
-        ArrayList<ArrayList<Integer>> copy = new ArrayList<>();
-        for (ArrayList<Integer> row : original) {
-            ArrayList<Integer> newRow = new ArrayList<>(row);
-            copy.add(newRow);
+    private int [][] deepCopyBoard(int [][] original) {
+        int [][] copy = new int [original.length][original.length];
+        for (int i = 0; i < original.length; i++) {
+            System.arraycopy(original[i], 0, copy[i], 0, original.length);
         }
         return copy;
     }

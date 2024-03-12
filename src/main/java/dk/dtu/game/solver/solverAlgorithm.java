@@ -1,76 +1,74 @@
 package dk.dtu.game.solver;
 
+import dk.dtu.game.core.Board;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Random;
 
 import static java.lang.Math.sqrt;
 
 public class solverAlgorithm {
-
-    public ArrayList<ArrayList<Integer>> solve(ArrayList<ArrayList<Integer>> gameboard) {
-        gameboard = convertToArrayList(runSolver((convertTo2DArray(gameboard))));
-        printboard(gameboard);
-        return gameboard;
+    public int [][] solve(int [][] gameBoard) {
+        runSolver(gameBoard);
+        printBoard(gameBoard);
+        return gameBoard;
     }
 
-    private int[][] convertTo2DArray(ArrayList<ArrayList<Integer>> gameboard) {
-        int[][] board = new int[gameboard.size()][gameboard.size()];
-        for (int i = 0; i < gameboard.size(); i++) {
-            for (int j = 0; j < gameboard.size(); j++) {
-                board[i][j] = gameboard.get(i).get(j);
+    public static int[][] convertTo2DArray(ArrayList<ArrayList<Integer>> gameBoard) {
+        int[][] board = new int[gameBoard.size()][gameBoard.size()];
+        for (int i = 0; i < gameBoard.size(); i++) {
+            for (int j = 0; j < gameBoard.size(); j++) {
+                board[i][j] = gameBoard.get(i).get(j);
             }
         }
         return board;
     }
+
     private static ArrayList<ArrayList<Integer>> convertToArrayList(int[][] board) {
-        ArrayList<ArrayList<Integer>> gameboard = new ArrayList<>();
-        for (int i = 0; i < board.length; i++) {
+        ArrayList<ArrayList<Integer>> gameBoard = new ArrayList<>();
+        for (int[] integers : board) {
             ArrayList<Integer> row = new ArrayList<>();
             for (int j = 0; j < board.length; j++) {
-                row.add(board[i][j]);
+                row.add(integers[j]);
             }
-            gameboard.add(row);
+            gameBoard.add(row);
         }
-        return gameboard;
+        return gameBoard;
     }
 
-    static int [][] runSolver(int[][] board) {
+    static void runSolver(int[][] board) {
         long startTime = System.nanoTime();
 
-        int[] randCol = fisherYatesShuffle(new int[board.length]);
-        int[] randRow = fisherYatesShuffle(new int[board.length]);
-
-        if (sudoku(board, randRow, randCol)) {
+        if (sudoku(board)) {
             long endTime = System.nanoTime();
             long duration = (endTime - startTime);
             System.out.println("Time taken: " + duration / 1000 + " microseconds");
         } else {
             System.out.println("No solution exists");
         }
-        return board;
     }
 
-    static boolean sudoku(int[][] board, int[] randRow, int[] randCol) {
-        int constant = (int) sqrt(board.length);
-        for (int row = 0; row < board.length; row++) {
-            for (int col = 0; col < board.length; col++) {
-                if (board[randRow[row]][randCol[col]] == 0) {
-                    for (int c = 1; c <= board.length; c++) {
-                        if (checkBoard(board, randRow[row], randCol[col], c, constant)) {
-                            board[randRow[row]][randCol[col]] = c;
-                            if (sudoku(board, randRow, randCol)) {
-                                return true;
-                            } else {
-                                board[randRow[row]][randCol[col]] = 0;
+    static boolean sudoku(int[][] board) {
+        if (emptyCellCount(board) > 0) {
+            int[] chosenCells = pickCell(board);
+            assert chosenCells != null;
+            int row = chosenCells[0];
+            int col = chosenCells[1];
 
-                            }
-                        }
+            for (int c = 1; c <= board.length; c++) {
+                if (checkBoard(board, row, col, c, (int) sqrt(board.length))) {
+                    board[row][col] = c;
+                    if (sudoku(board)) {
+                        return true;
+                    } else {
+                        board[row][col] = 0;
                     }
-                    return false;
                 }
             }
+            return false;
+        } else {
+            return true; // board is solved
         }
-        return true; // board is solved
     }
 
     static boolean checkBoard(int[][] board, int row, int col, int c, int constant) {
@@ -94,9 +92,10 @@ public class solverAlgorithm {
 
         return legal_row_col && legal_square;
     }
-    public static void printboard(ArrayList<ArrayList<Integer>> gameboard) {
+
+    public static void printBoard(int [][] gameBoard) {
         System.out.println("Solved board: ");
-        for (ArrayList<Integer> row : gameboard) {
+        for (int[] row : gameBoard) {
             for (int cell : row) {
                 System.out.print(cell + " ");
             }
@@ -105,19 +104,87 @@ public class solverAlgorithm {
         System.out.println("End of solved board");
     }
 
-    public static int [] fisherYatesShuffle(int[] arr) {
-        for (int i = 0; i<arr.length; i++) {
-            arr[i] = i;
+    public static int[] pickCell(int[][] arr) {
+        ArrayList<int[]> possibleCells = new ArrayList<>();
+        int lowestPossibleValue = Integer.MAX_VALUE;
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr.length; j++) {
+                if (arr[i][j] == 0) {
+                    int possibleValues = 0;
+                    for (int k = 1; k <= arr.length; k++) {
+                        if (checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
+                            possibleValues++;
+                        }
+                    }
+                    if (possibleValues < lowestPossibleValue) {
+                        lowestPossibleValue = possibleValues;
+                        possibleCells.clear();
+                        possibleCells.add(new int[]{i, j});
+                    } else if (possibleValues == lowestPossibleValue) {
+                        possibleCells.add(new int[]{i, j});
+                    }
+                }
+            }
+        }
+        if (possibleCells.isEmpty()) {
+            return null;
+        } else {
+            Random random = new Random();
+
+            return possibleCells.get(random.nextInt(possibleCells.size()));
+        }
+    }
+
+    public static int emptyCellCount(int[][] arr) {
+        int emptyCells = 0;
+        for (int[] integers : arr) {
+            for (int j = 0; j < arr.length; j++) {
+                if (integers[j] == 0) {
+                    emptyCells++;
+                }
+            }
+        }
+        return emptyCells;
+    }
+
+    public static void fillBoard(Board board) throws Exception {
+        int size = board.getDimensions();
+        int[][] arr = new int[size][size];
+
+        if (sudoku(arr)) {
+            board.setBoard(arr);
+        } else {
+            System.out.println("No solution exists");
         }
 
-        for (int i = arr.length - 1; i > 0; i--) {
-            int index = (int) (Math.random() * (i + 1));
-            int a = arr[index];
-            arr[index] = arr[i];
-            arr[i] = a;
+    }
+
+    public static void removeNumsRecursive(Board board) throws Exception {
+        int[][] tempBoard = deepCopy(board.getBoard());
+        int numRemoved = 0;
+        while (numRemoved < 30) {
+            System.out.println("Num removed: " + numRemoved);
+            int randRow = (int) (Math.random() * board.getDimensions());
+            int randCol = (int) (Math.random() * board.getDimensions());
+
+            int tempNumber = tempBoard[randRow][randCol];
+            tempBoard[randRow][randCol] = 0;
+            int[][] initialBoard = deepCopy(tempBoard);
+
+            if (sudoku(initialBoard)) {
+                numRemoved++;
+            } else {
+                tempBoard[randRow][randCol] = tempNumber;
+
+
+            }
+            board.setBoard(tempBoard);
+        }
+    }
+    public static int [][] deepCopy (int [][] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            System.arraycopy(arr[i], 0, arr[i], 0, arr.length);
         }
         return arr;
     }
-
-
 }
