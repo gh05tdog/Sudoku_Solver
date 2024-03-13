@@ -163,21 +163,27 @@ public class solverAlgorithm {
         int[][] tempBoard = deepCopy(board.getBoard());
         int[][] initialBoard;
         int numRemoved = 0;
-        while (numRemoved < 30) {
-            System.out.println("Num removed: " + numRemoved);
+        while (numRemoved < 200) {
+            int possibleSols = 0;
             int randRow = (int) (Math.random() * board.getDimensions());
             int randCol = (int) (Math.random() * board.getDimensions());
 
             int tempNumber = tempBoard[randRow][randCol];
             tempBoard[randRow][randCol] = 0;
-            initialBoard = deepCopy(tempBoard);
 
-            if (sudoku(initialBoard)) {
-                numRemoved++;
-            } else {
+            for (int i = 1; i <= board.getDimensions(); i++) {
+                initialBoard = deepCopy(tempBoard);
+                if (checkBoard(initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
+                    initialBoard[randRow][randCol] = i;
+                    if (sudoku(initialBoard)) {
+                        possibleSols++;
+                    }
+                }
+            }
+            if (possibleSols != 1) {
                 tempBoard[randRow][randCol] = tempNumber;
-
-
+            } else {
+                numRemoved++;
             }
             board.setBoard(tempBoard);
         }
