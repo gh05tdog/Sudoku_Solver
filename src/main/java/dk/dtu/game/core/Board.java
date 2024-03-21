@@ -30,8 +30,8 @@
             return (k * n) <= (n * n);
         }
 
-        public void setNumber(int x, int y, int num) {
-            board[x][y] = num;
+        public void setNumber(int row, int col, int num) {
+            board[row][col] = num;
         }
 
         public boolean validPlace(int x, int y, int num) {
@@ -39,10 +39,10 @@
             return !contains(getRow(x),num) && !contains(getRow(y),num) && !squareContains(getSquare(x,y),num);
         }
 
-        public int[] getRow(int i) {
+        public int[] getRow(int numRow) {
             int [] row = new int[size];
             for (int j = 0; j < size; j++) {
-                row[i] = board[i][j];
+                row[j] = board[numRow][j];
 
             }
             return row;
@@ -68,10 +68,10 @@
             return false;
         }
 
-        public int[] getColumn(int i) {
+        public int[] getColumn(int numCol) {
             int [] column = new int[size];
             for (int j = 0; j < size; j++) {
-                column[i] = board[j][i];
+                column[j] = board[j][numCol];
 
             }
             return column;
@@ -88,9 +88,9 @@
         public int[][] getSquare(int x, int y) {
             int [][] square = new int [n][n];
 
-            for(int i = 0; i < n; i++) {
-                for(int j = 0; j < n; j++) {
-                    square[i][j] = board[(x / n) * n + i][(y / n) * n + j];
+            for(int row = 0; row < n; row++) {
+                for(int col = 0; col < n; col++) {
+                    square[row][col] = board[(x / n) * n + row][(y / n) * n + col];
                 }
             }
             return square;
@@ -110,15 +110,16 @@
         }
 
         public void clear() {
-            this.board = new int[size][size];
             int numRows = n * k;
             for (int i = 0; i < numRows; i++) {
-
+                for (int j = 0; j < numRows; j++) {
+                    board[i][j] = 0;
+                }
             }
         }
 
-        public int getNumber(int x, int y) {
-            return board[x][y];
+        public int getNumber(int row, int col) {
+            return board[row][col];
         }
 
         public int[][] getBoard() {

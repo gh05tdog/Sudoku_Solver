@@ -34,8 +34,10 @@ public class SudokuGame {
 
     public void onSudokuBoardClicked(int x, int y) {
         // Calculate the column and row based on the adjusted click location
-        int column = x / (board.getWidth() / gridSize); // Adjust for variable cell size
-        int row = y / (board.getHeight() / gridSize); // Adjust for variable cell size
+        int row = y / (board.getWidth() / gridSize); // Adjust for variable cell size
+        int column = x / (board.getHeight() / gridSize); // Adjust for variable cell size
+
+        System.out.println("Row: " + row + ", Column: " + column);
 
         // Check if the adjusted click is within the bounds of the Sudoku board
         if (column >= 0 && column < gridSize && row >= 0 && row < gridSize) {
@@ -63,6 +65,7 @@ public class SudokuGame {
                 if(gameboard.validPlace(row, col, number) && initialBoard[row][col] == 0){
                     board.removeNumber(row, col); // Assuming (col, row) are the correct order for your logic
                     gameboard.setNumber(row, col, number); // Update the cell with the new number
+                    gameboard.printBoard();
                 }
             }
         }
@@ -81,10 +84,10 @@ public class SudokuGame {
     }
 
     public void displayNumbersVisually(){
-        for (int i = 0; i < gameboard.getDimensions(); i++) {
-            for (int j = 0; j < gameboard.getDimensions(); j++) {
-                int number = gameboard.getNumber(j, i);
-                board.drawNumber(j, i, number, board.getGraphics());
+        for (int row = 0; row < gameboard.getDimensions(); row++) {
+            for (int col = 0; col < gameboard.getDimensions(); col++) {
+                int number = gameboard.getNumber(row, col);
+                board.drawNumber(row, col, number, board.getGraphics());
             }
         }
     }
@@ -98,6 +101,7 @@ public class SudokuGame {
 
         board.addKeyListener(keyboardListener);
         creater.createSudoku2(gameboard);
+        solverAlgorithm.printBoard(gameboard.getBoard());
         initialBoard = deepCopyBoard(gameboard.getBoard());
 
     }
