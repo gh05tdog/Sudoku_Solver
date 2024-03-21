@@ -2,12 +2,14 @@ package dk.dtu.core;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Creater;
+import dk.dtu.game.solver.solverAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,10 +55,12 @@ class CreateTest {
     @DisplayName("Test creating a filled board adheres to Sudoku rules")
     void testBoardFilling() {
         Board board = null;
-        Creater creater = new Creater();
+        solverAlgorithm solver = new solverAlgorithm();
+
         try {
             board = new Board(3, 3);
-            creater.fillBoard(board);
+            solverAlgorithm.fillBoard(board);
+            solverAlgorithm.printBoard(board.getBoard());
         } catch (Exception e) {
             fail("Creating or filling the board should not throw an exception.");
         }
@@ -102,21 +106,33 @@ class CreateTest {
     }
 
     private boolean isValidSudoku(Board board) {
+        Set<String> uniqueRow = new HashSet<>();
+        Set<String> uniqueCol = new HashSet<>();
+        Set<String> uniqueSquare = new HashSet<>();
         // Check all rows and columns for duplicates
         for (int i = 0; i < board.getDimensions(); i++) {
-            if (isUnique(board.getRow(i)) || isUnique(board.getColumn(i))) {
+            if (uniqueRow.contains(Arrays.toString(board.getRow(i))) || uniqueCol.contains(Arrays.toString(board.getColumn(i)))) {
+                System.out.println("Didnt work " + i);
                 return false;
+            }
+            uniqueRow.add(Arrays.toString(board.getRow(i)));
+            uniqueCol.add(Arrays.toString(board.getColumn(i)));
+        }
+
+        for (int row = 0; row < board.getDimensions(); row += 3) {
+            for (int col = 0; col < board.getDimensions(); col += 3) {
+                if (uniqueSquare.contains(Arrays.toString(board.getSquare(row, col)))) {
+                    System.out.println("Square didnt work" + row + " " + col);
+                    return false;
+                }
+                uniqueSquare.add(Arrays.toString(board.getSquare(row, col)));
             }
         }
 
+
+
         // Check all 3x3 sub grids for duplicates
-        for (int row = 0; row < board.getDimensions(); row += 3) {
-            for (int col = 0; col < board.getDimensions(); col += 3) {
-                if (isUnique(board.getSquare(row, col))) {
-                    return false;
-                }
-            }
-        }
+
         return true; // Passed all checks
     }
 
