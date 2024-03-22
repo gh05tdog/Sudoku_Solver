@@ -114,7 +114,7 @@ public class SudokuGame {
 
     private void newGame() throws Exception {
         gameboard.clear();
-        creater.createSudoku(gameboard);
+        creater.createSudoku2(gameboard);
         initialBoard = deepCopyBoard(gameboard.getBoard());
         gameIsStarted = true;
     }
