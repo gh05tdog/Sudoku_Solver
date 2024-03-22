@@ -48,7 +48,7 @@ public class solverAlgorithm {
         }
     }
 
-    static boolean sudoku(int[][] board) {
+    public static boolean sudoku(int[][] board) {
         if (emptyCellCount(board) > 0) {
             int[] chosenCells = pickCell(board);
             assert chosenCells != null;
@@ -163,7 +163,7 @@ public class solverAlgorithm {
         int[][] tempBoard = deepCopy(board.getBoard());
         int[][] initialBoard;
         int numRemoved = 0;
-        while (numRemoved < 200) {
+        while (numRemoved < 150) {
             int possibleSols = 0;
             int randRow = (int) (Math.random() * board.getDimensions());
             int randCol = (int) (Math.random() * board.getDimensions());
