@@ -3,6 +3,7 @@ package dk.dtu.engine.core;
 import dk.dtu.engine.input.MouseActionListener;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class WindowManager {
@@ -15,18 +16,16 @@ public class WindowManager {
 
     public WindowManager(int width, int height) {
         frame.setSize(width, height);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Ensure the application closes properly
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
-        frame.setLayout(new BorderLayout()); // Use BorderLayout for JFrame
+        frame.setLayout(new BorderLayout());
 
-        whitePanel.setBackground(Color.WHITE); // Set the background color of the white panel to white
-        whitePanel.setLayout(null); // Use BorderLayout for JPanel
+        whitePanel.setBackground(Color.WHITE);
+        whitePanel.setLayout(new FlowLayout()); // Switched to FlowLayout for demonstration
 
-
-        frame.add(whitePanel, BorderLayout.CENTER); // Add the white panel to the frame's center
-
-        // Add window listener using the default window closing operation set above
+        frame.add(whitePanel, BorderLayout.CENTER);
     }
+
 
     public void drawComponent(Component obj) {
         whitePanel.add(obj);

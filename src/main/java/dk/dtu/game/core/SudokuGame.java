@@ -35,6 +35,7 @@ public class SudokuGame {
         // Calculate the column and row based on the adjusted click location
         int row = y / (board.getWidth() / gridSize); // Adjust for variable cell size
         int column = x / (board.getHeight() / gridSize); // Adjust for variable cell size
+        board.setMarkedCell(row,column);
 
         System.out.println("Row: " + row + ", Column: " + column);
 
@@ -43,7 +44,7 @@ public class SudokuGame {
             int cellIndex = row * gridSize + column + 1; // Calculate the cell index
             System.out.println("Cell " + cellIndex + " clicked. Row: " + (row + 1) + ", Column: " + (column + 1));
             board.removeNumber(row, column);
-            board.highlightCell(row, column);
+            board.highlightCell(row, column,true);
             System.out.println("highlighted cell: " + Arrays.toString(board.getHightligtedCell()));
 
         } else {
@@ -51,24 +52,25 @@ public class SudokuGame {
         }
     }
 
-
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
-        if (Character.isDigit(keyChar)) { // Check if the key character is a digit
-            int number = keyChar - '0'; // Convert key character to its integer value
+        if (Character.isDigit(keyChar)) {
+            int number = keyChar - '0'; // Convert character to integer
 
-            if (board.isACellHighligthed()) {
-                int[] cell = board.getHightligtedCell();
-                int row = cell[0];
-                int col = cell[1];
+            // Check if a cell is highlighted and update the number
+            int[] highlightedCell = board.getMarkedCell();
+            int row = highlightedCell[0];
+            int col = highlightedCell[1];
+            if (row >= 0 && col >= 0) { // Validate that a cell is indeed highlighted
                 if(gameboard.validPlace(row, col, number) && initialBoard[row][col] == 0){
-                    board.removeNumber(row, col); // Assuming (col, row) are the correct order for your logic
-                    gameboard.setNumber(row, col, number); // Update the cell with the new number
-                    gameboard.printBoard();
+                    board.setCellNumber(row, col, number); // Update the cell number
+                    gameboard.setNumber(row, col, number); // Assuming you have a method to update your game logic
+                    // No need to call board.removeNumber() since setCellNumber() should overwrite the existing number
                 }
             }
         }
     }
+
 
     private void eraseNumber(){
         if (board.isACellHighligthed()) {
@@ -86,7 +88,7 @@ public class SudokuGame {
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
                 int number = gameboard.getNumber(row, col);
-                board.drawNumber(row, col, number, board.getGraphics());
+                board.setCellNumber(row, col, number);
             }
         }
     }
