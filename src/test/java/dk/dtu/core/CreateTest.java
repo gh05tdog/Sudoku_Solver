@@ -1,6 +1,7 @@
 package dk.dtu.core;
 
 import dk.dtu.game.core.Board;
+
 import dk.dtu.game.solver.solverAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,6 +58,7 @@ class CreateTest {
         try {
             board = new Board(3, 3);
             solverAlgorithm.fillBoard(board);
+
         } catch (Exception e) {
             fail("Creating or filling the board should not throw an exception.");
         }
@@ -84,6 +87,7 @@ class CreateTest {
     }
 
     private boolean isValidSudoku(Board board) {
+
         Set<String> uniqueRows = new HashSet<>();
         Set<String> uniqueCols = new HashSet<>();
 
@@ -106,8 +110,14 @@ class CreateTest {
                     return false;
                 }
                 uniqueSquares.add(Arrays.toString(board.getSquare(row,col)));
+
             }
         }
+
+
+
+        // Check all 3x3 sub grids for duplicates
+
         return true; // Passed all checks
     }
     @Test
