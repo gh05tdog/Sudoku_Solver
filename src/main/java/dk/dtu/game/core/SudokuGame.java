@@ -7,6 +7,7 @@ import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.game.solver.solverAlgorithm;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 
@@ -45,7 +46,7 @@ public class SudokuGame {
             System.out.println("Cell " + cellIndex + " clicked. Row: " + (row + 1) + ", Column: " + (column + 1));
             board.removeNumber(row, column);
             board.highlightCell(row, column,true);
-            System.out.println("highlighted cell: " + Arrays.toString(board.getHightligtedCell()));
+            System.out.println("highlighted cell: " + Arrays.toString(board.getMarkedCell()));
 
         } else {
             System.out.println("Click outside the Sudoku board or on another component");
@@ -57,15 +58,14 @@ public class SudokuGame {
         if (Character.isDigit(keyChar)) {
             int number = keyChar - '0'; // Convert character to integer
 
-            // Check if a cell is highlighted and update the number
-            int[] highlightedCell = board.getMarkedCell();
-            int row = highlightedCell[0];
-            int col = highlightedCell[1];
+            int[] markedCell = board.getMarkedCell();
+            int row = markedCell[0];
+            int col = markedCell[1];
             if (row >= 0 && col >= 0) { // Validate that a cell is indeed highlighted
                 if(gameboard.validPlace(row, col, number) && initialBoard[row][col] == 0){
-                    board.setCellNumber(row, col, number); // Update the cell number
-                    gameboard.setNumber(row, col, number); // Assuming you have a method to update your game logic
-                    // No need to call board.removeNumber() since setCellNumber() should overwrite the existing number
+                    board.setCellNumber(row, col, number);
+                    gameboard.setNumber(row, col, number);
+                    gameboard.printBoard();
                 }
             }
         }
@@ -74,12 +74,12 @@ public class SudokuGame {
 
     private void eraseNumber(){
         if (board.isACellHighligthed()) {
-            int[] cell = board.getHightligtedCell();
+            int[] cell = board.getMarkedCell();
             int row = cell[0];
             int col = cell[1];
             if(initialBoard[row][col] == 0){
-                board.removeNumber(row, col); // Assuming (col, row) are the correct order for your logic
-                gameboard.setNumber(row, col, 0); // Update the cell with the new number
+                board.removeNumber(row, col);
+                gameboard.setNumber(row, col, 0);
             }
         }
     }
@@ -101,39 +101,53 @@ public class SudokuGame {
         board.addMouseListener(mouseActionListener);
 
         board.addKeyListener(keyboardListener);
-        solverAlgorithm.createSudoku(gameboard);
-        initialBoard = deepCopyBoard(gameboard.getBoard());
 
+        initialBoard = deepCopyBoard(gameboard.getBoard());
     }
 
     public void initialize(int n, int k, int cellSize) throws Exception {
         createBoard(n, k, cellSize);
         displayButtons();
-        windowManager.drawComponent(board);
+        windowManager.drawBoard(board);
     }
 
     private void newGame() throws Exception {
         gameboard.clear();
-        solverAlgorithm.createSudoku(gameboard);
+        dk.dtu.game.solver.solverAlgorithm.createSudoku(gameboard);
         initialBoard = deepCopyBoard(gameboard.getBoard());
         gameIsStarted = true;
+        gameboard.printBoard();
+
     }
 
-    private JButton createButton(String text, int x, int y, int width, int height){
+    private JButton createButton(String text, int width, int height) {
         JButton button = new JButton(text);
-        button.setBounds(x, y, width, height);
+        button.setMaximumSize(new Dimension(width, height));
+        button.setAlignmentX(Component.CENTER_ALIGNMENT); // Align buttons for BoxLayout
+
+        // Create a margin around the button
+        int topBottomMargin = 5; // Space above and below the button
+        int leftRightMargin = 10; // Space to the left and right of the button
+        button.setBorder(BorderFactory.createEmptyBorder(topBottomMargin, leftRightMargin, topBottomMargin, leftRightMargin));
+
         return button;
     }
 
+
     private void displayButtons(){
-        JButton startButton = createButton("Start", 600, 100, 100, 30);
-        JButton restartButton = createButton("Restart", 600, 150, 100, 30);
-        JButton solveButton = createButton("Solve", 600, 200, 100, 30);
-        JButton newGameButton = createButton("New Game", 600, 250, 100, 30);
-        JButton eraseButton = createButton("Erase", (board.getWidth()/2 + board.getX()) - 50 , board.getY()-35, 100, 30);
+        JButton startButton = createButton("Start",  100, 30);
+        JButton restartButton = createButton("Restart",  100, 30);
+        JButton solveButton = createButton("Solve",  100, 30);
+        JButton newGameButton = createButton("New Game",  100, 30);
+        JButton eraseButton = createButton("Erase", 100, 30);
 
         startButton.addActionListener(e -> {
             System.out.println("Start game!");
+            try {
+                newGame();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             displayNumbersVisually();
             gameIsStarted = true;
             board.requestFocusInWindow();
@@ -174,11 +188,15 @@ public class SudokuGame {
             eraseNumber();
         });
 
-        windowManager.drawComponent(startButton);
-        windowManager.drawComponent(restartButton);
-        windowManager.drawComponent(solveButton);
-        windowManager.drawComponent(newGameButton);
-        windowManager.drawComponent(eraseButton);
+        windowManager.addComponentToButtonPanel(startButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10))); // 10-pixel vertical spacing
+        windowManager.addComponentToButtonPanel(restartButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
+        windowManager.addComponentToButtonPanel(solveButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
+        windowManager.addComponentToButtonPanel(newGameButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
+        windowManager.addComponentToButtonPanel(eraseButton);
     }
 
     private int [][] deepCopyBoard(int [][] original) {

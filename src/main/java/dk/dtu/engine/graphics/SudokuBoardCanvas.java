@@ -167,17 +167,6 @@ public class SudokuBoardCanvas extends JPanel {
         cells[row][col].isMarked = true;
     }
 
-    public int[] getHightligtedCell() {
-        for (int row = 0; row < gridSize; row++) {
-            for (int col = 0; col < gridSize; col++) {
-                if (cells[row][col].isHighlighted) {
-                    return new int[] { row, col };
-                }
-            }
-        }
-        return new int[] { -1, -1 };
-    }
-
     public boolean isACellHighligthed() {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
