@@ -112,8 +112,6 @@ class CreateTest {
             }
         }
 
-
-
         // Check all 3x3 sub grids for duplicates
 
         return true; // Passed all checks
@@ -142,7 +140,7 @@ class CreateTest {
         //Fill the board with a correct Sudoku solution first
         solverAlgorithm.fillBoard(board);
         assertTrue(solverAlgorithm.isValidSudoku(board.getBoard()), "Large board should adhere to Sudoku rules.");
-        assertEquals(16, board.getDimensions(), "Board should have correct dimensions for an 8x8 board.");
+        assertEquals(16, board.getDimensions(), "Board should have correct dimensions for an 16x16 board.");
     }
 
     @Test
