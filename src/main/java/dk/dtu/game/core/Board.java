@@ -1,7 +1,5 @@
     package dk.dtu.game.core;
 
-    import java.util.ArrayList;
-
     public class Board {
 
         private final int n;
@@ -20,7 +18,6 @@
                 throw new Exception("This board is not possible to create");
             }
             this.board = new int [n*k][n*k];
-            int numRows = n * k;
             // Initialize the board with zeros
             fillZeros(board);
 
@@ -36,7 +33,7 @@
 
         public boolean validPlace(int x, int y, int num) {
             // Check rows and check square
-            return !contains(getRow(x),num) && !contains(getRow(y),num) && !squareContains(getSquare(x,y),num);
+            return contains(getRow(x), num) && contains(getRow(y), num) && !squareContains(getSquare(x,y),num);
         }
 
         public int[] getRow(int i) {
@@ -51,10 +48,10 @@
         public boolean contains (int [] arr, int num) {
             for (int j : arr) {
                 if (j == num) {
-                    return true;
+                    return false;
                 }
             }
-            return false;
+            return true;
         }
 
         public boolean squareContains(int [][] square, int num) {
@@ -113,6 +110,9 @@
             this.board = new int[size][size];
             int numRows = n * k;
             for (int i = 0; i < numRows; i++) {
+                for (int j = 0; j < numRows; j++) {
+                    board[i][j] = 0;
+                }
 
             }
         }
@@ -128,4 +128,5 @@
         public void setBoard(int[][] tempBoard) {
             this.board = tempBoard;
         }
+
     }

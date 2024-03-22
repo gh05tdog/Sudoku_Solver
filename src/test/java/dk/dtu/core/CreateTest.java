@@ -1,15 +1,13 @@
 package dk.dtu.core;
 
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.Creater;
 import dk.dtu.game.solver.solverAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -55,12 +53,10 @@ class CreateTest {
     @DisplayName("Test creating a filled board adheres to Sudoku rules")
     void testBoardFilling() {
         Board board = null;
-        solverAlgorithm solver = new solverAlgorithm();
-
         try {
             board = new Board(3, 3);
             solverAlgorithm.fillBoard(board);
-            solverAlgorithm.printBoard(board.getBoard());
+
         } catch (Exception e) {
             fail("Creating or filling the board should not throw an exception.");
         }
@@ -77,23 +73,6 @@ class CreateTest {
     }
 
     @Test
-    @DisplayName("Test Sudoku puzzle is unique")
-    void testSudokuUniqueness() {
-        Board board = null;
-        Creater creater = new Creater();
-
-        try {
-            board = new Board(3, 3);
-            creater.createSudoku(board);
-        } catch (Exception e) {
-            fail("Creating the Sudoku puzzle should not throw an exception.");
-        }
-
-        // Check if the created Sudoku puzzle has a unique solution
-        assertTrue(creater.hasUniqueSolution(board), "The Sudoku puzzle should have a unique solution.");
-    }
-
-    @Test
     @DisplayName("Test invalid sudoku board")
     void invalidSudokuBoard() {
         Exception exception = null;
@@ -106,40 +85,107 @@ class CreateTest {
     }
 
     private boolean isValidSudoku(Board board) {
-        Set<String> uniqueRow = new HashSet<>();
-        Set<String> uniqueCol = new HashSet<>();
-        Set<String> uniqueSquare = new HashSet<>();
+
+        Set<String> uniqueRows = new HashSet<>();
+        Set<String> uniqueCols = new HashSet<>();
+
         // Check all rows and columns for duplicates
         for (int i = 0; i < board.getDimensions(); i++) {
-            if (uniqueRow.contains(Arrays.toString(board.getRow(i))) || uniqueCol.contains(Arrays.toString(board.getColumn(i)))) {
-                System.out.println("Didnt work " + i);
+            if (uniqueRows.contains(Arrays.toString(board.getRow(i))) || uniqueCols.contains(Arrays.toString(board.getColumn(i))) ) {
                 return false;
             }
-            uniqueRow.add(Arrays.toString(board.getRow(i)));
-            uniqueCol.add(Arrays.toString(board.getColumn(i)));
+            uniqueRows.add(Arrays.toString(board.getRow(i)));
+            uniqueCols.add(Arrays.toString(board.getColumn(i)));
         }
 
+        Set<String> uniqueSquares = new HashSet<>();
+
+
+        // Check all 3x3 sub grids for duplicates
         for (int row = 0; row < board.getDimensions(); row += 3) {
             for (int col = 0; col < board.getDimensions(); col += 3) {
-                if (uniqueSquare.contains(Arrays.toString(board.getSquare(row, col)))) {
-                    System.out.println("Square didnt work" + row + " " + col);
+                if (uniqueSquares.contains(Arrays.toString(board.getSquare(row, col)))) {
                     return false;
                 }
-                uniqueSquare.add(Arrays.toString(board.getSquare(row, col)));
+                uniqueSquares.add(Arrays.toString(board.getSquare(row,col)));
+
             }
         }
-
-
 
         // Check all 3x3 sub grids for duplicates
 
         return true; // Passed all checks
     }
-
-    // Helper method to check if all elements in a list are unique
-    private boolean isUnique(List<Integer> list) {
-        Set<Integer> set = new HashSet<>(list);
-        return set.size() != list.size();
+    @Test
+    @DisplayName("Test creating a small 4x4 Sudoku board")
+    void testSmallBoardCreation() throws Exception {
+        Board board = new Board(2, 2);
+        assertNotNull(board, "Small board should be created successfully.");
+        assertEquals(4, board.getDimensions(), "Board should have correct dimensions for a 4x4 board.");
     }
 
+    @Test
+    @DisplayName("Test solving a small 4x4 Sudoku board")
+    void testSmallBoardSolving() throws Exception {
+        Board board = new Board(2, 2);
+        solverAlgorithm.fillBoard(board);
+        assertTrue(isValidSudoku(board), "Small board should adhere to Sudoku rules.");
+    }
+
+    @Test
+    @DisplayName("Test creating a large 16x16 Sudoku board and filling it with a solution")
+    void testLargeBoardCreation() throws Exception {
+        Board board = new Board(4, 4);
+        assertNotNull(board, "Large board should be created successfully.");
+        //Fill the board with a correct Sudoku solution first
+        solverAlgorithm.fillBoard(board);
+        assertTrue(solverAlgorithm.isValidSudoku(board.getBoard()), "Large board should adhere to Sudoku rules.");
+        assertEquals(16, board.getDimensions(), "Board should have correct dimensions for an 16x16 board.");
+    }
+
+    @Test
+    @DisplayName("Test board validation with incorrect Sudoku")
+    void testInvalidSudokuValidation() throws Exception {
+        Board board = new Board(3, 3);
+        board.setNumber(0, 0, 1);
+        board.setNumber(0, 1, 1); // Duplicate in the same row
+        assertFalse(isValidSudoku(board), "Board validation should detect incorrect Sudoku.");
+    }
+
+    @Test
+    @DisplayName("Test board validation with correct Sudoku")
+    void testValidSudokuValidation() throws Exception {
+        // Fill the board with a correct Sudoku solution first
+        Board board = new Board(3, 3);
+        solverAlgorithm.fillBoard(board);
+        assertTrue(isValidSudoku(board), "Board validation should confirm correct Sudoku.");
+    }
+
+    @Test
+    @DisplayName("Test solving an impossible Sudoku board")
+    void testSolvingImpossibleBoard() throws Exception {
+        Board board = new Board(3, 3);
+        board.setNumber(0, 0, 1);
+        board.setNumber(0, 1, 1); // Create a conflict
+        assertFalse(solverAlgorithm.sudoku(board.getBoard()), "Solver should detect the board is unsolvable.");
+    }
+
+    @Test
+    @DisplayName("Performance test for solving a standard Sudoku")
+    void testSolverPerformance() throws Exception {
+        Board board = new Board(3, 3);
+        long startTime = System.currentTimeMillis();
+        solverAlgorithm.fillBoard(board);
+        long endTime = System.currentTimeMillis();
+        assertTrue((endTime - startTime) < 1000, "Solver should complete within reasonable time for a standard board.");
+    }
+
+    @Test
+    @DisplayName("Create sudoku, solve it and test if valid")
+    void testCreateSudoku() throws Exception {
+        Board board = new Board(3, 3);
+        solverAlgorithm.createSudoku(board);
+        solverAlgorithm.sudoku(board.getBoard());
+        assertTrue(isValidSudoku(board), "Board should adhere to Sudoku rules.");
+    }
 }

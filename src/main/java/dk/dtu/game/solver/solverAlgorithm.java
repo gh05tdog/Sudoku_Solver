@@ -2,53 +2,23 @@ package dk.dtu.game.solver;
 
 import dk.dtu.game.core.Board;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 import static java.lang.Math.sqrt;
 
 public class solverAlgorithm {
-    public int [][] solve(int [][] gameBoard) {
-        runSolver(gameBoard);
-        printBoard(gameBoard);
-        return gameBoard;
+
+   public static void createSudoku(Board board) throws Exception {
+        fillBoard(board);
+        removeNumsRecursive(board);
     }
 
-    public static int[][] convertTo2DArray(ArrayList<ArrayList<Integer>> gameBoard) {
-        int[][] board = new int[gameBoard.size()][gameBoard.size()];
-        for (int i = 0; i < gameBoard.size(); i++) {
-            for (int j = 0; j < gameBoard.size(); j++) {
-                board[i][j] = gameBoard.get(i).get(j);
-            }
+    public static boolean sudoku(int[][] board) {
+
+        if(!isValidSudoku(board)) {
+            return false;
         }
-        return board;
-    }
 
-    private static ArrayList<ArrayList<Integer>> convertToArrayList(int[][] board) {
-        ArrayList<ArrayList<Integer>> gameBoard = new ArrayList<>();
-        for (int[] integers : board) {
-            ArrayList<Integer> row = new ArrayList<>();
-            for (int j = 0; j < board.length; j++) {
-                row.add(integers[j]);
-            }
-            gameBoard.add(row);
-        }
-        return gameBoard;
-    }
-
-    static void runSolver(int[][] board) {
-        long startTime = System.nanoTime();
-
-        if (sudoku(board)) {
-            long endTime = System.nanoTime();
-            long duration = (endTime - startTime);
-            System.out.println("Time taken: " + duration / 1000 + " microseconds");
-        } else {
-            System.out.println("No solution exists");
-        }
-    }
-
-    static boolean sudoku(int[][] board) {
         if (emptyCellCount(board) > 0) {
             int[] chosenCells = pickCell(board);
             assert chosenCells != null;
@@ -91,17 +61,6 @@ public class solverAlgorithm {
         }
 
         return legal_row_col && legal_square;
-    }
-
-    public static void printBoard(int [][] gameBoard) {
-        System.out.println("Solved board: ");
-        for (int[] row : gameBoard) {
-            for (int cell : row) {
-                System.out.print(cell + " ");
-            }
-            System.out.println();
-        }
-        System.out.println("End of solved board");
     }
 
     public static int[] pickCell(int[][] arr) {
@@ -147,7 +106,7 @@ public class solverAlgorithm {
         return emptyCells;
     }
 
-    public static void fillBoard(Board board) throws Exception {
+    public static void fillBoard(Board board) {
         int size = board.getDimensions();
         int[][] arr = new int[size][size];
 
@@ -159,11 +118,11 @@ public class solverAlgorithm {
 
     }
 
-    public static void removeNumsRecursive(Board board) throws Exception {
+    public static void removeNumsRecursive(Board board) {
         int[][] tempBoard = deepCopy(board.getBoard());
         int[][] initialBoard;
         int numRemoved = 0;
-        while (numRemoved < 200) {
+        while (numRemoved < 150) {
             int possibleSols = 0;
             int randRow = (int) (Math.random() * board.getDimensions());
             int randCol = (int) (Math.random() * board.getDimensions());
@@ -191,10 +150,68 @@ public class solverAlgorithm {
     public static int [][] deepCopy (int [][] arr) {
         int [][] copy = new int [arr.length][arr.length];
         for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < arr.length; j++) {
-                copy[i][j] = arr[i][j];
-            }
+            System.arraycopy(arr[i], 0, copy[i], 0, arr.length);
         }
         return copy;
     }
+
+    public static boolean isValidSudoku(int[][] board) {
+        int size = board.length; // Assuming square board
+        int n = (int) Math.sqrt(size); // Calculate the size of subgrids
+
+        // Check for row and column uniqueness
+        for (int i = 0; i < size; i++) {
+            if (isUnique(board[i]) || isUnique(getColumn(board, i))) {
+                return false;
+            }
+        }
+
+        // Check subgrids for uniqueness
+        for (int row = 0; row < size; row += n) {
+            for (int col = 0; col < size; col += n) {
+                if (!isSubgridUnique(board, row, col, n)) {
+                    return false;
+                }
+            }
+        }
+
+        return true; // Passed all checks
+    }
+
+    // Helper method to check if all elements in an array are unique (excluding zero)
+    private static boolean isUnique(int[] arr) {
+        Set<Integer> seen = new HashSet<>();
+        for (int num : arr) {
+            if (num != 0) {
+                if (seen.contains(num)) {
+                    return true;
+                }
+                seen.add(num);
+            }
+        }
+        return false;
+    }
+
+    // Helper method to get a column from a 2D array
+    private static int[] getColumn(int[][] board, int colIndex) {
+        return Arrays.stream(board).mapToInt(row -> row[colIndex]).toArray();
+    }
+
+    // Check if a subgrid (n by n) is unique
+    private static boolean isSubgridUnique(int[][] board, int startRow, int startCol, int n) {
+        Set<Integer> seen = new HashSet<>();
+        for (int row = startRow; row < startRow + n; row++) {
+            for (int col = startCol; col < startCol + n; col++) {
+                int num = board[row][col];
+                if (num != 0) {
+                    if (seen.contains(num)) {
+                        return false;
+                    }
+                    seen.add(num);
+                }
+            }
+        }
+        return true;
+    }
+
 }
