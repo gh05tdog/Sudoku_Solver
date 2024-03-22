@@ -1,7 +1,6 @@
 package dk.dtu.core;
 
 import dk.dtu.game.core.Board;
-
 import dk.dtu.game.solver.solverAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -137,7 +135,7 @@ class CreateTest {
     }
 
     @Test
-    @DisplayName("Test creating a large 4x4 Sudoku board and filling it with a solution")
+    @DisplayName("Test creating a large 16x16 Sudoku board and filling it with a solution")
     void testLargeBoardCreation() throws Exception {
         Board board = new Board(4, 4);
         assertNotNull(board, "Large board should be created successfully.");
