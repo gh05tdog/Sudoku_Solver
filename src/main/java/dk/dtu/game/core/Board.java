@@ -1,7 +1,5 @@
     package dk.dtu.game.core;
 
-    import java.util.ArrayList;
-
     public class Board {
 
         private final int n;
@@ -20,7 +18,6 @@
                 throw new Exception("This board is not possible to create");
             }
             this.board = new int [n*k][n*k];
-            int numRows = n * k;
             // Initialize the board with zeros
             fillZeros(board);
 
@@ -30,19 +27,19 @@
             return (k * n) <= (n * n);
         }
 
-        public void setNumber(int row, int col, int num) {
-            board[row][col] = num;
+        public void setNumber(int x, int y, int num) {
+            board[x][y] = num;
         }
 
         public boolean validPlace(int x, int y, int num) {
             // Check rows and check square
-            return !contains(getRow(x),num) && !contains(getRow(y),num) && !squareContains(getSquare(x,y),num);
+            return contains(getRow(x), num) && contains(getRow(y), num) && !squareContains(getSquare(x,y),num);
         }
 
-        public int[] getRow(int numRow) {
+        public int[] getRow(int i) {
             int [] row = new int[size];
             for (int j = 0; j < size; j++) {
-                row[j] = board[numRow][j];
+                row[i] = board[i][j];
 
             }
             return row;
@@ -51,10 +48,10 @@
         public boolean contains (int [] arr, int num) {
             for (int j : arr) {
                 if (j == num) {
-                    return true;
+                    return false;
                 }
             }
-            return false;
+            return true;
         }
 
         public boolean squareContains(int [][] square, int num) {
@@ -68,10 +65,10 @@
             return false;
         }
 
-        public int[] getColumn(int numCol) {
+        public int[] getColumn(int i) {
             int [] column = new int[size];
             for (int j = 0; j < size; j++) {
-                column[j] = board[j][numCol];
+                column[i] = board[j][i];
 
             }
             return column;
@@ -88,9 +85,9 @@
         public int[][] getSquare(int x, int y) {
             int [][] square = new int [n][n];
 
-            for(int row = 0; row < n; row++) {
-                for(int col = 0; col < n; col++) {
-                    square[row][col] = board[(x / n) * n + row][(y / n) * n + col];
+            for(int i = 0; i < n; i++) {
+                for(int j = 0; j < n; j++) {
+                    square[i][j] = board[(x / n) * n + i][(y / n) * n + j];
                 }
             }
             return square;
@@ -110,16 +107,18 @@
         }
 
         public void clear() {
+            this.board = new int[size][size];
             int numRows = n * k;
             for (int i = 0; i < numRows; i++) {
                 for (int j = 0; j < numRows; j++) {
                     board[i][j] = 0;
                 }
+
             }
         }
 
-        public int getNumber(int row, int col) {
-            return board[row][col];
+        public int getNumber(int x, int y) {
+            return board[x][y];
         }
 
         public int[][] getBoard() {
@@ -129,4 +128,5 @@
         public void setBoard(int[][] tempBoard) {
             this.board = tempBoard;
         }
+
     }
