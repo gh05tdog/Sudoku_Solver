@@ -127,6 +127,17 @@ class CreateTest {
     }
 
     @Test
+    @DisplayName("Test creating a large 4x4 Sudoku board and filling it with a solution")
+    void testLargeBoardCreation() throws Exception {
+        Board board = new Board(4, 4);
+        assertNotNull(board, "Large board should be created successfully.");
+        //Fill the board with a correct Sudoku solution first
+        solverAlgorithm.fillBoard(board);
+        assertTrue(solverAlgorithm.isValidSudoku(board.getBoard()), "Large board should adhere to Sudoku rules.");
+        assertEquals(16, board.getDimensions(), "Board should have correct dimensions for an 8x8 board.");
+    }
+
+    @Test
     @DisplayName("Test board validation with incorrect Sudoku")
     void testInvalidSudokuValidation() throws Exception {
         Board board = new Board(3, 3);
