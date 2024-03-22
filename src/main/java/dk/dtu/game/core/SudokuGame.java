@@ -8,7 +8,6 @@ import dk.dtu.game.solver.solverAlgorithm;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SudokuGame {
@@ -19,7 +18,7 @@ public class SudokuGame {
     private final Board gameboard;
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
-    Creater creater = new Creater();
+    solverAlgorithm solverAlgorithm = new solverAlgorithm();
     private SudokuBoardCanvas board;
     private boolean gameIsStarted = false;
 
@@ -100,8 +99,7 @@ public class SudokuGame {
         board.addMouseListener(mouseActionListener);
 
         board.addKeyListener(keyboardListener);
-        creater.createSudoku2(gameboard);
-        solverAlgorithm.printBoard(gameboard.getBoard());
+        solverAlgorithm.createSudoku(gameboard);
         initialBoard = deepCopyBoard(gameboard.getBoard());
 
     }
@@ -114,7 +112,7 @@ public class SudokuGame {
 
     private void newGame() throws Exception {
         gameboard.clear();
-        creater.createSudoku2(gameboard);
+        solverAlgorithm.createSudoku(gameboard);
         initialBoard = deepCopyBoard(gameboard.getBoard());
         gameIsStarted = true;
     }
@@ -151,7 +149,7 @@ public class SudokuGame {
         solveButton.addActionListener(e -> {
             int [][] boardArray = deepCopyBoard(gameboard.getBoard());
             solverAlgorithm solver = new solverAlgorithm();
-            boardArray = solver.solve(boardArray);
+            solver.sudoku(boardArray);
             gameboard.setBoard(boardArray);
 
             board.requestFocusInWindow();

@@ -1,15 +1,13 @@
 package dk.dtu.core;
 
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.Creater;
 import dk.dtu.game.solver.solverAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,22 +72,6 @@ class CreateTest {
     }
 
     @Test
-    @DisplayName("Test Sudoku puzzle is unique")
-    void testSudokuUniqueness() {
-        Board board = null;
-        Creater creater = new Creater();
-
-        try {
-            board = new Board(3, 3);
-            creater.createSudoku2(board);
-        } catch (Exception e) {
-            fail("Creating the Sudoku puzzle should not throw an exception.");
-        }
-        // Check if the created Sudoku puzzle has a unique solution
-        assertTrue(creater.hasUniqueSolution(board), "The Sudoku puzzle should have a unique solution.");
-    }
-
-    @Test
     @DisplayName("Test invalid sudoku board")
     void invalidSudokuBoard() {
         Exception exception = null;
@@ -128,11 +110,65 @@ class CreateTest {
         }
         return true; // Passed all checks
     }
-
-    // Helper method to check if all elements in a list are unique
-    private boolean isUnique(List<Integer> list) {
-        Set<Integer> set = new HashSet<>(list);
-        return set.size() != list.size();
+    @Test
+    @DisplayName("Test creating a small 4x4 Sudoku board")
+    void testSmallBoardCreation() throws Exception {
+        Board board = new Board(2, 2);
+        assertNotNull(board, "Small board should be created successfully.");
+        assertEquals(4, board.getDimensions(), "Board should have correct dimensions for a 4x4 board.");
     }
 
+    @Test
+    @DisplayName("Test solving a small 4x4 Sudoku board")
+    void testSmallBoardSolving() throws Exception {
+        Board board = new Board(2, 2);
+        solverAlgorithm.fillBoard(board);
+        assertTrue(isValidSudoku(board), "Small board should adhere to Sudoku rules.");
+    }
+
+    @Test
+    @DisplayName("Test board validation with incorrect Sudoku")
+    void testInvalidSudokuValidation() throws Exception {
+        Board board = new Board(3, 3);
+        board.setNumber(0, 0, 1);
+        board.setNumber(0, 1, 1); // Duplicate in the same row
+        assertFalse(isValidSudoku(board), "Board validation should detect incorrect Sudoku.");
+    }
+
+    @Test
+    @DisplayName("Test board validation with correct Sudoku")
+    void testValidSudokuValidation() throws Exception {
+        // Fill the board with a correct Sudoku solution first
+        Board board = new Board(3, 3);
+        solverAlgorithm.fillBoard(board);
+        assertTrue(isValidSudoku(board), "Board validation should confirm correct Sudoku.");
+    }
+
+    @Test
+    @DisplayName("Test solving an impossible Sudoku board")
+    void testSolvingImpossibleBoard() throws Exception {
+        Board board = new Board(3, 3);
+        board.setNumber(0, 0, 1);
+        board.setNumber(0, 1, 1); // Create a conflict
+        assertFalse(solverAlgorithm.sudoku(board.getBoard()), "Solver should detect the board is unsolvable.");
+    }
+
+    @Test
+    @DisplayName("Performance test for solving a standard Sudoku")
+    void testSolverPerformance() throws Exception {
+        Board board = new Board(3, 3);
+        long startTime = System.currentTimeMillis();
+        solverAlgorithm.fillBoard(board);
+        long endTime = System.currentTimeMillis();
+        assertTrue((endTime - startTime) < 1000, "Solver should complete within reasonable time for a standard board.");
+    }
+
+    @Test
+    @DisplayName("Create sudoku, solve it and test if valid")
+    void testCreateSudoku() throws Exception {
+        Board board = new Board(3, 3);
+        solverAlgorithm.createSudoku(board);
+        solverAlgorithm.sudoku(board.getBoard());
+        assertTrue(isValidSudoku(board), "Board should adhere to Sudoku rules.");
+    }
 }
