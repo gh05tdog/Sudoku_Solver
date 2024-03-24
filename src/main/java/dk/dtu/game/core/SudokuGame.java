@@ -9,7 +9,10 @@ import dk.dtu.game.solver.solverAlgorithm;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Stack;
 
 public class SudokuGame {
     private final WindowManager windowManager;
@@ -20,6 +23,9 @@ public class SudokuGame {
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
     solverAlgorithm solverAlgorithm = new solverAlgorithm();
+    private final Stack<Move> moveList = new Stack<>();
+    private ArrayList<Integer> arrayMovelist = new ArrayList<>();
+
     private SudokuBoardCanvas board;
     private boolean gameIsStarted = false;
 
@@ -63,9 +69,13 @@ public class SudokuGame {
             int col = markedCell[1];
             if (row >= 0 && col >= 0) { // Validate that a cell is indeed highlighted
                 if(gameboard.validPlace(row, col, number) && initialBoard[row][col] == 0){
+                    int previousNumber = gameboard.getNumber(row, col);
                     board.setCellNumber(row, col, number);
                     gameboard.setNumber(row, col, number);
                     gameboard.printBoard();
+                    Move move = moveList.push(new Move(row, col, number, previousNumber));
+                    arrayMovelist.add(move.getNumber());
+                    System.out.println(Arrays.toString(arrayMovelist.toArray()));
                 }
             }
         }
@@ -92,6 +102,21 @@ public class SudokuGame {
             }
         }
     }
+
+    private void undoMove() {
+        if (!moveList.isEmpty()) {
+            Move move = moveList.pop();
+            int row = move.getRow();
+            int col = move.getColumn();
+            int prevNumber = move.getPreviousNumber();
+            gameboard.setNumber(row, col, prevNumber);
+            board.setCellNumber(row, col, prevNumber);
+            arrayMovelist.remove(arrayMovelist.size()-1);
+            System.out.println(Arrays.toString(arrayMovelist.toArray()));
+        }
+    }
+
+
 
     public void createBoard(int n, int k, int cellSize) throws Exception {
         board = new SudokuBoardCanvas(n, k, cellSize);
@@ -140,6 +165,7 @@ public class SudokuGame {
         JButton solveButton = createButton("Solve",  100, 30);
         JButton newGameButton = createButton("New Game",  100, 30);
         JButton eraseButton = createButton("Erase", 100, 30);
+        JButton undoButton = createButton("Undo", 100, 300);
 
         startButton.addActionListener(e -> {
             System.out.println("Start game!");
@@ -188,6 +214,11 @@ public class SudokuGame {
             eraseNumber();
         });
 
+        undoButton.addActionListener(e -> {
+            board.requestFocusInWindow();
+            undoMove();
+        });
+
         windowManager.addComponentToButtonPanel(startButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10))); // 10-pixel vertical spacing
         windowManager.addComponentToButtonPanel(restartButton);
@@ -197,7 +228,11 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(newGameButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
         windowManager.addComponentToButtonPanel(eraseButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10,10))));
+        windowManager.addComponentToButtonPanel(undoButton);
     }
+
+
 
     private int [][] deepCopyBoard(int [][] original) {
         int [][] copy = new int [original.length][original.length];
