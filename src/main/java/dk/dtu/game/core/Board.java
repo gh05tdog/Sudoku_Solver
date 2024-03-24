@@ -39,7 +39,7 @@
 
         public int[] getRow(int rowIndex) {
             int[] row = new int[size];
-                for (int colIndex = 0; colIndex < size; colIndex++) {
+            for (int colIndex = 0; colIndex < size; colIndex++) {
                 row[colIndex] = board[rowIndex][colIndex];
             }
             return row;

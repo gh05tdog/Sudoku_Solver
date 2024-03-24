@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Stack;
 
 public class SudokuGame {
@@ -25,6 +26,8 @@ public class SudokuGame {
     solverAlgorithm solverAlgorithm = new solverAlgorithm();
     private final Stack<Move> moveList = new Stack<>();
     private ArrayList<Integer> arrayMovelist = new ArrayList<>();
+
+    private ArrayList<Move> hintList = new ArrayList<>();
 
     private SudokuBoardCanvas board;
     private boolean gameIsStarted = false;
@@ -80,7 +83,6 @@ public class SudokuGame {
             }
         }
     }
-
 
     private void eraseNumber(){
         if (board.isACellHighligthed()) {
@@ -138,10 +140,13 @@ public class SudokuGame {
 
     private void newGame() throws Exception {
         gameboard.clear();
+        hintList.clear();
         dk.dtu.game.solver.solverAlgorithm.createSudoku(gameboard);
         initialBoard = deepCopyBoard(gameboard.getBoard());
         gameIsStarted = true;
         gameboard.printBoard();
+        fillHintList();
+        System.out.println(hintList.size());
 
     }
 
@@ -159,6 +164,41 @@ public class SudokuGame {
     }
 
 
+    private void fillHintList() {
+        int[][] solutionBoard = solverAlgorithm.getSolutionBoard(gameboard.getBoard());
+
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                if (initialBoard[row][col] == 0) { // Assuming initialBoard is the puzzle with empty spaces
+                    hintList.add(new Move(row, col, solutionBoard[row][col], 0));
+                }
+            }
+        }
+    }
+
+    public void provideHint() {
+        if (!hintList.isEmpty()) {
+            Random random = new Random();
+            int hintIndex = random.nextInt(hintList.size());
+            Move hintMove = hintList.get(hintIndex);
+            hintList.remove(hintIndex);
+
+            int row = hintMove.getRow();
+            int col = hintMove.getColumn();
+            int number = hintMove.getNumber();
+
+
+            gameboard.setNumber(row, col, number);
+            board.setCellNumber(row, col, number);
+            initialBoard[row][col] = number;
+
+        } else {
+            System.out.println("No more hints available.");
+        }
+    }
+
+
+
     private void displayButtons(){
         JButton startButton = createButton("Start",  100, 30);
         JButton restartButton = createButton("Restart",  100, 30);
@@ -166,6 +206,7 @@ public class SudokuGame {
         JButton newGameButton = createButton("New Game",  100, 30);
         JButton eraseButton = createButton("Erase", 100, 30);
         JButton undoButton = createButton("Undo", 100, 300);
+        JButton hintButton = createButton("Hint", 100, 30);
 
         startButton.addActionListener(e -> {
             System.out.println("Start game!");
@@ -219,6 +260,11 @@ public class SudokuGame {
             undoMove();
         });
 
+        hintButton.addActionListener(e -> {
+            board.requestFocusInWindow();
+            provideHint();
+        });
+
         windowManager.addComponentToButtonPanel(startButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10))); // 10-pixel vertical spacing
         windowManager.addComponentToButtonPanel(restartButton);
@@ -230,6 +276,8 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(eraseButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10,10))));
         windowManager.addComponentToButtonPanel(undoButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10,10))));
+        windowManager.addComponentToButtonPanel(hintButton);
     }
 
 
