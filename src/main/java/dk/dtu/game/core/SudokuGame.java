@@ -9,7 +9,6 @@ import dk.dtu.game.solver.solverAlgorithm;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -20,7 +19,7 @@ public class SudokuGame {
     private boolean running = true;
     int gridSize; // or 9 for a standard Sudoku
     int cellSize; // Adjust based on your window size and desired grid size
-    private final Board gameboard;
+    public final Board gameboard;
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
     solverAlgorithm solverAlgorithm = new solverAlgorithm();
@@ -105,7 +104,7 @@ public class SudokuGame {
         }
     }
 
-    private void undoMove() {
+    public void undoMove() {
         if (!moveList.isEmpty()) {
             Move move = moveList.pop();
             int row = move.getRow();
@@ -164,7 +163,7 @@ public class SudokuGame {
     }
 
 
-    private void fillHintList() {
+    public void fillHintList() {
         int[][] solutionBoard = solverAlgorithm.getSolutionBoard(gameboard.getBoard());
 
         for (int row = 0; row < gridSize; row++) {
@@ -282,7 +281,7 @@ public class SudokuGame {
 
 
 
-    private int [][] deepCopyBoard(int [][] original) {
+    public int [][] deepCopyBoard(int[][] original) {
         int [][] copy = new int [original.length][original.length];
         for (int i = 0; i < original.length; i++) {
             System.arraycopy(original[i], 0, copy[i], 0, original.length);
@@ -306,4 +305,19 @@ public class SudokuGame {
             render();
         }
     }
+
+    //Next function is simulating the move typed from the keyboard:
+    public void makeMoveTest(int row, int col, int number) {
+            int previousNumber = gameboard.getNumber(row, col);
+            gameboard.setNumber(row, col, number);
+            Move move = new Move(row, col, number, previousNumber);
+            arrayMovelist.add(move.getNumber());
+            moveList.push(move); // Log the move for undo functionality
+
+    }
+
+    public ArrayList<Move> getHintList(){
+        return hintList;
+    }
+
 }
