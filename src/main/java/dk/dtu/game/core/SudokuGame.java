@@ -229,12 +229,7 @@ public class SudokuGame {
 
 
         solveButton.addActionListener(e -> {
-            int [][] boardArray = deepCopyBoard(gameboard.getBoard());
-            solverAlgorithm solver = new solverAlgorithm();
-            solver.sudoku(boardArray);
-            gameboard.setBoard(boardArray);
-
-            board.requestFocusInWindow();
+            gameboard.setBoard(dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(initialBoard));
         });
 
         newGameButton.addActionListener(e -> {
