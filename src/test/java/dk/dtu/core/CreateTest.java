@@ -1,6 +1,10 @@
 package dk.dtu.core;
 
+import dk.dtu.engine.core.WindowManager;
+import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.game.core.Board;
+import dk.dtu.game.core.Move;
+import dk.dtu.game.core.SudokuGame;
 import dk.dtu.game.solver.solverAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -188,4 +192,8 @@ class CreateTest {
         solverAlgorithm.sudoku(board.getBoard());
         assertTrue(isValidSudoku(board), "Board should adhere to Sudoku rules.");
     }
+
+
+
+
 }

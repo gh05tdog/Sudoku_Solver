@@ -33,16 +33,23 @@
 
         public boolean validPlace(int x, int y, int num) {
             // Check rows and check square
-            return contains(getRow(x), num) && contains(getRow(y), num) && !squareContains(getSquare(x,y),num);
+            System.out.println("Checking if " + num + " can be placed at " + x + ", " + y);
+            return contains(getRow(x), num) && contains(getColumn(y), num) && !squareContains(getSquare(x,y),num);
         }
 
-        public int[] getRow(int i) {
-            int [] row = new int[size];
-            for (int j = 0; j < size; j++) {
-                row[i] = board[i][j];
-
+        public int[] getRow(int rowIndex) {
+            int[] row = new int[size];
+            for (int colIndex = 0; colIndex < size; colIndex++) {
+                row[colIndex] = board[rowIndex][colIndex];
             }
             return row;
+        }
+        public int[] getColumn(int colIndex) {
+            int[] column = new int[size];
+            for (int rowIndex = 0; rowIndex < size; rowIndex++) {
+                column[rowIndex] = board[rowIndex][colIndex];
+            }
+            return column;
         }
 
         public boolean contains (int [] arr, int num) {
@@ -58,6 +65,7 @@
             for (int[] ints : square) {
                 for (int anInt : ints) {
                     if (anInt == num) {
+                        System.out.println("Found " + num + " in the array");
                         return true;
                     }
                 }
@@ -65,14 +73,7 @@
             return false;
         }
 
-        public int[] getColumn(int i) {
-            int [] column = new int[size];
-            for (int j = 0; j < size; j++) {
-                column[i] = board[j][i];
 
-            }
-            return column;
-        }
 
         public void fillZeros(int[][] board) {
             for (int i = 0; i < size; i++) {
@@ -84,7 +85,6 @@
 
         public int[][] getSquare(int x, int y) {
             int [][] square = new int [n][n];
-
             for(int i = 0; i < n; i++) {
                 for(int j = 0; j < n; j++) {
                     square[i][j] = board[(x / n) * n + i][(y / n) * n + j];

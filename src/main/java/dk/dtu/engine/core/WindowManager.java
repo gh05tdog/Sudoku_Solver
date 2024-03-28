@@ -3,33 +3,68 @@ package dk.dtu.engine.core;
 import dk.dtu.engine.input.MouseActionListener;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class WindowManager {
-
     private static final String TITLE = "Sudoku Game";
     private final JFrame frame = new JFrame(TITLE);
-
-    private final JPanel whitePanel = new JPanel(); // Create a white panel to act as the white container
-    private final JPanel buttonPanel = new JPanel();
+    private final JPanel mainPanel = new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
+    private final JPanel buttonPanel = new JPanel(); // Panel for buttons
+    private final JPanel whitePanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
 
     public WindowManager(int width, int height) {
         frame.setSize(width, height);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Ensure the application closes properly
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
-        frame.setLayout(new BorderLayout()); // Use BorderLayout for JFrame
+        frame.getContentPane().setBackground(Color.WHITE);
+        whitePanel.setOpaque(true);
+        buttonPanel.setOpaque(true);
+        mainPanel.setOpaque(true);
+        whitePanel.setBackground(Color.WHITE);
+        buttonPanel.setBackground(Color.WHITE);
+        mainPanel.setBackground(Color.WHITE);
 
-        whitePanel.setBackground(Color.WHITE); // Set the background color of the white panel to white
-        whitePanel.setLayout(null); // Use BorderLayout for JPanel
+        // Configure the button panel
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Center buttons horizontally
+        buttonPanel.setBackground(Color.WHITE);
+
+        GridBagConstraints buttonContraints = new GridBagConstraints();
+        buttonContraints.insets = new Insets(10, 0, 10, 0); // Add padding
+
+        whitePanel.setBackground(Color.WHITE);
+        whitePanel.setLayout(new GridBagLayout()); // GridBagLayout to center the board
 
 
-        frame.add(whitePanel, BorderLayout.CENTER); // Add the white panel to the frame's center
+        // Add the white panel to the main panel
+        mainPanel.add(whitePanel, new GridBagConstraints());
 
-        // Add window listener using the default window closing operation set above
+        // Add the button panel below the board
+        buttonContraints.gridy = 1; // Place buttonPanel below the board
+        buttonContraints.weighty = 0; // Don't allow vertical stretching
+        mainPanel.add(buttonPanel, buttonContraints);
+
+        frame.setContentPane(mainPanel); // Add the main panel to the frame
+
     }
 
-    public void drawComponent(Component obj) {
-        whitePanel.add(obj);
+    public void addComponentToButtonPanel(Component component) {
+        // Adds a component (like a button) to the button panel
+        buttonPanel.add(component);
+        buttonPanel.revalidate();
+        buttonPanel.repaint();
+    }
+
+    public void drawBoard(Component board) {
+        // This method is used to add the Sudoku board itself, centered in the boardPanel
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0; // Align component at the grid's center
+        gbc.gridy = 0; // Align component at the grid's center
+        gbc.weightx = 1; // Give column some weight so component will be centered
+        gbc.weighty = 1; // Give row some weight so component will be centered
+        gbc.fill = GridBagConstraints.BOTH; // Let component fill its display area
+
+        whitePanel.add(board, gbc);
         whitePanel.revalidate();
         whitePanel.repaint();
     }
@@ -51,3 +86,4 @@ public class WindowManager {
         return frame;
     }
 }
+

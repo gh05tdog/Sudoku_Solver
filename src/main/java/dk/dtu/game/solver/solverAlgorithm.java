@@ -8,14 +8,14 @@ import static java.lang.Math.sqrt;
 
 public class solverAlgorithm {
 
-   public static void createSudoku(Board board) throws Exception {
+    public static void createSudoku(Board board) throws Exception {
         fillBoard(board);
         removeNumsRecursive(board);
     }
 
     public static boolean sudoku(int[][] board) {
 
-        if(!isValidSudoku(board)) {
+        if (!isValidSudoku(board)) {
             return false;
         }
 
@@ -147,8 +147,9 @@ public class solverAlgorithm {
             board.setBoard(tempBoard);
         }
     }
-    public static int [][] deepCopy (int [][] arr) {
-        int [][] copy = new int [arr.length][arr.length];
+
+    public static int[][] deepCopy(int[][] arr) {
+        int[][] copy = new int[arr.length][arr.length];
         for (int i = 0; i < arr.length; i++) {
             System.arraycopy(arr[i], 0, copy[i], 0, arr.length);
         }
@@ -212,6 +213,19 @@ public class solverAlgorithm {
             }
         }
         return true;
+    }
+
+    public static int[][] getSolutionBoard(int[][] board) {
+        int[][] copiedBoard = deepCopy(board);
+
+        boolean solved = sudoku(copiedBoard);
+
+        if (solved) {
+            return copiedBoard;
+        } else {
+            return null;
+
+        }
     }
 
 }
