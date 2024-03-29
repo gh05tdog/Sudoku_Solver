@@ -31,8 +31,6 @@ public class SudokuGame {
     private SudokuBoardCanvas board;
     private boolean gameIsStarted = false;
 
-    private int [][] initialBoard;
-
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
         this.windowManager = windowManager;
         gameboard = new Board(n, k);
@@ -70,7 +68,7 @@ public class SudokuGame {
             int row = markedCell[0];
             int col = markedCell[1];
             if (row >= 0 && col >= 0) { // Validate that a cell is indeed highlighted
-                if(gameboard.validPlace(row, col, number) && initialBoard[row][col] == 0){
+                if(gameboard.validPlace(row, col, number) && gameboard.getInitialNumber(row,col) == 0){
                     int previousNumber = gameboard.getNumber(row, col);
                     board.setCellNumber(row, col, number);
                     gameboard.setNumber(row, col, number);
@@ -88,7 +86,7 @@ public class SudokuGame {
             int[] cell = board.getMarkedCell();
             int row = cell[0];
             int col = cell[1];
-            if(initialBoard[row][col] == 0){
+            if(gameboard.getInitialNumber(row,col) == 0){
                 board.removeNumber(row, col);
                 gameboard.setNumber(row, col, 0);
             }
@@ -128,7 +126,7 @@ public class SudokuGame {
 
         board.addKeyListener(keyboardListener);
 
-        initialBoard = deepCopyBoard(gameboard.getBoard());
+        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
     }
 
     public void initialize(int n, int k, int cellSize) throws Exception {
@@ -141,7 +139,7 @@ public class SudokuGame {
         gameboard.clear();
         hintList.clear();
         dk.dtu.game.solver.solverAlgorithm.createSudoku(gameboard);
-        initialBoard = deepCopyBoard(gameboard.getBoard());
+        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
         gameIsStarted = true;
         gameboard.printBoard();
         fillHintList();
@@ -168,7 +166,7 @@ public class SudokuGame {
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
-                if (initialBoard[row][col] == 0) { // Assuming initialBoard is the puzzle with empty spaces
+                if (gameboard.getInitialNumber(row,col) == 0) { // Assuming initialBoard is the puzzle with empty spaces
                     hintList.add(new Move(row, col, solutionBoard[row][col], 0));
                 }
             }
@@ -189,7 +187,7 @@ public class SudokuGame {
 
             gameboard.setNumber(row, col, number);
             board.setCellNumber(row, col, number);
-            initialBoard[row][col] = number;
+            gameboard.setInitialNumber(row,col,number);
 
         } else {
             System.out.println("No more hints available.");
@@ -221,7 +219,7 @@ public class SudokuGame {
         restartButton.addActionListener(e -> {
             //set the numbers to the initial board
             gameIsStarted = false;
-            gameboard.setBoard(deepCopyBoard(initialBoard));
+            gameboard.setBoard(deepCopyBoard(gameboard.getInitialBoard()));
             board.requestFocusInWindow();
             gameIsStarted = true;
             windowManager.updateBoard();
@@ -229,7 +227,7 @@ public class SudokuGame {
 
 
         solveButton.addActionListener(e -> {
-            gameboard.setBoard(dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(initialBoard));
+            gameboard.setBoard(dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard()));
         });
 
         newGameButton.addActionListener(e -> {
