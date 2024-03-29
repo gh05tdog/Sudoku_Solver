@@ -22,11 +22,12 @@ public class numberHub extends JPanel {
         this.cellSize = cellSize;
         this.subGrid = (int) Math.sqrt(gridSize);
         this.numberArray = new int[subGrid][subGrid];
-        setPreferredSize(new Dimension(subGrid*(cellSize), subGrid*(cellSize)));
+        setPreferredSize(new Dimension(subGrid*(cellSize), (subGrid+2)*cellSize));
 
         for(int i = 0; i<subGrid; i++){
-            for(int j = 0; j<subGrid; j++){
-                numberArray[i][j] = j * subGrid + i + 1;
+            for(int j = 0; j<subGrid; j++) {
+
+                numberArray[i][j] = j + i * subGrid + 1;
             }
         }
 
@@ -68,14 +69,33 @@ public class numberHub extends JPanel {
                         y + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
 
             }
+
+
         }
+
+        int clearBoxY = (subGrid)*cellSize;
+        g.setColor(NON_HIGHLIGHT_COLOR);
+        g.fillRect(0, clearBoxY, subGrid * cellSize,2 * cellSize);
+        g.setColor(Color.BLACK);
+        g2d.setStroke(new BasicStroke(STROKE_WIDTH));
+        g.drawRect(0, clearBoxY, subGrid * cellSize, cellSize);
+        Font font = new Font("Arial", Font.BOLD, cellSize / 2);
+        g.setFont(font);
+        g.setColor(Color.BLACK);
+        g.drawString("Clear", subGrid*cellSize/2 - g.getFontMetrics().stringWidth("Clear")/2,
+                clearBoxY + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
 
     }
 
-    public int getNumber(int x, int y){
-        int i = x / cellSize;
-        int j = y / cellSize;
-        return numberArray[i][j];
+    public int getNumber(int x, int y) {
+
+        int i = x/cellSize;
+        int j = y/cellSize;
+
+        if (j == subGrid) {
+            return 0;
+        }
+        else return numberArray[j][i];
     }
 
 

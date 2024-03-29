@@ -13,6 +13,8 @@ public class WindowManager {
     private final JPanel buttonPanel = new JPanel(); // Panel for buttons
     private final JPanel whitePanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
 
+    private final JPanel hubPanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the number hub
+
     public WindowManager(int width, int height) {
         frame.setSize(width, height);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
