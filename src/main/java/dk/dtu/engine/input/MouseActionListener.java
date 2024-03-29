@@ -1,5 +1,6 @@
 package dk.dtu.engine.input;
 
+import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 
@@ -7,6 +8,7 @@ import java.awt.event.*;
 
 public class MouseActionListener implements MouseListener {
     private boolean isInsideSudokuBoard = false;
+    private boolean isInsideNumbersBoard = false;
     private SudokuGame sudokuGame; // Reference to the Game class
 
     public MouseActionListener(SudokuGame sudokuGame) {
@@ -19,6 +21,9 @@ public class MouseActionListener implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         if (isInsideSudokuBoard) {
             sudokuGame.onSudokuBoardClicked(e.getX(), e.getY());
+        }
+        else if (isInsideNumbersBoard) {
+            sudokuGame.onNumbersBoardClicked(e.getX(), e.getY());
         }
         else {
             sudokuGame.onMouseClicked(e.getX(), e.getY());
@@ -41,6 +46,9 @@ public class MouseActionListener implements MouseListener {
         if (e.getSource() instanceof SudokuBoardCanvas) {
             isInsideSudokuBoard = true;
         }
+        if (e.getSource() instanceof numberHub) {
+            isInsideNumbersBoard = true;
+        }
     }
 
     @Override
@@ -48,7 +56,11 @@ public class MouseActionListener implements MouseListener {
         if (e.getSource() instanceof SudokuBoardCanvas) {
             isInsideSudokuBoard = false;
         }
+        if (e.getSource() instanceof numberHub) {
+            isInsideNumbersBoard = false;
+        }
     }
+
 
     // ... other overrides ...
 }

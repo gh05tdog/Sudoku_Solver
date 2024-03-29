@@ -60,11 +60,25 @@ public class WindowManager {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; // Align component at the grid's center
         gbc.gridy = 0; // Align component at the grid's center
-        gbc.weightx = 1; // Give column some weight so component will be centered
+        gbc.weightx = 0.5; // Give column some weight so component will be centered
         gbc.weighty = 1; // Give row some weight so component will be centered
         gbc.fill = GridBagConstraints.BOTH; // Let component fill its display area
 
         whitePanel.add(board, gbc);
+        whitePanel.revalidate();
+        whitePanel.repaint();
+    }
+
+    public void drawNumbers (Component numbers) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 1; // Align component at the grid's center
+        gbc.gridy = 0; // Align component at the grid's center
+        gbc.weightx = 0.5; // Give column some weight so component will be centered
+        gbc.weighty = 1; // Give row some weight so component will be centered
+        gbc.fill = GridBagConstraints.REMAINDER; // Let component fill its display area
+        gbc.insets = new Insets(0, 20, 0, 20); // Add padding
+
+        whitePanel.add(numbers, gbc);
         whitePanel.revalidate();
         whitePanel.repaint();
     }

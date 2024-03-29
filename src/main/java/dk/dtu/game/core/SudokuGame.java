@@ -2,6 +2,7 @@ package dk.dtu.game.core;
 
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.core.WindowManager;
+import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.game.solver.solverAlgorithm;
@@ -20,6 +21,7 @@ public class SudokuGame {
     int gridSize; // or 9 for a standard Sudoku
     int cellSize; // Adjust based on your window size and desired grid size
     public final Board gameboard;
+    int placeableNumber = 0;
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
     solverAlgorithm solverAlgorithm = new solverAlgorithm();
@@ -29,6 +31,7 @@ public class SudokuGame {
     private ArrayList<Move> hintList = new ArrayList<>();
 
     private SudokuBoardCanvas board;
+    private numberHub numbers;
     private boolean gameIsStarted = false;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
@@ -43,6 +46,18 @@ public class SudokuGame {
         int row = y / (board.getWidth() / gridSize); // Adjust for variable cell size
         int column = x / (board.getHeight() / gridSize); // Adjust for variable cell size
         board.setMarkedCell(row,column);
+
+        if (row >= 0 && column >= 0) { // Validate that a cell is indeed highlighted
+            if(gameboard.validPlace(row, column, placeableNumber) && gameboard.getInitialNumber(row,column) == 0){
+                int previousNumber = gameboard.getNumber(row, column);
+                board.setCellNumber(row, column, placeableNumber);
+                gameboard.setNumber(row, column, placeableNumber);
+                gameboard.printBoard();
+                Move move = moveList.push(new Move(row, column, placeableNumber, previousNumber));
+                arrayMovelist.add(move.getNumber());
+                System.out.println(Arrays.toString(arrayMovelist.toArray()));
+            }
+        }
 
         System.out.println("Row: " + row + ", Column: " + column);
 
@@ -127,12 +142,22 @@ public class SudokuGame {
         board.addKeyListener(keyboardListener);
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
+
+        numbers = new numberHub(n*k,cellSize);
+        numbers.setLocation(50,50);
+        numbers.setFocusable(true);
+
+        numbers.addMouseListener(mouseActionListener);
+        numbers.addKeyListener(keyboardListener);
+
+
     }
 
     public void initialize(int n, int k, int cellSize) throws Exception {
         createBoard(n, k, cellSize);
         displayButtons();
         windowManager.drawBoard(board);
+        windowManager.drawNumbers(numbers);
     }
 
     private void newGame() throws Exception {
@@ -227,7 +252,7 @@ public class SudokuGame {
 
 
         solveButton.addActionListener(e -> {
-            gameboard.setBoard(dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard()));
+            gameboard.setBoard(solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard()));
         });
 
         newGameButton.addActionListener(e -> {
@@ -313,4 +338,12 @@ public class SudokuGame {
         return hintList;
     }
 
+    public void onNumbersBoardClicked(int x, int y) {
+        System.out.println("Numbers board clicked at: " + x + ", " + y);
+        placeableNumber = numbers.getNumber(x, y);
+        System.out.println("Number: " + placeableNumber);
+
+        numbers.highlightNumber(x, y);
+
+    }
 }

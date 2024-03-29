@@ -6,7 +6,7 @@ import dk.dtu.engine.core.WindowManager;
 class SudokuSolverApp {
     public static void main(String[] args) throws Exception {
         // Set up the window manager and game parameters.
-        WindowManager windowManager = new WindowManager(800, 800);
+        WindowManager windowManager = new WindowManager(900, 900);
         int n = 3;
         int k = 3;
         int cellSize = 550/(n*k);
