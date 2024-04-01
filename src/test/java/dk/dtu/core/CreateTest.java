@@ -193,6 +193,23 @@ class CreateTest {
         assertTrue(isValidSudoku(board), "Board should adhere to Sudoku rules.");
     }
 
+    @Test
+    @DisplayName("Add wrong numbers and test if sudoku solves correctly")
+    void testInvalidSudoku() throws Exception {
+        Board board = new Board(3, 3);
+        solverAlgorithm.createSudoku(board);
+        board.setInitialBoard(board.getBoard());
+        int [][] solvedBoard = solverAlgorithm.getSolutionBoard(board.getInitialBoard());
+
+        board.setNumber(0, 0, 1);
+        board.setNumber(0, 1, 1); // Create a conflict
+
+        board.setBoard(solverAlgorithm.getSolutionBoard(board.getInitialBoard()));
+
+        assertArrayEquals(solvedBoard, board.getBoard(), "The board should be the same as the solved board");
+
+    }
+
 
 
 

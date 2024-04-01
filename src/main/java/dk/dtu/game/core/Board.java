@@ -9,6 +9,8 @@
 
         private int [][] board;
 
+        private int [][] initialBoard;
+
         public Board(int n, int k) throws Exception {
             this.n = n;
             this.k = k;
@@ -18,8 +20,10 @@
                 throw new Exception("This board is not possible to create");
             }
             this.board = new int [n*k][n*k];
+            this.initialBoard = new int [n*k][n*k];
             // Initialize the board with zeros
             fillZeros(board);
+            fillZeros(initialBoard);
 
         }
 
@@ -126,7 +130,27 @@
         }
 
         public void setBoard(int[][] tempBoard) {
-            this.board = tempBoard;
+            for (int i = 0; i < tempBoard.length; i++) {
+                System.arraycopy(tempBoard[i], 0, this.board[i], 0, tempBoard[i].length);
+            }
+        }
+
+        public void setInitialBoard(int[][] tempBoard) {
+            for (int i = 0; i < tempBoard.length; i++) {
+                System.arraycopy(tempBoard[i], 0, this.initialBoard[i], 0, tempBoard[i].length);
+            }
+        }
+
+        public int[][] getInitialBoard() {
+            return initialBoard;
+        }
+
+        public void setInitialNumber(int x, int y, int num) {
+            initialBoard[x][y] = num;
+        }
+
+        public int getInitialNumber(int x, int y) {
+            return initialBoard[x][y];
         }
 
     }
