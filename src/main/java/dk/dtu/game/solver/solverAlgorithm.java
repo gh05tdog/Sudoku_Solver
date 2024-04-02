@@ -122,7 +122,7 @@ public class solverAlgorithm {
         int[][] tempBoard = deepCopy(board.getBoard());
         int[][] initialBoard;
         int numRemoved = 0;
-        while (numRemoved < 150) {
+        while (numRemoved < 50) {
             int possibleSols = 0;
             int randRow = (int) (Math.random() * board.getDimensions());
             int randCol = (int) (Math.random() * board.getDimensions());
