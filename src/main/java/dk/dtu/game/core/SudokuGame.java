@@ -10,26 +10,19 @@ import dk.dtu.game.solver.solverAlgorithm;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 public class SudokuGame {
+    public final Board gameboard;
     private final WindowManager windowManager;
-    private boolean running = true;
+    private final Stack<Move> moveList = new Stack<>();
+    private final ArrayList<Integer> arrayMovelist = new ArrayList<>();
+    private final ArrayList<Move> hintList = new ArrayList<>();
     int gridSize; // or 9 for a standard Sudoku
     int cellSize; // Adjust based on your window size and desired grid size
-    public final Board gameboard;
     int placeableNumber = 0;
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
-    solverAlgorithm solverAlgorithm = new solverAlgorithm();
-    private final Stack<Move> moveList = new Stack<>();
-    private ArrayList<Integer> arrayMovelist = new ArrayList<>();
-
-    private ArrayList<Move> hintList = new ArrayList<>();
-
     private SudokuBoardCanvas board;
     private numberHub numbers;
     private boolean gameIsStarted = false;
@@ -45,10 +38,10 @@ public class SudokuGame {
         // Calculate the column and row based on the adjusted click location
         int row = y / (board.getWidth() / gridSize); // Adjust for variable cell size
         int column = x / (board.getHeight() / gridSize); // Adjust for variable cell size
-        board.setMarkedCell(row,column);
+        board.setMarkedCell(row, column);
 
         if (row >= 0 && column >= 0) { // Validate that a cell is indeed highlighted
-            if(gameboard.validPlace(row, column, placeableNumber) && gameboard.getInitialNumber(row,column) == 0){
+            if (gameboard.validPlace(row, column, placeableNumber) && gameboard.getInitialNumber(row, column) == 0) {
                 int previousNumber = gameboard.getNumber(row, column);
                 board.setCellNumber(row, column, placeableNumber);
                 gameboard.setNumber(row, column, placeableNumber);
@@ -66,7 +59,7 @@ public class SudokuGame {
             int cellIndex = row * gridSize + column + 1; // Calculate the cell index
             System.out.println("Cell " + cellIndex + " clicked. Row: " + (row + 1) + ", Column: " + (column + 1));
             board.removeNumber(row, column);
-            board.highlightCell(row, column,true);
+            board.highlightCell(row, column, true);
             System.out.println("highlighted cell: " + Arrays.toString(board.getMarkedCell()));
 
         } else {
@@ -83,7 +76,7 @@ public class SudokuGame {
             int row = markedCell[0];
             int col = markedCell[1];
             if (row >= 0 && col >= 0) { // Validate that a cell is indeed highlighted
-                if(gameboard.validPlace(row, col, number) && gameboard.getInitialNumber(row,col) == 0){
+                if (gameboard.validPlace(row, col, number) && gameboard.getInitialNumber(row, col) == 0) {
                     int previousNumber = gameboard.getNumber(row, col);
                     board.setCellNumber(row, col, number);
                     gameboard.setNumber(row, col, number);
@@ -96,19 +89,19 @@ public class SudokuGame {
         }
     }
 
-    private void eraseNumber(){
+    private void eraseNumber() {
         if (board.isACellHighligthed()) {
             int[] cell = board.getMarkedCell();
             int row = cell[0];
             int col = cell[1];
-            if(gameboard.getInitialNumber(row,col) == 0){
+            if (gameboard.getInitialNumber(row, col) == 0) {
                 board.removeNumber(row, col);
                 gameboard.setNumber(row, col, 0);
             }
         }
     }
 
-    public void displayNumbersVisually(){
+    public void displayNumbersVisually() {
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
                 int number = gameboard.getNumber(row, col);
@@ -125,16 +118,15 @@ public class SudokuGame {
             int prevNumber = move.getPreviousNumber();
             gameboard.setNumber(row, col, prevNumber);
             board.setCellNumber(row, col, prevNumber);
-            arrayMovelist.remove(arrayMovelist.size()-1);
+            arrayMovelist.removeLast();
             System.out.println(Arrays.toString(arrayMovelist.toArray()));
         }
     }
 
 
-
-    public void createBoard(int n, int k, int cellSize) throws Exception {
+    public void createBoard(int n, int k, int cellSize) {
         board = new SudokuBoardCanvas(n, k, cellSize);
-        board.setLocation(50,50);
+        board.setLocation(50, 50);
         board.setFocusable(true);
 
         board.addMouseListener(mouseActionListener);
@@ -143,8 +135,8 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
 
-        numbers = new numberHub(n*k,cellSize);
-        numbers.setLocation(50,50);
+        numbers = new numberHub(n * k, cellSize);
+        numbers.setLocation(50, 50);
         numbers.setFocusable(true);
 
         numbers.addMouseListener(mouseActionListener);
@@ -153,7 +145,7 @@ public class SudokuGame {
 
     }
 
-    public void initialize(int n, int k, int cellSize) throws Exception {
+    public void initialize(int n, int k, int cellSize) {
         createBoard(n, k, cellSize);
         displayButtons();
         windowManager.drawBoard(board);
@@ -191,7 +183,8 @@ public class SudokuGame {
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
-                if (gameboard.getInitialNumber(row,col) == 0) { // Assuming initialBoard is the puzzle with empty spaces
+                if (gameboard.getInitialNumber(row, col) == 0) { // Assuming initialBoard is the puzzle with empty spaces
+                    assert solutionBoard != null;
                     hintList.add(new Move(row, col, solutionBoard[row][col], 0));
                 }
             }
@@ -212,7 +205,10 @@ public class SudokuGame {
 
             gameboard.setNumber(row, col, number);
             board.setCellNumber(row, col, number);
-            gameboard.setInitialNumber(row,col,number);
+            gameboard.setInitialNumber(row, col, number);
+
+            // Visualize the hint
+            board.visualizeCell(row, col, Color.blue);
 
         } else {
             System.out.println("No more hints available.");
@@ -220,12 +216,11 @@ public class SudokuGame {
     }
 
 
-
-    private void displayButtons(){
-        JButton startButton = createButton("Start",  100, 30);
-        JButton restartButton = createButton("Restart",  100, 30);
-        JButton solveButton = createButton("Solve",  100, 30);
-        JButton newGameButton = createButton("New Game",  100, 30);
+    private void displayButtons() {
+        JButton startButton = createButton("Start", 100, 30);
+        JButton restartButton = createButton("Restart", 100, 30);
+        JButton solveButton = createButton("Solve", 100, 30);
+        JButton newGameButton = createButton("New Game", 100, 30);
         JButton eraseButton = createButton("Erase", 100, 30);
         JButton undoButton = createButton("Undo", 100, 300);
         JButton hintButton = createButton("Hint", 100, 30);
@@ -251,9 +246,7 @@ public class SudokuGame {
         });
 
 
-        solveButton.addActionListener(e -> {
-            gameboard.setBoard(solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard()));
-        });
+        solveButton.addActionListener(e -> gameboard.setBoard(Objects.requireNonNull(solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard()))));
 
         newGameButton.addActionListener(e -> {
             gameIsStarted = false;
@@ -291,16 +284,15 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(newGameButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
         windowManager.addComponentToButtonPanel(eraseButton);
-        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10,10))));
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(undoButton);
-        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10,10))));
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(hintButton);
     }
 
 
-
-    public int [][] deepCopyBoard(int[][] original) {
-        int [][] copy = new int [original.length][original.length];
+    public int[][] deepCopyBoard(int[][] original) {
+        int[][] copy = new int[original.length][original.length];
         for (int i = 0; i < original.length; i++) {
             System.arraycopy(original[i], 0, copy[i], 0, original.length);
         }
@@ -312,29 +304,28 @@ public class SudokuGame {
     }
 
     public void render() {
-        if(gameIsStarted){
+        if (gameIsStarted) {
             displayNumbersVisually();
         }
 
     }
 
     public void update() {
-        if (running) {
-            render();
-        }
+        render();
+
     }
 
     //Next function is simulating the move typed from the keyboard:
     public void makeMoveTest(int row, int col, int number) {
-            int previousNumber = gameboard.getNumber(row, col);
-            gameboard.setNumber(row, col, number);
-            Move move = new Move(row, col, number, previousNumber);
-            arrayMovelist.add(move.getNumber());
-            moveList.push(move); // Log the move for undo functionality
+        int previousNumber = gameboard.getNumber(row, col);
+        gameboard.setNumber(row, col, number);
+        Move move = new Move(row, col, number, previousNumber);
+        arrayMovelist.add(move.getNumber());
+        moveList.push(move); // Log the move for undo functionality
 
     }
 
-    public ArrayList<Move> getHintList(){
+    public ArrayList<Move> getHintList() {
         return hintList;
     }
 

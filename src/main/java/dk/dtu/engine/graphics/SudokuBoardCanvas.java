@@ -1,26 +1,30 @@
 package dk.dtu.engine.graphics;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 class Cell {
     boolean isMarked = false;
-    private Color backgroundColor = Color.WHITE;
     boolean isHighlighted = false;
+    private Color backgroundColor = Color.WHITE;
     private int number = 0; // 0 indicates no number
 
     public Cell() {
+
     }
 
     public void paintCell(Graphics g, int x, int y, int cellSize) {
-        if(isHighlighted){
+        if (isHighlighted) {
             g.setColor(Color.LIGHT_GRAY);
-            if(isMarked){
+            if (isMarked) {
                 g.setColor(Color.DARK_GRAY);
             }
-        }else{
+        } else {
             g.setColor(backgroundColor);
         }
         g.fillRect(x, y, cellSize, cellSize);
@@ -38,10 +42,6 @@ class Cell {
         g.drawRect(x, y, cellSize, cellSize);
     }
 
-    public void setMarked(boolean marked) {
-        isMarked = marked;
-    }
-
     public void setBackgroundColor(Color color) {
         backgroundColor = color;
     }
@@ -52,10 +52,6 @@ class Cell {
 
     public void setNumber(int number) {
         this.number = number;
-    }
-
-    public int getNumber() {
-        return number;
     }
 
     // Add additional getters and setters as necessary
@@ -118,7 +114,7 @@ public class SudokuBoardCanvas extends JPanel {
 
         if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
             // Calculate the subgrid's top-left coordinates
-            int subGridSize = (int)Math.sqrt(gridSize);
+            int subGridSize = (int) Math.sqrt(gridSize);
             int subGridRowStart = (row / subGridSize) * subGridSize;
             int subGridColStart = (col / subGridSize) * subGridSize;
 
@@ -140,6 +136,39 @@ public class SudokuBoardCanvas extends JPanel {
             repaint();
         }
     }
+
+    public void visualizeCell(int row, int col, Color startColor) {
+
+        final int totalSteps = 10; // Total steps to fade color
+        final int delay = 100;
+        Cell cell = cells[row][col];
+
+
+        ActionListener fadeAction = new ActionListener() {
+            private int step = 0;
+
+            public void actionPerformed(ActionEvent e) {
+                if (step < totalSteps) {
+                    // Calculate the step color
+                    int r = startColor.getRed() + (Color.WHITE.getRed() - startColor.getRed()) * step / totalSteps;
+                    int g = startColor.getGreen() + (Color.WHITE.getGreen() - startColor.getGreen()) * step / totalSteps;
+                    int b = startColor.getBlue() + (Color.WHITE.getBlue() - startColor.getBlue()) * step / totalSteps;
+                    Color stepColor = new Color(r, g, b);
+                    cell.setBackgroundColor(stepColor);
+                    repaint();
+                    step++;
+                } else {
+                    // Stop the timer and reset the background color to white at the end
+                    ((Timer) e.getSource()).stop();
+                    cell.setBackgroundColor(Color.WHITE);
+                    repaint();
+                }
+            }
+        };
+
+        new Timer(delay, fadeAction).start();
+    }
+
     private void clearHighlights() {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -147,20 +176,21 @@ public class SudokuBoardCanvas extends JPanel {
             }
         }
     }
-    public int[] getMarkedCell(){
-        for (int i = 0; i < gridSize; i++){
-            for(int j = 0; j < gridSize; j++){
-                if (cells[i][j].isMarked){
-                    return new int[] {i, j};
+
+    public int[] getMarkedCell() {
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                if (cells[i][j].isMarked) {
+                    return new int[]{i, j};
                 }
             }
         }
         return new int[0];
     }
 
-    public void setMarkedCell(int row, int col){
-        for(int i = 0; i < gridSize; i++){
-            for(int j = 0; j < gridSize; j++){
+    public void setMarkedCell(int row, int col) {
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
                 cells[i][j].isMarked = false;
             }
         }
@@ -184,6 +214,4 @@ public class SudokuBoardCanvas extends JPanel {
             repaint();
         }
     }
-
-    // Add additional methods as necessary for interaction
 }
