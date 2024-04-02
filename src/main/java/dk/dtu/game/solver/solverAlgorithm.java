@@ -1,6 +1,7 @@
 package dk.dtu.game.solver;
 
 import dk.dtu.game.core.Board;
+import dk.dtu.game.core.config;
 
 import java.util.*;
 
@@ -122,7 +123,18 @@ public class solverAlgorithm {
         int[][] tempBoard = deepCopy(board.getBoard());
         int[][] initialBoard;
         int numRemoved = 0;
-        while (numRemoved < 50) {
+        int maxNumRemoved = 0;
+        String difficulty = config.getDifficulty();
+
+        maxNumRemoved = switch (difficulty) {
+            case "easy" -> 30;
+            case "medium" -> 60;
+            case "hard" -> 80;
+            case "extreme" -> 200;
+            default -> 30;
+        };
+
+        while (numRemoved < maxNumRemoved) {
             int possibleSols = 0;
             int randRow = (int) (Math.random() * board.getDimensions());
             int randCol = (int) (Math.random() * board.getDimensions());
