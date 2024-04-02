@@ -92,7 +92,7 @@ public class SudokuGame {
     }
 
     private void eraseNumber() {
-        if (board.isACellHighlighted()) {
+        if (board.isACellHighligthed()) {
             int[] cell = board.getMarkedCell();
             int row = cell[0];
             int col = cell[1];
