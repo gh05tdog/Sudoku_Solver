@@ -13,14 +13,14 @@ public class config {
         config.difficulty = difficulty;
     }
 
-    public int getK() {
+    public static int getK() {
         return k;
     }
 
-    public int getN() {
+    public static int getN() {
         return n;
     }
-    public int getCellSize() {
+    public static int getCellSize() {
         return cellSize;
     }
     public static String getDifficulty() {
