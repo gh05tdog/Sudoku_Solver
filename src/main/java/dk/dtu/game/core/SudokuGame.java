@@ -375,23 +375,8 @@ public class SudokuGame {
         System.out.println("Number: " + placeableNumber);
 
         numbers.highlightNumber(x, y);
-
-        if (board.isACellHighligthed()) {
-            int[] markedCell = board.getMarkedCell();
-            int row = markedCell[0];
-            int col = markedCell[1];
-            if (row >= 0 && col >= 0) { // Validate that a cell is indeed highlighted
-                if (gameboard.validPlace(row, col, placeableNumber) && gameboard.getInitialNumber(row, col) == 0) {
-                    int previousNumber = gameboard.getNumber(row, col);
-                    board.setCellNumber(row, col, placeableNumber);
-                    gameboard.setNumber(row, col, placeableNumber);
-                    gameboard.printBoard();
-                    Move move = moveList.push(new Move(row, col, placeableNumber, previousNumber));
-                    arrayMovelist.add(move.getNumber());
-                    System.out.println(Arrays.toString(arrayMovelist.toArray()));
-                }
-            }
-        }
+        int chosenNumber = numbers.getNumber(x, y);
+        board.setChosenNumber(chosenNumber);
 
     }
 }
