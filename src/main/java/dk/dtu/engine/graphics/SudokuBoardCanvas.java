@@ -14,8 +14,22 @@ class Cell {
     private Color backgroundColor = Color.WHITE;
     private int number = 0; // 0 indicates no number
 
+    boolean isVisualizingHint = false;
+    boolean wasHighlightedBeforeHint = false;
+
     public Cell() {
 
+    }
+
+    public void startHintVisualization() {
+        wasHighlightedBeforeHint = isHighlighted;
+        isVisualizingHint = true;
+        isHighlighted = false;
+    }
+
+    public void endHintVisualization() {
+        isVisualizingHint = false;
+        isHighlighted = wasHighlightedBeforeHint;
     }
 
     public void paintCell(Graphics g, int x, int y, int cellSize) {
@@ -53,8 +67,6 @@ class Cell {
     public void setNumber(int number) {
         this.number = number;
     }
-
-    // Add additional getters and setters as necessary
 }
 
 public class SudokuBoardCanvas extends JPanel {
@@ -142,6 +154,7 @@ public class SudokuBoardCanvas extends JPanel {
         final int totalSteps = 10; // Total steps to fade color
         final int delay = 100;
         Cell cell = cells[row][col];
+        cell.startHintVisualization();
 
 
         ActionListener fadeAction = new ActionListener() {
@@ -161,7 +174,9 @@ public class SudokuBoardCanvas extends JPanel {
                     // Stop the timer and reset the background color to white at the end
                     ((Timer) e.getSource()).stop();
                     cell.setBackgroundColor(Color.WHITE);
+                    cell.endHintVisualization();
                     repaint();
+
                 }
             }
         };
