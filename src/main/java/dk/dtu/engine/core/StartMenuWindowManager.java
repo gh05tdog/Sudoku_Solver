@@ -37,10 +37,10 @@ public class StartMenuWindowManager {
         difficultyPanel.setBackground(Color.WHITE);
 
         buttonPanel.setBounds((frame.getWidth())-250,(frame.getHeight()/2)-150, 200, difficultyPanel.getHeight()+sizePanel.getHeight()+50 ) ;
-        buttonPanel.setBackground(Color.RED);
+        buttonPanel.setBackground(Color.WHITE);
 
         inputPanel.setBounds(525,(frame.getHeight()/2)-205, 140, 50);
-        inputPanel.setBackground(Color.BLUE);
+        inputPanel.setBackground(Color.WHITE);
 
         mainPanel.add(buttonPanel);
         mainPanel.add(sizePanel);

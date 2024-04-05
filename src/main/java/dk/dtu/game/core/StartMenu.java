@@ -6,6 +6,8 @@ import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.utility.*;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import java.awt.*;
 import java.awt.event.*;
@@ -33,9 +35,8 @@ public class StartMenu {
     private final ButtonGroup difficultyGroup = new ButtonGroup();
     private final CustomComponentGroup sizeGroup = new CustomComponentGroup();
 
+    private int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
 ;
-
-
 
     public StartMenu(StartMenuWindowManager startMenu) {
         this.startMenu = startMenu;
@@ -44,14 +45,12 @@ public class StartMenu {
 
 
     public void startGame() throws Exception {
-
-        WindowManager windowManager = new WindowManager(900, 900);
-
+        System.out.println("startGame:" + config.getK() + " " + config.getN() + " " + config.getDifficulty()+ " " + config.getCellSize());
         int n = config.getN();
         int k = config.getK();
         int cellSize = config.getCellSize();
+        WindowManager windowManager = new WindowManager(900, 900);
 
-        // Initialize the GameEngine with the window manager.
         GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
 
         // Display the window.
@@ -61,7 +60,6 @@ public class StartMenu {
         gameEngine.start();
         startMenu.close();
     }
-
 
 
     public void updateCustomBoardPanel(int n, int k) {
@@ -80,13 +78,49 @@ public class StartMenu {
         addButtonPanelButtons();
         addInputPanelButtons();
         updateCustomBoardPanel(2,2);
+
+        threeByThree.updateBackgroundColor(Color.GRAY);
+        config.setK(3);
+        config.setN(3);
+        config.setCellSize(550/(config.getK()*config.getN()));
+
+        addChangeListenerToField(inputNField);
+        addChangeListenerToField(inputKField);
+
     }
 
 
+    private void addChangeListenerToField(JTextField field) {
+        field.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                updateBoard();
+            }
+            public void removeUpdate(DocumentEvent e) {
+                updateBoard();
+            }
+            public void insertUpdate(DocumentEvent e) {
+                updateBoard();
+            }
+
+            // Method to parse the n and k values and update the custom board panel
+            private void updateBoard() {
+                try {
+                    int n = Integer.parseInt(inputNField.getText().trim());
+                    int k = Integer.parseInt(inputKField.getText().trim());
+                    if(n*k <= n*n){
+                        updateCustomBoardPanel(n, k);
+                        boardConfigs[3] = new int[]{n, k};
+                    }
+                } catch (NumberFormatException ex) {
+                    // Handle the case where one of the fields is empty or does not contain a valid integer
+                    System.out.println("Invalid input: " + ex.getMessage());
+                }
+            }
+        });
+    }
     private void addInputPanelButtons() {
         Font fieldFont = new Font("SansSerif", Font.BOLD, 20);
 
-        // Set properties common to both fields
         JTextField[] fields = {inputNField, inputKField};
         String[] initialTexts = {"N", "K"};
         for (int i = 0; i < fields.length; i++) {
@@ -95,24 +129,18 @@ public class StartMenu {
             field.setHorizontalAlignment(JTextField.CENTER);
             ((AbstractDocument) field.getDocument()).setDocumentFilter(new NumberDocumentFilter());
 
-            int finalI1 = i;
+            String initialText = initialTexts[i];
             field.addFocusListener(new FocusAdapter() {
                 @Override
                 public void focusGained(FocusEvent e) {
-                    if (field.getText().equals(initialTexts[finalI1])) {
+                    if (field.getText().trim().equalsIgnoreCase(initialText)) {
                         field.setText("");
                     }
                 }
 
-                @Override
-                public void focusLost(FocusEvent e) {
-                    if (field.getText().isEmpty()) {
-                        field.setText(initialTexts[finalI1]);
-                    }
-                }
             });
 
-            field.setBounds(i == 0 ? 5 : 60, 5, 50, 40);
+            field.setBounds(i == 0 ? 5 : 85, 5, 50, 40);
             startMenu.addComponent(field, startMenu.getInputPanel());
         }
     }
@@ -120,16 +148,28 @@ public class StartMenu {
 
 
     private void addButtonPanelButtons(){
-        //TODO: implement
+        startButton.setBounds(5,5, 190, 40);
+        startButton.setBackground(Color.WHITE);
+        startButton.setFocusPainted(false);
+        startButton.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                startButton.setBackground(Color.GRAY);
+                try {
+                    startGame();
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }
+            else{
+                startButton.setBackground(Color.WHITE);
+            }
+        });
+        startMenu.addComponent(startButton,startMenu.getButtonPanel());
     }
 
     private void addSizePanelButtons() {
-        // Set up an array of the buttons for convenience.
         CustomBoardPanel[] boardPanels = {twoBytwo, threeByThree, fourByFour, customBoardPanel};
-        int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}}; // Replace the last pair with the user's input for customBoardPanel
-        //boardConfigs[3] = new int[]{Integer.parseInt(inputNField.getText()), Integer.parseInt(inputKField.getText())};
 
-        // Use a single mouse listener for all the panels.
         MouseAdapter mouseAdapter = new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 CustomBoardPanel source = (CustomBoardPanel) evt.getSource();
@@ -139,6 +179,7 @@ public class StartMenu {
                         int k = boardConfigs[i][1];
                         config.setN(n);
                         config.setK(k);
+                        config.setCellSize(550/(n*k));
                         break;
                     }
                 }
@@ -164,12 +205,16 @@ public class StartMenu {
     }
 
     private void addDifficultyPanelButtons(){
+        config.setDifficulty("medium");
         difficultyGroup.add(easyButton);
         difficultyGroup.add(mediumButton);
         difficultyGroup.add(hardButton);
         difficultyGroup.add(extremeButton);
 
         easyButton.setBackground(Color.WHITE);
+        mediumButton.setBackground(Color.WHITE);
+        hardButton.setBackground(Color.WHITE);
+        extremeButton.setBackground(Color.WHITE);
         easyButton.setFocusPainted(false);
         mediumButton.setFocusPainted(false);
         hardButton.setFocusPainted(false);
