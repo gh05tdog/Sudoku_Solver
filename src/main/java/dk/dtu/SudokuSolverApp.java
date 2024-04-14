@@ -9,6 +9,7 @@ class SudokuSolverApp {
         WindowManager windowManager = new WindowManager(900, 900);
         int n = 3;
         int k = 3;
+
         int cellSize = 550/(n*k);
         // Initialize the GameEngine with the window manager.
         GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);

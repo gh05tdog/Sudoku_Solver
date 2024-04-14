@@ -8,8 +8,23 @@ import static java.lang.Math.sqrt;
 
 public class solverAlgorithm {
 
+    public static void main(String[] args) {
+
+        int [][] tempBoard = createExactCoverMatrix(2,2);
+        for (int i = 0; i < tempBoard.length; i++) {
+            for (int j = 0; j < tempBoard[0].length; j++) {
+                System.out.print(tempBoard[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
     public static void createSudoku(Board board) throws Exception {
+        long startTime = System.nanoTime();
         fillBoard(board);
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        System.out.println("Time taken to generate board: " + duration/1000 + "ns");
         removeNumsRecursive(board);
     }
 
@@ -227,5 +242,126 @@ public class solverAlgorithm {
 
         }
     }
+
+    // use exact cover problem to solve sudoku
+    // size of matrix:
+      // column size: (n*k)^3
+      // row size: (n*k)^2*4
+
+    // exact_cover_matrix [(n*k)^3][(n*k)^2*4]
+
+    // 1. create exact cover matrix
+    // 2. solve exact cover problem
+    // 3. convert solution to sudoku board
+
+    public static int[][] createExactCoverMatrix(int n, int k) {
+        int size = k*n;
+        int matrix_size = size*size*size;
+        int constraint = size*size*4;
+
+        int [][]exactCoverMatrix = new int[matrix_size][constraint];
+
+        // exactCovermatrix is set up. Now we need to fill it with the constraints
+        // 1. Each cell must contain exactly one number
+        // 2. Each number must appear exactly once in each row
+        // 3. Each number must appear exactly once in each column
+        // 4. Each number must appear exactly once in each subgrid
+        // 5. Each cell must contain a number
+        // 6. Each number must appear in the grid (not necessary, but makes it easier to check if the solution is correct)
+        //
+        // the matrix has size^3 rows, representing each cell filled with each number once.
+        // the matrix has size^2*4 columns, representing the constraints
+        // constraint 1: 81 cells to check each number is in each row
+        // constraint 2: 81 cells to check each number is in each column
+        // constraint 3: 81 cells to check each number is in each subgrid
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                for (int t = 0; t < size; t++) {
+                    int row = i*size*size + j*size + t;
+                    // constraint 1
+                    exactCoverMatrix[row][i*size + t] = 1;
+                    // constraint 2
+                    exactCoverMatrix[row][size*size + j*size + t] = 1;
+                    // constraint 3
+                    exactCoverMatrix[row][2*size*size + (i/size)*size + (j/size)*size + t] = 1;
+                    // constraint 4
+                    exactCoverMatrix[row][3*size*size + t] = 1;
+                }
+            }
+        }
+
+
+
+
+        return exactCoverMatrix;
+
+    }
+
+
+class Node {
+    Node left;
+    Node right;
+    Node up;
+    Node down;
+
+    ColumnNode column;
+
+    public Node() {
+        this.left = this;
+        this.right = this;
+        this.up = this;
+        this.down = this;
+    }
+
+    public void removeRow() {
+        this.left.right = this.right;
+        this.right.left = this.left;
+    }
+
+    public void reinsertRow() {
+        this.left.right = this;
+        this.right.left = this;
+    }
+}
+
+class ColumnNode extends Node {
+        int size;
+    String name;
+
+    public ColumnNode(String name) {
+        super();
+        this.size = 0;
+        this.name = name;
+        this.column = this;
+    }
+
+    public void cover() {
+        this.removeRow();
+        for (Node i = this.down; i != this; i = i.down) {
+            for (Node j = i.right; j != i; j = j.right) {
+                j.removeRow();
+                j.column.size--;
+            }
+        }
+    }
+
+    public void uncover() {
+        for (Node i = this.up; i != this; i = i.up) {
+            for (Node j = i.left; j != i; j = j.left) {
+                j.column.size++;
+                j.reinsertRow();
+            }
+        }
+        this.reinsertRow();
+    }
+}
+
+
+
+
+
+
+
 
 }
