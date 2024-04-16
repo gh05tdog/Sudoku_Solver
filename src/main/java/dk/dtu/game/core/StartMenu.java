@@ -5,14 +5,13 @@ import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.utility.*;
 
+import javax.annotation.processing.Generated;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class StartMenu {
 
@@ -154,11 +153,13 @@ public class StartMenu {
         startButton.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 startButton.setBackground(Color.GRAY);
+
                 try {
                     startGame();
-                } catch (Exception exception) {
-                    exception.printStackTrace();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
                 }
+
             }
             else{
                 startButton.setBackground(Color.WHITE);
@@ -270,10 +271,46 @@ public class StartMenu {
     }
 
 
+    public CustomBoardPanel getCustomBoardPanel() {
+        return customBoardPanel;
+    }
+
+    public ButtonGroup getDifficultyButtons() {
+        return difficultyGroup;
+    }
+
+    public CustomBoardPanel getThreeByThree() {
+        return threeByThree;
+    }
 
 
+    public JToggleButton getStartButton(){
+        return startButton;
+    }
 
+    public JTextField getInputNField() {
+        return inputNField;
+    }
 
+    public JTextField getInputKField(){
+        return inputKField;
+    }
 
+    public JToggleButton getMediumButton() {
+        return mediumButton;
+    }
+    public JToggleButton getEasyButton(){
+        return easyButton;
+    }
+    public JToggleButton getExtremeButton() {
+        return extremeButton;
+    }
 
+    public JToggleButton getHardButton(){
+        return hardButton;
+    }
+
+    public CustomBoardPanel getFourByFour() {
+        return fourByFour;
+    }
 }

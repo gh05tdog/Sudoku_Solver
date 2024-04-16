@@ -1,7 +1,10 @@
 package dk.dtu.engine.utility;
 
+import dk.dtu.game.core.config;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseListener;
 
 public class CustomBoardPanel extends JPanel {
     private int n;
@@ -82,6 +85,7 @@ public class CustomBoardPanel extends JPanel {
     }
 
 
+
     // No change needed for these methods
     public void setSelection() {
         this.updateBackgroundColor(Color.GRAY);
@@ -90,4 +94,13 @@ public class CustomBoardPanel extends JPanel {
     public void removeSelection() {
         this.updateBackgroundColor(Color.WHITE);
     }
+
+    public int getN (){
+        return n;
+    }
+    public int getK (){
+        return k;
+    }
+
+
 }
