@@ -23,14 +23,6 @@ public class ColumnNode extends Node {
             for (Node node = row.right; node != row; node = node.right) {
                 node.removeRow();
                 node.column.size--;
-                if (System.currentTimeMillis() - startTime1 > timeout) {
-                    System.out.println("Operation cover timed out");
-                    timeoutFlag1 = true;
-                    break;
-                }
-            }
-            if (timeoutFlag1) {
-                break;
             }
         }
     }
@@ -44,14 +36,6 @@ public class ColumnNode extends Node {
             for (Node node = row.left; node != row; node = node.left) {
                 node.reinsertRow();
                 node.column.size++;
-                if (System.currentTimeMillis() - startTime2 > timeout) {
-                    System.out.println("Operation uncover timed out");
-                    timeoutFlag2 = true;
-                    break;
-                }
-            }
-            if (timeoutFlag2) {
-                break;
             }
         }
 

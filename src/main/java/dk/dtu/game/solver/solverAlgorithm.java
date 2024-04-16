@@ -8,15 +8,16 @@ import static java.lang.Math.sqrt;
 
 public class solverAlgorithm {
 
+    private static List <Node> solution = new ArrayList<>();
+
+    public static boolean solutionFound = false;
+
     public static void main(String[] args) {
 
         int [][] tempBoard = createExactCoverMatrix(2,2);
-        for (int i = 0; i < tempBoard.length; i++) {
-            for (int j = 0; j < tempBoard[0].length; j++) {
-                System.out.print(tempBoard[i][j] + " ");
-            }
-            System.out.println();
-        }
+        dancingLinks dl = new dancingLinks(tempBoard);
+        ColumnNode header = dl.header;
+        algorithmX(header);
     }
 
     public static void createSudoku(Board board) throws Exception {
@@ -274,31 +275,128 @@ public class solverAlgorithm {
         // constraint 1: 81 cells to check each number is in each row
         // constraint 2: 81 cells to check each number is in each column
         // constraint 3: 81 cells to check each number is in each subgrid
+        // constraint 4: 81 cells to check each cell is filled with a number
 
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                for (int t = 0; t < size; t++) {
-                    int row = i*size*size + j*size + t;
-                    // constraint 1
-                    exactCoverMatrix[row][i*size + t] = 1;
-                    // constraint 2
-                    exactCoverMatrix[row][size*size + j*size + t] = 1;
-                    // constraint 3
-                    exactCoverMatrix[row][2*size*size + (i/size)*size + (j/size)*size + t] = 1;
-                    // constraint 4
-                    exactCoverMatrix[row][3*size*size + t] = 1;
+        int subSize = (int) Math.sqrt(size);
+
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                for (int num = 0; num < size; num++) {
+                    int x = row*size*size + col*size + num;
+                    // constraint 1 - each cell must contain exactly one number
+                    exactCoverMatrix[x][row*size + col] = 1;
+
+                    // constraint 2 - each number must appear exactly once in each row
+                    exactCoverMatrix[x][size*size + row*size + num] = 1;
+
+                    // constraint 3 - each number must appear exactly once in each column
+                    exactCoverMatrix[x][2*size*size + col*size + num] = 1;
+
+                    // constraint 4 - each number must appear exactly once in each subgrid
+                    int subGridID = (row/subSize)*subSize + (col/subSize);
+                    exactCoverMatrix[x][3*size*size + subGridID*size + num] = 1;
                 }
             }
         }
-
-
-
-
         return exactCoverMatrix;
+    }
+    public static void algorithmX(ColumnNode header) {
+        if (solutionFound) {
+            System.out.println("Exiting as solution is found.");
+            return;
+        }
 
+        if (header.right == header) {
+            System.out.println("Solution found");
+            solutionFound = true;
+            printSolution(); // A method to print or process the solution
+            convertSolutionToBoard();
+            return;
+        }
+
+        ColumnNode c = chooseHeuristicColumn(header);
+        c.cover();
+
+        for (Node r = c.down; r != c; r = r.down) {
+            if (solutionFound) {
+                return;
+            }
+            selectRow(r);
+            for (Node j = r.right; j != r; j = j.right) {
+                j.column.cover();
+            }
+            algorithmX(header);
+            c = r.column; // ensure the correct column is reestablished after recursion
+
+            for (Node j = r.left; j != r; j = j.left) {
+                j.column.uncover();
+            }
+            deselectRow(r);
+        }
+        c.uncover();
     }
 
+    private static void printSolution() {
+        System.out.println("Current solution set:");
+        for (Node node : solution) {
+            System.out.println(node); // Assuming Node.toString() gives meaningful output
+        }
+    }
+    public static ColumnNode chooseHeuristicColumn(ColumnNode header) {
+        Random rand = new Random();
+        ColumnNode c = (ColumnNode) header.right;
+        List<ColumnNode> columns = new ArrayList<>();
+        int minSize = c.size;
+        for (ColumnNode temp = (ColumnNode) header.right; temp != header; temp = (ColumnNode) temp.right) {
+            if (temp.size < minSize) {
+                minSize = temp.size;
+                columns.clear();
+                columns.add(temp);
+            } else if (temp.size == minSize) {
+                columns.add(temp);
+            }
+        }
+        return columns.get(rand.nextInt(columns.size()));
+    }
 
+    private static void selectRow(Node row) {
+        solution.add(row);
+    }
 
+    private static void deselectRow(Node row) {
+        solution.remove(row);
+    }
+
+    public static void convertSolutionToBoard() {
+
+        int[][] board = new int[4][4];
+
+        for (Node node : solution) {
+            Node temp = node;
+            int min = Integer.parseInt(temp.column.name);
+            temp = temp.right;
+            while (temp != node) {
+                int val = Integer.parseInt(temp.column.name);
+                if (val < min) {
+                    min = val;
+                }
+                temp = temp.right;
+            }
+            int num = min % board.length + 1;
+            min /= board.length;
+            int col = min % board.length;
+            min /= board.length;
+            int row = min;
+            board[row][col] = num;
+        }
+
+        printBoard(board);
+    }
+
+    public static void printBoard(int[][] board) {
+        for (int[] row : board) {
+            System.out.println(Arrays.toString(row));
+        }
+    }
 
 }
