@@ -14,11 +14,25 @@ class Cell {
     private Color backgroundColor = Color.WHITE;
     private int number = 0; // 0 indicates no number
 
+    boolean isVisualizingHint = false;
+    boolean wasHighlightedBeforeHint = false;
+
     public Cell() {
 
     }
 
-    public void paintCell(Graphics g, int x, int y, int cellSize) {
+    public void startHintVisualization() {
+        wasHighlightedBeforeHint = isHighlighted;
+        isVisualizingHint = true;
+        isHighlighted = false;
+    }
+
+    public void endHintVisualization() {
+        isVisualizingHint = false;
+        isHighlighted = wasHighlightedBeforeHint;
+    }
+
+    public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
         if (isHighlighted) {
             g.setColor(Color.LIGHT_GRAY);
             if (isMarked) {
@@ -30,9 +44,13 @@ class Cell {
         g.fillRect(x, y, cellSize, cellSize);
 
         if (number > 0) {
+            if (number == currentNumber) {
+                g.setColor(Color.BLUE);
+            } else {
+                g.setColor(Color.BLACK);
+            }
             Font font = new Font("Arial", Font.BOLD, cellSize / 2);
             g.setFont(font);
-            g.setColor(Color.BLACK);
             String numberStr = Integer.toString(number);
             g.drawString(numberStr, x + cellSize / 2 - g.getFontMetrics().stringWidth(numberStr) / 2,
                     y + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
@@ -41,6 +59,7 @@ class Cell {
         g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
     }
+
 
     public void setBackgroundColor(Color color) {
         backgroundColor = color;
@@ -53,14 +72,14 @@ class Cell {
     public void setNumber(int number) {
         this.number = number;
     }
-
-    // Add additional getters and setters as necessary
 }
 
 public class SudokuBoardCanvas extends JPanel {
     private final int gridSize;
     private final int cellSize;
     private final Cell[][] cells;
+
+    int chosenNumber = 0;
 
     public SudokuBoardCanvas(int n, int k, int cellSize) {
         this.gridSize = n * k;
@@ -82,7 +101,7 @@ public class SudokuBoardCanvas extends JPanel {
                 Cell cell = cells[row][col];
                 int x = col * cellSize;
                 int y = row * cellSize;
-                cell.paintCell(g, x, y, cellSize);
+                cell.paintCell(g, x, y, cellSize, chosenNumber);
             }
         }
         drawSubGrids(g);
@@ -142,6 +161,7 @@ public class SudokuBoardCanvas extends JPanel {
         final int totalSteps = 10; // Total steps to fade color
         final int delay = 100;
         Cell cell = cells[row][col];
+        cell.startHintVisualization();
 
 
         ActionListener fadeAction = new ActionListener() {
@@ -161,7 +181,9 @@ public class SudokuBoardCanvas extends JPanel {
                     // Stop the timer and reset the background color to white at the end
                     ((Timer) e.getSource()).stop();
                     cell.setBackgroundColor(Color.WHITE);
+                    cell.endHintVisualization();
                     repaint();
+
                 }
             }
         };
@@ -213,5 +235,9 @@ public class SudokuBoardCanvas extends JPanel {
             cells[row][column].setNumber(0);
             repaint();
         }
+    }
+
+    public void setChosenNumber(int number) {
+        chosenNumber = number;
     }
 }

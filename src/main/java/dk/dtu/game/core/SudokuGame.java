@@ -87,6 +87,8 @@ public class SudokuGame {
                 }
             }
         }
+
+        checkCompletionAndOfferNewGame();
     }
 
     private void eraseNumber() {
@@ -191,6 +193,20 @@ public class SudokuGame {
         }
     }
 
+    public boolean isSudokuCompleted() {
+        for (int row = 0; row < gameboard.getDimensions(); row++) {
+            for (int col = 0; col < gameboard.getDimensions(); col++) {
+                if (gameboard.getNumber(row, col) == 0 ) {
+                    return false;
+                }
+                System.out.println(gameboard.getNumber(row, col));
+            }
+        }
+        return true;
+    }
+
+
+
     public void provideHint() {
         if (!hintList.isEmpty()) {
             Random random = new Random();
@@ -209,11 +225,28 @@ public class SudokuGame {
 
             // Visualize the hint
             board.visualizeCell(row, col, Color.blue);
-
+            checkCompletionAndOfferNewGame();
         } else {
             System.out.println("No more hints available.");
         }
     }
+
+    public void checkCompletionAndOfferNewGame() {
+        if (isSudokuCompleted()) {
+            Object[] options = {"New Game", "Close"};
+            int response = JOptionPane.showOptionDialog(null, "Congratulations! You've completed the Sudoku!\nWould you like to start a new game?", "Game Completed",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+
+            if (response == JOptionPane.YES_OPTION) {
+                try {
+                    newGame();
+                } catch (Exception e) {
+                    System.out.println("Error creating new game:" + e.getMessage());
+                }
+            }
+        }
+    }
+
 
 
     private void displayButtons() {
@@ -225,6 +258,9 @@ public class SudokuGame {
         JButton undoButton = createButton("Undo", 100, 300);
         JButton hintButton = createButton("Hint", 100, 30);
 
+        //Set solvebutton to be disabled at the start of the game
+        solveButton.setEnabled(false);
+
         startButton.addActionListener(e -> {
             System.out.println("Start game!");
             try {
@@ -235,6 +271,7 @@ public class SudokuGame {
             displayNumbersVisually();
             gameIsStarted = true;
             board.requestFocusInWindow();
+            solveButton.setEnabled(true);
         });
         restartButton.addActionListener(e -> {
             //set the numbers to the initial board
@@ -246,7 +283,10 @@ public class SudokuGame {
         });
 
 
-        solveButton.addActionListener(e -> gameboard.setBoard(Objects.requireNonNull(solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard()))));
+        solveButton.addActionListener(e -> {
+            gameboard.setBoard(Objects.requireNonNull(solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard())));
+            checkCompletionAndOfferNewGame();
+        });
 
         newGameButton.addActionListener(e -> {
             gameIsStarted = false;
@@ -335,23 +375,8 @@ public class SudokuGame {
         System.out.println("Number: " + placeableNumber);
 
         numbers.highlightNumber(x, y);
-
-        if (board.isACellHighligthed()) {
-            int[] markedCell = board.getMarkedCell();
-            int row = markedCell[0];
-            int col = markedCell[1];
-            if (row >= 0 && col >= 0) { // Validate that a cell is indeed highlighted
-                if (gameboard.validPlace(row, col, placeableNumber) && gameboard.getInitialNumber(row, col) == 0) {
-                    int previousNumber = gameboard.getNumber(row, col);
-                    board.setCellNumber(row, col, placeableNumber);
-                    gameboard.setNumber(row, col, placeableNumber);
-                    gameboard.printBoard();
-                    Move move = moveList.push(new Move(row, col, placeableNumber, previousNumber));
-                    arrayMovelist.add(move.getNumber());
-                    System.out.println(Arrays.toString(arrayMovelist.toArray()));
-                }
-            }
-        }
+        int chosenNumber = numbers.getNumber(x, y);
+        board.setChosenNumber(chosenNumber);
 
     }
 }
