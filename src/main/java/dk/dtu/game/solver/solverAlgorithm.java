@@ -299,69 +299,6 @@ public class solverAlgorithm {
     }
 
 
-class Node {
-    Node left;
-    Node right;
-    Node up;
-    Node down;
-
-    ColumnNode column;
-
-    public Node() {
-        this.left = this;
-        this.right = this;
-        this.up = this;
-        this.down = this;
-    }
-
-    public void removeRow() {
-        this.left.right = this.right;
-        this.right.left = this.left;
-    }
-
-    public void reinsertRow() {
-        this.left.right = this;
-        this.right.left = this;
-    }
-}
-
-class ColumnNode extends Node {
-        int size;
-    String name;
-
-    public ColumnNode(String name) {
-        super();
-        this.size = 0;
-        this.name = name;
-        this.column = this;
-    }
-
-    public void cover() {
-        this.removeRow();
-        for (Node i = this.down; i != this; i = i.down) {
-            for (Node j = i.right; j != i; j = j.right) {
-                j.removeRow();
-                j.column.size--;
-            }
-        }
-    }
-
-    public void uncover() {
-        for (Node i = this.up; i != this; i = i.up) {
-            for (Node j = i.left; j != i; j = j.left) {
-                j.column.size++;
-                j.reinsertRow();
-            }
-        }
-        this.reinsertRow();
-    }
-}
-
-
-
-
-
-
 
 
 }
