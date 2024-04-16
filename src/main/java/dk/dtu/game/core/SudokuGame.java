@@ -91,7 +91,7 @@ public class SudokuGame {
         checkCompletionAndOfferNewGame();
     }
 
-    private void eraseNumber() {
+    public void eraseNumber() {
         if (board.isACellHighligthed()) {
             int[] cell = board.getMarkedCell();
             int row = cell[0];
@@ -154,7 +154,7 @@ public class SudokuGame {
         windowManager.drawNumbers(numbers);
     }
 
-    private void newGame() throws Exception {
+    public void newGame() throws Exception {
         gameboard.clear();
         hintList.clear();
         dk.dtu.game.solver.solverAlgorithm.createSudoku(gameboard);
