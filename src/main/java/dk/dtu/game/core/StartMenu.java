@@ -52,10 +52,9 @@ public class StartMenu {
 
         GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
 
-        // Display the window.
+
         windowManager.display();
 
-        // Start the game loop in the GameEngine.
         gameEngine.start();
         startMenu.close();
     }
@@ -72,6 +71,7 @@ public class StartMenu {
 
 
     public void initialize(){
+        //Initialize the start menu with all the buttons, and set the default to 3x3 board with medium difficulty
         addSizePanelButtons();
         addDifficultyPanelButtons();
         addButtonPanelButtons();
@@ -90,6 +90,7 @@ public class StartMenu {
 
 
     private void addChangeListenerToField(JTextField field) {
+        //This method adds a document listener to the input fields, so that the board is updated when the user changes the values
         field.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
                 updateBoard();
@@ -118,6 +119,7 @@ public class StartMenu {
         });
     }
     private void addInputPanelButtons() {
+        //This method adds the N and K fields for the custom board
         Font fieldFont = new Font("SansSerif", Font.BOLD, 20);
 
         JTextField[] fields = {inputNField, inputKField};
@@ -147,6 +149,7 @@ public class StartMenu {
 
 
     private void addButtonPanelButtons(){
+        //This method adds the start button and in the future different buttons
         startButton.setBounds(5,5, 190, 40);
         startButton.setBackground(Color.WHITE);
         startButton.setFocusPainted(false);
@@ -169,6 +172,7 @@ public class StartMenu {
     }
 
     private void addSizePanelButtons() {
+        //This function adds the small boards for selecting size in game
         CustomBoardPanel[] boardPanels = {twoBytwo, threeByThree, fourByFour, customBoardPanel};
 
         MouseAdapter mouseAdapter = new MouseAdapter() {
@@ -206,6 +210,7 @@ public class StartMenu {
     }
 
     private void addDifficultyPanelButtons(){
+        //This method adds the difficulty buttons to the start menu
         config.setDifficulty("medium");
         difficultyGroup.add(easyButton);
         difficultyGroup.add(mediumButton);
@@ -271,10 +276,10 @@ public class StartMenu {
     }
 
 
+    //Getters used for testing the startMenu
     public CustomBoardPanel getCustomBoardPanel() {
         return customBoardPanel;
     }
-
 
     public JToggleButton getStartButton(){
         return startButton;

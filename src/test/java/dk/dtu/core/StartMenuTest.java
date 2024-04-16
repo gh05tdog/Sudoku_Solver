@@ -23,14 +23,15 @@ public class StartMenuTest {
     void setUp() {
         startMenuWindowManager = new StartMenuWindowManager(800, 600);
         startMenu = new StartMenu(startMenuWindowManager);
-        startMenu.initialize();  // Assuming this properly sets up the environment
+        startMenu.initialize();
     }
 
     private void simulateTextFieldInput(JTextField textField, String input) {
+        //helper function to test input fields N and K
         Document doc = textField.getDocument();
         try {
-            doc.remove(0, doc.getLength());  // Clear existing content
-            doc.insertString(0, input, null);  // Insert new text which triggers DocumentListener
+            doc.remove(0, doc.getLength());
+            doc.insertString(0, input, null);
         } catch (BadLocationException e) {
             fail("Bad location: " + e.getMessage());
         }
@@ -39,8 +40,9 @@ public class StartMenuTest {
     @Test
     @DisplayName("Start Game Testing")
     void testStartGame() throws Exception {
+        //Testing the start game button, and if the startmenu closes and the difficulties + size is the correct
         SwingUtilities.invokeAndWait(() -> startMenu.getStartButton().doClick());
-        startMenu.startGame();  // This should probably be triggered by the button click in a real scenario
+        startMenu.startGame();
         assertEquals(3, config.getK());
         assertEquals(3, config.getN());
         assertEquals(550 / (3 * 3), config.getCellSize());
@@ -50,6 +52,7 @@ public class StartMenuTest {
     @Test
     @DisplayName("Custom Board Panel Testing")
     void testCustomBoardPanelUpdate() {
+        //Tests if the custom board actually updates the n and k values
         startMenu.updateCustomBoardPanel(3, 3);
         assertEquals(3, startMenu.getCustomBoardPanel().getN());
         assertEquals(3, startMenu.getCustomBoardPanel().getK());
@@ -59,6 +62,7 @@ public class StartMenuTest {
     @Test
     @DisplayName("Input Field Testing")
     void testInputFieldFunctionality() throws Exception {
+        //Tests if the input fields are working correctly
         SwingUtilities.invokeAndWait(() -> {
             simulateTextFieldInput(startMenu.getInputNField(), "4");
             simulateTextFieldInput(startMenu.getInputKField(), "4");
@@ -70,6 +74,7 @@ public class StartMenuTest {
     @Test
     @DisplayName("Button Panel Testing")
     void testButtonPanelFunctionality() throws Exception {
+        //Testing the start button
         SwingUtilities.invokeAndWait(() -> startMenu.getStartButton().doClick());
         assertFalse(startMenuWindowManager.getFrame().isVisible());
     }
@@ -77,6 +82,7 @@ public class StartMenuTest {
     @Test
     @DisplayName("Size Panel Testing")
     void testSizePanelFunctionality() {
+        //Tests if the size panel is working correctly
         assertEquals(3, config.getN());
         assertEquals(3, config.getK());
     }
@@ -84,6 +90,7 @@ public class StartMenuTest {
     @Test
     @DisplayName("Difficulty Panel Testing")
     void testDifficultyPanelFunctionality() throws Exception {
+        //Tests if the difficulty panel is working correctly
         SwingUtilities.invokeAndWait(() -> {
             startMenu.getEasyButton().doClick();
             assertEquals("easy", config.getDifficulty());
@@ -99,6 +106,7 @@ public class StartMenuTest {
     @Test
     @DisplayName("Initialization Configuration Test")
     void testInitializationConfiguration() {
+        //Tests if the configuration is initialized correctly
         assertEquals(3, config.getN());
         assertEquals(3, config.getK());
         assertEquals("medium", config.getDifficulty());
@@ -108,10 +116,11 @@ public class StartMenuTest {
     @Test
     @DisplayName("Size Panel Button Click Simulation for 4x4 Button")
     void testSizePanelButtonClicks() throws Exception {
+        // tests if the size panel works when clicking on the by simulating mouse event
         StartMenuWindowManager startMenuManager = new StartMenuWindowManager(800, 800);
         StartMenu startMenu = new StartMenu(startMenuManager);
-        startMenu.initialize(); // Make sure to initialize the components
-        // Assertions to check if the size is set to 4x4
+        startMenu.initialize();
+        // Assertions to check if the size is set to 3x3
         assertEquals(3, config.getN(), "N should be set to 3, at the beginning");
         assertEquals(3, config.getK(), "K should be set to 3, at the beginning");
 
@@ -129,6 +138,7 @@ public class StartMenuTest {
     @Test
     @DisplayName("Difficulty Button Toggle Functionality")
     void testDifficultyButtonToggles() throws Exception {
+        // tests if the difficulty panel works when clicking on the by simulating mouse event
         SwingUtilities.invokeAndWait(() -> startMenu.getMediumButton().doClick());
         assertEquals("medium", config.getDifficulty());
         SwingUtilities.invokeAndWait(() -> startMenu.getHardButton().doClick());
@@ -138,6 +148,7 @@ public class StartMenuTest {
     @Test
     @DisplayName("Input Field Invalid Data Handling")
     void testInputFieldInvalidData() throws Exception {
+        //Tests if the input fields are working correctly
         SwingUtilities.invokeAndWait(() -> {
             simulateTextFieldInput(startMenu.getInputNField(), "invalid");
             simulateTextFieldInput(startMenu.getInputKField(), "");
