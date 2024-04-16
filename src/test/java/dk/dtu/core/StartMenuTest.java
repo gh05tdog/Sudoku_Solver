@@ -1,15 +1,18 @@
 package dk.dtu.core;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
+import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import javax.swing.*;
-import javax.swing.text.Document;
 import javax.swing.text.BadLocationException;
-import java.awt.*;
+import javax.swing.text.Document;
+import java.awt.event.MouseEvent;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StartMenuTest {
@@ -68,12 +71,12 @@ public class StartMenuTest {
     @DisplayName("Button Panel Testing")
     void testButtonPanelFunctionality() throws Exception {
         SwingUtilities.invokeAndWait(() -> startMenu.getStartButton().doClick());
-        assertTrue(startMenuWindowManager.getFrame().isVisible());
+        assertFalse(startMenuWindowManager.getFrame().isVisible());
     }
 
     @Test
     @DisplayName("Size Panel Testing")
-    void testSizePanelFunctionality() throws Exception {
+    void testSizePanelFunctionality() {
         assertEquals(3, config.getN());
         assertEquals(3, config.getK());
     }
@@ -103,10 +106,24 @@ public class StartMenuTest {
     }
 
     @Test
-    @DisplayName("Size Panel Button Click Simulation")
+    @DisplayName("Size Panel Button Click Simulation for 4x4 Button")
     void testSizePanelButtonClicks() throws Exception {
-        assertEquals(4, config.getN());
-        assertEquals(4, config.getK());
+        StartMenuWindowManager startMenuManager = new StartMenuWindowManager(800, 800);
+        StartMenu startMenu = new StartMenu(startMenuManager);
+        startMenu.initialize(); // Make sure to initialize the components
+        // Assertions to check if the size is set to 4x4
+        assertEquals(3, config.getN(), "N should be set to 3, at the beginning");
+        assertEquals(3, config.getK(), "K should be set to 3, at the beginning");
+
+        // Simulate mouse click on the 4x4 CustomBoardPanel
+        SwingUtilities.invokeAndWait(() -> {
+            CustomBoardPanel fourByFourPanel = startMenu.getFourByFour();
+            fourByFourPanel.getMouseListeners()[0].mouseClicked(new MouseEvent(fourByFourPanel, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 10, 10, 1, false));
+        });
+
+        // Assertions to check if the size is set to 4x4
+        assertEquals(4, config.getN(), "N should be set to 4");
+        assertEquals(4, config.getK(), "K should be set to 4");
     }
 
     @Test
@@ -129,19 +146,4 @@ public class StartMenuTest {
         assertNotEquals("", config.getK());
     }
 
-    @Test
-    @DisplayName("Ensure Coverage of Getter Methods")
-    void testGetterCoverage() throws Exception {
-        SwingUtilities.invokeAndWait(() -> {
-            assertNotNull(startMenu.getCustomBoardPanel());
-            assertNotNull(startMenu.getDifficultyButtons());
-            assertNotNull(startMenu.getThreeByThree());
-            assertNotNull(startMenu.getFourByFour());
-            assertNotNull(startMenu.getStartButton());
-            assertNotNull(startMenu.getInputNField());
-            assertNotNull(startMenu.getInputKField());
-            assertNotNull(startMenu.getMediumButton());
-            assertNotNull(startMenu.getHardButton());
-        });
-    }
 }

@@ -3,9 +3,10 @@ package dk.dtu.game.core;
 import dk.dtu.engine.core.GameEngine;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
-import dk.dtu.engine.utility.*;
+import dk.dtu.engine.utility.CustomBoardPanel;
+import dk.dtu.engine.utility.CustomComponentGroup;
+import dk.dtu.engine.utility.NumberDocumentFilter;
 
-import javax.annotation.processing.Generated;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -15,7 +16,7 @@ import java.awt.event.*;
 
 public class StartMenu {
 
-    private StartMenuWindowManager startMenu;
+    private final StartMenuWindowManager startMenu;
     private final JToggleButton startButton = new JToggleButton("Start Game");
     private final JToggleButton easyButton = new JToggleButton("Easy");
     private final JToggleButton mediumButton = new JToggleButton("Medium",true);
@@ -34,8 +35,7 @@ public class StartMenu {
     private final ButtonGroup difficultyGroup = new ButtonGroup();
     private final CustomComponentGroup sizeGroup = new CustomComponentGroup();
 
-    private int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
-;
+    private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
 
     public StartMenu(StartMenuWindowManager startMenu) {
         this.startMenu = startMenu;
@@ -273,14 +273,6 @@ public class StartMenu {
 
     public CustomBoardPanel getCustomBoardPanel() {
         return customBoardPanel;
-    }
-
-    public ButtonGroup getDifficultyButtons() {
-        return difficultyGroup;
-    }
-
-    public CustomBoardPanel getThreeByThree() {
-        return threeByThree;
     }
 
 
