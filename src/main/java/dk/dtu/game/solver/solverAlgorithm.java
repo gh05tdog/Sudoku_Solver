@@ -12,9 +12,11 @@ public class solverAlgorithm {
 
     public static boolean solutionFound = false;
 
+    private static final int arraySize = 3;
+
     public static void main(String[] args) {
 
-        int [][] tempBoard = createExactCoverMatrix(2,2);
+        int [][] tempBoard = createExactCoverMatrix(arraySize,arraySize);
         dancingLinks dl = new dancingLinks(tempBoard);
         ColumnNode header = dl.header;
         algorithmX(header);
@@ -338,6 +340,7 @@ public class solverAlgorithm {
 
     private static void printSolution() {
         System.out.println("Current solution set:");
+        System.out.println(solution.size());
         for (Node node : solution) {
             System.out.println(node); // Assuming Node.toString() gives meaningful output
         }
@@ -369,7 +372,7 @@ public class solverAlgorithm {
 
     public static void convertSolutionToBoard() {
 
-        int[][] board = new int[4][4];
+        int[][] board = new int[arraySize*arraySize][arraySize*arraySize];
 
         for (Node node : solution) {
             Node temp = node;
