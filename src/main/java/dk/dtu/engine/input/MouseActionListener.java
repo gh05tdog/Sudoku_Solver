@@ -26,7 +26,7 @@ public class MouseActionListener implements MouseListener {
             sudokuGame.onNumbersBoardClicked(e.getX(), e.getY());
         }
         else {
-            sudokuGame.onMouseClicked(e.getX(), e.getY());
+            System.out.println("Clicked outside of the board");
         }
     }
 
