@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
+import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.StartMenu;
@@ -157,6 +158,49 @@ class SudokuGameTest {
         game.getStartButton().doClick();
         assertTrue(game.gameIsStarted, "Game should be started after clicking the new game button.");
         assertNotNull(game.board);
+    }
+
+    @Test
+    void testSolver(){
+        game.getNewGameButton().doClick();
+        game.getSolveButton().doClick();
+        SwingUtilities.invokeLater(() -> assertTrue(game.isSudokuCompleted(), "Game should be marked as completed after solving."));
+    }
+
+    @Test
+    @DisplayName("Test handling of number board clicks")
+    void testOnNumbersBoardClicked() {
+        // Simulate clicking at a position corresponding to number 5 in the numberHub
+        final int x = 50;  // Example coordinates that would correspond to the number 5
+        final int y = 50;  // Example coordinates that would correspond to the number 5
+
+        // Assuming getNumber simulates returning the number 5 for these coordinates
+        game.numbers = new numberHub(9, 550 / 9) {
+            @Override
+            public int getNumber(int x, int y) {
+                return 5;  // Mock behavior
+            }
+
+            @Override
+            public void highlightNumber(int x, int y) {
+                // Mock behavior: Test could verify this call
+                System.out.println("Number highlighted: " + getNumber(x, y));
+            }
+        };
+
+        // Set an expectation for the setChosenNumber on the board
+        game.board = new SudokuBoardCanvas(3, 3, 550 / 9) {
+            @Override
+            public void setChosenNumber(int number) {
+                super.setChosenNumber(number);
+                assertEquals(5, number, "Chosen number should be set to 5 on the board.");
+            }
+        };
+
+        game.onNumbersBoardClicked(x, y);
+
+        // Assertions to verify correct number was "chosen"
+        assertEquals(5, game.placeableNumber, "Placeable number should be updated to 5.");
     }
 
 }

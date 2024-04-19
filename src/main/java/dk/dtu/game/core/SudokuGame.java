@@ -24,7 +24,7 @@ public class SudokuGame {
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
     public SudokuBoardCanvas board;
-    private numberHub numbers;
+    public numberHub numbers;
     public boolean gameIsStarted = false;
     private JButton startButton, undoButton, hintButton, restartButton, solveButton, newGameButton, eraseButton;
 
@@ -327,7 +327,6 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(hintButton);
     }
-
 
     public int[][] deepCopyBoard(int[][] original) {
         int[][] copy = new int[original.length][original.length];
