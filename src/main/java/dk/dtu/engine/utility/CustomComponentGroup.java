@@ -9,8 +9,8 @@ import java.util.List;
 
 public class CustomComponentGroup {
 
-    private final List<CustomBoardPanel> components = new ArrayList<>();
-    private CustomBoardPanel selectedComponent = null;
+    public final List<CustomBoardPanel> components = new ArrayList<>();
+    public CustomBoardPanel selectedComponent = null;
 
     public void addComponent(CustomBoardPanel component) {
         components.add(component);

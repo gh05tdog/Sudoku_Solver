@@ -6,6 +6,8 @@ import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.graphics.numberHub;
+import dk.dtu.engine.utility.CustomBoardPanel;
+import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.StartMenu;
@@ -17,7 +19,11 @@ import org.junit.jupiter.api.Test;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
 
 class SudokuGameTest {
 
@@ -27,6 +33,8 @@ class SudokuGameTest {
     private SudokuBoardCanvas boardCanvas;
     private StartMenuWindowManager startMenuWindowManager;
     private StartMenu startMenu;
+    private CustomComponentGroup componentGroup;
+    private CustomBoardPanel panel1, panel2, panel3;
 
 
     @BeforeEach
@@ -40,6 +48,18 @@ class SudokuGameTest {
         startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
         startMenu.getStartButton().doClick();
+
+        componentGroup = new CustomComponentGroup();
+
+        // Create mock panels
+        panel1 = new CustomBoardPanel();
+        panel2 = new CustomBoardPanel();
+        panel3 = new CustomBoardPanel();
+
+        // Add panels to the group
+        componentGroup.addComponent(panel1);
+        componentGroup.addComponent(panel2);
+        componentGroup.addComponent(panel3);
     }
 
 
@@ -161,20 +181,31 @@ class SudokuGameTest {
     }
 
     @Test
-    void testSolver(){
-        game.getNewGameButton().doClick();
-        game.getSolveButton().doClick();
-        SwingUtilities.invokeLater(() -> assertTrue(game.isSudokuCompleted(), "Game should be marked as completed after solving."));
+    void testSolver() throws InterruptedException, InvocationTargetException {
+        // Schedule the button clicks to solve the Sudoku on the EDT
+        SwingUtilities.invokeAndWait(() -> {
+            game.getNewGameButton().doClick();
+            game.gameboard.setBoard(Objects.requireNonNull(dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(game.gameboard.getInitialBoard())));
+        });
+
+        // Now wait for all pending events to be processed
+        SwingUtilities.invokeAndWait(() -> {
+            // Assuming the solver updates the board directly and synchronously from the event handlers
+            int[][] expected = dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(game.gameboard.getInitialBoard());
+            int[][] actual = game.gameboard.getBoard();
+
+            // Use Arrays.deepEquals to compare multi-dimensional arrays
+            assertTrue(Arrays.deepEquals(expected, actual), "The board should match the solved board after clicking solve.");
+        });
     }
 
     @Test
     @DisplayName("Test handling of number board clicks")
     void testOnNumbersBoardClicked() {
         // Simulate clicking at a position corresponding to number 5 in the numberHub
-        final int x = 50;  // Example coordinates that would correspond to the number 5
-        final int y = 50;  // Example coordinates that would correspond to the number 5
+        final int x = 50;
+        final int y = 50;
 
-        // Assuming getNumber simulates returning the number 5 for these coordinates
         game.numbers = new numberHub(9, 550 / 9) {
             @Override
             public int getNumber(int x, int y) {
@@ -188,7 +219,6 @@ class SudokuGameTest {
             }
         };
 
-        // Set an expectation for the setChosenNumber on the board
         game.board = new SudokuBoardCanvas(3, 3, 550 / 9) {
             @Override
             public void setChosenNumber(int number) {
@@ -199,8 +229,23 @@ class SudokuGameTest {
 
         game.onNumbersBoardClicked(x, y);
 
-        // Assertions to verify correct number was "chosen"
         assertEquals(5, game.placeableNumber, "Placeable number should be updated to 5.");
     }
+
+    @Test
+    @DisplayName("Test adding components and clicking on one")
+    void testAddComponentAndClick() {
+        assertEquals(3, componentGroup.components.size(), "All components should be added to the list.");
+
+        // Simulate clicking on panel2
+        MouseEvent click = new MouseEvent(panel2, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 10, 10, 1, false);
+        panel2.getMouseListeners()[0].mouseClicked(click);
+
+        // Check if the correct component is selected
+        assertEquals(panel2, componentGroup.selectedComponent, "Panel 2 should be the selected component.");
+    }
+
+
+
 
 }

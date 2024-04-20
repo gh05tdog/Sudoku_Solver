@@ -384,9 +384,6 @@ public class SudokuGame {
     public JButton getEraseButton(){
         return eraseButton;
     }
-    public JButton getSolveButton(){
-        return solveButton;
-    }
     public JButton getStartButton(){
         return startButton;
     }
