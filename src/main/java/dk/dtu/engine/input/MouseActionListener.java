@@ -7,7 +7,7 @@ import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import java.awt.event.*;
 
 public class MouseActionListener implements MouseListener {
-    private boolean isInsideSudokuBoard = false;
+    public boolean isInsideSudokuBoard = false;
     private boolean isInsideNumbersBoard = false;
     private SudokuGame sudokuGame; // Reference to the Game class
 
@@ -61,5 +61,4 @@ public class MouseActionListener implements MouseListener {
     }
 
 
-    // ... other overrides ...
 }
