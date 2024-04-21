@@ -10,12 +10,12 @@ import static java.lang.Math.sqrt;
 public class solverAlgorithm {
 
     public static List<Node> solution = new ArrayList<>();
-
-    private static final int subSize = 4;
-    private static final int arraySize = subSize * subSize;
+    private static int arraySize;
 
     public static void createXSudoku(Board board) throws Exception {
-        int [][] xBoard = createXBoard(3);
+        int subSize = (int) Math.sqrt(board.getDimensions());
+        arraySize = board.getDimensions();
+        int [][] xBoard = createXBoard(subSize);
         board.setBoard(xBoard);
         solution.clear();
     }

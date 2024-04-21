@@ -157,7 +157,7 @@ public class SudokuGame {
     private void newGame() throws Exception {
         gameboard.clear();
         hintList.clear();
-        dk.dtu.game.solver.solverAlgorithm.createXSudoku(gameboard);
+        solverAlgorithm.createXSudoku(gameboard);
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
         gameIsStarted = true;
         gameboard.printBoard();
