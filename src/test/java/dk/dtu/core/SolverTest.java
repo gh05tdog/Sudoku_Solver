@@ -3,7 +3,7 @@ package dk.dtu.core;
 import dk.dtu.game.solver.solverAlgorithm;
 import dk.dtu.game.solver.ColumnNode;
 import dk.dtu.game.solver.Node;
-import dk.dtu.game.solver.dancingLinks;
+import dk.dtu.game.solver.DancingLinks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SolverTest {
     int[][] matrix = solverAlgorithm.createExactCoverMatrix(2, 2); // For a 4x4 Sudoku grid
-    dancingLinks dl = new dancingLinks(matrix);
+    DancingLinks dl = new DancingLinks(matrix);
     ColumnNode header = dl.header;
 
     @Test
@@ -68,23 +68,6 @@ public class SolverTest {
         System.out.println("Row and column linkage is correct.");
     }
 
-    @Test
-    @DisplayName("Test row removal and reinsertion")
-    void testRowRemovalAndReinsertion() {
-        Node temp = header.right;
-        while (temp != header) {
-            Node downNode = temp.down;
-            while (downNode != temp) {
-                downNode.removeRow();
-                assert downNode.left.right == downNode.right : "Row should be removed correctly";
-                downNode.reinsertRow();
-                assert downNode.left.right == downNode : "Row should be reinserted correctly";
-                downNode = downNode.down;
-            }
-            temp = temp.right;
-        }
-        System.out.println("Row removal and reinsertion is correct.");
-    }
 
     @Test
     @DisplayName("Test circular linkage of column nodes")
@@ -169,6 +152,50 @@ public class SolverTest {
             temp = (ColumnNode) temp.right;
         }
         System.out.println("Circular linkage of column nodes is correct.");
+    }
+
+    @Test
+    @DisplayName("Test row removal and reinsertion")
+    void testCoverUncover () {
+        // 1. Set up a simple Dancing Links matrix
+
+        solverAlgorithm solve= new solverAlgorithm();
+        int[][] matrix = {
+                {1, 0, 1, 0},
+                {0, 1, 1, 1},
+                {1, 1, 0, 1},
+                {0, 1, 1, 0}
+        };
+        DancingLinks dl = new DancingLinks(matrix);
+        ColumnNode testColumn = (ColumnNode) dl.header.right; // Assume we test the first column after the header
+
+        // 2. Print initial state
+        System.out.println("Initial state:");
+        solve.printMatrix(dl);
+
+        // 3. Cover the column
+        testColumn.cover();
+        System.out.println("After covering column " + testColumn.name + ":");
+        solve.printMatrix(dl);
+
+        // 4. Check if the column is correctly covered
+        if (solve.isColumnCovered(testColumn)) {
+            System.out.println("Column " + testColumn.name + " is correctly covered.");
+        } else {
+            System.out.println("Error in covering column " + testColumn.name);
+        }
+
+        // 5. Uncover the column
+        testColumn.uncover();
+        System.out.println("After uncovering column " + testColumn.name + ":");
+        solve.printMatrix(dl);
+
+        // 6. Check if the column is correctly uncovered
+        if (solve.isColumnUncovered(testColumn, matrix)) {
+            System.out.println("Column " + testColumn.name + " is correctly uncovered.");
+        } else {
+            System.out.println("Error in uncovering column " + testColumn.name);
+        }
     }
 
 

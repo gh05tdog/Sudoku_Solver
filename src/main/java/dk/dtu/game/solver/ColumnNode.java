@@ -12,12 +12,14 @@ public class ColumnNode extends Node {
     }
 
     public void cover() {
-        this.left.right = this.right;
-        this.right.left = this.left;
-        // For each node in the column, traverse right and remove each node from its column
+
+        left.right = right;
+        right.left = left;
+
+        // If the loop starts now, there should be nodes to cover
         for (Node row = this.down; row != this; row = row.down) {
             for (Node node = row.right; node != row; node = node.right) {
-                node.removeRow();
+                node.removeNode();
                 node.column.size--;
             }
         }
@@ -26,7 +28,7 @@ public class ColumnNode extends Node {
     public void uncover() {
         for (Node row = this.up; row != this; row = row.up) {
             for (Node node = row.left; node != row; node = node.left) {
-                node.reinsertRow();
+                node.reinsertNode();
                 node.column.size++;
             }
         }
