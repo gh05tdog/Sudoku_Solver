@@ -255,6 +255,17 @@ public class solverAlgorithm {
         }
     }
 
+    public static List<Integer> getPossiblePlacements(int[][] board, int row, int col) {
+        List<Integer> possiblePlacements = new ArrayList<>();
+        int subsize = (int) sqrt(board.length);
+        for (int i = 1; i <= board.length; i++) {
+            if (checkBoard(board, row, col, i, subsize)) {
+                possiblePlacements.add(i);
+            }
+        }
+        return possiblePlacements;
+    }
+
 
 // __________________________________________________________________________________________
 // AlgorithmX using Dancing Links
@@ -317,6 +328,43 @@ public class solverAlgorithm {
             }
         }
         return exactCoverMatrix;
+    }
+
+    public static int[][] createExactCoverfromBoard(int [][] board) {
+
+        List<int[]> coverList = new ArrayList<>();
+        int constraints = board.length * board.length * 4;
+
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board.length; j++) {
+                if(board[i][j] == 0) {
+                    List<Integer> nums = getPossiblePlacements(board, i, j);
+                    for(int num : nums) {
+                        int [] cover = new int[constraints];
+                        int x = i * board.length * board.length + j * board.length + num - 1;
+                        cover[x] = 1;
+                        cover[i * board.length + j] = 1;
+                        cover[board.length * board.length + i * board.length + num - 1] = 1;
+                        cover[2 * board.length * board.length + j * board.length + num - 1] = 1;
+                        int subSize = (int) Math.sqrt(board.length);
+                        int subGridID = (i / subSize) * subSize + (j / subSize);
+                        cover[3 * board.length * board.length + subGridID * board.length + num - 1] = 1;
+                        coverList.add(cover);
+                    }
+                }
+            }
+        }
+
+        int [][] exactCoverMatrix = new int[coverList.size()][constraints];
+        for(int i = 0; i < coverList.size(); i++) {
+            exactCoverMatrix[i] = coverList.get(i);
+        }
+        return exactCoverMatrix;
+    }
+
+    public static boolean removeXrecursive() {
+
+        return true;
     }
 
     public static boolean algorithmX(ColumnNode header) {
