@@ -8,7 +8,6 @@ public class StartMenuWindowManager {
     private static final String TITLE = "Sudoku Game";
 
     private final JFrame frame = new JFrame(TITLE);
-    private final JPanel mainPanel = new JPanel(null); // Use GridBagLayout for more control
     private final JPanel buttonPanel = new JPanel(null); // Panel for buttons
     private final JPanel difficultyPanel = new JPanel(null); // Panel for difficulty buttons
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
@@ -23,23 +22,32 @@ public class StartMenuWindowManager {
 
         buttonPanel.setOpaque(true);
         sizePanel.setOpaque(true);
+        // Use GridBagLayout for more control
+        JPanel mainPanel = new JPanel(null);
         mainPanel.setOpaque(true);
         difficultyPanel.setOpaque(true);
         inputPanel.setOpaque(true);
+        // Panel for fullscreen and settings buttons
+        JPanel fullscreenSettingsPanel = new JPanel(null);
+        fullscreenSettingsPanel.setOpaque(true);
 
         mainPanel.setBackground(Color.WHITE);
 
 
-        sizePanel.setBounds(50,(frame.getHeight()/2)-150, 650, 160);
+        sizePanel.setBounds(50, (frame.getHeight() / 2) - 150, 650, 160);
         sizePanel.setBackground(Color.WHITE);
 
-        difficultyPanel.setBounds(50,(frame.getHeight()/2)+50, 650, 50);
+        difficultyPanel.setBounds(50, (frame.getHeight() / 2) + 50, 650, 50);
         difficultyPanel.setBackground(Color.WHITE);
 
-        buttonPanel.setBounds((frame.getWidth())-250,(frame.getHeight()/2)-150, 200, difficultyPanel.getHeight()+sizePanel.getHeight()+50 ) ;
+
+        fullscreenSettingsPanel.setBackground(Color.WHITE);
+        fullscreenSettingsPanel.setBounds(10, 10, 150, 150);
+        mainPanel.add(fullscreenSettingsPanel);
+        buttonPanel.setBounds((frame.getWidth()) - 250, (frame.getHeight() / 2) - 150, 200, difficultyPanel.getHeight() + sizePanel.getHeight() + 50);
         buttonPanel.setBackground(Color.WHITE);
 
-        inputPanel.setBounds(525,(frame.getHeight()/2)-205, 140, 50);
+        inputPanel.setBounds(525, (frame.getHeight() / 2) - 205, 140, 50);
         inputPanel.setBackground(Color.WHITE);
 
         mainPanel.add(buttonPanel);
@@ -47,12 +55,55 @@ public class StartMenuWindowManager {
         mainPanel.add(difficultyPanel);
         mainPanel.add(inputPanel);
 
+        JButton settingsButton = new JButton("Settings");
+        settingsButton.setBounds(10, 5, 120, 30);
+        JButton fullscreenButton = new JButton("Toggle Fullscreen");
+        fullscreenButton.setBounds(10, 40, 150, 30);
+        fullscreenSettingsPanel.add(settingsButton);
+        fullscreenSettingsPanel.add(fullscreenButton);
+
+        settingsButton.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Settings button clicked"));
+
+        fullscreenButton.addActionListener(e -> toggleFullscreen());
+
 
         frame.setContentPane(mainPanel); // Add the main panel to the frame
     }
 
 
-    public void addComponent(Component component,JPanel panel) {
+    public void toggleFullscreen() {
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice device = env.getDefaultScreenDevice();
+        if (device.isFullScreenSupported()) {
+            if (frame.isUndecorated()) {
+                device.setFullScreenWindow(null);
+                frame.dispose();
+                frame.setUndecorated(false);
+                frame.setSize(1000, 700);
+                frame.setResizable(false);
+                frame.setVisible(true);
+            } else {
+                frame.dispose();
+                frame.setUndecorated(true);
+                device.setFullScreenWindow(frame);
+                frame.setResizable(false);
+            }
+            repositionComponents();
+        }
+    }
+
+
+    private void repositionComponents() {
+        int width = frame.getWidth();
+        int height = frame.getHeight();
+        sizePanel.setLocation((width - sizePanel.getWidth()) / 2, (height / 2) - 150);
+        difficultyPanel.setLocation((width - difficultyPanel.getWidth()) / 2, (height / 2) + 50);
+        inputPanel.setLocation((width - inputPanel.getWidth()) / 2, (height / 2) - 205);
+        buttonPanel.setLocation(width - 210, 10);  // Always at the top-left
+    }
+
+
+    public void addComponent(Component component, JPanel panel) {
         panel.add(component);
         panel.revalidate();
         panel.repaint();
@@ -62,10 +113,6 @@ public class StartMenuWindowManager {
         frame.setVisible(true);
     }
 
-    public void close() {
-        frame.setVisible(false);
-    }
-
     public JFrame getFrame() {
         return frame;
     }
@@ -73,9 +120,11 @@ public class StartMenuWindowManager {
     public JPanel getButtonPanel() {
         return buttonPanel;
     }
+
     public JPanel getDifficultyPanel() {
         return difficultyPanel;
     }
+
     public JPanel getSizePanel() {
         return sizePanel;
     }

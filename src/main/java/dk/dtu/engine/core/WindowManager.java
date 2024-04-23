@@ -1,27 +1,24 @@
 package dk.dtu.engine.core;
 
-import dk.dtu.engine.input.MouseActionListener;
-
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 public class WindowManager {
-    private static final String TITLE = "Sudoku Game";
-    private final JFrame frame = new JFrame(TITLE);
-    private final JPanel mainPanel = new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
+    private final JFrame frame;
     private final JPanel buttonPanel = new JPanel(); // Panel for buttons
     private final JPanel whitePanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
 
-    private final JPanel hubPanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the number hub
 
-    public WindowManager(int width, int height) {
-        frame.setSize(width, height);
+    public WindowManager(JFrame frame) {
+        this.frame = frame;
+        // frame.setSize(width, height);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.getContentPane().setBackground(Color.WHITE);
         whitePanel.setOpaque(true);
         buttonPanel.setOpaque(true);
+        // Use GridBagLayout for more control
+        JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setOpaque(true);
         whitePanel.setBackground(Color.WHITE);
         buttonPanel.setBackground(Color.WHITE);
@@ -94,12 +91,5 @@ public class WindowManager {
         frame.setVisible(true);
     }
 
-    public void addMouseListener(MouseActionListener listener) {
-        whitePanel.addMouseListener(listener);
-    }
-
-    public JFrame getFrame() {
-        return frame;
-    }
 }
 

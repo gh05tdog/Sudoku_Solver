@@ -7,6 +7,7 @@ import dk.dtu.game.solver.solverAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.*;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,7 +17,7 @@ public class UndoTest {
     @DisplayName("Test undo reverses the last move")
     void testUndoReversesLastMove() throws Exception {
         // Initialize the game and its components
-        SudokuGame game = new SudokuGame(new WindowManager(800, 800), 3, 3, 50);
+        SudokuGame game = new SudokuGame(new WindowManager(new JFrame()), 3, 3, 50);
 
         // Manually initialize the board component to avoid NullPointerException
         game.createBoard(3, 3, 50); // Assuming this is the correct way to initialize the board in your game
@@ -44,7 +45,7 @@ public class UndoTest {
     @DisplayName("Apply all hints and check for valid Sudoku")
     void testHintsLeadToValidSudoku() throws Exception {
         // Initialize the game
-        SudokuGame game = new SudokuGame(new WindowManager(800,800), 3, 3, 50);
+        SudokuGame game = new SudokuGame(new WindowManager(new JFrame()), 3, 3, 50);
         game.createBoard(3, 3, 50); // Set up the board
 
         // Generate a solvable Sudoku puzzle

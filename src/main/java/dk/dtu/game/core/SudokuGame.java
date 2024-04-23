@@ -166,9 +166,9 @@ public class SudokuGame {
 
     }
 
-    private JButton createButton(String text, int width, int height) {
+    private JButton createButton(String text, int height) {
         JButton button = new JButton(text);
-        button.setMaximumSize(new Dimension(width, height));
+        button.setMaximumSize(new Dimension(100, height));
         button.setAlignmentX(Component.CENTER_ALIGNMENT); // Align buttons for BoxLayout
 
         // Create a margin around the button
@@ -196,7 +196,7 @@ public class SudokuGame {
     public boolean isSudokuCompleted() {
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
-                if (gameboard.getNumber(row, col) == 0 ) {
+                if (gameboard.getNumber(row, col) == 0) {
                     return false;
                 }
                 System.out.println(gameboard.getNumber(row, col));
@@ -204,7 +204,6 @@ public class SudokuGame {
         }
         return true;
     }
-
 
 
     public void provideHint() {
@@ -248,15 +247,14 @@ public class SudokuGame {
     }
 
 
-
     private void displayButtons() {
-        JButton startButton = createButton("Start", 100, 30);
-        JButton restartButton = createButton("Restart", 100, 30);
-        JButton solveButton = createButton("Solve", 100, 30);
-        JButton newGameButton = createButton("New Game", 100, 30);
-        JButton eraseButton = createButton("Erase", 100, 30);
-        JButton undoButton = createButton("Undo", 100, 300);
-        JButton hintButton = createButton("Hint", 100, 30);
+        JButton startButton = createButton("Start", 30);
+        JButton restartButton = createButton("Restart", 30);
+        JButton solveButton = createButton("Solve", 30);
+        JButton newGameButton = createButton("New Game", 30);
+        JButton eraseButton = createButton("Erase", 30);
+        JButton undoButton = createButton("Undo", 300);
+        JButton hintButton = createButton("Hint", 30);
 
         //Set solvebutton to be disabled at the start of the game
         solveButton.setEnabled(false);
@@ -332,11 +330,7 @@ public class SudokuGame {
 
 
     public int[][] deepCopyBoard(int[][] original) {
-        int[][] copy = new int[original.length][original.length];
-        for (int i = 0; i < original.length; i++) {
-            System.arraycopy(original[i], 0, copy[i], 0, original.length);
-        }
-        return copy;
+        return solverAlgorithm.deepCopy(original);
     }
 
     public void onMouseClicked(int x, int y) {

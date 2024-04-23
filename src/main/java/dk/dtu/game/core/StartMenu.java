@@ -48,7 +48,9 @@ public class StartMenu {
         int n = config.getN();
         int k = config.getK();
         int cellSize = config.getCellSize();
-        WindowManager windowManager = new WindowManager(900, 900);
+        //Get the frame from the startMenu
+        JFrame frame = startMenu.getFrame();
+        WindowManager windowManager = new WindowManager(frame);
 
         GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
 
@@ -56,7 +58,6 @@ public class StartMenu {
         windowManager.display();
 
         gameEngine.start();
-        startMenu.close();
     }
 
 
