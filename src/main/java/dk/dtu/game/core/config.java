@@ -4,7 +4,7 @@ public class config {
     private static int k;
     private static int n;
     private static int cellSize;
-    private static String difficulty;
+    private static String difficulty = "Easy";
 
     public config(int n, int k, int cellSize, String difficulty) {
         config.n = n;
