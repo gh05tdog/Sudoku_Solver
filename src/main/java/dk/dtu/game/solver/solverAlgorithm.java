@@ -12,12 +12,29 @@ public class solverAlgorithm {
     public static List<Node> solution = new ArrayList<>();
     private static int arraySize;
 
+    public static void main(String[] args) {
+        arraySize = 4;;
+        int subSize = (int) Math.sqrt(arraySize);
+        int [][] startBoard = {{1,0,0,0},
+                               {0,3,1,0},
+                               {0,1,3,0},
+                               {0,0,0,1}};
+        List<Placement> placements = new ArrayList<>();
+        int [][] xBoard = createExactCoverfromBoard(startBoard, placements);
+        System.out.println("Dimensions: " + xBoard.length + "x" + xBoard[0].length);
+        DancingLinks dl = new DancingLinks(xBoard);
+        ColumnNode header = dl.header;
+        printBoard(xBoard);
+        if (algorithmX(header)) {
+            System.out.println("Solution found");
+        } else {
+            System.out.println("No solution found");
+        }
+        printBoard(convertSolutionToBoard(solution, placements));
+    }
+
     public static void createXSudoku(Board board) throws Exception {
-        int subSize = (int) Math.sqrt(board.getDimensions());
-        arraySize = board.getDimensions();
-        int [][] xBoard = createXBoard(subSize);
-        board.setBoard(xBoard);
-        solution.clear();
+
     }
 
     public static void createSudoku(Board board) throws Exception {
@@ -270,9 +287,14 @@ public class solverAlgorithm {
 // __________________________________________________________________________________________
 // AlgorithmX using Dancing Links
 
-    public static int [][] createXBoard(int size) {
+ /*   public static int [][] createXBoard(int size) {
 
-        DancingLinks dl = new DancingLinks(createExactCoverMatrix(size, size));
+        int [][] arr = createExactCoverMatrix(size, size);
+
+        printBoard(arr);
+
+        DancingLinks dl = new DancingLinks(arr);
+
 
         ColumnNode header = dl.header;
 
@@ -281,8 +303,9 @@ public class solverAlgorithm {
         } else {
             System.out.println("No solution found");
         }
+        printBoard(arr);
         return convertSolutionToBoard(solution);
-    }
+    } */
 
     public static int[][] createExactCoverMatrix(int n, int k) {
         int size = k * n;
@@ -330,30 +353,33 @@ public class solverAlgorithm {
         return exactCoverMatrix;
     }
 
-    public static int[][] createExactCoverfromBoard(int [][] board) {
+    public static int[][] createExactCoverfromBoard(int [][] board, List<Placement> placements) {
 
         List<int[]> coverList = new ArrayList<>();
         int constraints = board.length * board.length * 4;
 
         for(int i = 0; i < board.length; i++) {
             for(int j = 0; j < board.length; j++) {
-                if(board[i][j] == 0) {
-                    List<Integer> nums = getPossiblePlacements(board, i, j);
-                    for(int num : nums) {
+                int num = board[i][j];
+                List<Integer> nums;
+                if(num == 0) {
+                    nums = getPossiblePlacements(board, i, j);
+                } else {
+                    nums = Collections.singletonList(num);
+                }
+                    for(int n : nums) {
                         int [] cover = new int[constraints];
-                        int x = i * board.length * board.length + j * board.length + num - 1;
-                        cover[x] = 1;
                         cover[i * board.length + j] = 1;
-                        cover[board.length * board.length + i * board.length + num - 1] = 1;
-                        cover[2 * board.length * board.length + j * board.length + num - 1] = 1;
+                        cover[board.length * board.length + i * board.length + n - 1] = 1;
+                        cover[2 * board.length * board.length + j * board.length + n - 1] = 1;
                         int subSize = (int) Math.sqrt(board.length);
                         int subGridID = (i / subSize) * subSize + (j / subSize);
-                        cover[3 * board.length * board.length + subGridID * board.length + num - 1] = 1;
+                        cover[3 * board.length * board.length + subGridID * board.length + n - 1] = 1;
                         coverList.add(cover);
+                        placements.add(new Placement(i, j, n));
                     }
                 }
             }
-        }
 
         int [][] exactCoverMatrix = new int[coverList.size()][constraints];
         for(int i = 0; i < coverList.size(); i++) {
@@ -495,18 +521,12 @@ public class solverAlgorithm {
         return node.rowIndex;  // Directly return the stored row index
     }
 
-    public static int[][] convertSolutionToBoard(List<Node> solution) {
-        // Assuming a standard Sudoku (9x9), but adjust size accordingly if using a different variant
-        int size = (int) Math.sqrt(solution.size());  // Normally, Sudoku is 9x9. If different sizes are used, adjust accordingly.
-        int[][] board = new int[size][size];
+    public static int[][] convertSolutionToBoard(List<Node> solution, List<Placement> placements) {
+        int[][] board = new int[arraySize][arraySize];
 
         for (Node node : solution) {
-            int row = extractRow(node);
-            int col = extractColumn(node);
-            int value = extractValue(node);
-
-
-            board[row][col] = value;
+            Placement placement = placements.get(node.rowIndex);
+            board[placement.row][placement.col] = placement.value;
         }
 
         return board;
@@ -522,6 +542,15 @@ public class solverAlgorithm {
 
     public static int extractValue(Node node) {
         return node.rowIndex % arraySize + 1;
+    }
+
+    public static void printBoard(int[][] matrix) {
+        for (int[] row : matrix) {
+            for (int cell : row) {
+                System.out.print(cell + " ");
+            }
+            System.out.println();
+        }
     }
 }
 
