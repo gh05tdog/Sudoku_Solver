@@ -272,10 +272,17 @@ public class SudokuGame {
         // Go back to the start menu
         GoBackButton.addActionListener(
                 e -> {
-                    StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(windowManager.getFrame(),1000, 700);
+                    JFrame frame = windowManager.getFrame();
+                    frame.getContentPane().removeAll();
+                    frame.invalidate();
+                    frame.validate();
+                    frame.repaint();
+
+                    StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(frame, 1000, 700);
                     StartMenu startMenu1 = new StartMenu(startMenuWindowManager);
                     startMenu1.initialize();
-                });
+                }
+        );
 
         // Set solvebutton to be disabled at the start of the game
         solveButton.setEnabled(false);
