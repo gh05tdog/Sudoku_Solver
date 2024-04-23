@@ -94,12 +94,5 @@ public class WindowManager {
         frame.setVisible(true);
     }
 
-    public void addMouseListener(MouseActionListener listener) {
-        whitePanel.addMouseListener(listener);
-    }
-
-    public JFrame getFrame() {
-        return frame;
-    }
 }
 
