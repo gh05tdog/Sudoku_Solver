@@ -72,6 +72,9 @@ class Cell {
     public void setNumber(int number) {
         this.number = number;
     }
+    public int getNumber(){
+        return number;
+    }
 }
 
 public class SudokuBoardCanvas extends JPanel {
@@ -163,7 +166,6 @@ public class SudokuBoardCanvas extends JPanel {
         Cell cell = cells[row][col];
         cell.startHintVisualization();
 
-
         ActionListener fadeAction = new ActionListener() {
             private int step = 0;
 
@@ -203,6 +205,7 @@ public class SudokuBoardCanvas extends JPanel {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 if (cells[i][j].isMarked) {
+                    System.out.println("Getting the marked cell " + i + " " + j);
                     return new int[]{i, j};
                 }
             }
@@ -217,12 +220,13 @@ public class SudokuBoardCanvas extends JPanel {
             }
         }
         cells[row][col].isMarked = true;
+        System.out.println("Setting the marked cell " + row + " " + col);
     }
 
-    public boolean isACellHighligthed() {
+    public boolean isACellMarked() {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
-                if (cells[row][col].isHighlighted) {
+                if (cells[row][col].isMarked) {
                     return true;
                 }
             }
@@ -239,5 +243,15 @@ public class SudokuBoardCanvas extends JPanel {
 
     public void setChosenNumber(int number) {
         chosenNumber = number;
+    }
+    public int getMarkedNumber(){
+        for(int i = 0; i < gridSize; i++){
+            for(int j = 0; j < gridSize; j++){
+                if(cells[i][j].isMarked){
+                    return cells[i][j].getNumber();
+                }
+            }
+        }
+        return 0;
     }
 }

@@ -89,7 +89,9 @@ public class WindowManager {
         frame.setVisible(true);
     }
 
+
     public JFrame getFrame() {
         return frame;
     }
+
 }

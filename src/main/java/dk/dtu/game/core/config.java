@@ -6,12 +6,6 @@ public class config {
     private static int cellSize;
     private static String difficulty = "Easy";
 
-    public config(int n, int k, int cellSize, String difficulty) {
-        config.n = n;
-        config.k = k;
-        config.cellSize = cellSize;
-        config.difficulty = difficulty;
-    }
 
     public static int getK() {
         return k;
