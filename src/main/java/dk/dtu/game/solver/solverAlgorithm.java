@@ -20,11 +20,11 @@ public class solverAlgorithm {
                                {0,1,3,0},
                                {0,0,0,1}};
         List<Placement> placements = new ArrayList<>();
-        int [][] xBoard = createExactCoverfromBoard(startBoard, placements);
-        System.out.println("Dimensions: " + xBoard.length + "x" + xBoard[0].length);
+        List<int[]> xBoard = createExactCoverfromBoard(startBoard, placements);
+        System.out.println("Dimensions: " + xBoard.size() + "x" + xBoard.getFirst().length);
         DancingLinks dl = new DancingLinks(xBoard);
         ColumnNode header = dl.header;
-        printBoard(xBoard);
+        printList(xBoard);
         if (algorithmX(header)) {
             System.out.println("Solution found");
         } else {
@@ -353,7 +353,7 @@ public class solverAlgorithm {
         return exactCoverMatrix;
     }
 
-    public static int[][] createExactCoverfromBoard(int [][] board, List<Placement> placements) {
+    public static List<int[]> createExactCoverfromBoard(int [][] board, List<Placement> placements) {
 
         List<int[]> coverList = new ArrayList<>();
         int constraints = board.length * board.length * 4;
@@ -381,16 +381,37 @@ public class solverAlgorithm {
                 }
             }
 
-        int [][] exactCoverMatrix = new int[coverList.size()][constraints];
-        for(int i = 0; i < coverList.size(); i++) {
-            exactCoverMatrix[i] = coverList.get(i);
-        }
-        return exactCoverMatrix;
+
+        return coverList;
     }
 
-    public static boolean removeXrecursive() {
+    public static void removeXRecursive() {
 
-        return true;
+        int[][] arr = { {1, 4, 2, 3},
+                              {2, 3, 1, 4},
+                              {4, 1, 3, 2},
+                              {3, 2, 4, 1}};
+        int numRemoved = 0;
+        int maxNumRemoved = 4;
+
+        int randRow = (int) (Math.random() * arr.length);
+        int randCol = (int) (Math.random() * arr.length);
+
+        arr [randRow][randCol] = 0;
+
+
+        List<Placement> placements = new ArrayList<>();
+        List<int[]> xBoard = createExactCoverfromBoard(arr, placements);
+
+        while (numRemoved < maxNumRemoved) {
+
+            int possibleSols = 0;
+            randRow = (int) (Math.random() * arr.length);
+            randCol = (int) (Math.random() * arr.length);
+
+            int tempNumber = arr[randRow][randCol];
+            arr[randRow][randCol] = 0;
+        }
     }
 
     public static boolean algorithmX(ColumnNode header) {
@@ -532,16 +553,13 @@ public class solverAlgorithm {
         return board;
     }
 
-    public static int extractRow(Node node) {
-        return node.rowIndex / (arraySize * arraySize);
-    }
-
-    public static int extractColumn(Node node) {
-        return (node.rowIndex / arraySize) % arraySize;
-    }
-
-    public static int extractValue(Node node) {
-        return node.rowIndex % arraySize + 1;
+    public static void printList(List<int[]> list) {
+        for (int[] arr : list) {
+            for (int i : arr) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+        }
     }
 
     public static void printBoard(int[][] matrix) {

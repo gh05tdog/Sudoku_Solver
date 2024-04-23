@@ -1,11 +1,13 @@
 package dk.dtu.game.solver;
 
+import java.util.List;
+
 public class DancingLinks {
     public ColumnNode header;
 
-    public DancingLinks(int[][] matrix) {
+    public DancingLinks(List<int[]> matrix) {
         header = new ColumnNode("header");
-        ColumnNode[] columnNodes = new ColumnNode[matrix[0].length];
+        ColumnNode[] columnNodes = new ColumnNode[matrix.getFirst().length];
 
         // Setting up the column nodes and linking them into a circular list
         ColumnNode last = header;
@@ -22,12 +24,12 @@ public class DancingLinks {
         header.left = last;
 
         // Setting up nodes for each 1 in the matrix and linking them
-        for (int row = 0; row < matrix.length; row++) {
+        for (int row = 0; row < matrix.size(); row++) {
             Node firstNodeInRow = null;
             Node lastNodeInRow = null;
 
-            for (int col = 0; col < matrix[0].length; col++) {
-                if (matrix[row][col] == 1) {
+            for (int col = 0; col < matrix.getFirst().length; col++) {
+                if (matrix.get(row)[col] == 1) {
                     Node newNode = new Node(row);  // Assuming Node constructor sets column and row indexes correctly
                     newNode.column = columnNodes[col];  // Linking node to its column
 
