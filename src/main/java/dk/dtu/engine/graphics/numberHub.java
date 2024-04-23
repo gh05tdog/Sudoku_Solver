@@ -24,13 +24,14 @@ public class numberHub extends JPanel {
         this.numberArray = new int[subGrid][subGrid];
         setPreferredSize(new Dimension(subGrid*(cellSize), (subGrid+2)*cellSize));
 
+
         for(int i = 0; i<subGrid; i++){
             for(int j = 0; j<subGrid; j++) {
 
                 numberArray[i][j] = j + i * subGrid + 1;
             }
         }
-
+        setAlignmentX(Component.CENTER_ALIGNMENT);
 
     }
 
