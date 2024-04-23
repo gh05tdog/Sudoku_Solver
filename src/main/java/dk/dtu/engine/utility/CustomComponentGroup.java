@@ -1,6 +1,5 @@
 package dk.dtu.engine.utility;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -10,7 +9,6 @@ import java.util.List;
 public class CustomComponentGroup {
 
     private final List<CustomBoardPanel> components = new ArrayList<>();
-    private CustomBoardPanel selectedComponent = null;
 
     public void addComponent(CustomBoardPanel component) {
         components.add(component);
@@ -24,7 +22,6 @@ public class CustomComponentGroup {
 
     private void setSelectedComponent(CustomBoardPanel component) {
         selectedComponent(component);
-        selectedComponent = component;
 
     }
 

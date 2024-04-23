@@ -67,12 +67,23 @@ public class StartMenuWindowManager {
         fullscreenSettingsPanel.add(settingsButton);
         fullscreenSettingsPanel.add(fullscreenButton);
 
-        settingsButton.addActionListener(
-                e -> JOptionPane.showMessageDialog(frame, "Settings button clicked"));
+        settingsButton.addActionListener(e -> showFrameSizeDialog());
 
         fullscreenButton.addActionListener(e -> toggleFullscreen());
 
         frame.setContentPane(mainPanel); // Add the main panel to the frame
+    }
+
+    private void showFrameSizeDialog() {
+        String input = JOptionPane.showInputDialog(frame, "Enter new frame size (width,height):");
+        if (input != null && input.matches("\\d+,\\d+")) {
+            String[] parts = input.split(",");
+            int width = Integer.parseInt(parts[0]);
+            int height = Integer.parseInt(parts[1]);
+            frame.setSize(width, height);
+        } else {
+            JOptionPane.showMessageDialog(frame, "Invalid input. Please enter two numbers separated by a comma.");
+        }
     }
 
     public void toggleFullscreen() {
