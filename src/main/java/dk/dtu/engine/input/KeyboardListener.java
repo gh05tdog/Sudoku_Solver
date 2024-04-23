@@ -1,7 +1,6 @@
 package dk.dtu.engine.input;
 
 import dk.dtu.game.core.SudokuGame;
-
 import java.awt.event.*;
 
 public class KeyboardListener implements KeyListener {
@@ -13,18 +12,17 @@ public class KeyboardListener implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        System.out.println("Key Typed: "+e.getKeyChar());
+        System.out.println("Key Typed: " + e.getKeyChar());
         sudokuGame.typeNumberWithKeyboard(e);
-
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.println("Key Typed: "+e.getKeyChar());
+        System.out.println("Key Typed: " + e.getKeyChar());
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        System.out.println("Key Typed: "+e.getKeyChar());
+        System.out.println("Key Typed: " + e.getKeyChar());
     }
 }

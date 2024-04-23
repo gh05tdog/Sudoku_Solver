@@ -1,13 +1,13 @@
 package dk.dtu.engine.core;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class WindowManager {
     private final JFrame frame;
     private final JPanel buttonPanel = new JPanel(); // Panel for buttons
-    private final JPanel whitePanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
-
+    private final JPanel whitePanel =
+            new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
 
     public WindowManager(JFrame frame) {
         this.frame = frame;
@@ -34,7 +34,6 @@ public class WindowManager {
         whitePanel.setBackground(Color.WHITE);
         whitePanel.setLayout(new GridBagLayout()); // GridBagLayout to center the board
 
-
         // Add the white panel to the main panel
         mainPanel.add(whitePanel, new GridBagConstraints());
 
@@ -44,7 +43,6 @@ public class WindowManager {
         mainPanel.add(buttonPanel, buttonContraints);
 
         frame.setContentPane(mainPanel); // Add the main panel to the frame
-
     }
 
     public void addComponentToButtonPanel(Component component) {
@@ -68,7 +66,7 @@ public class WindowManager {
         whitePanel.repaint();
     }
 
-    public void drawNumbers (Component numbers) {
+    public void drawNumbers(Component numbers) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 1; // Align component at the grid's center
         gbc.gridy = 0; // Align component at the grid's center
@@ -90,6 +88,4 @@ public class WindowManager {
     public void display() {
         frame.setVisible(true);
     }
-
 }
-

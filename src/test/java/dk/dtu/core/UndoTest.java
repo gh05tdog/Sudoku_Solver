@@ -1,16 +1,15 @@
 package dk.dtu.core;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.game.solver.solverAlgorithm;
+import java.util.Arrays;
+import javax.swing.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UndoTest {
     @Test
@@ -20,11 +19,13 @@ public class UndoTest {
         SudokuGame game = new SudokuGame(new WindowManager(new JFrame()), 3, 3, 50);
 
         // Manually initialize the board component to avoid NullPointerException
-        game.createBoard(3, 3, 50); // Assuming this is the correct way to initialize the board in your game
+        game.createBoard(
+                3, 3, 50); // Assuming this is the correct way to initialize the board in your game
 
         solverAlgorithm.createSudoku(game.gameboard);
 
-        // No need to call displayNumbersVisually here if it's just for visual representation and not part of the test logic
+        // No need to call displayNumbersVisually here if it's just for visual representation and
+        // not part of the test logic
 
         // Deep copy the board for later comparison
         int[][] initialBoardState = game.deepCopyBoard(game.gameboard.getBoard());
@@ -37,9 +38,10 @@ public class UndoTest {
         game.undoMove();
 
         // Assert the board's state is unchanged from the initial state
-        assertTrue(Arrays.deepEquals(initialBoardState, game.gameboard.getBoard()), "Board should return to its initial state after undo.");
+        assertTrue(
+                Arrays.deepEquals(initialBoardState, game.gameboard.getBoard()),
+                "Board should return to its initial state after undo.");
     }
-
 
     @Test
     @DisplayName("Apply all hints and check for valid Sudoku")
@@ -61,7 +63,8 @@ public class UndoTest {
         }
 
         // Validate the Sudoku board
-        assertTrue(solverAlgorithm.isValidSudoku(game.gameboard.getBoard()), "Applying all hints should result in a valid Sudoku.");
+        assertTrue(
+                solverAlgorithm.isValidSudoku(game.gameboard.getBoard()),
+                "Applying all hints should result in a valid Sudoku.");
     }
-
 }

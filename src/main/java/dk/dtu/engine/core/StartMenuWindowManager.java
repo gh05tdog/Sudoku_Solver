@@ -1,7 +1,7 @@
 package dk.dtu.engine.core;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class StartMenuWindowManager {
 
@@ -12,7 +12,6 @@ public class StartMenuWindowManager {
     private final JPanel difficultyPanel = new JPanel(null); // Panel for difficulty buttons
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
-
 
     public StartMenuWindowManager(int width, int height) {
         frame.setSize(width, height);
@@ -33,18 +32,20 @@ public class StartMenuWindowManager {
 
         mainPanel.setBackground(Color.WHITE);
 
-
         sizePanel.setBounds(50, (frame.getHeight() / 2) - 150, 650, 160);
         sizePanel.setBackground(Color.WHITE);
 
         difficultyPanel.setBounds(50, (frame.getHeight() / 2) + 50, 650, 50);
         difficultyPanel.setBackground(Color.WHITE);
 
-
         fullscreenSettingsPanel.setBackground(Color.WHITE);
         fullscreenSettingsPanel.setBounds(10, 10, 150, 150);
         mainPanel.add(fullscreenSettingsPanel);
-        buttonPanel.setBounds((frame.getWidth()) - 250, (frame.getHeight() / 2) - 150, 200, difficultyPanel.getHeight() + sizePanel.getHeight() + 50);
+        buttonPanel.setBounds(
+                (frame.getWidth()) - 250,
+                (frame.getHeight() / 2) - 150,
+                200,
+                difficultyPanel.getHeight() + sizePanel.getHeight() + 50);
         buttonPanel.setBackground(Color.WHITE);
 
         inputPanel.setBounds(525, (frame.getHeight() / 2) - 205, 140, 50);
@@ -62,14 +63,13 @@ public class StartMenuWindowManager {
         fullscreenSettingsPanel.add(settingsButton);
         fullscreenSettingsPanel.add(fullscreenButton);
 
-        settingsButton.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Settings button clicked"));
+        settingsButton.addActionListener(
+                e -> JOptionPane.showMessageDialog(frame, "Settings button clicked"));
 
         fullscreenButton.addActionListener(e -> toggleFullscreen());
 
-
         frame.setContentPane(mainPanel); // Add the main panel to the frame
     }
-
 
     public void toggleFullscreen() {
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -92,16 +92,14 @@ public class StartMenuWindowManager {
         }
     }
 
-
     private void repositionComponents() {
         int width = frame.getWidth();
         int height = frame.getHeight();
         sizePanel.setLocation((width - sizePanel.getWidth()) / 2, (height / 2) - 150);
         difficultyPanel.setLocation((width - difficultyPanel.getWidth()) / 2, (height / 2) + 50);
         inputPanel.setLocation((width - inputPanel.getWidth()) / 2, (height / 2) - 205);
-        buttonPanel.setLocation(width - 210, 10);  // Always at the top-left
+        buttonPanel.setLocation(width - 210, 10); // Always at the top-left
     }
-
 
     public void addComponent(Component component, JPanel panel) {
         panel.add(component);
@@ -128,7 +126,6 @@ public class StartMenuWindowManager {
     public JPanel getSizePanel() {
         return sizePanel;
     }
-
 
     public JPanel getInputPanel() {
         return inputPanel;

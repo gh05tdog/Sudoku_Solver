@@ -20,9 +20,11 @@ public class config {
     public static int getN() {
         return n;
     }
+
     public static int getCellSize() {
         return cellSize;
     }
+
     public static String getDifficulty() {
         return difficulty;
     }
@@ -30,16 +32,16 @@ public class config {
     public static void setN(int n) {
         config.n = n;
     }
+
     public static void setK(int k) {
         config.k = k;
     }
+
     public static void setCellSize(int cellSize) {
         config.cellSize = cellSize;
     }
+
     public static void setDifficulty(String difficulty) {
         config.difficulty = difficulty;
     }
-
-
-
 }

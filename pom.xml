@@ -43,10 +43,6 @@
                             <style>AOSP</style>
                         </googleJavaFormat>
                         <indent>
-                            <tabs>true</tabs>
-                            <spacesPerTab>2</spacesPerTab>
-                        </indent>
-                        <indent>
                             <spaces>true</spaces>
                             <spacesPerTab>4</spacesPerTab>
                         </indent>
