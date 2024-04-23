@@ -19,7 +19,7 @@ public class StartMenuTest {
 
     @BeforeEach
     void setUp() {
-        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(800, 600);
+        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(new JFrame(),800, 600);
         startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
     }
@@ -117,7 +117,7 @@ public class StartMenuTest {
     @DisplayName("Size Panel Button Click Simulation for 4x4 Button")
     void testSizePanelButtonClicks() throws Exception {
         // tests if the size panel works when clicking on the by simulating mouse event
-        StartMenuWindowManager startMenuManager = new StartMenuWindowManager(800, 800);
+        StartMenuWindowManager startMenuManager = new StartMenuWindowManager(new JFrame(),800, 800);
         StartMenu startMenu = new StartMenu(startMenuManager);
         startMenu.initialize();
         // Assertions to check if the size is set to 3x3

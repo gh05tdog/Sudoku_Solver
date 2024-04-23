@@ -1,23 +1,27 @@
 package dk.dtu.engine.core;
 
 import java.awt.*;
+import java.util.Objects;
 import javax.swing.*;
 
 public class StartMenuWindowManager {
 
     private static final String TITLE = "Sudoku Game";
-
-    private final JFrame frame = new JFrame(TITLE);
+    private final JFrame frame;
     private final JPanel buttonPanel = new JPanel(null); // Panel for buttons
     private final JPanel difficultyPanel = new JPanel(null); // Panel for difficulty buttons
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
 
-    public StartMenuWindowManager(int width, int height) {
-        frame.setSize(width, height);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        frame.getContentPane().setBackground(Color.WHITE);
+
+
+    public StartMenuWindowManager(JFrame Frame, int width, int height) {
+
+        this.frame = Objects.requireNonNullElseGet(Frame, () -> new JFrame(TITLE));
+        this.frame.setSize(width, height);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.frame.setResizable(false);
+        this.frame.getContentPane().setBackground(Color.WHITE);
 
         buttonPanel.setOpaque(true);
         sizePanel.setOpaque(true);

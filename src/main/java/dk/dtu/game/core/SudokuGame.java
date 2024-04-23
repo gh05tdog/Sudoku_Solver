@@ -1,5 +1,6 @@
 package dk.dtu.game.core;
 
+import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.graphics.numberHub;
@@ -265,6 +266,16 @@ public class SudokuGame {
         JButton eraseButton = createButton("Erase", 30);
         JButton undoButton = createButton("Undo", 300);
         JButton hintButton = createButton("Hint", 30);
+        JButton GoBackButton = createButton("Menu", 30);
+
+
+        // Go back to the start menu
+        GoBackButton.addActionListener(
+                e -> {
+                    StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(windowManager.getFrame(),1000, 700);
+                    StartMenu startMenu1 = new StartMenu(startMenuWindowManager);
+                    startMenu1.initialize();
+                });
 
         // Set solvebutton to be disabled at the start of the game
         solveButton.setEnabled(false);
@@ -345,6 +356,8 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(undoButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(hintButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
+        windowManager.addComponentToButtonPanel(GoBackButton);
     }
 
     public int[][] deepCopyBoard(int[][] original) {
