@@ -10,8 +10,6 @@ public class CustomComponentGroup {
 
 
     private final List<CustomBoardPanel> components = new ArrayList<>();
-
-    public final List<CustomBoardPanel> components = new ArrayList<>();
     public CustomBoardPanel selectedComponent = null;
 
     public void addComponent(CustomBoardPanel component) {
