@@ -288,10 +288,13 @@ public class SudokuGame {
         restartButton.addActionListener(e -> {
             //set the numbers to the initial board
             gameIsStarted = false;
+            timer.stop();
             gameboard.setBoard(deepCopyBoard(gameboard.getInitialBoard()));
             board.requestFocusInWindow();
             gameIsStarted = true;
             windowManager.updateBoard();
+            timer.reset();
+            timer.start();
         });
 
         solveButton.addActionListener(e -> {
