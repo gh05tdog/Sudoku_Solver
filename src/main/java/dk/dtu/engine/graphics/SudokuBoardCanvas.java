@@ -291,6 +291,7 @@ public class SudokuBoardCanvas extends JPanel {
     public void setChosenNumber(int number) {
         chosenNumber = number;
     }
+
     public int getMarkedNumber(){
         for(int i = 0; i < gridSize; i++){
             for(int j = 0; j < gridSize; j++){

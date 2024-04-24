@@ -42,6 +42,7 @@ public class SudokuGame {
         int row = y / (board.getWidth() / gridSize); // Adjust for variable cell size
         int column = x / (board.getHeight() / gridSize); // Adjust for variable cell size
         board.setMarkedCell(row, column);
+        board.setChosenNumber(gameboard.getNumber(row, column));
 
         makeMove(row, column, placeableNumber);
 
@@ -401,13 +402,17 @@ public class SudokuGame {
     }
 
     public void onNumbersBoardClicked(int x, int y) {
-        System.out.println("Numbers board clicked at: " + x + ", " + y);
-        placeableNumber = numbers.getNumber(x, y);
-        System.out.println("Number: " + placeableNumber);
+        //System.out.println("Numbers board clicked at: " + x + ", " + y);
+        //placeableNumber = numbers.getNumber(x, y);
+        //System.out.println("Number: " + placeableNumber);
 
-        numbers.highlightNumber(x, y);
+        //numbers.highlightNumber(x, y);
         int chosenNumber = numbers.getNumber(x, y);
         board.setChosenNumber(chosenNumber);
+        int[] markedCell = board.getMarkedCell();
+        int row = markedCell[0];
+        int col = markedCell[1];
+        makeMove(row, col, chosenNumber);
     }
 
     public JButton getUndoButton(){
