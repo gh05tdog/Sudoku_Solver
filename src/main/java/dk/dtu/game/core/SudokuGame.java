@@ -107,10 +107,10 @@ public class SudokuGame {
 
     public void makeMove(int row, int col, int number) {
         if (row >= 0 && col >= 0) {
-            if(noteButton.isSelected() && gameboard.getInitialNumber(row,col) == 0 && (gameboard.getNumber(row, col) == 0)){
+            if(noteButton.isSelected() && gameboard.getInitialNumber(row,col) == 0 && (gameboard.getNumber(row, col) == 0) && number != 0){
                 makeNote(row,col,number);
             }
-            if (gameboard.validPlace(row, col, number) && gameboard.getInitialNumber(row, col) == 0 && !noteButton.isSelected()) {
+            if (gameboard.validPlace(row, col, number) && gameboard.getInitialNumber(row, col) == 0 && !noteButton.isSelected() && number != 0) {
                 board.setHiddenProperty(row, col, true);
                 checkCellsForNotes(row, col, number, "hide");
                 int previousNumber = gameboard.getNumber(row, col);
@@ -202,6 +202,8 @@ public class SudokuGame {
     public void newGame() throws Exception {
         gameboard.clear();
         hintList.clear();
+        arrayMovelist.clear();
+        moveList.clear();
         dk.dtu.game.solver.solverAlgorithm.createSudoku(gameboard);
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
         gameIsStarted = true;
