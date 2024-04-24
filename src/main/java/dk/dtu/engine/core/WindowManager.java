@@ -1,20 +1,17 @@
 package dk.dtu.engine.core;
 
-
 import dk.dtu.engine.utility.Timer;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class WindowManager {
     private final JFrame frame;
     private final JPanel buttonPanel = new JPanel(); // Panel for buttons
     private final JPanel whitePanel =
             new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
-    private final JPanel mainPanel = new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
+    private final JPanel mainPanel =
+            new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
 
-    private final JPanel hubPanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the number hub
-    public Timer timer;
 
     public WindowManager(JFrame frame) {
         this.frame = frame;
@@ -40,8 +37,6 @@ public class WindowManager {
 
         whitePanel.setBackground(Color.WHITE);
         whitePanel.setLayout(new GridBagLayout()); // GridBagLayout to center the board
-
-
 
         // Add the white panel to the main panel
         mainPanel.add(whitePanel, new GridBagConstraints());
@@ -75,7 +70,7 @@ public class WindowManager {
         whitePanel.repaint();
     }
 
-    public void layoutComponents( Timer timer, Component numberHub) {
+    public void layoutComponents(Timer timer, Component numberHub) {
         JPanel combinedPanel = setupNumberAndTimerPanel(timer, numberHub);
 
         // Layout the combined panel with the number hub and timer
@@ -86,7 +81,6 @@ public class WindowManager {
         gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
         mainPanel.add(combinedPanel, gbcPanel);
         frame.add(mainPanel);
-
 
         frame.setVisible(true);
     }
@@ -99,14 +93,13 @@ public class WindowManager {
 
         timer.setAlignmentX(Component.CENTER_ALIGNMENT);
         combinedPanel.add(timer);
-        combinedPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
+        combinedPanel.add(
+                Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
 
         combinedPanel.add(numberHub);
 
         return combinedPanel;
     }
-
-
 
     public void updateBoard() {
         whitePanel.revalidate();

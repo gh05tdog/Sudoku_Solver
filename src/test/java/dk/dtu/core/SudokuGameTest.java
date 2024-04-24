@@ -10,7 +10,6 @@ import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -31,7 +30,8 @@ class SudokuGameTest {
     void setUp() throws Exception {
 
         JFrame testFrame = new JFrame();
-        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(testFrame, 1000, 700);
+        StartMenuWindowManager startMenuWindowManager =
+                new StartMenuWindowManager(testFrame, 1000, 700);
         StartMenu startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
         startMenu.getStartButton().doClick(); // Simulates starting the game through the UI

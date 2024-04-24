@@ -1,16 +1,13 @@
 package dk.dtu.game.core;
 
-import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
-import dk.dtu.game.solver.solverAlgorithm;
 import dk.dtu.engine.utility.Timer;
-
-import javax.swing.*;
+import dk.dtu.game.solver.solverAlgorithm;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.*;
@@ -25,8 +22,6 @@ public class SudokuGame {
     int gridSize; // or 9 for a standard Sudoku
     int cellSize; // Adjust based on your window size and desired grid size
     public int placeableNumber = 0;
-    MouseActionListener mouseActionListener = new MouseActionListener(this);
-    KeyboardListener keyboardListener = new KeyboardListener(this);
     public SudokuBoardCanvas board;
     public numberHub numbers;
     public Timer timer;
@@ -266,7 +261,7 @@ public class SudokuGame {
         board.setLocation(50, 50);
         board.setFocusable(true);
 
-        numbers = new numberHub(n * k, cellSize);  // Ensure numbers is initialized here
+        numbers = new numberHub(n * k, cellSize); // Ensure numbers is initialized here
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
 
@@ -296,7 +291,6 @@ public class SudokuGame {
         fillHintList();
         System.out.println(hintList.size());
         timer.start();
-
     }
 
     private JButton createButton(String text, int height) {
