@@ -1,5 +1,10 @@
 package dk.dtu.engine.core;
 
+
+import dk.dtu.engine.utility.Timer;
+
+import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import javax.swing.*;
 
@@ -8,6 +13,9 @@ public class WindowManager {
     private final JPanel buttonPanel = new JPanel(); // Panel for buttons
     private final JPanel whitePanel =
             new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
+
+    private final JPanel hubPanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the number hub
+    public Timer timer;
 
     public WindowManager(JFrame frame) {
         this.frame = frame;
@@ -33,6 +41,8 @@ public class WindowManager {
 
         whitePanel.setBackground(Color.WHITE);
         whitePanel.setLayout(new GridBagLayout()); // GridBagLayout to center the board
+
+
 
         // Add the white panel to the main panel
         mainPanel.add(whitePanel, new GridBagConstraints());
@@ -66,19 +76,36 @@ public class WindowManager {
         whitePanel.repaint();
     }
 
-    public void drawNumbers(Component numbers) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 1; // Align component at the grid's center
-        gbc.gridy = 0; // Align component at the grid's center
-        gbc.weightx = 0.5; // Give column some weight so component will be centered
-        gbc.weighty = 1; // Give row some weight so component will be centered
-        gbc.fill = GridBagConstraints.REMAINDER; // Let component fill its display area
-        gbc.insets = new Insets(0, 20, 0, 20); // Add padding
+    public void layoutComponents( Timer timer, Component numberHub) {
+        JPanel combinedPanel = setupNumberAndTimerPanel(timer, numberHub);
 
-        whitePanel.add(numbers, gbc);
-        whitePanel.revalidate();
-        whitePanel.repaint();
+        // Layout the combined panel with the number hub and timer
+        GridBagConstraints gbcPanel = new GridBagConstraints();
+        gbcPanel.gridx = 1;
+        gbcPanel.gridy = 0;
+        gbcPanel.fill = GridBagConstraints.NORTH; // Align to the top of the space
+        gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
+        mainPanel.add(combinedPanel, gbcPanel);
+
+
+        frame.setVisible(true);
     }
+
+    public JPanel setupNumberAndTimerPanel(Timer timer, Component numberHub) {
+        JPanel combinedPanel = new JPanel();
+        combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
+        combinedPanel.setOpaque(false);
+
+        timer.setAlignmentX(Component.CENTER_ALIGNMENT);
+        combinedPanel.add(timer);
+        combinedPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
+
+        combinedPanel.add(numberHub);
+
+        return combinedPanel;
+    }
+
+
 
     public void updateBoard() {
         whitePanel.revalidate();
