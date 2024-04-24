@@ -13,8 +13,6 @@ public class StartMenuWindowManager {
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
 
-
-
     public StartMenuWindowManager(JFrame Frame, int width, int height) {
 
         this.frame = Objects.requireNonNullElseGet(Frame, () -> new JFrame(TITLE));
@@ -82,7 +80,8 @@ public class StartMenuWindowManager {
             int height = Integer.parseInt(parts[1]);
             frame.setSize(width, height);
         } else {
-            JOptionPane.showMessageDialog(frame, "Invalid input. Please enter two numbers separated by a comma.");
+            JOptionPane.showMessageDialog(
+                    frame, "Invalid input. Please enter two numbers separated by a comma.");
         }
     }
 

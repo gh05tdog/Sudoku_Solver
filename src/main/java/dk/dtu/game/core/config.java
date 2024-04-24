@@ -6,7 +6,6 @@ public class config {
     private static int cellSize;
     private static String difficulty = "Easy";
 
-
     public static int getK() {
         return k;
     }

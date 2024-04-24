@@ -26,13 +26,135 @@ public class SudokuGame {
     public SudokuBoardCanvas board;
     public numberHub numbers;
     public boolean gameIsStarted = false;
-    private JButton startButton, undoButton, hintButton, restartButton, solveButton, newGameButton, eraseButton;
+    private JButton startButton;
+    private JButton undoButton;
+    private JButton hintButton;
+    private JButton restartButton;
+    private JButton solveButton;
+    private JButton eraseButton;
+    private boolean isTestMode = false;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
         this.windowManager = windowManager;
         gameboard = new Board(n, k);
         this.gridSize = n * k;
         this.cellSize = cellSize;
+
+        createUIComponents();
+        initialize(n, k, cellSize);
+    }
+
+    private void createUIComponents() {
+        startButton = createButton("Start", 30);
+        restartButton = createButton("Restart", 30);
+        solveButton = createButton("Solve", 30);
+        JButton newGameButton = createButton("New Game", 30);
+        eraseButton = createButton("Erase", 30);
+        undoButton = createButton("Undo", 300);
+        hintButton = createButton("Hint", 30);
+        JButton goBackButton = createButton("Menu", 30);
+        // Go back to the start menu
+        goBackButton.addActionListener(
+                e -> {
+                    JFrame frame = windowManager.getFrame();
+                    frame.getContentPane().removeAll();
+                    frame.invalidate();
+                    frame.validate();
+                    frame.repaint();
+
+                    StartMenuWindowManager startMenuWindowManager =
+                            new StartMenuWindowManager(frame, 1000, 700);
+                    StartMenu startMenu1 = new StartMenu(startMenuWindowManager);
+                    startMenu1.initialize();
+                });
+
+        // Set solve button to be disabled at the start of the game
+        solveButton.setEnabled(false);
+
+        startButton.addActionListener(
+                e -> {
+                    System.out.println("Button clicked");
+                    gameIsStarted = true;
+                    System.out.println("Start game!");
+                    try {
+                        newGame();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    displayNumbersVisually();
+                    board.requestFocusInWindow();
+                    solveButton.setEnabled(true);
+                });
+
+        restartButton.addActionListener(
+                e -> {
+                    // set the numbers to the initial board
+                    gameIsStarted = false;
+                    gameboard.setBoard(deepCopyBoard(gameboard.getInitialBoard()));
+                    board.requestFocusInWindow();
+                    gameIsStarted = true;
+                    windowManager.updateBoard();
+                });
+
+        solveButton.addActionListener(
+                e -> {
+                    gameboard.setBoard(
+                            Objects.requireNonNull(
+                                    solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard())));
+                    checkCompletionAndOfferNewGame();
+                });
+
+        newGameButton.addActionListener(
+                e -> {
+                    gameIsStarted = false;
+                    try {
+                        newGame();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    board.requestFocusInWindow();
+
+                    windowManager.updateBoard();
+                });
+
+        eraseButton.addActionListener(
+                e -> {
+                    board.requestFocusInWindow();
+                    eraseNumber();
+                });
+
+        undoButton.addActionListener(
+                e -> {
+                    board.requestFocusInWindow();
+                    undoMove();
+                });
+
+        hintButton.addActionListener(
+                e -> {
+                    board.requestFocusInWindow();
+                    provideHint();
+                });
+
+        windowManager.addComponentToButtonPanel(startButton);
+        windowManager.addComponentToButtonPanel(
+                Box.createRigidArea(new Dimension(10, 10))); // 10-pixel vertical spacing
+        windowManager.addComponentToButtonPanel(restartButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
+        windowManager.addComponentToButtonPanel(solveButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
+        windowManager.addComponentToButtonPanel(newGameButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
+        windowManager.addComponentToButtonPanel(eraseButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
+        windowManager.addComponentToButtonPanel(undoButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
+        windowManager.addComponentToButtonPanel(hintButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
+        windowManager.addComponentToButtonPanel(goBackButton);
+    }
+
+    public void setTestMode(boolean isTest) {
+        this.isTestMode = isTest;
     }
 
     public void onSudokuBoardClicked(int x, int y) {
@@ -154,7 +276,6 @@ public class SudokuGame {
 
     public void initialize(int n, int k, int cellSize) {
         createBoard(n, k, cellSize);
-        displayButtons();
         windowManager.drawBoard(board);
         windowManager.drawNumbers(numbers);
     }
@@ -235,6 +356,7 @@ public class SudokuGame {
     }
 
     public void checkCompletionAndOfferNewGame() {
+        if (isTestMode) return; // Skip this method if in test mode
         if (isSudokuCompleted()) {
             Object[] options = {"New Game", "Close"};
             int response =
@@ -256,163 +378,6 @@ public class SudokuGame {
                 }
             }
         }
-    }
-
-    private void displayButtons() {
-
-        JButton startButton = createButton("Start", 30);
-        JButton restartButton = createButton("Restart", 30);
-        JButton solveButton = createButton("Solve", 30);
-        JButton newGameButton = createButton("New Game", 30);
-        JButton eraseButton = createButton("Erase", 30);
-        JButton undoButton = createButton("Undo", 300);
-        JButton hintButton = createButton("Hint", 30);
-        JButton GoBackButton = createButton("Menu", 30);
-
-
-        // Go back to the start menu
-        GoBackButton.addActionListener(
-                e -> {
-                    JFrame frame = windowManager.getFrame();
-                    frame.getContentPane().removeAll();
-                    frame.invalidate();
-                    frame.validate();
-                    frame.repaint();
-
-                    StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(frame, 1000, 700);
-                    StartMenu startMenu1 = new StartMenu(startMenuWindowManager);
-                    startMenu1.initialize();
-                }
-        );
-
-
-        //Set solvebutton to be disabled at the start of the game
-        solveButton.setEnabled(false);
-
-        startButton.addActionListener(e -> {
-            System.out.println("Start game!");
-            try {
-                newGame();
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-            displayNumbersVisually();
-            gameIsStarted = true;
-            board.requestFocusInWindow();
-            solveButton.setEnabled(true);
-        });
-        restartButton.addActionListener(e -> {
-            //set the numbers to the initial board
-            gameIsStarted = false;
-            gameboard.setBoard(deepCopyBoard(gameboard.getInitialBoard()));
-            board.requestFocusInWindow();
-            gameIsStarted = true;
-            windowManager.updateBoard();
-        });
-
-        solveButton.addActionListener(e -> {
-            gameboard.setBoard(Objects.requireNonNull(solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard())));
-            checkCompletionAndOfferNewGame();
-        });
-
-        newGameButton.addActionListener(e -> {
-            gameIsStarted = false;
-            try {
-                newGame();
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-            board.requestFocusInWindow();
-
-            windowManager.updateBoard();
-        });
-
-        eraseButton.addActionListener(e -> {
-            board.requestFocusInWindow();
-            eraseNumber();
-        });
-
-        // Set solvebutton to be disabled at the start of the game
-        solveButton.setEnabled(false);
-
-        startButton.addActionListener(
-                e -> {
-                    System.out.println("Start game!");
-                    try {
-                        newGame();
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    displayNumbersVisually();
-                    gameIsStarted = true;
-                    board.requestFocusInWindow();
-                    solveButton.setEnabled(true);
-                });
-        restartButton.addActionListener(
-                e -> {
-                    // set the numbers to the initial board
-                    gameIsStarted = false;
-                    gameboard.setBoard(deepCopyBoard(gameboard.getInitialBoard()));
-                    board.requestFocusInWindow();
-                    gameIsStarted = true;
-                    windowManager.updateBoard();
-                });
-
-        solveButton.addActionListener(
-                e -> {
-                    gameboard.setBoard(
-                            Objects.requireNonNull(
-                                    solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard())));
-                    checkCompletionAndOfferNewGame();
-                });
-
-        newGameButton.addActionListener(
-                e -> {
-                    gameIsStarted = false;
-                    try {
-                        newGame();
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    board.requestFocusInWindow();
-
-                    windowManager.updateBoard();
-                });
-
-        eraseButton.addActionListener(
-                e -> {
-                    board.requestFocusInWindow();
-                    eraseNumber();
-                });
-
-        undoButton.addActionListener(
-                e -> {
-                    board.requestFocusInWindow();
-                    undoMove();
-                });
-
-        hintButton.addActionListener(
-                e -> {
-                    board.requestFocusInWindow();
-                    provideHint();
-                });
-
-        windowManager.addComponentToButtonPanel(startButton);
-        windowManager.addComponentToButtonPanel(
-                Box.createRigidArea(new Dimension(10, 10))); // 10-pixel vertical spacing
-        windowManager.addComponentToButtonPanel(restartButton);
-        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
-        windowManager.addComponentToButtonPanel(solveButton);
-        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
-        windowManager.addComponentToButtonPanel(newGameButton);
-        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
-        windowManager.addComponentToButtonPanel(eraseButton);
-        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
-        windowManager.addComponentToButtonPanel(undoButton);
-        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
-        windowManager.addComponentToButtonPanel(hintButton);
-        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
-        windowManager.addComponentToButtonPanel(GoBackButton);
     }
 
     public int[][] deepCopyBoard(int[][] original) {
@@ -452,22 +417,27 @@ public class SudokuGame {
         board.setChosenNumber(chosenNumber);
     }
 
-    public JButton getUndoButton(){
+    public JButton getUndoButton() {
         return undoButton;
     }
-    public JButton getHintButton(){
+
+    public JButton getHintButton() {
         return hintButton;
     }
-    public JButton getNewGameButton(){
-        return newGameButton;
-    }
-    public JButton getEraseButton(){
+
+    public JButton getEraseButton() {
         return eraseButton;
     }
-    public JButton getStartButton(){
+
+    public JButton getStartButton() {
         return startButton;
     }
-    public JButton getRestartButton(){
+
+    public JButton getRestartButton() {
         return restartButton;
+    }
+
+    public JButton getSolveButton() {
+        return solveButton;
     }
 }
