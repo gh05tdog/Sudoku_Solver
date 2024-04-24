@@ -1,4 +1,4 @@
-package dk.dtu.game.solver;
+package dk.dtu.game.core.solver.AlgorithmX;
 
 public class Node {
     public Node left;

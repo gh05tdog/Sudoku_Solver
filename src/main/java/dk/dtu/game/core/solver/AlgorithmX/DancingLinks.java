@@ -1,4 +1,4 @@
-package dk.dtu.game.solver;
+package dk.dtu.game.core.solver.AlgorithmX;
 
 import java.util.List;
 

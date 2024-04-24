@@ -5,7 +5,8 @@ import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
-import dk.dtu.game.solver.solverAlgorithm;
+import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
+import dk.dtu.game.core.solver.solverAlgorithm;
 
 import javax.swing.*;
 import java.awt.*;
@@ -181,7 +182,7 @@ public class SudokuGame {
 
 
     public void fillHintList() {
-        int[][] solutionBoard = solverAlgorithm.getSolutionBoard(gameboard.getBoard());
+        int[][] solutionBoard = BruteForceAlgorithm.getSolutionBoard(gameboard.getBoard());
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -284,7 +285,7 @@ public class SudokuGame {
 
 
         solveButton.addActionListener(e -> {
-            gameboard.setBoard(Objects.requireNonNull(solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard())));
+            gameboard.setBoard(Objects.requireNonNull(BruteForceAlgorithm.getSolutionBoard(gameboard.getInitialBoard())));
             checkCompletionAndOfferNewGame();
         });
 
