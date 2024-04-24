@@ -40,9 +40,9 @@ class Cell {
 
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
         if (isHighlighted) {
-            g.setColor(Color.LIGHT_GRAY);
+            g.setColor(new Color(225, 223, 221));
             if (isMarked) {
-                g.setColor(Color.DARK_GRAY);
+                g.setColor(new Color(149, 149, 149));
             }
         } else {
             g.setColor(backgroundColor);
@@ -70,9 +70,13 @@ class Cell {
         if(shouldHideNotes){
             return;
         }
-        g.setColor(Color.CYAN);
-        Font font = new Font("Arial", Font.BOLD, cellSize / 6);
+        g.setColor(new Color(21, 80, 213, 255));
+        Font font = new Font("Arial", Font.BOLD, cellSize / 5);
         g.setFont(font);
+        int subCellSize = cellSize / 3;  // Divide the cellSize by 3 to get the size of each sub-cell
+        int offsetX = subCellSize / 2;  // Half of the subCellSize to center the number horizontally
+        int offsetY = (cellSize / 6 + subCellSize / 2)-5;  // Position for vertical centering
+
         for (int note : notes) {
             String noteStr = Integer.toString(note);
             if(hideList.contains(note) || note == 0){
@@ -80,12 +84,14 @@ class Cell {
             }
             int row = (note - 1) / 3;
             int col = (note - 1) % 3;
-            g.drawString(noteStr, x + col * cellSize / 3 + cellSize / 12,
-                    y + row * cellSize / 3 + cellSize / 6);
+            g.drawString(noteStr,
+                    x + col * subCellSize + offsetX - g.getFontMetrics().stringWidth(noteStr) / 2,
+                    y + row * subCellSize + offsetY);
         }
         g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
     }
+
 
     public void addNote(int note){
         notes.add(note);
