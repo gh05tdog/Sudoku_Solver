@@ -330,4 +330,11 @@ public class SudokuBoardCanvas extends JPanel {
     public void removeFromHideList(int row, int col, int number){
         cells[row][col].hideList.remove(number);
     }
+    public Set<Integer> getHideList(int row, int col){
+        return cells[row][col].hideList;
+    }
+    public boolean getHiddenProperty(int row, int col){
+        return cells[row][col].shouldHideNotes;
+    }
+
 }

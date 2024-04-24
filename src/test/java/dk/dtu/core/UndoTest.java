@@ -30,7 +30,7 @@ public class UndoTest {
 
         // Make a move on a valid cell
         int row = 2, col = 2, number = 9;
-        game.makeMoveTest(row, col, number);
+        game.makeMove(row, col, number);
 
         // Undo the move
         game.undoMove();

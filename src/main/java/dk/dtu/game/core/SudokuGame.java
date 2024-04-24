@@ -427,4 +427,8 @@ public class SudokuGame {
     public JButton getRestartButton(){
         return restartButton;
     }
+
+    public JToggleButton getNoteButton() {
+        return noteButton;
+    }
 }
