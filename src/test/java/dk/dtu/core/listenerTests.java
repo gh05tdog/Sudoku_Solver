@@ -1,5 +1,6 @@
 package dk.dtu.core;
 
+import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.graphics.numberHub;
@@ -31,7 +32,7 @@ class ListenerTests {
         int lastY = -1;
 
         public TestableSudokuGame() throws Exception {
-            super(null, 9, 9, 40); // Assuming these are reasonable defaults
+            super(new WindowManager(new JFrame()), 9, 9, 40); // Assuming these are reasonable defaults
         }
 
         @Override

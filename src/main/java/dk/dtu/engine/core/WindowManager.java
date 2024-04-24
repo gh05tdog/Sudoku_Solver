@@ -4,15 +4,14 @@ package dk.dtu.engine.core;
 import dk.dtu.engine.utility.Timer;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import javax.swing.*;
 
 public class WindowManager {
     private final JFrame frame;
     private final JPanel buttonPanel = new JPanel(); // Panel for buttons
     private final JPanel whitePanel =
             new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
+    private final JPanel mainPanel = new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
 
     private final JPanel hubPanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the number hub
     public Timer timer;
@@ -86,12 +85,14 @@ public class WindowManager {
         gbcPanel.fill = GridBagConstraints.NORTH; // Align to the top of the space
         gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
         mainPanel.add(combinedPanel, gbcPanel);
+        frame.add(mainPanel);
 
 
         frame.setVisible(true);
     }
 
     public JPanel setupNumberAndTimerPanel(Timer timer, Component numberHub) {
+        System.out.println("Setting up number and timer panel");
         JPanel combinedPanel = new JPanel();
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
         combinedPanel.setOpaque(false);

@@ -266,23 +266,15 @@ public class SudokuGame {
         board.setLocation(50, 50);
         board.setFocusable(true);
 
-        board.addMouseListener(mouseActionListener);
-
-        board.addKeyListener(keyboardListener);
-
-        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
-
-        numbers = new numberHub(n * k, cellSize);
+        numbers = new numberHub(n * k, cellSize);  // Ensure numbers is initialized here
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
 
-        numbers.addMouseListener(mouseActionListener);
-        numbers.addKeyListener(keyboardListener);
-
         timer = new Timer();
-        timer.setFocusable(true);
 
-
+        // Ensure listeners are added here if not already in `numberHub` constructor
+        numbers.addMouseListener(new MouseActionListener(this));
+        numbers.addKeyListener(new KeyboardListener(this));
     }
 
     public void initialize(int n, int k, int cellSize) {
@@ -290,7 +282,6 @@ public class SudokuGame {
         windowManager.drawBoard(board);
         windowManager.setupNumberAndTimerPanel(timer, numbers);
         windowManager.layoutComponents(timer, numbers);
-
     }
 
     public void newGame() throws Exception {
