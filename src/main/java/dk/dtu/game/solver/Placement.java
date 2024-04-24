@@ -10,4 +10,5 @@ class Placement {
         this.col = col;
         this.value = value;
     }
+
 }

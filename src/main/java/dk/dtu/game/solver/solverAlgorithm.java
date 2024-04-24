@@ -13,24 +13,8 @@ public class solverAlgorithm {
     private static int arraySize;
 
     public static void main(String[] args) {
-        arraySize = 4;;
-        int subSize = (int) Math.sqrt(arraySize);
-        int [][] startBoard = {{1,0,0,0},
-                               {0,3,1,0},
-                               {0,1,3,0},
-                               {0,0,0,1}};
-        List<Placement> placements = new ArrayList<>();
-        List<int[]> xBoard = createExactCoverfromBoard(startBoard, placements);
-        System.out.println("Dimensions: " + xBoard.size() + "x" + xBoard.getFirst().length);
-        DancingLinks dl = new DancingLinks(xBoard);
-        ColumnNode header = dl.header;
-        printList(xBoard);
-        if (algorithmX(header)) {
-            System.out.println("Solution found");
-        } else {
-            System.out.println("No solution found");
-        }
-        printBoard(convertSolutionToBoard(solution, placements));
+        arraySize = 4;
+        removeXRecursive();
     }
 
     public static void createXSudoku(Board board) throws Exception {
@@ -403,15 +387,77 @@ public class solverAlgorithm {
         List<Placement> placements = new ArrayList<>();
         List<int[]> xBoard = createExactCoverfromBoard(arr, placements);
 
+        randRow = (int) (Math.random() * arr.length);
+        randCol = (int) (Math.random() * arr.length);
+
+
         while (numRemoved < maxNumRemoved) {
 
+            System.out.println("row and col: " + randRow + " " + randCol);
+
+            printBoard(arr);
+
             int possibleSols = 0;
-            randRow = (int) (Math.random() * arr.length);
-            randCol = (int) (Math.random() * arr.length);
+
+            while (arr[randRow][randCol] == 0) {
+                randRow = (int) (Math.random() * arr.length);
+                randCol = (int) (Math.random() * arr.length);
+            }
 
             int tempNumber = arr[randRow][randCol];
             arr[randRow][randCol] = 0;
+
+            int cellIndex = randRow * arraySize + randCol;                  // Cell index
+            int rowIndex = arraySize*arraySize + randRow * arraySize + (tempNumber - 1); // Row constraint index
+            int colIndex = 2*arraySize*arraySize + randCol * arraySize + (tempNumber - 1); // Column constraint index
+            int boxIndex = 3*arraySize*arraySize + (randRow / 3 * 3 + randCol / 3) * arraySize + (tempNumber - 1); // Box constraint index
+
+            // Iterate through the exact cover list to find and remove the row
+
+            for(int i = 0; i < xBoard.size(); i++) {
+                int[] coverRow = xBoard.get(i);
+                if (coverRow[cellIndex] == 1 && coverRow[rowIndex] == 1 &&
+                        coverRow[colIndex] == 1 && coverRow[boxIndex] == 1) {
+                    xBoard.remove(coverRow);  // Remove this row from the cover matrix
+                    break;
+                }
+
+            List<Integer> values = getPossiblePlacements(arr, randRow, randCol);
+
+            int possibleNums = 0;
+            for (int value : values) {
+                int [] cover = new int[arraySize*arraySize*4];
+                cover[randRow * arraySize + randCol] = 1;
+                cover[arraySize * arraySize + randRow * arraySize + value - 1] = 1;
+                cover[2 * arraySize * arraySize + randCol * arraySize + value - 1] = 1;
+                int subSize = (int) Math.sqrt(arraySize);
+                int subGridID = (randRow / subSize) * subSize + (randCol / subSize);
+                cover[3 * arraySize * arraySize + subGridID * arraySize + value - 1] = 1;
+                xBoard.add(cover);
+
+                arr[randRow][randCol] = value;
+                if (algorithmX(new DancingLinks(xBoard).header)) {
+                    possibleNums++;
+                }
+                xBoard.remove(cover);
+                if (possibleNums > 1) {
+                    arr[randRow][randCol] = tempNumber;
+                    break;
+                }
+            }
+            if (possibleNums == 1) {
+                System.out.println("Removed " + tempNumber + " from row " + randRow + " and column " + randCol);
+                    numRemoved++;
+                }
+            }
+
+
+
+
+
+
         }
+        printBoard(arr);
     }
 
     public static boolean algorithmX(ColumnNode header) {
