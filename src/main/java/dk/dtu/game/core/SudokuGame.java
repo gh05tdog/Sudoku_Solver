@@ -138,6 +138,7 @@ public class SudokuGame {
             int row = cell[0];
             int col = cell[1];
             if (gameboard.getInitialNumber(row, col) == 0) {
+                board.setHiddenProperty(row, col, false);
                 board.removeNumber(row, col);
                 gameboard.setNumber(row, col, 0);
             }

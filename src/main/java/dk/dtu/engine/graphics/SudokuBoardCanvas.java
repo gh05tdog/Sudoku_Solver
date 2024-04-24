@@ -74,7 +74,7 @@ class Cell {
         Font font = new Font("Arial", Font.BOLD, cellSize / 5);
         g.setFont(font);
         int subCellSize = cellSize / 3;  // Divide the cellSize by 3 to get the size of each sub-cell
-        int offsetX = subCellSize / 2;  // Half of the subCellSize to center the number horizontally
+        int offsetX = (subCellSize / 2) + 2;  // Half of the subCellSize to center the number horizontally
         int offsetY = (cellSize / 6 + subCellSize / 2)-5;  // Position for vertical centering
 
         for (int note : notes) {
