@@ -115,6 +115,7 @@ public class SudokuGame {
                 checkCellsForNotes(row, col, number, "hide");
                 int previousNumber = gameboard.getNumber(row, col);
                 board.setCellNumber(row, col, number);
+                board.setChosenNumber(number);
                 gameboard.setNumber(row, col, number);
                 Move move = new Move(row, col, number, previousNumber);
                 arrayMovelist.add(move.getNumber());
