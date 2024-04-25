@@ -62,9 +62,9 @@ public class BruteForceAlgorithm {
                     if (possibleValues < lowestPossibleValue) {
                         lowestPossibleValue = possibleValues;
                         possibleCells.clear();
-                        possibleCells.add(new int[] {i, j});
+                        possibleCells.add(new int[]{i, j});
                     } else if (possibleValues == lowestPossibleValue) {
-                        possibleCells.add(new int[] {i, j});
+                        possibleCells.add(new int[]{i, j});
                     }
                 }
             }
@@ -220,5 +220,64 @@ public class BruteForceAlgorithm {
         } else {
             return null;
         }
+    }
+
+    public static int checkUniqueSolution(int[][] board) {
+        simplifyBoard(board);
+        return countSolutions(board, 0);
+    }
+
+    private static void simplifyBoard(int[][] board) {
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board[0].length; j++) {
+                    if (board[i][j] == 0) {
+                        List<Integer> possiblePlacements = SolverAlgorithm.getPossiblePlacements(board, i, j);
+                        if (possiblePlacements.size() == 1) {
+                            board[i][j] = possiblePlacements.getFirst();
+                            changed = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static int countSolutions(int[][] board, int count) {
+        if (count > 1) return count;  // Early exit if more than one solution found
+        int[] cell = findLeastConstrainingCell(board);
+        if (cell == null) return count + 1;  // Increment count when a solution is found
+
+        int row = cell[0];
+        int col = cell[1];
+        List<Integer> possiblePlacements = SolverAlgorithm.getPossiblePlacements(board, row, col);
+
+        for (int value : possiblePlacements) {
+            board[row][col] = value;
+            count = countSolutions(board, count);
+            if (count > 1) return count;  // Early exit
+            board[row][col] = 0;  // Undo placement
+        }
+
+        return count;
+    }
+
+    private static int[] findLeastConstrainingCell(int[][] board) {
+        int minOptions = Integer.MAX_VALUE;
+        int[] cell = null;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == 0) {
+                    int numOptions = SolverAlgorithm.getPossiblePlacements(board, i, j).size();
+                    if (numOptions < minOptions) {
+                        minOptions = numOptions;
+                        cell = new int[] {i, j};
+                    }
+                }
+            }
+        }
+        return cell;
     }
 }

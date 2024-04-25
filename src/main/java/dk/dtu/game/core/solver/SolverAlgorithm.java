@@ -1,6 +1,11 @@
 /* (C)2024 */
 package dk.dtu.game.core.solver;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Math.sqrt;
+
 public class SolverAlgorithm {
 
     private SolverAlgorithm() {
@@ -37,5 +42,25 @@ public class SolverAlgorithm {
             System.arraycopy(board[i], 0, copy[i], 0, board.length);
         }
         return copy;
+    }
+
+    public static void printBoard(int[][] board) {
+        for (int[] row : board) {
+            for (int i : row) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static List<Integer> getPossiblePlacements(int[][] board, int row, int col) {
+        List<Integer> possiblePlacements = new ArrayList<>();
+        int subSize = (int) sqrt(board.length);
+        for (int i = 1; i <= board.length; i++) {
+            if (SolverAlgorithm.checkBoard(board, row, col, i, subSize)) {
+                possiblePlacements.add(i);
+            }
+        }
+        return possiblePlacements;
     }
 }
