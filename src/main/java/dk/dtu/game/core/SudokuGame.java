@@ -8,7 +8,8 @@ import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.engine.utility.TimerFunction;
-import dk.dtu.game.solver.SolverAlgorithm;
+import dk.dtu.game.core.solver.AlgorithmX.algorithmX;
+import dk.dtu.game.core.solver.SolverAlgorithm;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.*;
@@ -231,7 +232,7 @@ public class SudokuGame {
         moveList.clear();
         timer.stop();
         timer.reset();
-        SolverAlgorithm.createSudoku(gameboard);
+        algorithmX.createXSudoku(gameboard);
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
         gameIsStarted = true;
         fillHintList();
@@ -256,7 +257,7 @@ public class SudokuGame {
     }
 
     public void fillHintList() {
-        int[][] solutionBoard = SolverAlgorithm.getSolutionBoard(gameboard.getGameBoard());
+        int[][] solutionBoard = algorithmX.getSolutionBoard();
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -377,7 +378,7 @@ public class SudokuGame {
                     timer.stop();
                     gameboard.setGameBoard(
                             Objects.requireNonNull(
-                                    SolverAlgorithm.getSolutionBoard(gameboard.getInitialBoard())));
+                                    algorithmX.getSolutionBoard()));
                     checkCompletionAndOfferNewGame();
                 });
 
@@ -450,7 +451,7 @@ public class SudokuGame {
     }
 
     public int[][] deepCopyBoard(int[][] original) {
-        return SolverAlgorithm.deepCopy(original);
+        return SolverAlgorithm.deepCopyBoard(original);
     }
 
     public void render() {

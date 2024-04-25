@@ -3,13 +3,14 @@ package dk.dtu.core;
 import dk.dtu.game.core.Board;
 
 import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
-import dk.dtu.game.core.config;
+import dk.dtu.game.core.Config;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -186,7 +187,7 @@ class CreateTest {
     @Test
     @DisplayName("Create bruteForce sudoku, solve it and test if valid")
     void testCreateSudoku() throws Exception {
-        config.setDifficulty("medium");
+        Config.setDifficulty("medium");
         Board board = new Board(3, 3);
         BruteForceAlgorithm.createSudoku(board);
         BruteForceAlgorithm.sudoku(board.getBoard());
@@ -204,7 +205,7 @@ class CreateTest {
         board.setNumber(0, 0, 1);
         board.setNumber(0, 1, 1); // Create a conflict
 
-        board.setBoard(BruteForceAlgorithm.getSolutionBoard(board.getInitialBoard()));
+        board.setBoard(Objects.requireNonNull(BruteForceAlgorithm.getSolutionBoard(board.getInitialBoard())));
 
         assertArrayEquals(solvedBoard, board.getBoard(), "The board should be the same as the solved board");
 

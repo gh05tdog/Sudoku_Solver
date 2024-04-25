@@ -3,32 +3,39 @@ package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.SudokuGame;
+import dk.dtu.game.core.solver.AlgorithmX.algorithmX;
 import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
 import java.util.Arrays;
+import javax.swing.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class UndoTest {
+class UndoTest {
     @Test
     @DisplayName("Test undo reverses the last move")
     void testUndoReversesLastMove() throws Exception {
+        // Initialize the start menu
+        StartMenuWindowManager startMenuManager =
+                new StartMenuWindowManager(new JFrame(), 1000, 700);
         // Initialize the game and its components
-        SudokuGame game = new SudokuGame(new WindowManager(800, 800), 3, 3, 50);
+        SudokuGame game =
+                new SudokuGame(new WindowManager(startMenuManager.getFrame(), 800, 800), 3, 3, 50);
 
         // Manually initialize the board component to avoid NullPointerException
         game.createBoard(
                 3, 3, 50); // Assuming this is the correct way to initialize the board in your game
 
-        BruteForceAlgorithm.createSudoku(game.gameboard);
+        algorithmX.createXSudoku(game.gameboard);
 
         // No need to call displayNumbersVisually here if it's just for visual representation and
         // not part of the test logic
 
         // Deep copy the board for later comparison
-        int[][] initialBoardState = game.deepCopyBoard(game.gameboard.getBoard());
+        int[][] initialBoardState = game.deepCopyBoard(game.gameboard.getGameBoard());
 
         // Make a move on a valid cell
         int row = 2, col = 2, number = 9;
@@ -39,19 +46,24 @@ public class UndoTest {
 
         // Assert the board's state is unchanged from the initial state
         assertTrue(
-                Arrays.deepEquals(initialBoardState, game.gameboard.getBoard()),
+                Arrays.deepEquals(initialBoardState, game.gameboard.getGameBoard()),
                 "Board should return to its initial state after undo.");
     }
 
     @Test
     @DisplayName("Apply all hints and check for valid Sudoku")
     void testHintsLeadToValidSudoku() throws Exception {
+
+        StartMenuWindowManager startMenuManager =
+                new StartMenuWindowManager(new JFrame(), 1000, 700);
+        // Initialize the game and its components
+        SudokuGame game =
+                new SudokuGame(new WindowManager(startMenuManager.getFrame(), 800, 800), 3, 3, 50);
         // Initialize the game
-        SudokuGame game = new SudokuGame(new WindowManager(800, 800), 3, 3, 50);
         game.createBoard(3, 3, 50); // Set up the board
 
         // Generate a solvable Sudoku puzzle
-        BruteForceAlgorithm.createSudoku(game.gameboard);
+        algorithmX.createXSudoku(game.gameboard);
 
         // Remove numbers to generate hints (if not already part of createSudoku)
         // Assuming fillHintList() populates the hintList based on the current board state
@@ -64,7 +76,7 @@ public class UndoTest {
 
         // Validate the Sudoku board
         assertTrue(
-                BruteForceAlgorithm.isValidSudoku(game.gameboard.getBoard()),
+                BruteForceAlgorithm.isValidSudoku(game.gameboard.getGameBoard()),
                 "Applying all hints should result in a valid Sudoku.");
     }
 }

@@ -16,6 +16,16 @@ import org.slf4j.LoggerFactory;
 
         private final int [][] initialBoard;
 
+        public void setBoard(int[][] arr) {
+            for (int i = 0; i < arr.length; i++) {
+                System.arraycopy(arr[i], 0, this.gameBoard[i], 0, arr[i].length);
+            }
+        }
+
+        public int[][] getBoard() {
+            return gameBoard;
+        }
+
 
         public static class BoardNotCreatable extends Exception {
             public BoardNotCreatable(String errorMessage) {
