@@ -68,7 +68,7 @@ public class SudokuGame {
                     startMenu1.initialize();
                 });
 
-        // Set solve button to be disabled at the start of the game
+        // Set the "solve" button to be disabled at the start of the game
         solveButton.setEnabled(false);
 
         startButton.addActionListener(

@@ -29,8 +29,8 @@ public class StartMenuWindowManager {
         difficultyPanel.setOpaque(true);
         inputPanel.setOpaque(true);
         // Panel for fullscreen and settings buttons
-        JPanel fullscreenSettingsPanel = new JPanel(null);
-        fullscreenSettingsPanel.setOpaque(true);
+        JPanel fullscreenPanel = new JPanel(null);
+        fullscreenPanel.setOpaque(true);
 
         mainPanel.setBackground(Color.WHITE);
 
@@ -40,9 +40,9 @@ public class StartMenuWindowManager {
         difficultyPanel.setBounds(50, (frame.getHeight() / 2) + 50, 650, 50);
         difficultyPanel.setBackground(Color.WHITE);
 
-        fullscreenSettingsPanel.setBackground(Color.WHITE);
-        fullscreenSettingsPanel.setBounds(10, 10, 150, 150);
-        mainPanel.add(fullscreenSettingsPanel);
+        fullscreenPanel.setBackground(Color.WHITE);
+        fullscreenPanel.setBounds(10, 10, 150, 150);
+        mainPanel.add(fullscreenPanel);
         buttonPanel.setBounds(
                 (frame.getWidth()) - 250,
                 (frame.getHeight() / 2) - 150,
@@ -58,31 +58,13 @@ public class StartMenuWindowManager {
         mainPanel.add(difficultyPanel);
         mainPanel.add(inputPanel);
 
-        JButton settingsButton = new JButton("Settings");
-        settingsButton.setBounds(10, 5, 120, 30);
         JButton fullscreenButton = new JButton("Toggle Fullscreen");
         fullscreenButton.setBounds(10, 40, 150, 30);
-        fullscreenSettingsPanel.add(settingsButton);
-        fullscreenSettingsPanel.add(fullscreenButton);
-
-        settingsButton.addActionListener(e -> showFrameSizeDialog());
+        fullscreenPanel.add(fullscreenButton);
 
         fullscreenButton.addActionListener(e -> toggleFullscreen());
 
         frame.setContentPane(mainPanel); // Add the main panel to the frame
-    }
-
-    private void showFrameSizeDialog() {
-        String input = JOptionPane.showInputDialog(frame, "Enter new frame size (width,height):");
-        if (input != null && input.matches("\\d+,\\d+")) {
-            String[] parts = input.split(",");
-            int width = Integer.parseInt(parts[0]);
-            int height = Integer.parseInt(parts[1]);
-            frame.setSize(width, height);
-        } else {
-            JOptionPane.showMessageDialog(
-                    frame, "Invalid input. Please enter two numbers separated by a comma.");
-        }
     }
 
     public void toggleFullscreen() {

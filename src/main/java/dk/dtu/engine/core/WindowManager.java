@@ -12,7 +12,6 @@ public class WindowManager {
     private final JPanel mainPanel =
             new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
 
-
     public WindowManager(JFrame frame) {
         this.frame = frame;
         // frame.setSize(width, height);
