@@ -1,29 +1,17 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver.BruteForce;
-
-import dk.dtu.game.core.Board;
-<<<<<<<< HEAD:src/main/java/dk/dtu/game/core/solver/BruteForce/SolverAlgorithm.java
-import dk.dtu.game.core.Config;
-========
-import dk.dtu.game.core.config;
-import dk.dtu.game.core.solver.SolverAlgorithm;
->>>>>>>> origin/28-improve-solver-effeciency:src/main/java/dk/dtu/game/core/solver/BruteForce/BruteForceAlgorithm.java
-
-import java.util.*;
 
 import static java.lang.Math.sqrt;
 
-<<<<<<<< HEAD:src/main/java/dk/dtu/game/core/solver/BruteForce/SolverAlgorithm.java
-public class SolverAlgorithm {
+import dk.dtu.game.core.Board;
+import dk.dtu.game.core.Config;
+import dk.dtu.game.core.solver.SolverAlgorithm;
+import java.util.*;
 
-    static Random random = new Random();
-
-    public static void createSudoku(Board board) {
-========
 public class BruteForceAlgorithm {
 
     public static void createSudoku(Board board) {
         double startTime = System.nanoTime();
->>>>>>>> origin/28-improve-solver-effeciency:src/main/java/dk/dtu/game/core/solver/BruteForce/BruteForceAlgorithm.java
         fillBoard(board);
         double endTime = System.nanoTime();
         double duration = (endTime - startTime);
@@ -59,42 +47,12 @@ public class BruteForceAlgorithm {
         }
     }
 
-<<<<<<<< HEAD:src/main/java/dk/dtu/game/core/solver/BruteForce/SolverAlgorithm.java
-    static boolean checkBoard(int[][] board, int row, int col, int c, int constant) {
-        boolean legalRowCol = true;
-        boolean legalSquare = true;
-        for (int p = 0; p < board.length; p++) {
-            if (board[row][p] == c || board[p][col] == c) {
-                legalRowCol = false;
-                break;
-            }
-        }
-        for (int p = (row / constant) * constant; p < (row / constant) * constant + constant; p++) {
-            for (int q = (col / constant) * constant; q < (col / constant) * constant + constant; q++) {
-                if (board[p][q] == c) {
-                    legalSquare = false;
-                    break;
-                }
-            }
-            if (!legalSquare) break;
-        }
-
-        return legalRowCol && legalSquare;
-    }
-
-========
->>>>>>>> origin/28-improve-solver-effeciency:src/main/java/dk/dtu/game/core/solver/BruteForce/BruteForceAlgorithm.java
     public static int[] pickCell(int[][] arr) {
         ArrayList<int[]> possibleCells = new ArrayList<>();
         int lowestPossibleValue = Integer.MAX_VALUE;
-
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < arr.length; j++) {
                 if (arr[i][j] == 0) {
-<<<<<<<< HEAD:src/main/java/dk/dtu/game/core/solver/BruteForce/SolverAlgorithm.java
-                    int possibleValues = calculatePossibleValues(arr, i, j);
-                    lowestPossibleValue = updatePossibleCells(possibleCells, i, j, possibleValues, lowestPossibleValue);
-========
                     int possibleValues = 0;
                     for (int k = 1; k <= arr.length; k++) {
                         if (SolverAlgorithm.checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
@@ -108,37 +66,16 @@ public class BruteForceAlgorithm {
                     } else if (possibleValues == lowestPossibleValue) {
                         possibleCells.add(new int[]{i, j});
                     }
->>>>>>>> origin/28-improve-solver-effeciency:src/main/java/dk/dtu/game/core/solver/BruteForce/BruteForceAlgorithm.java
                 }
             }
         }
-
         if (possibleCells.isEmpty()) {
-            return new int[0];
+            return null;
         } else {
+            Random random = new Random();
+
             return possibleCells.get(random.nextInt(possibleCells.size()));
         }
-    }
-
-    private static int calculatePossibleValues(int[][] arr, int i, int j) {
-        int possibleValues = 0;
-        for (int k = 1; k <= arr.length; k++) {
-            if (checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
-                possibleValues++;
-            }
-        }
-        return possibleValues;
-    }
-
-    private static int updatePossibleCells(ArrayList<int[]> possibleCells, int i, int j, int possibleValues, int lowestPossibleValue) {
-        if (possibleValues < lowestPossibleValue) {
-            lowestPossibleValue = possibleValues;
-            possibleCells.clear();
-            possibleCells.add(new int[]{i, j});
-        } else if (possibleValues == lowestPossibleValue) {
-            possibleCells.add(new int[]{i, j});
-        }
-        return lowestPossibleValue;
     }
 
     public static int emptyCellCount(int[][] arr) {
@@ -158,40 +95,39 @@ public class BruteForceAlgorithm {
         int[][] arr = new int[size][size];
 
         if (sudoku(arr)) {
-            board.setGameBoard(arr);
+            board.setBoard(arr);
+        } else {
+            System.out.println("No solution exists");
         }
-
     }
 
     public static void removeNumsRecursive(Board board) {
-        int[][] tempBoard = deepCopy(board.getGameBoard());
+        int[][] tempBoard = deepCopy(board.getBoard());
         int[][] initialBoard;
         int numRemoved = 0;
         int maxNumRemoved;
-<<<<<<<< HEAD:src/main/java/dk/dtu/game/core/solver/BruteForce/SolverAlgorithm.java
         String difficulty = Config.getDifficulty();
-========
-        String difficulty = config.getDifficulty();
->>>>>>>> origin/28-improve-solver-effeciency:src/main/java/dk/dtu/game/core/solver/BruteForce/BruteForceAlgorithm.java
 
-        maxNumRemoved = switch (difficulty) {
-            case "medium" -> 60;
-            case "hard" -> 80;
-            case "extreme" -> 200;
-            default -> 30;
-        };
+        maxNumRemoved =
+                switch (difficulty) {
+                    case "medium" -> 60;
+                    case "hard" -> 80;
+                    case "extreme" -> 200;
+                    default -> 30;
+                };
 
         while (numRemoved < maxNumRemoved) {
             int possibleSols = 0;
-            int randRow = random.nextInt() * board.getDimensions();
-            int randCol = random.nextInt() * board.getDimensions();
+            int randRow = (int) (Math.random() * board.getDimensions());
+            int randCol = (int) (Math.random() * board.getDimensions());
 
             int tempNumber = tempBoard[randRow][randCol];
             tempBoard[randRow][randCol] = 0;
 
             for (int i = 1; i <= board.getDimensions(); i++) {
                 initialBoard = deepCopy(tempBoard);
-                if (SolverAlgorithm.checkBoard(initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
+                if (SolverAlgorithm.checkBoard(
+                        initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
                     initialBoard[randRow][randCol] = i;
                     if (sudoku(initialBoard)) {
                         possibleSols++;
@@ -203,7 +139,7 @@ public class BruteForceAlgorithm {
             } else {
                 numRemoved++;
             }
-            board.setGameBoard(tempBoard);
+            board.setBoard(tempBoard);
         }
     }
 
@@ -217,11 +153,7 @@ public class BruteForceAlgorithm {
 
     public static boolean isValidSudoku(int[][] board) {
         int size = board.length; // Assuming square board
-<<<<<<<< HEAD:src/main/java/dk/dtu/game/core/solver/BruteForce/SolverAlgorithm.java
-        int n = (int) Math.sqrt(size); // Calculate the size of sub-grids
-========
         int n = (int) Math.sqrt(size); // Calculate the size of subGrids
->>>>>>>> origin/28-improve-solver-effeciency:src/main/java/dk/dtu/game/core/solver/BruteForce/BruteForceAlgorithm.java
 
         // Check for row and column uniqueness
         for (int i = 0; i < size; i++) {
@@ -230,11 +162,7 @@ public class BruteForceAlgorithm {
             }
         }
 
-<<<<<<<< HEAD:src/main/java/dk/dtu/game/core/solver/BruteForce/SolverAlgorithm.java
-        // Check sub-grids for uniqueness
-========
         // Check subGrids for uniqueness
->>>>>>>> origin/28-improve-solver-effeciency:src/main/java/dk/dtu/game/core/solver/BruteForce/BruteForceAlgorithm.java
         for (int row = 0; row < size; row += n) {
             for (int col = 0; col < size; col += n) {
                 if (!isSubgridUnique(board, row, col, n)) {
@@ -290,8 +218,66 @@ public class BruteForceAlgorithm {
         if (solved) {
             return copiedBoard;
         } else {
-            return new int[0][0];
-
+            return null;
         }
+    }
+
+    public static int checkUniqueSolution(int[][] board) {
+        simplifyBoard(board);
+        return countSolutions(board, 0);
+    }
+
+    private static void simplifyBoard(int[][] board) {
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board[0].length; j++) {
+                    if (board[i][j] == 0) {
+                        List<Integer> possiblePlacements = SolverAlgorithm.getPossiblePlacements(board, i, j);
+                        if (possiblePlacements.size() == 1) {
+                            board[i][j] = possiblePlacements.getFirst();
+                            changed = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static int countSolutions(int[][] board, int count) {
+        if (count > 1) return count;  // Early exit if more than one solution found
+        int[] cell = findLeastConstrainingCell(board);
+        if (cell == null) return count + 1;  // Increment count when a solution is found
+
+        int row = cell[0];
+        int col = cell[1];
+        List<Integer> possiblePlacements = SolverAlgorithm.getPossiblePlacements(board, row, col);
+
+        for (int value : possiblePlacements) {
+            board[row][col] = value;
+            count = countSolutions(board, count);
+            if (count > 1) return count;  // Early exit
+            board[row][col] = 0;  // Undo placement
+        }
+
+        return count;
+    }
+
+    private static int[] findLeastConstrainingCell(int[][] board) {
+        int minOptions = Integer.MAX_VALUE;
+        int[] cell = null;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == 0) {
+                    int numOptions = SolverAlgorithm.getPossiblePlacements(board, i, j).size();
+                    if (numOptions < minOptions) {
+                        minOptions = numOptions;
+                        cell = new int[] {i, j};
+                    }
+                }
+            }
+        }
+        return cell;
     }
 }

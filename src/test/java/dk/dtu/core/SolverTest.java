@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class SolverTest {
 
     @Test
@@ -35,11 +38,12 @@ public class SolverTest {
         System.out.println("After covering:");
         printMatrix(dl);
 
+        assertTrue(isColumnCovered(c));
         c.uncover();
         System.out.println("Uncovered column: " + c.name);
         System.out.println("After uncovering:");
         printMatrix(dl);
-
+        assertFalse(isColumnCovered(c));
     }
 
     public static void printMatrix(DancingLinks dl) {

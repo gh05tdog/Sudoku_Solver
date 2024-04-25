@@ -1,5 +1,7 @@
 package dk.dtu.game.core.solver;
 
+import java.util.List;
+
 public class SolverAlgorithm {
 
     private SolverAlgorithm() {
@@ -36,6 +38,16 @@ public class SolverAlgorithm {
             System.arraycopy(board[i], 0, copy[i], 0, board.length);
         }
         return copy;
+    }
+
+    public static List<Integer> getPossiblePlacements(int[][] board, int row, int col) {
+        List<Integer> possiblePlacements = new java.util.ArrayList<>();
+        for (int c = 1; c <= board.length; c++) {
+            if (checkBoard(board, row, col, c, (int) Math.sqrt(board.length))) {
+                possiblePlacements.add(c);
+            }
+        }
+        return possiblePlacements;
     }
 }
 
