@@ -67,7 +67,7 @@ class SudokuGameTest {
         assertNotNull(game.gameboard, "Game board must not be null after initialization.");
         assertEquals(9, game.gameboard.getDimensions(), "Game board should be initialized as 9x9.");
         assertTrue(game.moveList.isEmpty(), "Move list should be empty initially.");
-        assertFalse(game.gameIsStarted, "Game should not start automatically.");
+        assertFalse(game.isGameStarted(), "Game should not start automatically.");
     }
 
     @Test
@@ -198,7 +198,7 @@ class SudokuGameTest {
     void testStartGame() {
         game.getStartButton().doClick();
         assertTrue(
-                game.gameIsStarted, "Game should be started after clicking the new game button.");
+                game.isGameStarted(), "Game should be started after clicking the new game button.");
         assertNotNull(sodukuBoardCanvasBoard, "Game board should be initialized after starting.");
     }
 
@@ -234,12 +234,12 @@ class SudokuGameTest {
     @Test
     @DisplayName("Test handling of number board clicks")
     void testOnNumbersBoardClicked() {
-        game.gameIsStarted = true;
+        game.setGameIsStarted(true);
         // Simulate clicking at a position corresponding to number 5 in the numberHub
         final int x = 50;
         final int y = 50;
 
-        game.numbers =
+        game.setNumbersBoard(
                 new numberHub(9, 550 / 9) {
                     @Override
                     public int getNumber(int x, int y) {
@@ -251,7 +251,7 @@ class SudokuGameTest {
                         // Mock behavior: Test could verify this call
                         System.out.println("Number highlighted: " + getNumber(x, y));
                     }
-                };
+                });
 
         sodukuBoardCanvasBoard =
                 new SudokuBoardCanvas(3, 3, 550 / 9) {
@@ -291,7 +291,7 @@ class SudokuGameTest {
 
     @Test
     void testMakeNote() {
-        game.gameIsStarted = true;
+        game.setGameIsStarted(true);
         sodukuBoardCanvasBoard.setMarkedCell(0, 0); // Set the top-left cell as marked
         game.getNoteButton().doClick();
 

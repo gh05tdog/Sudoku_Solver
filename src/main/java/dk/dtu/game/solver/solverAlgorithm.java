@@ -9,7 +9,7 @@ import static java.lang.Math.sqrt;
 
 public class solverAlgorithm {
 
-    public static void createSudoku(Board board) throws Exception {
+    public static void createSudoku(Board board) {
         fillBoard(board);
         removeNumsRecursive(board);
     }
