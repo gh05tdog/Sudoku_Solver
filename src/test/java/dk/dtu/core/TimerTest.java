@@ -3,18 +3,17 @@ package dk.dtu.core;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import dk.dtu.engine.utility.Timer;
+import dk.dtu.engine.utility.TimerFunction;
 
 
 import static org.junit.jupiter.api.Assertions.*;
+class TimerTest {
 
-public class timerTest {
-
-    private Timer timer;
+    private TimerFunction timer;
 
     @BeforeEach
     void setUp(){
-        timer = new Timer();
+        timer = new TimerFunction();
     }
 
     @Test

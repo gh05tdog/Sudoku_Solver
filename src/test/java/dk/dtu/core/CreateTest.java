@@ -1,8 +1,10 @@
 package dk.dtu.core;
 
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.Config;
-import dk.dtu.game.solver.SolverAlgorithm;
+
+import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
+import dk.dtu.game.core.config;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -56,7 +58,7 @@ class CreateTest {
         Board board = null;
         try {
             board = new Board(3, 3);
-            SolverAlgorithm.fillBoard(board);
+            BruteForceAlgorithm.fillBoard(board);
 
         } catch (Exception e) {
             fail("Creating or filling the board should not throw an exception.");
@@ -65,7 +67,7 @@ class CreateTest {
         // Ensure the board is completely filled
         for (int x = 0; x < board.getDimensions(); x++) {
             for (int y = 0; y < board.getDimensions(); y++) {
-                assertNotEquals(0, board.getNumber(x, y));
+                assertTrue(board.getNumber(x, y) != 0, "All cells in the board should be filled.");
             }
         }
 
@@ -129,7 +131,7 @@ class CreateTest {
     @DisplayName("Test solving a small 4x4 Sudoku board")
     void testSmallBoardSolving() throws Exception {
         Board board = new Board(2, 2);
-        SolverAlgorithm.fillBoard(board);
+        BruteForceAlgorithm.fillBoard(board);
         assertTrue(isValidSudoku(board), "Small board should adhere to Sudoku rules.");
     }
 
@@ -139,8 +141,8 @@ class CreateTest {
         Board board = new Board(4, 4);
         assertNotNull(board, "Large board should be created successfully.");
         //Fill the board with a correct Sudoku solution first
-        SolverAlgorithm.fillBoard(board);
-        assertTrue(SolverAlgorithm.isValidSudoku(board.getGameBoard()), "Large board should adhere to Sudoku rules.");
+        BruteForceAlgorithm.fillBoard(board);
+        assertTrue(BruteForceAlgorithm.isValidSudoku(board.getBoard()), "Large board should adhere to Sudoku rules.");
         assertEquals(16, board.getDimensions(), "Board should have correct dimensions for an 16x16 board.");
     }
 
@@ -158,7 +160,7 @@ class CreateTest {
     void testValidSudokuValidation() throws Exception {
         // Fill the board with a correct Sudoku solution first
         Board board = new Board(3, 3);
-        SolverAlgorithm.fillBoard(board);
+        BruteForceAlgorithm.fillBoard(board);
         assertTrue(isValidSudoku(board), "Board validation should confirm correct Sudoku.");
     }
 
@@ -168,7 +170,7 @@ class CreateTest {
         Board board = new Board(3, 3);
         board.setNumber(0, 0, 1);
         board.setNumber(0, 1, 1); // Create a conflict
-        assertFalse(SolverAlgorithm.sudoku(board.getGameBoard()), "Solver should detect the board is unsolvable.");
+        assertFalse(BruteForceAlgorithm.sudoku(board.getBoard()), "Solver should detect the board is unsolvable.");
     }
 
     @Test
@@ -176,18 +178,18 @@ class CreateTest {
     void testSolverPerformance() throws Exception {
         Board board = new Board(3, 3);
         long startTime = System.currentTimeMillis();
-        SolverAlgorithm.fillBoard(board);
+        BruteForceAlgorithm.fillBoard(board);
         long endTime = System.currentTimeMillis();
         assertTrue((endTime - startTime) < 1000, "Solver should complete within reasonable time for a standard board.");
     }
 
     @Test
-    @DisplayName("Create sudoku, solve it and test if valid")
+    @DisplayName("Create bruteForce sudoku, solve it and test if valid")
     void testCreateSudoku() throws Exception {
-        Config.setDifficulty("medium");
+        config.setDifficulty("medium");
         Board board = new Board(3, 3);
-        SolverAlgorithm.createSudoku(board);
-        SolverAlgorithm.sudoku(board.getGameBoard());
+        BruteForceAlgorithm.createSudoku(board);
+        BruteForceAlgorithm.sudoku(board.getBoard());
         assertTrue(isValidSudoku(board), "Board should adhere to Sudoku rules.");
     }
 
@@ -195,20 +197,16 @@ class CreateTest {
     @DisplayName("Add wrong numbers and test if sudoku solves correctly")
     void testInvalidSudoku() throws Exception {
         Board board = new Board(3, 3);
-        SolverAlgorithm.createSudoku(board);
-        board.setInitialBoard(board.getGameBoard());
-        int [][] solvedBoard = SolverAlgorithm.getSolutionBoard(board.getInitialBoard());
+        BruteForceAlgorithm.createSudoku(board);
+        board.setInitialBoard(board.getBoard());
+        int [][] solvedBoard = BruteForceAlgorithm.getSolutionBoard(board.getInitialBoard());
 
         board.setNumber(0, 0, 1);
         board.setNumber(0, 1, 1); // Create a conflict
 
-        board.setGameBoard(SolverAlgorithm.getSolutionBoard(board.getInitialBoard()));
+        board.setBoard(BruteForceAlgorithm.getSolutionBoard(board.getInitialBoard()));
 
-        assertArrayEquals(solvedBoard, board.getGameBoard(), "The board should be the same as the solved board");
+        assertArrayEquals(solvedBoard, board.getBoard(), "The board should be the same as the solved board");
 
     }
-
-
-
-
 }
