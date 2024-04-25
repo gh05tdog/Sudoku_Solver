@@ -1,12 +1,15 @@
+/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import javax.swing.*;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
+import java.util.Set;
+import javax.swing.*;
 
 class Cell {
     boolean isMarked = false;
@@ -17,9 +20,12 @@ class Cell {
     boolean isVisualizingHint = false;
     boolean wasHighlightedBeforeHint = false;
 
-    public Cell() {
+    private Set<Integer> notes = new HashSet<>();
+    Set<Integer> hideList = new HashSet<>();
 
-    }
+    boolean shouldHideNotes = false;
+
+    public Cell() {}
 
     public void startHintVisualization() {
         wasHighlightedBeforeHint = isHighlighted;
@@ -34,9 +40,9 @@ class Cell {
 
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
         if (isHighlighted) {
-            g.setColor(Color.LIGHT_GRAY);
+            g.setColor(new Color(225, 223, 221));
             if (isMarked) {
-                g.setColor(Color.DARK_GRAY);
+                g.setColor(new Color(149, 149, 149));
             }
         } else {
             g.setColor(backgroundColor);
@@ -52,7 +58,9 @@ class Cell {
             Font font = new Font("Arial", Font.BOLD, cellSize / 2);
             g.setFont(font);
             String numberStr = Integer.toString(number);
-            g.drawString(numberStr, x + cellSize / 2 - g.getFontMetrics().stringWidth(numberStr) / 2,
+            g.drawString(
+                    numberStr,
+                    x + cellSize / 2 - g.getFontMetrics().stringWidth(numberStr) / 2,
                     y + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
         }
 
@@ -60,6 +68,49 @@ class Cell {
         g.drawRect(x, y, cellSize, cellSize);
     }
 
+    public void paintNotes(Graphics g, int x, int y, int cellSize) {
+        if (shouldHideNotes) {
+            return;
+        }
+        g.setColor(new Color(21, 80, 213, 255));
+        Font font = new Font("Arial", Font.BOLD, cellSize / 5);
+        g.setFont(font);
+        int subCellSize = cellSize / 3; // Divide the cellSize by 3 to get the size of each sub-cell
+        int offsetX =
+                (subCellSize / 2) + 2; // Half of the subCellSize to center the number horizontally
+        int offsetY = (cellSize / 6 + subCellSize / 2) - 5; // Position for vertical centering
+
+        for (int note : notes) {
+            String noteStr = Integer.toString(note);
+            if (hideList.contains(note) || note == 0) {
+                continue;
+            }
+            int row = (note - 1) / 3;
+            int col = (note - 1) % 3;
+            g.drawString(
+                    noteStr,
+                    x + col * subCellSize + offsetX - g.getFontMetrics().stringWidth(noteStr) / 2,
+                    y + row * subCellSize + offsetY);
+        }
+        g.setColor(Color.BLACK);
+        g.drawRect(x, y, cellSize, cellSize);
+    }
+
+    public void addNote(int note) {
+        notes.add(note);
+    }
+
+    public void clearNotes() {
+        notes.clear();
+    }
+
+    public void removeNote(int note) {
+        notes.remove(note);
+    }
+
+    public Set<Integer> getNotes() {
+        return notes;
+    }
 
     public void setBackgroundColor(Color color) {
         backgroundColor = color;
@@ -72,7 +123,8 @@ class Cell {
     public void setNumber(int number) {
         this.number = number;
     }
-    public int getNumber(){
+
+    public int getNumber() {
         return number;
     }
 }
@@ -105,6 +157,7 @@ public class SudokuBoardCanvas extends JPanel {
                 int x = col * cellSize;
                 int y = row * cellSize;
                 cell.paintCell(g, x, y, cellSize, chosenNumber);
+                cell.paintNotes(g, x, y, cellSize);
             }
         }
         drawSubGrids(g);
@@ -148,7 +201,9 @@ public class SudokuBoardCanvas extends JPanel {
 
             // Highlight the subgrid
             for (int subRow = subGridRowStart; subRow < subGridRowStart + subGridSize; subRow++) {
-                for (int subCol = subGridColStart; subCol < subGridColStart + subGridSize; subCol++) {
+                for (int subCol = subGridColStart;
+                        subCol < subGridColStart + subGridSize;
+                        subCol++) {
                     cells[subRow][subCol].setHighlighted(highlight);
                 }
             }
@@ -166,29 +221,41 @@ public class SudokuBoardCanvas extends JPanel {
         Cell cell = cells[row][col];
         cell.startHintVisualization();
 
-        ActionListener fadeAction = new ActionListener() {
-            private int step = 0;
+        ActionListener fadeAction =
+                new ActionListener() {
+                    private int step = 0;
 
-            public void actionPerformed(ActionEvent e) {
-                if (step < totalSteps) {
-                    // Calculate the step color
-                    int r = startColor.getRed() + (Color.WHITE.getRed() - startColor.getRed()) * step / totalSteps;
-                    int g = startColor.getGreen() + (Color.WHITE.getGreen() - startColor.getGreen()) * step / totalSteps;
-                    int b = startColor.getBlue() + (Color.WHITE.getBlue() - startColor.getBlue()) * step / totalSteps;
-                    Color stepColor = new Color(r, g, b);
-                    cell.setBackgroundColor(stepColor);
-                    repaint();
-                    step++;
-                } else {
-                    // Stop the timer and reset the background color to white at the end
-                    ((Timer) e.getSource()).stop();
-                    cell.setBackgroundColor(Color.WHITE);
-                    cell.endHintVisualization();
-                    repaint();
-
-                }
-            }
-        };
+                    public void actionPerformed(ActionEvent e) {
+                        if (step < totalSteps) {
+                            // Calculate the step color
+                            int r =
+                                    startColor.getRed()
+                                            + (Color.WHITE.getRed() - startColor.getRed())
+                                                    * step
+                                                    / totalSteps;
+                            int g =
+                                    startColor.getGreen()
+                                            + (Color.WHITE.getGreen() - startColor.getGreen())
+                                                    * step
+                                                    / totalSteps;
+                            int b =
+                                    startColor.getBlue()
+                                            + (Color.WHITE.getBlue() - startColor.getBlue())
+                                                    * step
+                                                    / totalSteps;
+                            Color stepColor = new Color(r, g, b);
+                            cell.setBackgroundColor(stepColor);
+                            repaint();
+                            step++;
+                        } else {
+                            // Stop the timer and reset the background color to white at the end
+                            ((Timer) e.getSource()).stop();
+                            cell.setBackgroundColor(Color.WHITE);
+                            cell.endHintVisualization();
+                            repaint();
+                        }
+                    }
+                };
 
         new Timer(delay, fadeAction).start();
     }
@@ -206,7 +273,7 @@ public class SudokuBoardCanvas extends JPanel {
             for (int j = 0; j < gridSize; j++) {
                 if (cells[i][j].isMarked) {
                     System.out.println("Getting the marked cell " + i + " " + j);
-                    return new int[]{i, j};
+                    return new int[] {i, j};
                 }
             }
         }
@@ -244,14 +311,55 @@ public class SudokuBoardCanvas extends JPanel {
     public void setChosenNumber(int number) {
         chosenNumber = number;
     }
-    public int getMarkedNumber(){
-        for(int i = 0; i < gridSize; i++){
-            for(int j = 0; j < gridSize; j++){
-                if(cells[i][j].isMarked){
+
+    public int getMarkedNumber() {
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                if (cells[i][j].isMarked) {
                     return cells[i][j].getNumber();
                 }
             }
         }
         return 0;
+    }
+
+    public void addNoteToCell(int row, int col, int note) {
+        cells[row][col].addNote(note);
+    }
+
+    public void clearNotes() {
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                cells[i][j].clearNotes();
+            }
+        }
+    }
+
+    public void removeNoteFromCell(int row, int col, int note) {
+        cells[row][col].removeNote(note);
+    }
+
+    public Set<Integer> getNotesInCell(int row, int col) {
+        return cells[row][col].getNotes();
+    }
+
+    public void setHiddenProperty(int row, int col, boolean hideNotes) {
+        cells[row][col].shouldHideNotes = hideNotes;
+    }
+
+    public void addToHideList(int row, int col, int number) {
+        cells[row][col].hideList.add(number);
+    }
+
+    public void removeFromHideList(int row, int col, int number) {
+        cells[row][col].hideList.remove(number);
+    }
+
+    public Set<Integer> getHideList(int row, int col) {
+        return cells[row][col].hideList;
+    }
+
+    public boolean getHiddenProperty(int row, int col) {
+        return cells[row][col].shouldHideNotes;
     }
 }
