@@ -6,6 +6,7 @@ import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.game.solver.solverAlgorithm;
+import dk.dtu.engine.utility.Timer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,6 +26,7 @@ public class SudokuGame {
     KeyboardListener keyboardListener = new KeyboardListener(this);
     public SudokuBoardCanvas board;
     public numberHub numbers;
+    public Timer timer;
     public boolean gameIsStarted = false;
 
 
@@ -53,7 +55,7 @@ public class SudokuGame {
             board.removeNumber(row, column);
             board.highlightCell(row, column, true);
             System.out.println("highlighted cell: " + Arrays.toString(board.getMarkedCell()));
-
+            checkCompletionAndOfferNewGame();
         } else {
             System.out.println("Click outside the Sudoku board or on another component");
         }
@@ -190,6 +192,9 @@ public class SudokuGame {
         numbers.addMouseListener(mouseActionListener);
         numbers.addKeyListener(keyboardListener);
 
+        timer = new Timer();
+        timer.setFocusable(true);
+
 
     }
 
@@ -197,7 +202,9 @@ public class SudokuGame {
         createBoard(n, k, cellSize);
         displayButtons();
         windowManager.drawBoard(board);
-        windowManager.drawNumbers(numbers);
+        windowManager.setupNumberAndTimerPanel(timer, numbers);
+        windowManager.layoutComponents(timer, numbers);
+
     }
 
     public void newGame() throws Exception {
@@ -205,12 +212,15 @@ public class SudokuGame {
         hintList.clear();
         arrayMovelist.clear();
         moveList.clear();
+        timer.stop();
+        timer.reset();
         dk.dtu.game.solver.solverAlgorithm.createSudoku(gameboard);
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
         gameIsStarted = true;
         gameboard.printBoard();
         fillHintList();
         System.out.println(hintList.size());
+        timer.start();
 
 
     }
@@ -280,8 +290,10 @@ public class SudokuGame {
 
     public void checkCompletionAndOfferNewGame() {
         if (isSudokuCompleted()) {
+            timer.stop();
             Object[] options = {"New Game", "Close"};
-            int response = JOptionPane.showOptionDialog(null, "Congratulations! You've completed the Sudoku!\nWould you like to start a new game?", "Game Completed",
+            int response = JOptionPane.showOptionDialog(null, "Congratulations! You've completed the Sudoku in\n" + timer.getTimeString() + "\n\n" +
+                            "Would you like to start a new game?", "Game Completed",
                     JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
             if (response == JOptionPane.YES_OPTION) {
@@ -324,16 +336,21 @@ public class SudokuGame {
             //set the numbers to the initial board
             gameIsStarted = false;
             board.clearNotes();
+            timer.stop();
             gameboard.setBoard(deepCopyBoard(gameboard.getInitialBoard()));
             board.requestFocusInWindow();
             gameIsStarted = true;
             windowManager.updateBoard();
+            timer.reset();
+            timer.start();
         });
 
         solveButton.addActionListener(e -> {
             board.clearNotes();
+            timer.stop();
             gameboard.setBoard(Objects.requireNonNull(solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard())));
             checkCompletionAndOfferNewGame();
+
         });
 
         newGameButton.addActionListener(e -> {
