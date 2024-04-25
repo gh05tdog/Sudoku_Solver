@@ -47,10 +47,10 @@ public class StartMenu {
 
     public void startGame() throws Board.BoardNotCreatable {
 
-        logger.debug("startGame: {} {} {} {}", config.getK(), config.getN(), config.getDifficulty(), config.getCellSize());
-        int n = config.getN();
-        int k = config.getK();
-        int cellSize = config.getCellSize();
+        logger.debug("startGame: {} {} {} {}", Config.getK(), Config.getN(), Config.getDifficulty(), Config.getCellSize());
+        int n = Config.getN();
+        int k = Config.getK();
+        int cellSize = Config.getCellSize();
         WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
             GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
@@ -80,9 +80,9 @@ public class StartMenu {
         updateCustomBoardPanel(2, 2);
 
         threeByThree.updateBackgroundColor(Color.GRAY);
-        config.setK(3);
-        config.setN(3);
-        config.setCellSize(550 / (config.getK() * config.getN()));
+        Config.setK(3);
+        Config.setN(3);
+        Config.setCellSize(550 / (Config.getK() * Config.getN()));
 
         addChangeListenerToField(inputNField);
         addChangeListenerToField(inputKField);
@@ -189,9 +189,9 @@ public class StartMenu {
                             if (source == boardPanels[i]) {
                                 int n = boardConfigs[i][0];
                                 int k = boardConfigs[i][1];
-                                config.setN(n);
-                                config.setK(k);
-                                config.setCellSize(550 / (n * k));
+                                Config.setN(n);
+                                Config.setK(k);
+                                Config.setCellSize(550 / (n * k));
                                 break;
                             }
                         }
@@ -219,7 +219,7 @@ public class StartMenu {
 
     private void addDifficultyPanelButtons() {
         // This method adds the difficulty buttons to the start menu
-        config.setDifficulty("medium");
+        Config.setDifficulty("medium");
         difficultyGroup.add(easyButton);
         difficultyGroup.add(mediumButton);
         difficultyGroup.add(hardButton);
@@ -238,7 +238,7 @@ public class StartMenu {
                 e -> {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
                         easyButton.setBackground(Color.GRAY);
-                        config.setDifficulty("easy");
+                        Config.setDifficulty("easy");
                     } else {
                         easyButton.setBackground(Color.WHITE);
                     }
@@ -247,7 +247,7 @@ public class StartMenu {
                 e -> {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
                         mediumButton.setBackground(Color.GRAY);
-                        config.setDifficulty("medium");
+                        Config.setDifficulty("medium");
                     } else {
                         mediumButton.setBackground(Color.WHITE);
                     }
@@ -256,7 +256,7 @@ public class StartMenu {
                 e -> {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
                         hardButton.setBackground(Color.GRAY);
-                        config.setDifficulty("hard");
+                        Config.setDifficulty("hard");
                     } else {
                         hardButton.setBackground(Color.WHITE);
                     }
@@ -265,7 +265,7 @@ public class StartMenu {
                 e -> {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
                         extremeButton.setBackground(Color.GRAY);
-                        config.setDifficulty("extreme");
+                        Config.setDifficulty("extreme");
                     } else {
                         extremeButton.setBackground(Color.WHITE);
                     }

@@ -1,7 +1,7 @@
 package dk.dtu.core;
 
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.config;
+import dk.dtu.game.core.Config;
 import dk.dtu.game.solver.solverAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -184,7 +184,7 @@ class CreateTest {
     @Test
     @DisplayName("Create sudoku, solve it and test if valid")
     void testCreateSudoku() throws Exception {
-        config.setDifficulty("medium");
+        Config.setDifficulty("medium");
         Board board = new Board(3, 3);
         solverAlgorithm.createSudoku(board);
         solverAlgorithm.sudoku(board.getGameBoard());
