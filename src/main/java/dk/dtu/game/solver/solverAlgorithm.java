@@ -1,7 +1,7 @@
 package dk.dtu.game.solver;
 
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.config;
+import dk.dtu.game.core.Config;
 
 import java.util.*;
 
@@ -124,7 +124,7 @@ public class solverAlgorithm {
         int[][] initialBoard;
         int numRemoved = 0;
         int maxNumRemoved = 0;
-        String difficulty = config.getDifficulty();
+        String difficulty = Config.getDifficulty();
 
         maxNumRemoved = switch (difficulty) {
             case "easy" -> 30;

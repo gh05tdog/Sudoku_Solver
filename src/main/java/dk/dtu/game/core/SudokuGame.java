@@ -7,7 +7,7 @@ import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
-import dk.dtu.engine.utility.Timer;
+import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.solver.solverAlgorithm;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -32,7 +32,7 @@ public class SudokuGame {
 
     private SudokuBoardCanvas board;
     private numberHub numbers;
-    private Timer timer;
+    private TimerFunction timer;
     private boolean gameIsStarted = false;
 
     private JButton startButton;
@@ -213,7 +213,7 @@ public class SudokuGame {
         numbers.addMouseListener(mouseActionListener);
         numbers.addKeyListener(keyboardListener);
 
-        timer = new Timer();
+        timer = new TimerFunction();
         timer.setFocusable(true);
     }
 
