@@ -32,6 +32,7 @@ public class SudokuGame {
     private JButton restartButton;
     private JButton solveButton;
     private JButton eraseButton;
+
     private boolean isTestMode = false;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
@@ -52,6 +53,7 @@ public class SudokuGame {
         eraseButton = createButton("Erase", 30);
         undoButton = createButton("Undo", 300);
         hintButton = createButton("Hint", 30);
+        JButton toogleFullScreenButton = createButton("Toggle Full Screen", 30);
         JButton goBackButton = createButton("Menu", 30);
         // Go back to the start menu
         goBackButton.addActionListener(
@@ -135,6 +137,28 @@ public class SudokuGame {
                     provideHint();
                 });
 
+        toogleFullScreenButton.addActionListener(
+                e -> {
+                    JFrame frame = windowManager.getFrame();
+                    GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                    GraphicsDevice device = env.getDefaultScreenDevice();
+                    if (device.isFullScreenSupported()) {
+                        if (frame.isUndecorated()) {
+                            device.setFullScreenWindow(null);
+                            frame.dispose();
+                            frame.setUndecorated(false);
+                            frame.setSize(1000, 700);
+                            frame.setResizable(false);
+                            frame.setVisible(true);
+                        } else {
+                            frame.dispose();
+                            frame.setUndecorated(true);
+                            device.setFullScreenWindow(frame);
+                            frame.setResizable(false);
+                        }
+                    }
+                });
+
         windowManager.addComponentToButtonPanel(startButton);
         windowManager.addComponentToButtonPanel(
                 Box.createRigidArea(new Dimension(10, 10))); // 10-pixel vertical spacing
@@ -151,6 +175,8 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(hintButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(goBackButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
+        windowManager.addComponentToButtonPanel(toogleFullScreenButton);
     }
 
     public void setTestMode(boolean isTest) {
