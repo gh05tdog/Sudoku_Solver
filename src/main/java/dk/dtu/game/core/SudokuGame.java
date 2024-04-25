@@ -6,7 +6,7 @@ import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.game.core.solver.AlgorithmX.algorithmX;
-
+import dk.dtu.engine.utility.Timer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -15,17 +15,19 @@ import java.util.*;
 public class SudokuGame {
     public final Board gameboard;
     private final WindowManager windowManager;
-    private final Stack<Move> moveList = new Stack<>();
+    public final Stack<Move> moveList = new Stack<>();
     private final ArrayList<Integer> arrayMovelist = new ArrayList<>();
     private final ArrayList<Move> hintList = new ArrayList<>();
     int gridSize; // or 9 for a standard Sudoku
     int cellSize; // Adjust based on your window size and desired grid size
-    int placeableNumber = 0;
+    public int placeableNumber = 0;
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
-    private SudokuBoardCanvas board;
-    private numberHub numbers;
-    private boolean gameIsStarted = false;
+    public SudokuBoardCanvas board;
+    public numberHub numbers;
+    public Timer timer;
+    public boolean gameIsStarted = false;
+    private JButton startButton, undoButton, hintButton, restartButton, solveButton, newGameButton, eraseButton;
 
     public static int [][] solvedBoard;
 
@@ -37,7 +39,6 @@ public class SudokuGame {
     }
 
     public void onSudokuBoardClicked(int x, int y) {
-        // Calculate the column and row based on the adjusted click location
         int row = y / (board.getWidth() / gridSize); // Adjust for variable cell size
         int column = x / (board.getHeight() / gridSize); // Adjust for variable cell size
         board.setMarkedCell(row, column);
@@ -47,10 +48,10 @@ public class SudokuGame {
                 int previousNumber = gameboard.getNumber(row, column);
                 board.setCellNumber(row, column, placeableNumber);
                 gameboard.setNumber(row, column, placeableNumber);
-                gameboard.printBoard();
                 Move move = moveList.push(new Move(row, column, placeableNumber, previousNumber));
                 arrayMovelist.add(move.getNumber());
                 System.out.println(Arrays.toString(arrayMovelist.toArray()));
+                checkCompletionAndOfferNewGame();
             }
         }
 
@@ -58,12 +59,12 @@ public class SudokuGame {
 
         // Check if the adjusted click is within the bounds of the Sudoku board
         if (column >= 0 && column < gridSize && row >= 0 && row < gridSize) {
-            int cellIndex = row * gridSize + column + 1; // Calculate the cell index
-            System.out.println("Cell " + cellIndex + " clicked. Row: " + (row + 1) + ", Column: " + (column + 1));
+            int cellIndex = row * gridSize + column; // Calculate the cell index
+            System.out.println("Cell " + cellIndex + " clicked. Row: " + (row) + ", Column: " + (column));
             board.removeNumber(row, column);
             board.highlightCell(row, column, true);
             System.out.println("highlighted cell: " + Arrays.toString(board.getMarkedCell()));
-
+            checkCompletionAndOfferNewGame();
         } else {
             System.out.println("Click outside the Sudoku board or on another component");
         }
@@ -93,8 +94,8 @@ public class SudokuGame {
         checkCompletionAndOfferNewGame();
     }
 
-    private void eraseNumber() {
-        if (board.isACellHighligthed()) {
+    public void eraseNumber() {
+        if (board.isACellMarked()) {
             int[] cell = board.getMarkedCell();
             int row = cell[0];
             int col = cell[1];
@@ -146,6 +147,9 @@ public class SudokuGame {
         numbers.addMouseListener(mouseActionListener);
         numbers.addKeyListener(keyboardListener);
 
+        timer = new Timer();
+        timer.setFocusable(true);
+
 
     }
 
@@ -153,18 +157,23 @@ public class SudokuGame {
         createBoard(n, k, cellSize);
         displayButtons();
         windowManager.drawBoard(board);
-        windowManager.drawNumbers(numbers);
+        windowManager.setupNumberAndTimerPanel(timer, numbers);
+        windowManager.layoutComponents(timer, numbers);
+
     }
 
-    private void newGame() throws Exception {
+    public void newGame() throws Exception {
         gameboard.clear();
         hintList.clear();
         algorithmX.createXSudoku(gameboard);
         solvedBoard = algorithmX.getSolutionBoard();
+        timer.stop();
+        timer.reset();
         gameIsStarted = true;
         gameboard.printBoard();
         fillHintList();
         System.out.println(hintList.size());
+        timer.start();
 
     }
 
@@ -234,8 +243,10 @@ public class SudokuGame {
 
     public void checkCompletionAndOfferNewGame() {
         if (isSudokuCompleted()) {
+            timer.stop();
             Object[] options = {"New Game", "Close"};
-            int response = JOptionPane.showOptionDialog(null, "Congratulations! You've completed the Sudoku!\nWould you like to start a new game?", "Game Completed",
+            int response = JOptionPane.showOptionDialog(null, "Congratulations! You've completed the Sudoku in\n" + timer.getTimeString() + "\n\n" +
+                            "Would you like to start a new game?", "Game Completed",
                     JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
             if (response == JOptionPane.YES_OPTION) {
@@ -251,13 +262,13 @@ public class SudokuGame {
 
 
     private void displayButtons() {
-        JButton startButton = createButton("Start", 100, 30);
-        JButton restartButton = createButton("Restart", 100, 30);
-        JButton solveButton = createButton("Solve", 100, 30);
-        JButton newGameButton = createButton("New Game", 100, 30);
-        JButton eraseButton = createButton("Erase", 100, 30);
-        JButton undoButton = createButton("Undo", 100, 300);
-        JButton hintButton = createButton("Hint", 100, 30);
+        startButton = createButton("Start", 100, 30);
+        restartButton = createButton("Restart", 100, 30);
+        solveButton = createButton("Solve", 100, 30);
+        newGameButton = createButton("New Game", 100, 30);
+        eraseButton = createButton("Erase", 100, 30);
+        undoButton = createButton("Undo", 100, 300);
+        hintButton = createButton("Hint", 100, 30);
 
         //Set solvebutton to be disabled at the start of the game
         solveButton.setEnabled(false);
@@ -277,16 +288,20 @@ public class SudokuGame {
         restartButton.addActionListener(e -> {
             //set the numbers to the initial board
             gameIsStarted = false;
+            timer.stop();
             gameboard.setBoard(deepCopyBoard(gameboard.getInitialBoard()));
             board.requestFocusInWindow();
             gameIsStarted = true;
             windowManager.updateBoard();
+            timer.reset();
+            timer.start();
         });
 
-
         solveButton.addActionListener(e -> {
+            timer.stop();
             gameboard.setBoard(Objects.requireNonNull(solvedBoard));
             checkCompletionAndOfferNewGame();
+
         });
 
         newGameButton.addActionListener(e -> {
@@ -331,17 +346,12 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(hintButton);
     }
 
-
     public int[][] deepCopyBoard(int[][] original) {
         int[][] copy = new int[original.length][original.length];
         for (int i = 0; i < original.length; i++) {
             System.arraycopy(original[i], 0, copy[i], 0, original.length);
         }
         return copy;
-    }
-
-    public void onMouseClicked(int x, int y) {
-        System.out.println("Mouse clicked at: " + x + ", " + y);
     }
 
     public void render() {
@@ -353,7 +363,6 @@ public class SudokuGame {
 
     public void update() {
         render();
-
     }
 
     //Next function is simulating the move typed from the keyboard:
@@ -378,6 +387,24 @@ public class SudokuGame {
         numbers.highlightNumber(x, y);
         int chosenNumber = numbers.getNumber(x, y);
         board.setChosenNumber(chosenNumber);
+    }
 
+    public JButton getUndoButton(){
+        return undoButton;
+    }
+    public JButton getHintButton(){
+        return hintButton;
+    }
+    public JButton getNewGameButton(){
+        return newGameButton;
+    }
+    public JButton getEraseButton(){
+        return eraseButton;
+    }
+    public JButton getStartButton(){
+        return startButton;
+    }
+    public JButton getRestartButton(){
+        return restartButton;
     }
 }

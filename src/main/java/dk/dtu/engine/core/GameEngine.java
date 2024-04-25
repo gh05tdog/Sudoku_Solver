@@ -26,14 +26,6 @@ public class GameEngine implements Runnable {
         gameThread.start();
     }
 
-    public void stop() {
-        running = false;
-        try {
-            gameThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void run() {
@@ -69,8 +61,6 @@ public class GameEngine implements Runnable {
                 // One second has passed - could be used to update a FPS counter, etc.
             }
         }
-
-        cleanup();
     }
 
     private void initialize() throws Exception {
@@ -78,14 +68,4 @@ public class GameEngine implements Runnable {
         sudokuGame.initialize(this.n, this.k, this.cellSize); // Initialize game-specific components
     }
 
-    private void cleanup() {
-        // Perform cleanup tasks, such as saving the game state or releasing resources
-    }
-
-    // Getters and Setters
-    public WindowManager getWindowManager() {
-        return windowManager;
-    }
-
-    // Other getters for game state, if necessary
 }

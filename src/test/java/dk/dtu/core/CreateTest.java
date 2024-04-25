@@ -1,7 +1,10 @@
 package dk.dtu.core;
 
 import dk.dtu.game.core.Board;
+
 import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
+import dk.dtu.game.core.config;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -183,6 +186,7 @@ class CreateTest {
     @Test
     @DisplayName("Create bruteForce sudoku, solve it and test if valid")
     void testCreateSudoku() throws Exception {
+        config.setDifficulty("medium");
         Board board = new Board(3, 3);
         BruteForceAlgorithm.createSudoku(board);
         BruteForceAlgorithm.sudoku(board.getBoard());

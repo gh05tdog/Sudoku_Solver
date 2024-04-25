@@ -84,17 +84,6 @@ public class CustomBoardPanel extends JPanel {
         g2d.setStroke(defaultStroke);
     }
 
-
-
-    // No change needed for these methods
-    public void setSelection() {
-        this.updateBackgroundColor(Color.GRAY);
-    }
-
-    public void removeSelection() {
-        this.updateBackgroundColor(Color.WHITE);
-    }
-
     public int getN (){
         return n;
     }

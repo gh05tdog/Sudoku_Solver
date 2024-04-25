@@ -12,6 +12,7 @@ public class numberHub extends JPanel {
     private int[][] numberArray;
     private static final float STROKE_WIDTH = 3.0f; // Define the thickness of the stroke
 
+    private static final int MIN_CELL_SIZE = 50; // Minimum cell size to maintain visibility
     private static final Color HIGHLIGHT_COLOR = Color.LIGHT_GRAY;
     private static final Color NON_HIGHLIGHT_COLOR = Color.WHITE;
 
@@ -19,10 +20,11 @@ public class numberHub extends JPanel {
 
     public numberHub(int gridSize, int cellSize) {
         this.gridSize = gridSize;
-        this.cellSize = cellSize;
         this.subGrid = (int) Math.sqrt(gridSize);
         this.numberArray = new int[subGrid][subGrid];
-        setPreferredSize(new Dimension(subGrid*(cellSize), (subGrid+2)*cellSize));
+        this.cellSize = Math.max(cellSize, MIN_CELL_SIZE); // Ensure cellSize is not too small
+        setPreferredSize(new Dimension(subGrid * this.cellSize, (subGrid + 2) * this.cellSize));
+
 
         for(int i = 0; i<subGrid; i++){
             for(int j = 0; j<subGrid; j++) {
@@ -30,7 +32,7 @@ public class numberHub extends JPanel {
                 numberArray[i][j] = j + i * subGrid + 1;
             }
         }
-
+        setAlignmentX(Component.CENTER_ALIGNMENT);
 
     }
 
