@@ -14,9 +14,13 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class StartMenu {
 
-    private final StartMenuWindowManager startMenu;
+    private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
+
+    private final StartMenuWindowManager startMenuWindowManager;
     private final JToggleButton startButton = new JToggleButton("Start Game");
     private final JToggleButton easyButton = new JToggleButton("Easy");
     private final JToggleButton mediumButton = new JToggleButton("Medium", true);
@@ -36,28 +40,26 @@ public class StartMenu {
 
     private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
 
-    public StartMenu(StartMenuWindowManager startMenu) {
-        this.startMenu = startMenu;
-        startMenu.display();
+    public StartMenu(StartMenuWindowManager startMenuWindowManager) {
+        this.startMenuWindowManager = startMenuWindowManager;
+        startMenuWindowManager.display();
     }
 
-    public void startGame() throws Exception {
-        System.out.println(
-                "startGame:"
-                        + config.getK()
-                        + " "
-                        + config.getN()
-                        + " "
-                        + config.getDifficulty()
-                        + " "
-                        + config.getCellSize());
+    public void startGame() throws Board.BoardNotCreatable {
+
+        logger.debug("startGame: {} {} {} {}", config.getK(), config.getN(), config.getDifficulty(), config.getCellSize());
         int n = config.getN();
         int k = config.getK();
         int cellSize = config.getCellSize();
-        WindowManager windowManager = new WindowManager(startMenu.getFrame(), 1000, 1000);
-        GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
-        windowManager.display();
-        gameEngine.start();
+        WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
+        try {
+            GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
+            windowManager.display();
+            gameEngine.start();
+        } catch (Board.BoardNotCreatable boardNotCreatable) {
+            throw new Board.BoardNotCreatable("This board is not possible to create");
+        }
+
     }
 
     public void updateCustomBoardPanel(int n, int k) {
@@ -116,7 +118,7 @@ public class StartMenu {
                                 } catch (NumberFormatException ex) {
                                     // Handle the case where one of the fields is empty or does not
                                     // contain a valid integer
-                                    System.out.println("Invalid input: " + ex.getMessage());
+                                    logger.error("Invalid input: {}", ex.getMessage());
                                 }
                             }
                         });
@@ -146,7 +148,7 @@ public class StartMenu {
                     });
 
             field.setBounds(i == 0 ? 5 : 85, 5, 50, 40);
-            startMenu.addComponent(field, startMenu.getInputPanel());
+            startMenuWindowManager.addComponent(field, startMenuWindowManager.getInputPanel());
         }
     }
 
@@ -162,15 +164,16 @@ public class StartMenu {
 
                         try {
                             startGame();
-                        } catch (Exception ex) {
-                            throw new RuntimeException("Error is:" + ex);
+                        } catch (Board.BoardNotCreatable ex) {
+                            logger.error("Board not creatable: {}", ex.getMessage());
                         }
+
 
                     } else {
                         startButton.setBackground(Color.WHITE);
                     }
                 });
-        startMenu.addComponent(startButton, startMenu.getButtonPanel());
+        startMenuWindowManager.addComponent(startButton, startMenuWindowManager.getButtonPanel());
     }
 
     private void addSizePanelButtons() {
@@ -208,8 +211,8 @@ public class StartMenu {
             panel.setBounds(xPosition, 5, 150, 150);
             xPosition += 150 + 5; // Increment for the next panel
 
-            startMenu.addComponent(
-                    panel, startMenu.getSizePanel()); // Add the panel to the size panel
+            startMenuWindowManager.addComponent(
+                    panel, startMenuWindowManager.getSizePanel()); // Add the panel to the size panel
             sizeGroup.addComponent(panel); // Add the panel to the custom component group
         }
     }
@@ -278,10 +281,10 @@ public class StartMenu {
                 twoBytwo.getWidth(),
                 40);
 
-        startMenu.addComponent(easyButton, startMenu.getDifficultyPanel());
-        startMenu.addComponent(mediumButton, startMenu.getDifficultyPanel());
-        startMenu.addComponent(hardButton, startMenu.getDifficultyPanel());
-        startMenu.addComponent(extremeButton, startMenu.getDifficultyPanel());
+        startMenuWindowManager.addComponent(easyButton, startMenuWindowManager.getDifficultyPanel());
+        startMenuWindowManager.addComponent(mediumButton, startMenuWindowManager.getDifficultyPanel());
+        startMenuWindowManager.addComponent(hardButton, startMenuWindowManager.getDifficultyPanel());
+        startMenuWindowManager.addComponent(extremeButton, startMenuWindowManager.getDifficultyPanel());
     }
 
     // Getters used for testing the startMenu

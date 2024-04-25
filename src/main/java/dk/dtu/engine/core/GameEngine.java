@@ -1,5 +1,6 @@
 package dk.dtu.engine.core;
 
+import dk.dtu.game.core.Board;
 import dk.dtu.game.core.SudokuGame;
 
 public class GameEngine implements Runnable {
@@ -10,12 +11,16 @@ public class GameEngine implements Runnable {
     private final int k;
     private final int cellSize;
 
-    public GameEngine(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
+    public GameEngine(WindowManager windowManager, int n, int k, int cellSize) throws Board.BoardNotCreatable {
         this.n = n;
         this.k = k;
         this.cellSize = cellSize;
         this.windowManager = windowManager; // Set your desired window size
-        this.sudokuGame = new SudokuGame(this.windowManager,n,k,cellSize); // Set your desired game parameters
+        try {
+            this.sudokuGame = new SudokuGame(this.windowManager,n,k,cellSize); // Set your desired game parameters
+        } catch (Board.BoardNotCreatable boardNotCreatable) {
+           throw new Board.BoardNotCreatable("This board is not possible to create");
+        }
     }
 
     public void start() {

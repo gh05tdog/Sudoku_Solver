@@ -1,17 +1,19 @@
 /* (C)2024 */
 package dk.dtu.engine.graphics;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
+import java.io.Serializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
-import javax.swing.*;
 
-class Cell {
+class Cell implements Serializable{
+
     boolean isMarked = false;
     boolean isHighlighted = false;
     private Color backgroundColor = Color.WHITE;
@@ -20,12 +22,15 @@ class Cell {
     boolean isVisualizingHint = false;
     boolean wasHighlightedBeforeHint = false;
 
-    private Set<Integer> notes = new HashSet<>();
-    Set<Integer> hideList = new HashSet<>();
+    private final Set<Integer> notes;
+    transient Set<Integer> hideList;
 
     boolean shouldHideNotes = false;
 
-    public Cell() {}
+    public Cell() {
+        this.notes = new HashSet<>();
+        this.hideList = new HashSet<>();
+    }
 
     public void startHintVisualization() {
         wasHighlightedBeforeHint = isHighlighted;
@@ -134,6 +139,8 @@ public class SudokuBoardCanvas extends JPanel {
     private final int cellSize;
     private final Cell[][] cells;
 
+    private static final Logger logger = LoggerFactory.getLogger(SudokuBoardCanvas.class);
+
     int chosenNumber = 0;
 
     public SudokuBoardCanvas(int n, int k, int cellSize) {
@@ -233,17 +240,7 @@ public class SudokuBoardCanvas extends JPanel {
                                             + (Color.WHITE.getRed() - startColor.getRed())
                                                     * step
                                                     / totalSteps;
-                            int g =
-                                    startColor.getGreen()
-                                            + (Color.WHITE.getGreen() - startColor.getGreen())
-                                                    * step
-                                                    / totalSteps;
-                            int b =
-                                    startColor.getBlue()
-                                            + (Color.WHITE.getBlue() - startColor.getBlue())
-                                                    * step
-                                                    / totalSteps;
-                            Color stepColor = new Color(r, g, b);
+                            Color stepColor = getColor(r);
                             cell.setBackgroundColor(stepColor);
                             repaint();
                             step++;
@@ -254,6 +251,20 @@ public class SudokuBoardCanvas extends JPanel {
                             cell.endHintVisualization();
                             repaint();
                         }
+                    }
+
+                    private Color getColor(int r) {
+                        int g =
+                                startColor.getGreen()
+                                        + (Color.WHITE.getGreen() - startColor.getGreen())
+                                                * step
+                                                / totalSteps;
+                        int b =
+                                startColor.getBlue()
+                                        + (Color.WHITE.getBlue() - startColor.getBlue())
+                                                * step
+                                                / totalSteps;
+                        return new Color(r, g, b);
                     }
                 };
 
@@ -272,7 +283,6 @@ public class SudokuBoardCanvas extends JPanel {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 if (cells[i][j].isMarked) {
-                    System.out.println("Getting the marked cell " + i + " " + j);
                     return new int[] {i, j};
                 }
             }
@@ -287,7 +297,9 @@ public class SudokuBoardCanvas extends JPanel {
             }
         }
         cells[row][col].isMarked = true;
-        System.out.println("Setting the marked cell " + row + " " + col);
+        logger.debug("Setting the marked cell {} {}", row, col);
+
+        
     }
 
     public boolean isACellMarked() {

@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.utility.CustomBoardPanel;
+import dk.dtu.game.core.Board;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.config;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -17,11 +19,10 @@ import org.junit.jupiter.api.Test;
 
 class StartMenuTest {
     private StartMenu startMenu;
-    private StartMenuWindowManager startMenuWindowManager;
 
     @BeforeEach
     void setUp() {
-        startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 800, 600);
+        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 800, 600);
         startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
     }
@@ -39,8 +40,8 @@ class StartMenuTest {
 
     @Test
     @DisplayName("Start Game Testing")
-    void testStartGame() throws Exception {
-        // Testing the start game button, and if the startmenu closes and the difficulties + size is
+    void testStartGame() throws Board.BoardNotCreatable, InterruptedException, InvocationTargetException {
+        // Testing the start game button, and if the start menu closes and the difficulties + size is
         // the correct
         SwingUtilities.invokeAndWait(() -> startMenu.getStartButton().doClick());
         startMenu.startGame();
@@ -170,7 +171,7 @@ class StartMenuTest {
                     simulateTextFieldInput(startMenu.getInputNField(), "invalid");
                     simulateTextFieldInput(startMenu.getInputKField(), "");
                 });
-        assertNotEquals("invalid", config.getN());
-        assertNotEquals("", config.getK());
+        assertInstanceOf(int.class, config.getN());
+        assertInstanceOf(int.class, config.getK());
     }
 }
