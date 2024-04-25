@@ -216,6 +216,7 @@ public class algorithmX {
     private static void deselectRow(Node row) {
         solution.remove(row);
     }
+    public record Placement(int row, int col, int value) { }
 
 
     public static int[][] convertSolutionToBoard(List<Node> solution, List<Placement> placements) {
@@ -223,7 +224,7 @@ public class algorithmX {
 
         for (Node node : solution) {
             Placement placement = placements.get(node.rowIndex);
-            board[placement.row][placement.col] = placement.value;
+            board[placement.row()][placement.col()] = placement.value();
         }
 
         return board;
