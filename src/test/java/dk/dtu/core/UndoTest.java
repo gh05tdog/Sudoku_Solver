@@ -7,7 +7,7 @@ import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.SudokuGame;
-import dk.dtu.game.solver.solverAlgorithm;
+import dk.dtu.game.solver.SolverAlgorithm;
 import java.util.Arrays;
 import javax.swing.*;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,7 @@ class UndoTest {
         game.createBoard(
                 3, 3, 50); // Assuming this is the correct way to initialize the board in your game
 
-        solverAlgorithm.createSudoku(game.gameboard);
+        SolverAlgorithm.createSudoku(game.gameboard);
 
         // No need to call displayNumbersVisually here if it's just for visual representation and
         // not part of the test logic
@@ -62,7 +62,7 @@ class UndoTest {
         game.createBoard(3, 3, 50); // Set up the board
 
         // Generate a solvable Sudoku puzzle
-        solverAlgorithm.createSudoku(game.gameboard);
+        SolverAlgorithm.createSudoku(game.gameboard);
 
         // Remove numbers to generate hints (if not already part of createSudoku)
         // Assuming fillHintList() populates the hintList based on the current board state
@@ -75,7 +75,7 @@ class UndoTest {
 
         // Validate the Sudoku board
         assertTrue(
-                solverAlgorithm.isValidSudoku(game.gameboard.getGameBoard()),
+                SolverAlgorithm.isValidSudoku(game.gameboard.getGameBoard()),
                 "Applying all hints should result in a valid Sudoku.");
     }
 }

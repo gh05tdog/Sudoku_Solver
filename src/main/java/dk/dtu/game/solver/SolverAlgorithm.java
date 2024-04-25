@@ -7,7 +7,9 @@ import java.util.*;
 
 import static java.lang.Math.sqrt;
 
-public class solverAlgorithm {
+public class SolverAlgorithm {
+
+    static Random random = new Random();
 
     public static void createSudoku(Board board) {
         fillBoard(board);
@@ -43,56 +45,66 @@ public class solverAlgorithm {
     }
 
     static boolean checkBoard(int[][] board, int row, int col, int c, int constant) {
-        boolean legal_row_col = true;
-        boolean legal_square = true;
+        boolean legalRowCol = true;
+        boolean legalSquare = true;
         for (int p = 0; p < board.length; p++) {
             if (board[row][p] == c || board[p][col] == c) {
-                legal_row_col = false;
+                legalRowCol = false;
                 break;
             }
         }
         for (int p = (row / constant) * constant; p < (row / constant) * constant + constant; p++) {
             for (int q = (col / constant) * constant; q < (col / constant) * constant + constant; q++) {
                 if (board[p][q] == c) {
-                    legal_square = false;
+                    legalSquare = false;
                     break;
                 }
             }
-            if (!legal_square) break;
+            if (!legalSquare) break;
         }
 
-        return legal_row_col && legal_square;
+        return legalRowCol && legalSquare;
     }
 
     public static int[] pickCell(int[][] arr) {
         ArrayList<int[]> possibleCells = new ArrayList<>();
         int lowestPossibleValue = Integer.MAX_VALUE;
+
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < arr.length; j++) {
                 if (arr[i][j] == 0) {
-                    int possibleValues = 0;
-                    for (int k = 1; k <= arr.length; k++) {
-                        if (checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
-                            possibleValues++;
-                        }
-                    }
-                    if (possibleValues < lowestPossibleValue) {
-                        lowestPossibleValue = possibleValues;
-                        possibleCells.clear();
-                        possibleCells.add(new int[]{i, j});
-                    } else if (possibleValues == lowestPossibleValue) {
-                        possibleCells.add(new int[]{i, j});
-                    }
+                    int possibleValues = calculatePossibleValues(arr, i, j);
+                    lowestPossibleValue = updatePossibleCells(possibleCells, i, j, possibleValues, lowestPossibleValue);
                 }
             }
         }
-        if (possibleCells.isEmpty()) {
-            return null;
-        } else {
-            Random random = new Random();
 
+        if (possibleCells.isEmpty()) {
+            return new int[0];
+        } else {
             return possibleCells.get(random.nextInt(possibleCells.size()));
         }
+    }
+
+    private static int calculatePossibleValues(int[][] arr, int i, int j) {
+        int possibleValues = 0;
+        for (int k = 1; k <= arr.length; k++) {
+            if (checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
+                possibleValues++;
+            }
+        }
+        return possibleValues;
+    }
+
+    private static int updatePossibleCells(ArrayList<int[]> possibleCells, int i, int j, int possibleValues, int lowestPossibleValue) {
+        if (possibleValues < lowestPossibleValue) {
+            lowestPossibleValue = possibleValues;
+            possibleCells.clear();
+            possibleCells.add(new int[]{i, j});
+        } else if (possibleValues == lowestPossibleValue) {
+            possibleCells.add(new int[]{i, j});
+        }
+        return lowestPossibleValue;
     }
 
     public static int emptyCellCount(int[][] arr) {
@@ -113,8 +125,6 @@ public class solverAlgorithm {
 
         if (sudoku(arr)) {
             board.setGameBoard(arr);
-        } else {
-            System.out.println("No solution exists");
         }
 
     }
@@ -123,11 +133,10 @@ public class solverAlgorithm {
         int[][] tempBoard = deepCopy(board.getGameBoard());
         int[][] initialBoard;
         int numRemoved = 0;
-        int maxNumRemoved = 0;
+        int maxNumRemoved;
         String difficulty = Config.getDifficulty();
 
         maxNumRemoved = switch (difficulty) {
-            case "easy" -> 30;
             case "medium" -> 60;
             case "hard" -> 80;
             case "extreme" -> 200;
@@ -136,8 +145,8 @@ public class solverAlgorithm {
 
         while (numRemoved < maxNumRemoved) {
             int possibleSols = 0;
-            int randRow = (int) (Math.random() * board.getDimensions());
-            int randCol = (int) (Math.random() * board.getDimensions());
+            int randRow = random.nextInt() * board.getDimensions();
+            int randCol = random.nextInt() * board.getDimensions();
 
             int tempNumber = tempBoard[randRow][randCol];
             tempBoard[randRow][randCol] = 0;
@@ -170,7 +179,7 @@ public class solverAlgorithm {
 
     public static boolean isValidSudoku(int[][] board) {
         int size = board.length; // Assuming square board
-        int n = (int) Math.sqrt(size); // Calculate the size of subgrids
+        int n = (int) Math.sqrt(size); // Calculate the size of sub-grids
 
         // Check for row and column uniqueness
         for (int i = 0; i < size; i++) {
@@ -179,7 +188,7 @@ public class solverAlgorithm {
             }
         }
 
-        // Check subgrids for uniqueness
+        // Check sub-grids for uniqueness
         for (int row = 0; row < size; row += n) {
             for (int col = 0; col < size; col += n) {
                 if (!isSubgridUnique(board, row, col, n)) {
@@ -235,7 +244,7 @@ public class solverAlgorithm {
         if (solved) {
             return copiedBoard;
         } else {
-            return null;
+            return new int[0][0];
 
         }
     }
