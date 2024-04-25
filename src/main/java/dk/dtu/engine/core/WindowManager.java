@@ -80,6 +80,7 @@ public class WindowManager {
         gbcPanel.fill = GridBagConstraints.NORTH; // Align to the top of the space
         gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
         mainPanel.add(combinedPanel, gbcPanel);
+        mainPanel.setBackground(Color.WHITE);
         frame.add(mainPanel);
 
         frame.setVisible(true);
@@ -97,6 +98,7 @@ public class WindowManager {
                 Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
 
         combinedPanel.add(numberHub);
+        combinedPanel.setBackground(Color.WHITE);
 
         return combinedPanel;
     }
