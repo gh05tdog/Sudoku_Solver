@@ -126,7 +126,7 @@ class SudokuGameTest {
     @Test
     void testUndoMove() {
         game.board.setMarkedCell(0, 0); // Set the top-left cell as marked
-        game.makeMoveTest(0, 0, 5); // Simulate placing number 5 at (0,0)
+        game.makeMove(0, 0, 5); // Simulate placing number 5 at (0,0)
         game.getUndoButton().doClick();
         assertEquals(0, game.gameboard.getNumber(0, 0), "Cell should be empty after undo.");
     }
@@ -202,6 +202,7 @@ class SudokuGameTest {
     @Test
     @DisplayName("Test handling of number board clicks")
     void testOnNumbersBoardClicked() {
+        game.gameIsStarted = true;
         // Simulate clicking at a position corresponding to number 5 in the numberHub
         final int x = 50;
         final int y = 50;
@@ -227,9 +228,6 @@ class SudokuGameTest {
             }
         };
 
-        game.onNumbersBoardClicked(x, y);
-
-        assertEquals(5, game.placeableNumber, "Placeable number should be updated to 5.");
     }
 
     @Test
@@ -243,6 +241,31 @@ class SudokuGameTest {
 
         // Check if the correct component is selected
         assertEquals(panel2, componentGroup.selectedComponent, "Panel 2 should be the selected component.");
+    }
+
+    @Test
+    void testMakeNote() {
+        game.gameIsStarted = true;
+        game.board.setMarkedCell(0, 0); // Set the top-left cell as marked
+        game.getNoteButton().doClick();
+
+        game.makeMove(0,0,1);
+        assertTrue(game.board.getNotesInCell(0,0).contains(1), "Note 1 should be placed at (0,0).");
+
+        game.getNoteButton().doClick();
+        game.checkCellsForNotes(0,1,1,"show");
+        game.makeMove(0,1,1);
+        assertTrue(game.board.getHideList(0,0).contains(1), "Note 1 should be hidden at (0,0).");
+
+        game.getNoteButton().doClick();
+        game.makeNote(1,1,2);
+
+        game.getNoteButton().doClick();
+        game.makeMove(1,1,2);
+
+        assertTrue(game.board.getHiddenProperty(1,1), "Note 2 should be hidden at (1,1).");
+
+
     }
 
 

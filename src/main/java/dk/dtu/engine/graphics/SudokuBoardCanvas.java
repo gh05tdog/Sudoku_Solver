@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
+import java.util.Set;
 
 class Cell {
     boolean isMarked = false;
@@ -17,8 +19,12 @@ class Cell {
     boolean isVisualizingHint = false;
     boolean wasHighlightedBeforeHint = false;
 
-    public Cell() {
+    private Set<Integer> notes = new HashSet<>();
+    Set<Integer> hideList = new HashSet<>();
 
+    boolean shouldHideNotes = false;
+
+    public Cell() {
     }
 
     public void startHintVisualization() {
@@ -34,9 +40,9 @@ class Cell {
 
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
         if (isHighlighted) {
-            g.setColor(Color.LIGHT_GRAY);
+            g.setColor(new Color(225, 223, 221));
             if (isMarked) {
-                g.setColor(Color.DARK_GRAY);
+                g.setColor(new Color(149, 149, 149));
             }
         } else {
             g.setColor(backgroundColor);
@@ -58,6 +64,46 @@ class Cell {
 
         g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
+    }
+
+    public void paintNotes(Graphics g, int x, int y, int cellSize) {
+        if(shouldHideNotes){
+            return;
+        }
+        g.setColor(new Color(21, 80, 213, 255));
+        Font font = new Font("Arial", Font.BOLD, cellSize / 5);
+        g.setFont(font);
+        int subCellSize = cellSize / 3;  // Divide the cellSize by 3 to get the size of each sub-cell
+        int offsetX = (subCellSize / 2) + 2;  // Half of the subCellSize to center the number horizontally
+        int offsetY = (cellSize / 6 + subCellSize / 2)-5;  // Position for vertical centering
+
+        for (int note : notes) {
+            String noteStr = Integer.toString(note);
+            if(hideList.contains(note) || note == 0){
+                continue;
+            }
+            int row = (note - 1) / 3;
+            int col = (note - 1) % 3;
+            g.drawString(noteStr,
+                    x + col * subCellSize + offsetX - g.getFontMetrics().stringWidth(noteStr) / 2,
+                    y + row * subCellSize + offsetY);
+        }
+        g.setColor(Color.BLACK);
+        g.drawRect(x, y, cellSize, cellSize);
+    }
+
+
+    public void addNote(int note){
+        notes.add(note);
+    }
+    public void clearNotes() {
+        notes.clear();
+    }
+    public void removeNote (int note) {
+        notes.remove(note);
+    }
+    public Set<Integer> getNotes(){
+        return notes;
     }
 
 
@@ -105,6 +151,7 @@ public class SudokuBoardCanvas extends JPanel {
                 int x = col * cellSize;
                 int y = row * cellSize;
                 cell.paintCell(g, x, y, cellSize, chosenNumber);
+                cell.paintNotes(g, x, y, cellSize);
             }
         }
         drawSubGrids(g);
@@ -244,6 +291,7 @@ public class SudokuBoardCanvas extends JPanel {
     public void setChosenNumber(int number) {
         chosenNumber = number;
     }
+
     public int getMarkedNumber(){
         for(int i = 0; i < gridSize; i++){
             for(int j = 0; j < gridSize; j++){
@@ -254,4 +302,40 @@ public class SudokuBoardCanvas extends JPanel {
         }
         return 0;
     }
+
+    public void addNoteToCell (int row, int col, int note) {
+        cells[row][col].addNote(note);
+    }
+
+    public void clearNotes() {
+        for(int i = 0; i < gridSize; i++){
+            for(int j = 0; j < gridSize; j++){
+                cells[i][j].clearNotes();
+            }
+        }
+    }
+    public void removeNoteFromCell (int row, int col, int note) {
+        cells[row][col].removeNote(note);
+
+    }
+    public Set<Integer> getNotesInCell(int row, int col){
+        return cells[row][col].getNotes();
+    }
+
+    public void setHiddenProperty(int row, int col, boolean hideNotes){
+        cells[row][col].shouldHideNotes = hideNotes;
+    }
+    public void addToHideList(int row, int col, int number){
+        cells[row][col].hideList.add(number);
+    }
+    public void removeFromHideList(int row, int col, int number){
+        cells[row][col].hideList.remove(number);
+    }
+    public Set<Integer> getHideList(int row, int col){
+        return cells[row][col].hideList;
+    }
+    public boolean getHiddenProperty(int row, int col){
+        return cells[row][col].shouldHideNotes;
+    }
+
 }
