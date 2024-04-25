@@ -171,7 +171,7 @@ class StartMenuTest {
                     simulateTextFieldInput(startMenu.getInputNField(), "invalid");
                     simulateTextFieldInput(startMenu.getInputKField(), "");
                 });
-        assertInstanceOf(int.class, Config.getN());
-        assertInstanceOf(int.class, Config.getK());
+        assertInstanceOf(Integer.class, Config.getN());
+        assertInstanceOf(Integer.class, Config.getK());
     }
 }
