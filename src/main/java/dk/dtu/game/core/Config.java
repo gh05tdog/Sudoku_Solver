@@ -6,6 +6,10 @@ public class Config {
     private static int cellSize;
     private static String difficulty;
 
+    private Config() {
+        throw new IllegalStateException("Utility class");
+    }
+
 
     public static int getK() {
         return k;

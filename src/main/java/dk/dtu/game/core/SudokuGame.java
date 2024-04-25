@@ -4,7 +4,7 @@ package dk.dtu.game.core;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
-import dk.dtu.engine.graphics.numberHub;
+import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.engine.utility.TimerFunction;
@@ -31,7 +31,7 @@ public class SudokuGame {
     KeyboardListener keyboardListener = new KeyboardListener(this);
 
     private SudokuBoardCanvas board;
-    private numberHub numbers;
+    private NumberHub numbers;
     private TimerFunction timer;
     private boolean gameIsStarted = false;
 
@@ -206,7 +206,7 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new numberHub(n * k, cellSize);
+        numbers = new NumberHub(n * k, cellSize);
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
 
@@ -512,7 +512,7 @@ public class SudokuGame {
         return board;
     }
 
-    public void setNumbersBoard(numberHub numberHub) {
+    public void setNumbersBoard(NumberHub numberHub) {
         this.numbers = numberHub;
     }
 

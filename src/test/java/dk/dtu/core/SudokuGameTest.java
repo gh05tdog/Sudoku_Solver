@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
-import dk.dtu.engine.graphics.numberHub;
+import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.Board;
@@ -25,33 +25,26 @@ import org.junit.jupiter.api.Test;
 class SudokuGameTest {
 
     private SudokuGame game;
-    private Board board;
-    private WindowManager windowManager;
-    private SudokuBoardCanvas boardCanvas;
-    private StartMenuWindowManager startMenuWindowManager;
-    private StartMenu startMenu;
     private CustomComponentGroup componentGroup;
-    private CustomBoardPanel panel1, panel2, panel3;
+    private CustomBoardPanel panel2;
     private SudokuBoardCanvas sodukuBoardCanvasBoard;
 
     @BeforeEach
     void setUp() throws Exception {
-        startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 1000, 700);
-        startMenu = new StartMenu(startMenuWindowManager);
+        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 1000, 700);
+        StartMenu startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
         startMenu.getStartButton().doClick();
-        windowManager = new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
-        board = new Board(3, 3); // Standard 9x9 Sudoku
+        WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
-        boardCanvas = new SudokuBoardCanvas(3, 3, 550 / 9);
         game.initialize(3, 3, 550 / 9);
 
         componentGroup = new CustomComponentGroup();
 
         // Create mock panels
-        panel1 = new CustomBoardPanel();
+        CustomBoardPanel panel1 = new CustomBoardPanel();
         panel2 = new CustomBoardPanel();
-        panel3 = new CustomBoardPanel();
+        CustomBoardPanel panel3 = new CustomBoardPanel();
 
         // Add panels to the group
         componentGroup.addComponent(panel1);
@@ -159,7 +152,7 @@ class SudokuGameTest {
     }
 
     @Test
-    void testProvideHint() throws Exception {
+    void testProvideHint() {
         game.getNewGameButton().doClick();
         game.getHintButton().doClick(); // Provide a hint
         assertFalse(
@@ -235,12 +228,8 @@ class SudokuGameTest {
     @DisplayName("Test handling of number board clicks")
     void testOnNumbersBoardClicked() {
         game.setGameIsStarted(true);
-        // Simulate clicking at a position corresponding to number 5 in the numberHub
-        final int x = 50;
-        final int y = 50;
-
         game.setNumbersBoard(
-                new numberHub(9, 550 / 9) {
+                new NumberHub(9, 550 / 9) {
                     @Override
                     public int getNumber(int x, int y) {
                         return 5; // Mock behavior

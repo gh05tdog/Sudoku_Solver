@@ -1,6 +1,6 @@
 package dk.dtu.engine.input;
 
-import dk.dtu.engine.graphics.numberHub;
+import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class MouseActionListener implements MouseListener {
         if (e.getSource() instanceof SudokuBoardCanvas) {
             isInsideSudokuBoard = true;
         }
-        if (e.getSource() instanceof numberHub) {
+        if (e.getSource() instanceof NumberHub) {
             isInsideNumbersBoard = true;
         }
     }
@@ -59,7 +59,7 @@ public class MouseActionListener implements MouseListener {
         if (e.getSource() instanceof SudokuBoardCanvas) {
             isInsideSudokuBoard = false;
         }
-        if (e.getSource() instanceof numberHub) {
+        if (e.getSource() instanceof NumberHub) {
             isInsideNumbersBoard = false;
         }
     }

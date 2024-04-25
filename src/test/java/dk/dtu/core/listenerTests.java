@@ -2,7 +2,7 @@ package dk.dtu.core;
 
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
-import dk.dtu.engine.graphics.numberHub;
+import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
 
@@ -21,7 +21,7 @@ class ListenerTests {
     private KeyboardListener keyboardListener;
     private MouseActionListener mouseListener;
     private SudokuBoardCanvas boardCanvas;
-    private numberHub numbersBoard;
+    private NumberHub numbersBoard;
 
     static class TestableSudokuGame extends SudokuGame {
         boolean numberTyped = false;
@@ -61,7 +61,7 @@ class ListenerTests {
         mouseListener = new MouseActionListener(game);
 
         boardCanvas = new SudokuBoardCanvas(9, 9, 40); // Assuming constructor parameters as required
-        numbersBoard = new numberHub(81, 40); // Assuming constructor parameters as required
+        numbersBoard = new NumberHub(81, 40); // Assuming constructor parameters as required
     }
 
     @Test
