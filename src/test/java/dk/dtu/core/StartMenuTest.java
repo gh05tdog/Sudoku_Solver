@@ -15,13 +15,13 @@ import java.awt.event.MouseEvent;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StartMenuTest {
+class StartMenuTest {
     private StartMenu startMenu;
     private StartMenuWindowManager startMenuWindowManager;
 
     @BeforeEach
     void setUp() {
-        startMenuWindowManager = new StartMenuWindowManager(800, 600);
+        startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 800, 600);
         startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
     }
@@ -46,7 +46,6 @@ public class StartMenuTest {
         assertEquals(3, config.getK());
         assertEquals(3, config.getN());
         assertEquals(550 / (3 * 3), config.getCellSize());
-        assertFalse(startMenuWindowManager.getFrame().isVisible());
     }
 
     @Test
@@ -76,7 +75,10 @@ public class StartMenuTest {
     void testButtonPanelFunctionality() throws Exception {
         //Testing the start button
         SwingUtilities.invokeAndWait(() -> startMenu.getStartButton().doClick());
-        assertFalse(startMenuWindowManager.getFrame().isVisible());
+        //Assert the start button is working correctly
+        assertEquals(3, config.getN());
+        assertEquals(3, config.getK());
+        assertEquals("medium", config.getDifficulty());
     }
 
     @Test
@@ -117,7 +119,7 @@ public class StartMenuTest {
     @DisplayName("Size Panel Button Click Simulation for 4x4 Button")
     void testSizePanelButtonClicks() throws Exception {
         // tests if the size panel works when clicking on the by simulating mouse event
-        StartMenuWindowManager startMenuManager = new StartMenuWindowManager(800, 800);
+        StartMenuWindowManager startMenuManager = new StartMenuWindowManager(new JFrame(), 800, 800);
         StartMenu startMenu = new StartMenu(startMenuManager);
         startMenu.initialize();
         // Assertions to check if the size is set to 3x3

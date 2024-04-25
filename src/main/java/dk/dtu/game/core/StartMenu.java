@@ -41,25 +41,16 @@ public class StartMenu {
         this.startMenu = startMenu;
         startMenu.display();
     }
-
-
     public void startGame() throws Exception {
         System.out.println("startGame:" + config.getK() + " " + config.getN() + " " + config.getDifficulty()+ " " + config.getCellSize());
         int n = config.getN();
         int k = config.getK();
         int cellSize = config.getCellSize();
-        WindowManager windowManager = new WindowManager(900, 900);
-
+        WindowManager windowManager = new WindowManager(startMenu.getFrame(),900, 900);
         GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
-
-
         windowManager.display();
-
         gameEngine.start();
-        startMenu.close();
     }
-
-
     public void updateCustomBoardPanel(int n, int k) {
         if((k * n) <= (n * n)){
             customBoardPanel.updateBoard(n, k); // Update the board based on n and k
@@ -68,7 +59,6 @@ public class StartMenu {
             customBoardPanel.setBackground(Color.WHITE);
         }
     }
-
 
     public void initialize(){
         //Initialize the start menu with all the buttons, and set the default to 3x3 board with medium difficulty
@@ -127,7 +117,7 @@ public class StartMenu {
         for (int i = 0; i < fields.length; i++) {
             JTextField field = fields[i];
             field.setFont(fieldFont);
-            field.setHorizontalAlignment(JTextField.CENTER);
+            field.setHorizontalAlignment(SwingConstants.CENTER);
             ((AbstractDocument) field.getDocument()).setDocumentFilter(new NumberDocumentFilter());
 
             String initialText = initialTexts[i];
@@ -160,6 +150,7 @@ public class StartMenu {
                 try {
                     startGame();
                 } catch (Exception ex) {
+                    System.out.println("Error starting game: " + ex.getMessage());
                     throw new RuntimeException(ex);
                 }
 
@@ -176,6 +167,7 @@ public class StartMenu {
         CustomBoardPanel[] boardPanels = {twoBytwo, threeByThree, fourByFour, customBoardPanel};
 
         MouseAdapter mouseAdapter = new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent evt) {
                 CustomBoardPanel source = (CustomBoardPanel) evt.getSource();
                 for (int i = 0; i < boardPanels.length; i++) {
@@ -310,4 +302,5 @@ public class StartMenu {
     public CustomBoardPanel getFourByFour() {
         return fourByFour;
     }
+
 }

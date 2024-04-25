@@ -4,26 +4,21 @@ package dk.dtu.engine.core;
 import dk.dtu.engine.utility.Timer;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 public class WindowManager {
-    private static final String TITLE = "Sudoku Game";
-    private final JFrame frame = new JFrame(TITLE);
+    private final JFrame frame;
     private final JPanel mainPanel = new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
     private final JPanel buttonPanel = new JPanel(); // Panel for buttons
     private final JPanel whitePanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
 
-    private final JPanel hubPanel = new JPanel(new GridBagLayout()); // Create a new JPanel for the number hub
-    public Timer timer;
 
-
-
-    public WindowManager(int width, int height) {
-        frame.setSize(width, height);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        frame.getContentPane().setBackground(Color.WHITE);
+    public WindowManager(JFrame frame, int width, int height) {
+        this.frame = frame;
+        this.frame.setSize(width, height);
+        this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.frame.setResizable(false);
+        this.frame.getContentPane().setBackground(Color.WHITE);
         whitePanel.setOpaque(true);
         buttonPanel.setOpaque(true);
         mainPanel.setOpaque(true);
@@ -35,8 +30,8 @@ public class WindowManager {
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Center buttons horizontally
         buttonPanel.setBackground(Color.WHITE);
 
-        GridBagConstraints buttonContraints = new GridBagConstraints();
-        buttonContraints.insets = new Insets(10, 0, 10, 0); // Add padding
+        GridBagConstraints buttonConstraints = new GridBagConstraints();
+        buttonConstraints.insets = new Insets(10, 0, 10, 0); // Add padding
 
         whitePanel.setBackground(Color.WHITE);
         whitePanel.setLayout(new GridBagLayout()); // GridBagLayout to center the board
@@ -47,11 +42,11 @@ public class WindowManager {
         mainPanel.add(whitePanel, new GridBagConstraints());
 
         // Add the button panel below the board
-        buttonContraints.gridy = 1; // Place buttonPanel below the board
-        buttonContraints.weighty = 0; // Don't allow vertical stretching
-        mainPanel.add(buttonPanel, buttonContraints);
+        buttonConstraints.gridy = 1; // Place buttonPanel below the board
+        buttonConstraints.weighty = 0; // Don't allow vertical stretching
+        mainPanel.add(buttonPanel, buttonConstraints);
 
-        frame.setContentPane(mainPanel); // Add the main panel to the frame
+        this.frame.setContentPane(mainPanel); // Add the main panel to the frame
 
     }
 
@@ -67,8 +62,8 @@ public class WindowManager {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; // Align component at the grid's center
         gbc.gridy = 0; // Align component at the grid's center
-        gbc.weightx = 0.5; // Give column some weight so component will be centered
-        gbc.weighty = 1; // Give row some weight so component will be centered
+        gbc.weightx = 0.5; // Give column some weight so the component will be centered
+        gbc.weighty = 1; // Give row some weight so the component will be centered
         gbc.fill = GridBagConstraints.BOTH; // Let component fill its display area
 
         whitePanel.add(board, gbc);

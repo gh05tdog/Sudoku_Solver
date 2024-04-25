@@ -3,6 +3,7 @@ package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.SudokuGame;
@@ -11,12 +12,16 @@ import java.util.Arrays;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class UndoTest {
+import javax.swing.*;
+
+class UndoTest {
     @Test
     @DisplayName("Test undo reverses the last move")
     void testUndoReversesLastMove() throws Exception {
+        // Initialize the start menu
+        StartMenuWindowManager startMenuManager = new StartMenuWindowManager(new JFrame(), 1000, 700);
         // Initialize the game and its components
-        SudokuGame game = new SudokuGame(new WindowManager(800, 800), 3, 3, 50);
+        SudokuGame game = new SudokuGame(new WindowManager(startMenuManager.getFrame(), 800, 800), 3, 3, 50);
 
         // Manually initialize the board component to avoid NullPointerException
         game.createBoard(
@@ -46,8 +51,11 @@ public class UndoTest {
     @Test
     @DisplayName("Apply all hints and check for valid Sudoku")
     void testHintsLeadToValidSudoku() throws Exception {
+
+        StartMenuWindowManager startMenuManager = new StartMenuWindowManager(new JFrame(), 1000, 700);
+        // Initialize the game and its components
+        SudokuGame game = new SudokuGame(new WindowManager(startMenuManager.getFrame(), 800, 800), 3, 3, 50);
         // Initialize the game
-        SudokuGame game = new SudokuGame(new WindowManager(800, 800), 3, 3, 50);
         game.createBoard(3, 3, 50); // Set up the board
 
         // Generate a solvable Sudoku puzzle
