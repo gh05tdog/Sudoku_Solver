@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,21 +10,18 @@ import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.Move;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
+import javax.swing.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class SudokuGameTest {
 
@@ -36,10 +34,10 @@ class SudokuGameTest {
     private CustomComponentGroup componentGroup;
     private CustomBoardPanel panel1, panel2, panel3;
 
-
     @BeforeEach
     void setUp() throws Exception {
-        windowManager = new WindowManager(800, 800); // Assuming WindowManager can be instantiated like this
+        windowManager =
+                new WindowManager(800, 800); // Assuming WindowManager can be instantiated like this
         board = new Board(3, 3); // Standard 9x9 Sudoku
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         boardCanvas = new SudokuBoardCanvas(3, 3, 550 / 9);
@@ -62,8 +60,6 @@ class SudokuGameTest {
         componentGroup.addComponent(panel3);
     }
 
-
-
     @Test
     void testGameInitialization() {
         assertNotNull(game.gameboard, "Game board must not be null after initialization.");
@@ -71,7 +67,6 @@ class SudokuGameTest {
         assertTrue(game.moveList.isEmpty(), "Move list should be empty initially.");
         assertFalse(game.gameIsStarted, "Game should not start automatically.");
     }
-
 
     @Test
     @DisplayName("Test number placement on board click within valid conditions")
@@ -82,7 +77,7 @@ class SudokuGameTest {
 
         // Ensuring the target cell is valid for placement
         game.gameboard.setInitialNumber(4, 4, 0); // Ensure the cell is initially empty
-        game.gameboard.setNumber(4, 4, 0);        // No number currently placed
+        game.gameboard.setNumber(4, 4, 0); // No number currently placed
 
         // Click at the center cell which should be empty and valid
         game.onSudokuBoardClicked(275, 275);
@@ -92,8 +87,12 @@ class SudokuGameTest {
         assertEquals(4, markedCell[0], "Clicked cell row should be 4.");
         assertEquals(4, markedCell[1], "Clicked cell column should be 4.");
         assertEquals(5, game.gameboard.getNumber(4, 4), "Number 5 should be placed at (4,4).");
-        assertFalse(game.moveList.isEmpty(), "Move list should not be empty after a valid placement.");
-        assertEquals(5, game.moveList.peek().getNumber(), "Top of move list should have the placed number 5.");
+        assertFalse(
+                game.moveList.isEmpty(), "Move list should not be empty after a valid placement.");
+        assertEquals(
+                5,
+                game.moveList.peek().getNumber(),
+                "Top of move list should have the placed number 5.");
     }
 
     @Test
@@ -109,16 +108,30 @@ class SudokuGameTest {
         game.onSudokuBoardClicked(275, 275);
 
         // Check that the initial number is unchanged
-        assertEquals(1, game.gameboard.getInitialNumber(4, 4), "Cell (4,4) should still have the initial number 1.");
-        assertEquals(1, game.gameboard.getNumber(4, 4), "Cell (4,4) should not update the number due to initial number constraint.");
-        assertTrue(game.moveList.isEmpty(), "No moves should be recorded when clicking on a cell with an initial number.");
+        assertEquals(
+                1,
+                game.gameboard.getInitialNumber(4, 4),
+                "Cell (4,4) should still have the initial number 1.");
+        assertEquals(
+                1,
+                game.gameboard.getNumber(4, 4),
+                "Cell (4,4) should not update the number due to initial number constraint.");
+        assertTrue(
+                game.moveList.isEmpty(),
+                "No moves should be recorded when clicking on a cell with an initial number.");
     }
-
 
     @Test
     void testTypeNumberWithKeyboard() {
         game.board.setMarkedCell(0, 0); // Set the top-left cell as marked
-        KeyEvent keyEvent = new KeyEvent(new JButton(), KeyEvent.KEY_TYPED, System.currentTimeMillis(), 0, KeyEvent.VK_UNDEFINED, '5');
+        KeyEvent keyEvent =
+                new KeyEvent(
+                        new JButton(),
+                        KeyEvent.KEY_TYPED,
+                        System.currentTimeMillis(),
+                        0,
+                        KeyEvent.VK_UNDEFINED,
+                        '5');
         game.typeNumberWithKeyboard(keyEvent);
         assertEquals(5, game.gameboard.getNumber(0, 0), "Number 5 should be placed at (0,0).");
     }
@@ -136,19 +149,22 @@ class SudokuGameTest {
         // Fill the board with non-zero numbers
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                game.gameboard.setNumber(i, j, 1); // Assuming valid placement isn't required for this test
+                game.gameboard.setNumber(
+                        i, j, 1); // Assuming valid placement isn't required for this test
             }
         }
         assertTrue(game.isSudokuCompleted(), "Game should be marked as completed.");
     }
+
     @Test
     void testProvideHint() throws Exception {
         game.getNewGameButton().doClick();
         game.getHintButton().doClick(); // Provide a hint
-        assertFalse(game.getHintList().isEmpty(), "Game board should not be empty after providing a hint.");
+        assertFalse(
+                game.getHintList().isEmpty(),
+                "Game board should not be empty after providing a hint.");
         assertTrue(game.getHintList().size() < game.getHintList().size() + 1);
     }
-
 
     @Test
     void testEraseNumber() {
@@ -162,41 +178,55 @@ class SudokuGameTest {
     void testDisplayNumbersVisually() {
         game.displayNumbersVisually();
         game.board.setMarkedCell(0, 0); // Set the top-left cell as marked
-        assertEquals(game.board.getMarkedNumber(), game.gameboard.getNumber(0,0));
+        assertEquals(game.board.getMarkedNumber(), game.gameboard.getNumber(0, 0));
     }
+
     @Test
     void testRestartGame() {
         game.board.setCellNumber(0, 0, 5); // Set number 5 at (0,0)
         game.getRestartButton().doClick();
         assertTrue(game.moveList.isEmpty(), "Move list should be empty after restarting the game.");
-        assertFalse(game.isSudokuCompleted(), "Game should not be marked as completed after restarting.");
+        assertFalse(
+                game.isSudokuCompleted(),
+                "Game should not be marked as completed after restarting.");
         assertEquals(0, game.gameboard.getNumber(0, 0), "Cell should be empty after restarting.");
     }
 
     @Test
-    void testStartGame(){
+    void testStartGame() {
         game.getStartButton().doClick();
-        assertTrue(game.gameIsStarted, "Game should be started after clicking the new game button.");
+        assertTrue(
+                game.gameIsStarted, "Game should be started after clicking the new game button.");
         assertNotNull(game.board);
     }
 
     @Test
     void testSolver() throws InterruptedException, InvocationTargetException {
         // Schedule the button clicks to solve the Sudoku on the EDT
-        SwingUtilities.invokeAndWait(() -> {
-            game.getNewGameButton().doClick();
-            game.gameboard.setBoard(Objects.requireNonNull(dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(game.gameboard.getInitialBoard())));
-        });
+        SwingUtilities.invokeAndWait(
+                () -> {
+                    game.getNewGameButton().doClick();
+                    game.gameboard.setBoard(
+                            Objects.requireNonNull(
+                                    dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(
+                                            game.gameboard.getInitialBoard())));
+                });
 
         // Now wait for all pending events to be processed
-        SwingUtilities.invokeAndWait(() -> {
-            // Assuming the solver updates the board directly and synchronously from the event handlers
-            int[][] expected = dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(game.gameboard.getInitialBoard());
-            int[][] actual = game.gameboard.getBoard();
+        SwingUtilities.invokeAndWait(
+                () -> {
+                    // Assuming the solver updates the board directly and synchronously from the
+                    // event handlers
+                    int[][] expected =
+                            dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(
+                                    game.gameboard.getInitialBoard());
+                    int[][] actual = game.gameboard.getBoard();
 
-            // Use Arrays.deepEquals to compare multi-dimensional arrays
-            assertTrue(Arrays.deepEquals(expected, actual), "The board should match the solved board after clicking solve.");
-        });
+                    // Use Arrays.deepEquals to compare multi-dimensional arrays
+                    assertTrue(
+                            Arrays.deepEquals(expected, actual),
+                            "The board should match the solved board after clicking solve.");
+                });
     }
 
     @Test
@@ -207,40 +237,54 @@ class SudokuGameTest {
         final int x = 50;
         final int y = 50;
 
-        game.numbers = new numberHub(9, 550 / 9) {
-            @Override
-            public int getNumber(int x, int y) {
-                return 5;  // Mock behavior
-            }
+        game.numbers =
+                new numberHub(9, 550 / 9) {
+                    @Override
+                    public int getNumber(int x, int y) {
+                        return 5; // Mock behavior
+                    }
 
-            @Override
-            public void highlightNumber(int x, int y) {
-                // Mock behavior: Test could verify this call
-                System.out.println("Number highlighted: " + getNumber(x, y));
-            }
-        };
+                    @Override
+                    public void highlightNumber(int x, int y) {
+                        // Mock behavior: Test could verify this call
+                        System.out.println("Number highlighted: " + getNumber(x, y));
+                    }
+                };
 
-        game.board = new SudokuBoardCanvas(3, 3, 550 / 9) {
-            @Override
-            public void setChosenNumber(int number) {
-                super.setChosenNumber(number);
-                assertEquals(5, number, "Chosen number should be set to 5 on the board.");
-            }
-        };
-
+        game.board =
+                new SudokuBoardCanvas(3, 3, 550 / 9) {
+                    @Override
+                    public void setChosenNumber(int number) {
+                        super.setChosenNumber(number);
+                        assertEquals(5, number, "Chosen number should be set to 5 on the board.");
+                    }
+                };
     }
 
     @Test
     @DisplayName("Test adding components and clicking on one")
     void testAddComponentAndClick() {
-        assertEquals(3, componentGroup.components.size(), "All components should be added to the list.");
+        assertEquals(
+                3, componentGroup.components.size(), "All components should be added to the list.");
 
         // Simulate clicking on panel2
-        MouseEvent click = new MouseEvent(panel2, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 10, 10, 1, false);
+        MouseEvent click =
+                new MouseEvent(
+                        panel2,
+                        MouseEvent.MOUSE_CLICKED,
+                        System.currentTimeMillis(),
+                        0,
+                        10,
+                        10,
+                        1,
+                        false);
         panel2.getMouseListeners()[0].mouseClicked(click);
 
         // Check if the correct component is selected
-        assertEquals(panel2, componentGroup.selectedComponent, "Panel 2 should be the selected component.");
+        assertEquals(
+                panel2,
+                componentGroup.selectedComponent,
+                "Panel 2 should be the selected component.");
     }
 
     @Test
@@ -249,26 +293,21 @@ class SudokuGameTest {
         game.board.setMarkedCell(0, 0); // Set the top-left cell as marked
         game.getNoteButton().doClick();
 
-        game.makeMove(0,0,1);
-        assertTrue(game.board.getNotesInCell(0,0).contains(1), "Note 1 should be placed at (0,0).");
+        game.makeMove(0, 0, 1);
+        assertTrue(
+                game.board.getNotesInCell(0, 0).contains(1), "Note 1 should be placed at (0,0).");
 
         game.getNoteButton().doClick();
-        game.checkCellsForNotes(0,1,1,"show");
-        game.makeMove(0,1,1);
-        assertTrue(game.board.getHideList(0,0).contains(1), "Note 1 should be hidden at (0,0).");
+        game.checkCellsForNotes(0, 1, 1, "show");
+        game.makeMove(0, 1, 1);
+        assertTrue(game.board.getHideList(0, 0).contains(1), "Note 1 should be hidden at (0,0).");
 
         game.getNoteButton().doClick();
-        game.makeNote(1,1,2);
+        game.makeNote(1, 1, 2);
 
         game.getNoteButton().doClick();
-        game.makeMove(1,1,2);
+        game.makeMove(1, 1, 2);
 
-        assertTrue(game.board.getHiddenProperty(1,1), "Note 2 should be hidden at (1,1).");
-
-
+        assertTrue(game.board.getHiddenProperty(1, 1), "Note 2 should be hidden at (1,1).");
     }
-
-
-
-
 }
