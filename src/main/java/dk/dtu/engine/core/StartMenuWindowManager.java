@@ -1,7 +1,8 @@
+/* (C)2024 */
 package dk.dtu.engine.core;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class StartMenuWindowManager {
     private final JFrame frame;
@@ -9,7 +10,6 @@ public class StartMenuWindowManager {
     private final JPanel difficultyPanel = new JPanel(null); // Panel for difficulty buttons
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
-
 
     public StartMenuWindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
@@ -28,14 +28,17 @@ public class StartMenuWindowManager {
 
         mainPanel.setBackground(Color.WHITE);
 
-
         sizePanel.setBounds(50, (frame.getHeight() / 2) - 150, 650, 160);
         sizePanel.setBackground(Color.WHITE);
 
         difficultyPanel.setBounds(50, (frame.getHeight() / 2) + 50, 650, 50);
         difficultyPanel.setBackground(Color.WHITE);
 
-        buttonPanel.setBounds((frame.getWidth()) - 250, (frame.getHeight() / 2) - 150, 200, difficultyPanel.getHeight() + sizePanel.getHeight() + 50);
+        buttonPanel.setBounds(
+                (frame.getWidth()) - 250,
+                (frame.getHeight() / 2) - 150,
+                200,
+                difficultyPanel.getHeight() + sizePanel.getHeight() + 50);
         buttonPanel.setBackground(Color.WHITE);
 
         inputPanel.setBounds(525, (frame.getHeight() / 2) - 205, 140, 50);
@@ -46,10 +49,8 @@ public class StartMenuWindowManager {
         mainPanel.add(difficultyPanel);
         mainPanel.add(inputPanel);
 
-
         frame.setContentPane(mainPanel); // Add the main panel to the frame
     }
-
 
     public void addComponent(Component component, JPanel panel) {
         panel.add(component);

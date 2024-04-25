@@ -12,7 +12,6 @@ import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -45,7 +44,6 @@ class SudokuGameTest {
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         boardCanvas = new SudokuBoardCanvas(3, 3, 550 / 9);
         game.initialize(3, 3, 550 / 9);
-
 
         componentGroup = new CustomComponentGroup();
 

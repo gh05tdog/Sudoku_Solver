@@ -406,12 +406,18 @@ public class SudokuGame {
         goBackButton.addActionListener(
                 e -> {
 
-                    //Make a popup to ask if they want to go back
-                    int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to go back to the main menu?", "Go back to main menu", JOptionPane.YES_NO_OPTION);
+                    // Make a popup to ask if they want to go back
+                    int response =
+                            JOptionPane.showConfirmDialog(
+                                    null,
+                                    "Are you sure you want to go back to the main menu?",
+                                    "Go back to main menu",
+                                    JOptionPane.YES_NO_OPTION);
                     if (response == JOptionPane.YES_OPTION) {
-                        //Get the frame
+                        // Get the frame
                         JFrame frame = windowManager.getFrame();
-                        StartMenuWindowManager startMenu = new StartMenuWindowManager(frame, 1000, 1000);
+                        StartMenuWindowManager startMenu =
+                                new StartMenuWindowManager(frame, 1000, 1000);
                         StartMenu startMenu1 = new StartMenu(startMenu);
                         startMenu1.initialize();
                     }
@@ -435,8 +441,6 @@ public class SudokuGame {
 
         windowManager.addGoBackButton(goBackButton);
     }
-
-
 
     public int[][] deepCopyBoard(int[][] original) {
         return solverAlgorithm.deepCopy(original);
