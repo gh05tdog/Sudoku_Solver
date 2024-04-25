@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver.AlgorithmX;
 
 import java.util.List;
@@ -30,25 +31,28 @@ public class DancingLinks {
 
             for (int col = 0; col < matrix.getFirst().length; col++) {
                 if (matrix.get(row)[col] == 1) {
-                    Node newNode = new Node(row);  // Assuming Node constructor sets column and row indexes correctly
-                    newNode.column = columnNodes[col];  // Linking node to its column
+                    Node newNode =
+                            new Node(row); // Assuming Node constructor sets column and row indexes
+                    // correctly
+                    newNode.column = columnNodes[col]; // Linking node to its column
 
                     // Link nodes horizontally
                     if (firstNodeInRow == null) {
-                        firstNodeInRow = newNode;  // This is the first node in this row
+                        firstNodeInRow = newNode; // This is the first node in this row
                     } else {
-                        lastNodeInRow.right = newNode;  // Link the last node in the row to this new node
-                        newNode.left = lastNodeInRow;  // Link new node back to the last node
+                        lastNodeInRow.right =
+                                newNode; // Link the last node in the row to this new node
+                        newNode.left = lastNodeInRow; // Link new node back to the last node
                     }
-                    lastNodeInRow = newNode;  // Update this node to be the last in the row
+                    lastNodeInRow = newNode; // Update this node to be the last in the row
 
                     // Vertical linking within the column
-                    if (columnNodes[col].down == columnNodes[col]) {  // Column is empty
+                    if (columnNodes[col].down == columnNodes[col]) { // Column is empty
                         columnNodes[col].down = newNode;
                         newNode.up = columnNodes[col];
                         newNode.down = columnNodes[col];
                         columnNodes[col].up = newNode;
-                    } else {  // Column already has nodes
+                    } else { // Column already has nodes
                         newNode.down = columnNodes[col].down;
                         newNode.up = columnNodes[col];
                         columnNodes[col].down.up = newNode;
@@ -61,8 +65,8 @@ public class DancingLinks {
 
             // Close the horizontal row loop
             if (firstNodeInRow != null) {
-                lastNodeInRow.right = firstNodeInRow;  // Last node links back to the first
-                firstNodeInRow.left = lastNodeInRow;  // First node links back to the last
+                lastNodeInRow.right = firstNodeInRow; // Last node links back to the first
+                firstNodeInRow.left = lastNodeInRow; // First node links back to the last
             }
         }
 

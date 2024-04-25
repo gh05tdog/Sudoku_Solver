@@ -1,12 +1,12 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver.BruteForce;
+
+import static java.lang.Math.sqrt;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.config;
 import dk.dtu.game.core.solver.SolverAlgorithm;
-
 import java.util.*;
-
-import static java.lang.Math.sqrt;
 
 public class BruteForceAlgorithm {
 
@@ -62,9 +62,9 @@ public class BruteForceAlgorithm {
                     if (possibleValues < lowestPossibleValue) {
                         lowestPossibleValue = possibleValues;
                         possibleCells.clear();
-                        possibleCells.add(new int[]{i, j});
+                        possibleCells.add(new int[] {i, j});
                     } else if (possibleValues == lowestPossibleValue) {
-                        possibleCells.add(new int[]{i, j});
+                        possibleCells.add(new int[] {i, j});
                     }
                 }
             }
@@ -99,7 +99,6 @@ public class BruteForceAlgorithm {
         } else {
             System.out.println("No solution exists");
         }
-
     }
 
     public static void removeNumsRecursive(Board board) {
@@ -109,12 +108,13 @@ public class BruteForceAlgorithm {
         int maxNumRemoved;
         String difficulty = config.getDifficulty();
 
-        maxNumRemoved = switch (difficulty) {
-            case "medium" -> 60;
-            case "hard" -> 80;
-            case "extreme" -> 200;
-            default -> 30;
-        };
+        maxNumRemoved =
+                switch (difficulty) {
+                    case "medium" -> 60;
+                    case "hard" -> 80;
+                    case "extreme" -> 200;
+                    default -> 30;
+                };
 
         while (numRemoved < maxNumRemoved) {
             int possibleSols = 0;
@@ -126,7 +126,8 @@ public class BruteForceAlgorithm {
 
             for (int i = 1; i <= board.getDimensions(); i++) {
                 initialBoard = deepCopy(tempBoard);
-                if (SolverAlgorithm.checkBoard(initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
+                if (SolverAlgorithm.checkBoard(
+                        initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
                     initialBoard[randRow][randCol] = i;
                     if (sudoku(initialBoard)) {
                         possibleSols++;
@@ -218,7 +219,6 @@ public class BruteForceAlgorithm {
             return copiedBoard;
         } else {
             return null;
-
         }
     }
 }

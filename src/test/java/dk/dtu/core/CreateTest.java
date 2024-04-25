@@ -1,18 +1,16 @@
+/* (C)2024 */
 package dk.dtu.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import dk.dtu.game.core.Board;
-
-import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
 import dk.dtu.game.core.config;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
+import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class CreateTest {
 
@@ -36,7 +34,8 @@ class CreateTest {
 
         // Ensure the board is correctly initialized with zeros and has the correct size
         int expectedDimension = 3 * 3;
-        assertEquals(expectedDimension, board.getDimensions(), "Board should have correct dimensions.");
+        assertEquals(
+                expectedDimension, board.getDimensions(), "Board should have correct dimensions.");
 
         // Verify that all cells are initialized to zero
         boolean allZeros = true;
@@ -94,7 +93,8 @@ class CreateTest {
 
         // Check all rows and columns for duplicates
         for (int i = 0; i < board.getDimensions(); i++) {
-            if (uniqueRows.contains(Arrays.toString(board.getRow(i))) || uniqueCols.contains(Arrays.toString(board.getColumn(i))) ) {
+            if (uniqueRows.contains(Arrays.toString(board.getRow(i)))
+                    || uniqueCols.contains(Arrays.toString(board.getColumn(i)))) {
                 return false;
             }
             uniqueRows.add(Arrays.toString(board.getRow(i)));
@@ -103,15 +103,13 @@ class CreateTest {
 
         Set<String> uniqueSquares = new HashSet<>();
 
-
         // Check all 3x3 sub grids for duplicates
         for (int row = 0; row < board.getDimensions(); row += 3) {
             for (int col = 0; col < board.getDimensions(); col += 3) {
                 if (uniqueSquares.contains(Arrays.toString(board.getSquare(row, col)))) {
                     return false;
                 }
-                uniqueSquares.add(Arrays.toString(board.getSquare(row,col)));
-
+                uniqueSquares.add(Arrays.toString(board.getSquare(row, col)));
             }
         }
 
@@ -119,12 +117,14 @@ class CreateTest {
 
         return true; // Passed all checks
     }
+
     @Test
     @DisplayName("Test creating a small 4x4 Sudoku board")
     void testSmallBoardCreation() throws Exception {
         Board board = new Board(2, 2);
         assertNotNull(board, "Small board should be created successfully.");
-        assertEquals(4, board.getDimensions(), "Board should have correct dimensions for a 4x4 board.");
+        assertEquals(
+                4, board.getDimensions(), "Board should have correct dimensions for a 4x4 board.");
     }
 
     @Test
@@ -140,10 +140,15 @@ class CreateTest {
     void testLargeBoardCreation() throws Exception {
         Board board = new Board(4, 4);
         assertNotNull(board, "Large board should be created successfully.");
-        //Fill the board with a correct Sudoku solution first
+        // Fill the board with a correct Sudoku solution first
         BruteForceAlgorithm.fillBoard(board);
-        assertTrue(BruteForceAlgorithm.isValidSudoku(board.getBoard()), "Large board should adhere to Sudoku rules.");
-        assertEquals(16, board.getDimensions(), "Board should have correct dimensions for an 16x16 board.");
+        assertTrue(
+                BruteForceAlgorithm.isValidSudoku(board.getBoard()),
+                "Large board should adhere to Sudoku rules.");
+        assertEquals(
+                16,
+                board.getDimensions(),
+                "Board should have correct dimensions for an 16x16 board.");
     }
 
     @Test
@@ -170,7 +175,9 @@ class CreateTest {
         Board board = new Board(3, 3);
         board.setNumber(0, 0, 1);
         board.setNumber(0, 1, 1); // Create a conflict
-        assertFalse(BruteForceAlgorithm.sudoku(board.getBoard()), "Solver should detect the board is unsolvable.");
+        assertFalse(
+                BruteForceAlgorithm.sudoku(board.getBoard()),
+                "Solver should detect the board is unsolvable.");
     }
 
     @Test
@@ -180,7 +187,9 @@ class CreateTest {
         long startTime = System.currentTimeMillis();
         BruteForceAlgorithm.fillBoard(board);
         long endTime = System.currentTimeMillis();
-        assertTrue((endTime - startTime) < 1000, "Solver should complete within reasonable time for a standard board.");
+        assertTrue(
+                (endTime - startTime) < 1000,
+                "Solver should complete within reasonable time for a standard board.");
     }
 
     @Test
@@ -199,14 +208,14 @@ class CreateTest {
         Board board = new Board(3, 3);
         BruteForceAlgorithm.createSudoku(board);
         board.setInitialBoard(board.getBoard());
-        int [][] solvedBoard = BruteForceAlgorithm.getSolutionBoard(board.getInitialBoard());
+        int[][] solvedBoard = BruteForceAlgorithm.getSolutionBoard(board.getInitialBoard());
 
         board.setNumber(0, 0, 1);
         board.setNumber(0, 1, 1); // Create a conflict
 
         board.setBoard(BruteForceAlgorithm.getSolutionBoard(board.getInitialBoard()));
 
-        assertArrayEquals(solvedBoard, board.getBoard(), "The board should be the same as the solved board");
-
+        assertArrayEquals(
+                solvedBoard, board.getBoard(), "The board should be the same as the solved board");
     }
 }

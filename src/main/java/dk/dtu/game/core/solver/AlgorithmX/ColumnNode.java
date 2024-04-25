@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver.AlgorithmX;
 
 public class ColumnNode extends Node {

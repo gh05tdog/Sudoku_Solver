@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver;
 
 public class SolverAlgorithm {
@@ -5,8 +6,6 @@ public class SolverAlgorithm {
     private SolverAlgorithm() {
         throw new IllegalStateException("Utility class");
     }
-
-
 
     public static boolean checkBoard(int[][] board, int row, int col, int c, int constant) {
         boolean legalRowCol = true;
@@ -18,7 +17,9 @@ public class SolverAlgorithm {
             }
         }
         for (int p = (row / constant) * constant; p < (row / constant) * constant + constant; p++) {
-            for (int q = (col / constant) * constant; q < (col / constant) * constant + constant; q++) {
+            for (int q = (col / constant) * constant;
+                    q < (col / constant) * constant + constant;
+                    q++) {
                 if (board[p][q] == c) {
                     legalSquare = false;
                     break;
@@ -38,4 +39,3 @@ public class SolverAlgorithm {
         return copy;
     }
 }
-

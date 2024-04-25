@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver.AlgorithmX;
 
 public class Placement {
@@ -10,5 +11,4 @@ public class Placement {
         this.col = col;
         this.value = value;
     }
-
 }

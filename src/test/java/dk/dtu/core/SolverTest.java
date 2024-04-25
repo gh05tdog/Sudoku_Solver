@@ -1,14 +1,13 @@
+/* (C)2024 */
 package dk.dtu.core;
-
 
 import dk.dtu.game.core.solver.AlgorithmX.ColumnNode;
 import dk.dtu.game.core.solver.AlgorithmX.DancingLinks;
 import dk.dtu.game.core.solver.AlgorithmX.Node;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class SolverTest {
 
@@ -16,10 +15,10 @@ public class SolverTest {
     @DisplayName("Test if a column is correctly covered")
     void testIsColumnCovered() {
         List<int[]> coverList = new ArrayList<>();
-        int [] coverRow1 = {1,1,0,1};
-        int [] coverRow2 = {0,0,1,1};
-        int [] coverRow3 = {0,0,1,1};
-        int [] coverRow4 = {1,1,0,0};
+        int[] coverRow1 = {1, 1, 0, 1};
+        int[] coverRow2 = {0, 0, 1, 1};
+        int[] coverRow3 = {0, 0, 1, 1};
+        int[] coverRow4 = {1, 1, 0, 0};
 
         coverList.add(coverRow1);
         coverList.add(coverRow2);
@@ -28,7 +27,7 @@ public class SolverTest {
 
         DancingLinks dl = new DancingLinks(coverList);
         printMatrix(dl);
-        ColumnNode c = (ColumnNode)  dl.header.right;
+        ColumnNode c = (ColumnNode) dl.header.right;
 
         c.cover();
         System.out.println("Covered column: " + c.name);
@@ -39,7 +38,6 @@ public class SolverTest {
         System.out.println("Uncovered column: " + c.name);
         System.out.println("After uncovering:");
         printMatrix(dl);
-
     }
 
     public static void printMatrix(DancingLinks dl) {
@@ -101,7 +99,7 @@ public class SolverTest {
         int currentRow = 0;
         for (Node node = column.down; node != column; node = node.down, currentRow++) {
             if (matrix[getRowIndex(node)][Integer.parseInt(column.name)] != 1) {
-                return false;  // The node exists where matrix indicates there should be no node
+                return false; // The node exists where matrix indicates there should be no node
             }
         }
 
@@ -109,7 +107,6 @@ public class SolverTest {
     }
 
     private static int getRowIndex(Node node) {
-        return node.rowIndex;  // Directly return the stored row index
+        return node.rowIndex; // Directly return the stored row index
     }
-
 }

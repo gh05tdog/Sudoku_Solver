@@ -12,6 +12,7 @@ import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
+import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -19,8 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.swing.*;
-
-import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

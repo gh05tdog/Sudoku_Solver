@@ -1,14 +1,14 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver.AlgorithmX;
+
+import static java.lang.Math.sqrt;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.SolverAlgorithm;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-import static java.lang.Math.sqrt;
 
 public class algorithmX {
     public static List<Node> solution = new ArrayList<>();
@@ -33,7 +33,6 @@ public class algorithmX {
         } else {
             System.out.println("No solution found");
         }
-
     }
 
     public static List<Integer> getPossiblePlacements(int[][] board, int row, int col) {
@@ -69,11 +68,11 @@ public class algorithmX {
             }
         }
 
-
         return coverList;
     }
 
-    private static void setCoverRow(int[][] board, List<int[]> coverList, int i, int j, int n, int[] cover) {
+    private static void setCoverRow(
+            int[][] board, List<int[]> coverList, int i, int j, int n, int[] cover) {
         cover[i * board.length + j] = 1;
         cover[board.length * board.length + i * board.length + n - 1] = 1;
         cover[2 * board.length * board.length + j * board.length + n - 1] = 1;
@@ -116,7 +115,8 @@ public class algorithmX {
         }
     }
 
-    private static boolean canRemoveNumber(int[][] arr, int row, int col, List<int[]> xBoard, List<Integer> placements) {
+    private static boolean canRemoveNumber(
+            int[][] arr, int row, int col, List<int[]> xBoard, List<Integer> placements) {
 
         int possibleNums = 0;
         int chosenNum = 0;
@@ -142,7 +142,8 @@ public class algorithmX {
         return false;
     }
 
-    public static void addNumberToXBoard(int[][] arr, int row, int col, int num, List<int[]> xBoard) {
+    public static void addNumberToXBoard(
+            int[][] arr, int row, int col, int num, List<int[]> xBoard) {
         int[] list = new int[arr.length * arr.length * 4];
 
         setCoverRow(arr, xBoard, row, col, num, list);
@@ -159,10 +160,9 @@ public class algorithmX {
         }
     }
 
-
     public static boolean algorithmXSolver(ColumnNode header) {
         if (header.right == header) {
-            return true;  // Return true indicating the solution was found
+            return true; // Return true indicating the solution was found
         }
 
         ColumnNode c = chooseHeuristicColumn(header);
@@ -178,7 +178,7 @@ public class algorithmX {
             }
 
             if (algorithmXSolver(header)) {
-                return true;  // Return immediately if solution was found
+                return true; // Return immediately if solution was found
             }
 
             for (Node j = r.left; j != r; j = j.left) {
@@ -189,7 +189,7 @@ public class algorithmX {
 
         c.uncover();
 
-        return false;  // Return false as no solution was found in this path
+        return false; // Return false as no solution was found in this path
     }
 
     public static ColumnNode chooseHeuristicColumn(ColumnNode header) {
@@ -197,7 +197,9 @@ public class algorithmX {
         ColumnNode c = (ColumnNode) header.right;
         List<ColumnNode> columns = new ArrayList<>();
         int minSize = c.size;
-        for (ColumnNode temp = (ColumnNode) header.right; temp != header; temp = (ColumnNode) temp.right) {
+        for (ColumnNode temp = (ColumnNode) header.right;
+                temp != header;
+                temp = (ColumnNode) temp.right) {
             if (temp.size < minSize) {
                 minSize = temp.size;
                 columns.clear();
@@ -217,7 +219,6 @@ public class algorithmX {
         solution.remove(row);
     }
 
-
     public static int[][] convertSolutionToBoard(List<Node> solution, List<Placement> placements) {
         int[][] board = new int[arraySize][arraySize];
 
@@ -233,10 +234,9 @@ public class algorithmX {
         for (int i = 0; i < board.length; i++) {
             System.arraycopy(board[i], 0, solvedBoard[i], 0, board.length);
         }
-
-
     }
-    public static int [][] getSolutionBoard() {
+
+    public static int[][] getSolutionBoard() {
         return solvedBoard;
     }
 }
