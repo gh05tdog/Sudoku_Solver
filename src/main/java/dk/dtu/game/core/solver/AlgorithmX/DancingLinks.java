@@ -60,7 +60,7 @@ public class DancingLinks {
             }
 
             // Close the horizontal row loop
-            if (firstNodeInRow != null && lastNodeInRow != null) {
+            if (firstNodeInRow != null) {
                 lastNodeInRow.right = firstNodeInRow;  // Last node links back to the first
                 firstNodeInRow.left = lastNodeInRow;  // First node links back to the last
             }
@@ -68,9 +68,7 @@ public class DancingLinks {
 
         // Ensure each column node is circularly linked if no nodes were added
         for (ColumnNode colNode : columnNodes) {
-            if (colNode.up == colNode) {  // No nodes have been added
-                // These lines are redundant since up and down are already set to colNode in initialization
-                colNode.up = colNode;  // Ensure circular linkage
+            if (colNode.up == colNode) {
                 colNode.down = colNode;
             }
         }

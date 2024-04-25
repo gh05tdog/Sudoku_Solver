@@ -2,6 +2,7 @@ package dk.dtu.game.core.solver.BruteForce;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.config;
+import dk.dtu.game.core.solver.solverAlgorithm;
 
 import java.util.*;
 
@@ -9,7 +10,7 @@ import static java.lang.Math.sqrt;
 
 public class BruteForceAlgorithm {
 
-    public static void createSudoku(Board board) throws Exception {
+    public static void createSudoku(Board board) {
         double startTime = System.nanoTime();
         fillBoard(board);
         double endTime = System.nanoTime();
@@ -31,7 +32,7 @@ public class BruteForceAlgorithm {
             int col = chosenCells[1];
 
             for (int c = 1; c <= board.length; c++) {
-                if (checkBoard(board, row, col, c, (int) sqrt(board.length))) {
+                if (solverAlgorithm.checkBoard(board, row, col, c, (int) sqrt(board.length))) {
                     board[row][col] = c;
                     if (sudoku(board)) {
                         return true;
@@ -46,28 +47,6 @@ public class BruteForceAlgorithm {
         }
     }
 
-    static boolean checkBoard(int[][] board, int row, int col, int c, int constant) {
-        boolean legal_row_col = true;
-        boolean legal_square = true;
-        for (int p = 0; p < board.length; p++) {
-            if (board[row][p] == c || board[p][col] == c) {
-                legal_row_col = false;
-                break;
-            }
-        }
-        for (int p = (row / constant) * constant; p < (row / constant) * constant + constant; p++) {
-            for (int q = (col / constant) * constant; q < (col / constant) * constant + constant; q++) {
-                if (board[p][q] == c) {
-                    legal_square = false;
-                    break;
-                }
-            }
-            if (!legal_square) break;
-        }
-
-        return legal_row_col && legal_square;
-    }
-
     public static int[] pickCell(int[][] arr) {
         ArrayList<int[]> possibleCells = new ArrayList<>();
         int lowestPossibleValue = Integer.MAX_VALUE;
@@ -76,7 +55,7 @@ public class BruteForceAlgorithm {
                 if (arr[i][j] == 0) {
                     int possibleValues = 0;
                     for (int k = 1; k <= arr.length; k++) {
-                        if (checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
+                        if (solverAlgorithm.checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
                             possibleValues++;
                         }
                     }
@@ -127,11 +106,10 @@ public class BruteForceAlgorithm {
         int[][] tempBoard = deepCopy(board.getBoard());
         int[][] initialBoard;
         int numRemoved = 0;
-        int maxNumRemoved = 0;
+        int maxNumRemoved;
         String difficulty = config.getDifficulty();
 
         maxNumRemoved = switch (difficulty) {
-            case "easy" -> 30;
             case "medium" -> 60;
             case "hard" -> 80;
             case "extreme" -> 200;
@@ -148,7 +126,7 @@ public class BruteForceAlgorithm {
 
             for (int i = 1; i <= board.getDimensions(); i++) {
                 initialBoard = deepCopy(tempBoard);
-                if (checkBoard(initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
+                if (solverAlgorithm.checkBoard(initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
                     initialBoard[randRow][randCol] = i;
                     if (sudoku(initialBoard)) {
                         possibleSols++;
@@ -174,7 +152,7 @@ public class BruteForceAlgorithm {
 
     public static boolean isValidSudoku(int[][] board) {
         int size = board.length; // Assuming square board
-        int n = (int) Math.sqrt(size); // Calculate the size of subgrids
+        int n = (int) Math.sqrt(size); // Calculate the size of subGrids
 
         // Check for row and column uniqueness
         for (int i = 0; i < size; i++) {
@@ -183,7 +161,7 @@ public class BruteForceAlgorithm {
             }
         }
 
-        // Check subgrids for uniqueness
+        // Check subGrids for uniqueness
         for (int row = 0; row < size; row += n) {
             for (int col = 0; col < size; col += n) {
                 if (!isSubgridUnique(board, row, col, n)) {
