@@ -1,10 +1,7 @@
 package dk.dtu.engine.utility;
 
-import dk.dtu.game.core.config;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseListener;
 
 public class CustomBoardPanel extends JPanel {
     private int n;

@@ -112,7 +112,7 @@ public class solverAlgorithm {
         int[][] arr = new int[size][size];
 
         if (sudoku(arr)) {
-            board.setBoard(arr);
+            board.setGameBoard(arr);
         } else {
             System.out.println("No solution exists");
         }
@@ -120,7 +120,7 @@ public class solverAlgorithm {
     }
 
     public static void removeNumsRecursive(Board board) {
-        int[][] tempBoard = deepCopy(board.getBoard());
+        int[][] tempBoard = deepCopy(board.getGameBoard());
         int[][] initialBoard;
         int numRemoved = 0;
         int maxNumRemoved = 0;
@@ -156,7 +156,7 @@ public class solverAlgorithm {
             } else {
                 numRemoved++;
             }
-            board.setBoard(tempBoard);
+            board.setGameBoard(tempBoard);
         }
     }
 

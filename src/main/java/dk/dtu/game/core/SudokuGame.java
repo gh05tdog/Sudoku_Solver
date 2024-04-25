@@ -22,10 +22,11 @@ public class SudokuGame {
     private final ArrayList<Move> hintList = new ArrayList<>();
     int gridSize; // or 9 for a standard Sudoku
     int cellSize; // Adjust based on your window size and desired grid size
-    public int placeableNumber = 0;
+    private int placeableNumber = 0;
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
-    public SudokuBoardCanvas board;
+
+    private SudokuBoardCanvas board;
     public numberHub numbers;
     public Timer timer;
     public boolean gameIsStarted = false;
@@ -188,7 +189,7 @@ public class SudokuGame {
 
         board.addKeyListener(keyboardListener);
 
-        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
+        gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
         numbers = new numberHub(n * k, cellSize);
         numbers.setLocation(50, 50);
@@ -217,9 +218,8 @@ public class SudokuGame {
         timer.stop();
         timer.reset();
         dk.dtu.game.solver.solverAlgorithm.createSudoku(gameboard);
-        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
+        gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
         gameIsStarted = true;
-        gameboard.printBoard();
         fillHintList();
         System.out.println(hintList.size());
         timer.start();
@@ -241,7 +241,7 @@ public class SudokuGame {
     }
 
     public void fillHintList() {
-        int[][] solutionBoard = solverAlgorithm.getSolutionBoard(gameboard.getBoard());
+        int[][] solutionBoard = solverAlgorithm.getSolutionBoard(gameboard.getGameBoard());
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -350,7 +350,7 @@ public class SudokuGame {
                     gameIsStarted = false;
                     board.clearNotes();
                     timer.stop();
-                    gameboard.setBoard(deepCopyBoard(gameboard.getInitialBoard()));
+                    gameboard.setGameBoard(deepCopyBoard(gameboard.getInitialBoard()));
                     board.requestFocusInWindow();
                     gameIsStarted = true;
                     windowManager.updateBoard();
@@ -362,7 +362,7 @@ public class SudokuGame {
                 e -> {
                     board.clearNotes();
                     timer.stop();
-                    gameboard.setBoard(
+                    gameboard.setGameBoard(
                             Objects.requireNonNull(
                                     solverAlgorithm.getSolutionBoard(gameboard.getInitialBoard())));
                     checkCompletionAndOfferNewGame();
@@ -500,5 +500,13 @@ public class SudokuGame {
 
     public JToggleButton getNoteButton() {
         return noteButton;
+    }
+
+    public void setPlaceableNumber(int i) {
+        placeableNumber = i;
+    }
+
+    public SudokuBoardCanvas getBoard() {
+        return board;
     }
 }

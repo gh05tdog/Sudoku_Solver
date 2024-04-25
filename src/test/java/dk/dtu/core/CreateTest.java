@@ -1,10 +1,6 @@
 package dk.dtu.core;
 
-import dk.dtu.engine.core.WindowManager;
-import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.Move;
-import dk.dtu.game.core.SudokuGame;
 import dk.dtu.game.core.config;
 import dk.dtu.game.solver.solverAlgorithm;
 import org.junit.jupiter.api.DisplayName;
@@ -144,7 +140,7 @@ class CreateTest {
         assertNotNull(board, "Large board should be created successfully.");
         //Fill the board with a correct Sudoku solution first
         solverAlgorithm.fillBoard(board);
-        assertTrue(solverAlgorithm.isValidSudoku(board.getBoard()), "Large board should adhere to Sudoku rules.");
+        assertTrue(solverAlgorithm.isValidSudoku(board.getGameBoard()), "Large board should adhere to Sudoku rules.");
         assertEquals(16, board.getDimensions(), "Board should have correct dimensions for an 16x16 board.");
     }
 
@@ -172,7 +168,7 @@ class CreateTest {
         Board board = new Board(3, 3);
         board.setNumber(0, 0, 1);
         board.setNumber(0, 1, 1); // Create a conflict
-        assertFalse(solverAlgorithm.sudoku(board.getBoard()), "Solver should detect the board is unsolvable.");
+        assertFalse(solverAlgorithm.sudoku(board.getGameBoard()), "Solver should detect the board is unsolvable.");
     }
 
     @Test
@@ -191,7 +187,7 @@ class CreateTest {
         config.setDifficulty("medium");
         Board board = new Board(3, 3);
         solverAlgorithm.createSudoku(board);
-        solverAlgorithm.sudoku(board.getBoard());
+        solverAlgorithm.sudoku(board.getGameBoard());
         assertTrue(isValidSudoku(board), "Board should adhere to Sudoku rules.");
     }
 
@@ -200,15 +196,15 @@ class CreateTest {
     void testInvalidSudoku() throws Exception {
         Board board = new Board(3, 3);
         solverAlgorithm.createSudoku(board);
-        board.setInitialBoard(board.getBoard());
+        board.setInitialBoard(board.getGameBoard());
         int [][] solvedBoard = solverAlgorithm.getSolutionBoard(board.getInitialBoard());
 
         board.setNumber(0, 0, 1);
         board.setNumber(0, 1, 1); // Create a conflict
 
-        board.setBoard(solverAlgorithm.getSolutionBoard(board.getInitialBoard()));
+        board.setGameBoard(solverAlgorithm.getSolutionBoard(board.getInitialBoard()));
 
-        assertArrayEquals(solvedBoard, board.getBoard(), "The board should be the same as the solved board");
+        assertArrayEquals(solvedBoard, board.getGameBoard(), "The board should be the same as the solved board");
 
     }
 

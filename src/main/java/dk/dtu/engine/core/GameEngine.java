@@ -9,7 +9,6 @@ public class GameEngine implements Runnable {
     private final int n;
     private final int k;
     private final int cellSize;
-    private Thread gameThread;
 
     public GameEngine(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
         this.n = n;
@@ -22,18 +21,14 @@ public class GameEngine implements Runnable {
     public void start() {
         if (running) return;
         running = true;
-        gameThread = new Thread(this);
+        Thread gameThread = new Thread(this);
         gameThread.start();
     }
 
 
     @Override
     public void run() {
-        try {
-            initialize();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        initialize();
         long lastTime = System.nanoTime();
         final double nsPerTick = 1000000000D / 60D; // 60 ticks per second
 
@@ -63,7 +58,7 @@ public class GameEngine implements Runnable {
         }
     }
 
-    private void initialize() throws Exception {
+    private void initialize() {
         windowManager.display(); // Show the game window
         sudokuGame.initialize(this.n, this.k, this.cellSize); // Initialize game-specific components
     }

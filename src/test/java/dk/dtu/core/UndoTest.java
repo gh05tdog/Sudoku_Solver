@@ -34,7 +34,7 @@ class UndoTest {
         // not part of the test logic
 
         // Deep copy the board for later comparison
-        int[][] initialBoardState = game.deepCopyBoard(game.gameboard.getBoard());
+        int[][] initialBoardState = game.deepCopyBoard(game.gameboard.getGameBoard());
 
         // Make a move on a valid cell
         int row = 2, col = 2, number = 9;
@@ -45,7 +45,7 @@ class UndoTest {
 
         // Assert the board's state is unchanged from the initial state
         assertTrue(
-                Arrays.deepEquals(initialBoardState, game.gameboard.getBoard()),
+                Arrays.deepEquals(initialBoardState, game.gameboard.getGameBoard()),
                 "Board should return to its initial state after undo.");
     }
 
@@ -75,7 +75,7 @@ class UndoTest {
 
         // Validate the Sudoku board
         assertTrue(
-                solverAlgorithm.isValidSudoku(game.gameboard.getBoard()),
+                solverAlgorithm.isValidSudoku(game.gameboard.getGameBoard()),
                 "Applying all hints should result in a valid Sudoku.");
     }
 }

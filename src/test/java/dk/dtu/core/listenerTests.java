@@ -102,6 +102,6 @@ class ListenerTests {
         mouseListener.mouseEntered(new MouseEvent(boardCanvas, MouseEvent.MOUSE_ENTERED, System.currentTimeMillis(), 0, 100, 100, 0, false));
         mouseListener.mouseExited(new MouseEvent(boardCanvas, MouseEvent.MOUSE_EXITED, System.currentTimeMillis(), 0, 100, 100, 0, false));
 
-        assertFalse(mouseListener.isInsideSudokuBoard, "Mouse should not be considered inside Sudoku board after exit.");
+        assertFalse(mouseListener.getIsInsideSudokuBoard(), "Mouse should not be considered inside Sudoku board after exit.");
     }
 }

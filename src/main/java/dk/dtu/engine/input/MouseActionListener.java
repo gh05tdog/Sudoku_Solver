@@ -3,40 +3,44 @@ package dk.dtu.engine.input;
 import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.event.*;
 
 public class MouseActionListener implements MouseListener {
-    public boolean isInsideSudokuBoard = false;
+    private static final Logger logger = LoggerFactory.getLogger(MouseActionListener.class);
+    private boolean isInsideSudokuBoard = false;
     private boolean isInsideNumbersBoard = false;
-    private SudokuGame sudokuGame; // Reference to the Game class
+    private final SudokuGame sudokuGame; // Reference to the Game class
 
     public MouseActionListener(SudokuGame sudokuGame) {
         this.sudokuGame = sudokuGame;
     }
 
 
-
     @Override
     public void mouseClicked(MouseEvent e) {
         if (isInsideSudokuBoard) {
             sudokuGame.onSudokuBoardClicked(e.getX(), e.getY());
-        }
-        else if (isInsideNumbersBoard) {
+        } else if (isInsideNumbersBoard) {
             sudokuGame.onNumbersBoardClicked(e.getX(), e.getY());
-        }
-        else {
-            System.out.println("Clicked outside of the board");
+        } else {
+            logger.info("Clicked outside of the board");
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+        logger.info("Mouse Pressed: {} ", e.getButton());
+
 
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        logger.info("Mouse Released: {} ", e.getButton());
+
     }
 
     @Override
@@ -61,4 +65,7 @@ public class MouseActionListener implements MouseListener {
     }
 
 
+    public boolean getIsInsideSudokuBoard() {
+        return isInsideSudokuBoard;
+    }
 }
