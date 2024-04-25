@@ -20,7 +20,6 @@ public class ColumnNode extends Node {
         for (Node row = this.down; row != this; row = row.down) {
             for (Node node = row.right; node != row; node = node.right) {
                 node.removeNode();
-                node.column.size--;
             }
         }
     }
@@ -29,7 +28,6 @@ public class ColumnNode extends Node {
         for (Node row = this.up; row != this; row = row.up) {
             for (Node node = row.left; node != row; node = node.left) {
                 node.reinsertNode();
-                node.column.size++;
             }
         }
 

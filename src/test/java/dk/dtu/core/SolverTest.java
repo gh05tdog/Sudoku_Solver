@@ -4,8 +4,43 @@ package dk.dtu.core;
 import dk.dtu.game.core.solver.AlgorithmX.ColumnNode;
 import dk.dtu.game.core.solver.AlgorithmX.DancingLinks;
 import dk.dtu.game.core.solver.AlgorithmX.Node;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SolverTest {
+
+    @Test
+    @DisplayName("Test if a column is correctly covered")
+    void testIsColumnCovered() {
+        List<int[]> coverList = new ArrayList<>();
+        int [] coverRow1 = {1,1,0,1};
+        int [] coverRow2 = {0,0,1,1};
+        int [] coverRow3 = {0,0,1,1};
+        int [] coverRow4 = {1,1,0,0};
+
+        coverList.add(coverRow1);
+        coverList.add(coverRow2);
+        coverList.add(coverRow3);
+        coverList.add(coverRow4);
+
+        DancingLinks dl = new DancingLinks(coverList);
+        printMatrix(dl);
+        ColumnNode c = (ColumnNode)  dl.header.right;
+
+        c.cover();
+        System.out.println("Covered column: " + c.name);
+        System.out.println("After covering:");
+        printMatrix(dl);
+
+        c.uncover();
+        System.out.println("Uncovered column: " + c.name);
+        System.out.println("After uncovering:");
+        printMatrix(dl);
+
+    }
 
     public static void printMatrix(DancingLinks dl) {
         ColumnNode header = dl.header;

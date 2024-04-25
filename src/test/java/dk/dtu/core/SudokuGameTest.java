@@ -19,6 +19,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.swing.*;
+
+import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -208,7 +210,7 @@ class SudokuGameTest {
                     game.getNewGameButton().doClick();
                     game.gameboard.setBoard(
                             Objects.requireNonNull(
-                                    dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(
+                                    BruteForceAlgorithm.getSolutionBoard(
                                             game.gameboard.getInitialBoard())));
                 });
 
@@ -218,7 +220,7 @@ class SudokuGameTest {
                     // Assuming the solver updates the board directly and synchronously from the
                     // event handlers
                     int[][] expected =
-                            dk.dtu.game.solver.solverAlgorithm.getSolutionBoard(
+                            dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm.getSolutionBoard(
                                     game.gameboard.getInitialBoard());
                     int[][] actual = game.gameboard.getBoard();
 
