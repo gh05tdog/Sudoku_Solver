@@ -12,7 +12,6 @@ import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -36,16 +35,15 @@ class SudokuGameTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        windowManager =
-                new WindowManager(800, 800); // Assuming WindowManager can be instantiated like this
+        startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 1000, 700);
+        startMenu = new StartMenu(startMenuWindowManager);
+        startMenu.initialize();
+        startMenu.getStartButton().doClick();
+        windowManager = new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
         board = new Board(3, 3); // Standard 9x9 Sudoku
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         boardCanvas = new SudokuBoardCanvas(3, 3, 550 / 9);
         game.initialize(3, 3, 550 / 9);
-        startMenuWindowManager = new StartMenuWindowManager(1000, 700);
-        startMenu = new StartMenu(startMenuWindowManager);
-        startMenu.initialize();
-        startMenu.getStartButton().doClick();
 
         componentGroup = new CustomComponentGroup();
 
