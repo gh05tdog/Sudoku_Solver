@@ -29,3 +29,9 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Check code format with Spotless
+      run: mvn spotless:check
+      continue-on-error: true  # This will allow the workflow to continue even if this step fails
+    - name: Report Spotless issues
+      if: failure() && steps.spotless.outcome == 'failure'
+      run: echo "Spotless check failed. Please run 'mvn spotless:apply' locally to fix formatting issues."
