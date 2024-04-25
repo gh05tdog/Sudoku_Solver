@@ -2,7 +2,7 @@ package dk.dtu.game.core.solver.BruteForce;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.config;
-import dk.dtu.game.core.solver.solverAlgorithm;
+import dk.dtu.game.core.solver.SolverAlgorithm;
 
 import java.util.*;
 
@@ -32,7 +32,7 @@ public class BruteForceAlgorithm {
             int col = chosenCells[1];
 
             for (int c = 1; c <= board.length; c++) {
-                if (solverAlgorithm.checkBoard(board, row, col, c, (int) sqrt(board.length))) {
+                if (SolverAlgorithm.checkBoard(board, row, col, c, (int) sqrt(board.length))) {
                     board[row][col] = c;
                     if (sudoku(board)) {
                         return true;
@@ -55,7 +55,7 @@ public class BruteForceAlgorithm {
                 if (arr[i][j] == 0) {
                     int possibleValues = 0;
                     for (int k = 1; k <= arr.length; k++) {
-                        if (solverAlgorithm.checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
+                        if (SolverAlgorithm.checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
                             possibleValues++;
                         }
                     }
@@ -126,7 +126,7 @@ public class BruteForceAlgorithm {
 
             for (int i = 1; i <= board.getDimensions(); i++) {
                 initialBoard = deepCopy(tempBoard);
-                if (solverAlgorithm.checkBoard(initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
+                if (SolverAlgorithm.checkBoard(initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
                     initialBoard[randRow][randCol] = i;
                     if (sudoku(initialBoard)) {
                         possibleSols++;

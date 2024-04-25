@@ -4,7 +4,6 @@ import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
-import dk.dtu.game.core.solver.solverAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

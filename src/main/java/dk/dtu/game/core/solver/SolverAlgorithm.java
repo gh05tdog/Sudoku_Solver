@@ -1,28 +1,33 @@
 package dk.dtu.game.core.solver;
 
-public class solverAlgorithm {
+public class SolverAlgorithm {
+
+    private SolverAlgorithm() {
+        throw new IllegalStateException("Utility class");
+    }
+
 
 
     public static boolean checkBoard(int[][] board, int row, int col, int c, int constant) {
-        boolean legal_row_col = true;
-        boolean legal_square = true;
+        boolean legalRowCol = true;
+        boolean legalSquare = true;
         for (int p = 0; p < board.length; p++) {
             if (board[row][p] == c || board[p][col] == c) {
-                legal_row_col = false;
+                legalRowCol = false;
                 break;
             }
         }
         for (int p = (row / constant) * constant; p < (row / constant) * constant + constant; p++) {
             for (int q = (col / constant) * constant; q < (col / constant) * constant + constant; q++) {
                 if (board[p][q] == c) {
-                    legal_square = false;
+                    legalSquare = false;
                     break;
                 }
             }
-            if (!legal_square) break;
+            if (!legalSquare) break;
         }
 
-        return legal_row_col && legal_square;
+        return legalRowCol && legalSquare;
     }
 }
 

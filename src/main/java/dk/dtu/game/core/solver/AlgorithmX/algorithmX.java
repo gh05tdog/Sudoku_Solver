@@ -1,7 +1,7 @@
 package dk.dtu.game.core.solver.AlgorithmX;
 
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.solver.solverAlgorithm;
+import dk.dtu.game.core.solver.SolverAlgorithm;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +28,7 @@ public class algorithmX {
             solvedBoard = new int[arraySize][arraySize];
             deepSetSolutionBoard(sudokuBoard);
             removeXRecursive(sudokuBoard, arraySize * arraySize / 2);
+            board.setInitialBoard(sudokuBoard);
             board.setBoard(sudokuBoard);
         } else {
             System.out.println("No solution found");
@@ -39,7 +40,7 @@ public class algorithmX {
         List<Integer> possiblePlacements = new ArrayList<>();
         int subSize = (int) sqrt(board.length);
         for (int i = 1; i <= board.length; i++) {
-            if (solverAlgorithm.checkBoard(board, row, col, i, subSize)) {
+            if (SolverAlgorithm.checkBoard(board, row, col, i, subSize)) {
                 possiblePlacements.add(i);
             }
         }
