@@ -181,7 +181,7 @@ class CreateTest {
     }
 
     @Test
-    @DisplayName("Create sudoku, solve it and test if valid")
+    @DisplayName("Create bruteForce sudoku, solve it and test if valid")
     void testCreateSudoku() throws Exception {
         Board board = new Board(3, 3);
         BruteForceAlgorithm.createSudoku(board);

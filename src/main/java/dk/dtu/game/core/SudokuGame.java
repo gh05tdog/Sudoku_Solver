@@ -5,8 +5,7 @@ import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.numberHub;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
-import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
-import dk.dtu.game.core.solver.solverAlgorithm;
+import dk.dtu.game.core.solver.AlgorithmX.algorithmX;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,6 +26,8 @@ public class SudokuGame {
     private SudokuBoardCanvas board;
     private numberHub numbers;
     private boolean gameIsStarted = false;
+
+    public static int [][] solvedBoard;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
         this.windowManager = windowManager;
@@ -158,8 +159,8 @@ public class SudokuGame {
     private void newGame() throws Exception {
         gameboard.clear();
         hintList.clear();
-        solverAlgorithm.createXSudoku(gameboard);
-        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
+        algorithmX.createXSudoku(gameboard);
+        solvedBoard = algorithmX.getSolutionBoard();
         gameIsStarted = true;
         gameboard.printBoard();
         fillHintList();
@@ -182,13 +183,12 @@ public class SudokuGame {
 
 
     public void fillHintList() {
-        int[][] solutionBoard = BruteForceAlgorithm.getSolutionBoard(gameboard.getBoard());
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (gameboard.getInitialNumber(row, col) == 0) { // Assuming initialBoard is the puzzle with empty spaces
-                    assert solutionBoard != null;
-                    hintList.add(new Move(row, col, solutionBoard[row][col], 0));
+                    assert solvedBoard != null;
+                    hintList.add(new Move(row, col, solvedBoard[row][col], 0));
                 }
             }
         }
@@ -285,7 +285,7 @@ public class SudokuGame {
 
 
         solveButton.addActionListener(e -> {
-            gameboard.setBoard(Objects.requireNonNull(BruteForceAlgorithm.getSolutionBoard(gameboard.getInitialBoard())));
+            gameboard.setBoard(Objects.requireNonNull(solvedBoard));
             checkCompletionAndOfferNewGame();
         });
 

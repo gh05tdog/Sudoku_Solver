@@ -14,10 +14,10 @@ public class algorithmX {
     public static List<Node> solution = new ArrayList<>();
     private static int arraySize;
 
-    static int [][] solvedBoard = new int[arraySize][arraySize];
+    static int[][] solvedBoard;
 
     public static void createXSudoku(Board board) {
-        int [][] arr = board.getBoard();
+        int[][] arr = board.getBoard();
         arraySize = board.getDimensions();
         List<Placement> placements = new ArrayList<>();
         List<int[]> xBoard = createExactCoverFromBoard(arr, placements);
@@ -25,14 +25,16 @@ public class algorithmX {
         ColumnNode header = dl.header;
         if (algorithmXSolver(header)) {
             int[][] sudokuBoard = convertSolutionToBoard(solution, placements);
-            solvedBoard = sudokuBoard;
-            removeXRecursive(sudokuBoard, arraySize*arraySize*3/4);
-            board.setSolutionBoard(solvedBoard);
+            solvedBoard = new int[arraySize][arraySize];
+            deepSetSolutionBoard(sudokuBoard);
+            removeXRecursive(sudokuBoard, arraySize * arraySize / 2);
+            board.setBoard(sudokuBoard);
         } else {
             System.out.println("No solution found");
         }
 
     }
+
     public static List<Integer> getPossiblePlacements(int[][] board, int row, int col) {
         List<Integer> possiblePlacements = new ArrayList<>();
         int subSize = (int) sqrt(board.length);
@@ -44,22 +46,22 @@ public class algorithmX {
         return possiblePlacements;
     }
 
-    public static List<int[]> createExactCoverFromBoard(int [][] board, List<Placement> placements) {
+    public static List<int[]> createExactCoverFromBoard(int[][] board, List<Placement> placements) {
 
         List<int[]> coverList = new ArrayList<>();
         int constraints = board.length * board.length * 4;
 
-        for(int i = 0; i < board.length; i++) {
-            for(int j = 0; j < board.length; j++) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
                 int num = board[i][j];
                 List<Integer> nums;
-                if(num == 0) {
+                if (num == 0) {
                     nums = getPossiblePlacements(board, i, j);
                 } else {
                     nums = Collections.singletonList(num);
                 }
-                for(int n : nums) {
-                    int [] cover = new int[constraints];
+                for (int n : nums) {
+                    int[] cover = new int[constraints];
                     setCoverRow(board, coverList, i, j, n, cover);
                     placements.add(new Placement(i, j, n));
                 }
@@ -80,7 +82,7 @@ public class algorithmX {
         coverList.add(cover);
     }
 
-    public static void removeXRecursive(int [][] arr, int maxRemoved) {
+    public static void removeXRecursive(int[][] arr, int maxRemoved) {
 
         int numRemoved = 0;
 
@@ -140,7 +142,7 @@ public class algorithmX {
     }
 
     public static void addNumberToXBoard(int[][] arr, int row, int col, int num, List<int[]> xBoard) {
-        int [] list = new int[arr.length * arr.length * 4];
+        int[] list = new int[arr.length * arr.length * 4];
 
         setCoverRow(arr, xBoard, row, col, num, list);
     }
@@ -226,5 +228,14 @@ public class algorithmX {
         return board;
     }
 
+    public static void deepSetSolutionBoard(int[][] board) {
+        for (int i = 0; i < board.length; i++) {
+            System.arraycopy(board[i], 0, solvedBoard[i], 0, board.length);
+        }
 
+
+    }
+    public static int [][] getSolutionBoard() {
+        return solvedBoard;
+    }
 }
