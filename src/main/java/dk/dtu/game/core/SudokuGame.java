@@ -1,6 +1,7 @@
 /* (C)2024 */
 package dk.dtu.game.core;
 
+import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.graphics.numberHub;
@@ -35,7 +36,8 @@ public class SudokuGame {
             restartButton,
             solveButton,
             newGameButton,
-            eraseButton;
+            eraseButton,
+            goBackButton;
     private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
@@ -324,6 +326,7 @@ public class SudokuGame {
         eraseButton = createButton("Erase", 100, 30);
         undoButton = createButton("Undo", 100, 300);
         hintButton = createButton("Hint", 100, 30);
+        goBackButton = createButton("Go Back", 100, 30);
 
         // Set solvebutton to be disabled at the start of the game
         solveButton.setEnabled(false);
@@ -400,10 +403,22 @@ public class SudokuGame {
                 e -> {
                     board.requestFocusInWindow();
                 });
+        goBackButton.addActionListener(
+                e -> {
+
+                    //Make a popup to ask if they want to go back
+                    int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to go back to the main menu?", "Go back to main menu", JOptionPane.YES_NO_OPTION);
+                    if (response == JOptionPane.YES_OPTION) {
+                        //Get the frame
+                        JFrame frame = windowManager.getFrame();
+                        StartMenuWindowManager startMenu = new StartMenuWindowManager(frame, 1000, 1000);
+                        StartMenu startMenu1 = new StartMenu(startMenu);
+                        startMenu1.initialize();
+                    }
+                });
 
         windowManager.addComponentToButtonPanel(startButton);
-        windowManager.addComponentToButtonPanel(
-                Box.createRigidArea(new Dimension(10, 10))); // 10-pixel vertical spacing
+        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
         windowManager.addComponentToButtonPanel(restartButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
         windowManager.addComponentToButtonPanel(solveButton);
@@ -417,7 +432,11 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(hintButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(noteButton);
+
+        windowManager.addGoBackButton(goBackButton);
     }
+
+
 
     public int[][] deepCopyBoard(int[][] original) {
         return solverAlgorithm.deepCopy(original);

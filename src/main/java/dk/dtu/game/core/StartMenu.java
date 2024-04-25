@@ -46,7 +46,7 @@ public class StartMenu {
         int n = config.getN();
         int k = config.getK();
         int cellSize = config.getCellSize();
-        WindowManager windowManager = new WindowManager(startMenu.getFrame(),900, 900);
+        WindowManager windowManager = new WindowManager(startMenu.getFrame(),1000, 1000);
         GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
         windowManager.display();
         gameEngine.start();
@@ -150,8 +150,7 @@ public class StartMenu {
                 try {
                     startGame();
                 } catch (Exception ex) {
-                    System.out.println("Error starting game: " + ex.getMessage());
-                    throw new RuntimeException(ex);
+                    throw new RuntimeException("Error is:" + ex);
                 }
 
             }
