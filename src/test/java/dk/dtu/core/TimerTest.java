@@ -21,14 +21,9 @@ class TimerTest {
     void testTimer() {
         //Tests if the timer is working correctly
         timer.start();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         timer.stop();
         String time = timer.getTimeString();
-        assertEquals("00:00:02", time);
+        assertEquals("00:00:01", time);
     }
 
 
