@@ -62,10 +62,6 @@ public class StartMenuWindowManager {
         frame.setVisible(true);
     }
 
-    public void close() {
-        frame.setVisible(false);
-    }
-
     public JFrame getFrame() {
         return frame;
     }

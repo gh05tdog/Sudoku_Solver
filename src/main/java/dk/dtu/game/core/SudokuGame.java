@@ -3,13 +3,13 @@ package dk.dtu.game.core;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
-import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.graphics.NumberHub;
+import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.engine.utility.TimerFunction;
-import dk.dtu.game.core.solver.AlgorithmX.algorithmX;
 import dk.dtu.game.core.solver.SolverAlgorithm;
+import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.*;
@@ -47,11 +47,12 @@ public class SudokuGame {
 
     Random random = new Random();
 
-    public SudokuGame(WindowManager windowManager, int n, int k, int cellSize) throws Board.BoardNotCreatable {
+    public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
+            throws Board.BoardNotCreatable {
         this.windowManager = windowManager;
         try {
             gameboard = new Board(n, k);
-        }catch (Board.BoardNotCreatable e){
+        } catch (Board.BoardNotCreatable e) {
             throw new Board.BoardNotCreatable("This board is not possible to create");
         }
         this.gridSize = n * k;
@@ -107,10 +108,11 @@ public class SudokuGame {
     }
 
     private void checkSubSquareForNotes(int row, int col, int number, String mode) {
-        int startRow = row - row % 3;
-        int startCol = col - col % 3;
-        for (int i = startRow; i < startRow + 3; i++) {
-            for (int j = startCol; j < startCol + 3; j++) {
+        int subSize = (int) Math.sqrt(gameboard.getDimensions());
+        int startRow = row - (row % subSize);
+        int startCol = col - (col % subSize);
+        for (int i = startRow; i < startRow + subSize; i++) {
+            for (int j = startCol; j < startCol + subSize; j++) {
                 if (board.getNotesInCell(i, j).contains(number)) {
                     updateHideList(i, j, number, mode);
                 }
@@ -232,7 +234,7 @@ public class SudokuGame {
         moveList.clear();
         timer.stop();
         timer.reset();
-        algorithmX.createXSudoku(gameboard);
+        AlgorithmXSolver.createXSudoku(gameboard);
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
         gameIsStarted = true;
         fillHintList();
@@ -257,7 +259,7 @@ public class SudokuGame {
     }
 
     public void fillHintList() {
-        int[][] solutionBoard = algorithmX.getSolutionBoard();
+        int[][] solutionBoard = AlgorithmXSolver.getSolutionBoard();
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -277,7 +279,6 @@ public class SudokuGame {
                     logger.debug("Sudoku is not completed");
                     return false;
                 }
-
             }
         }
         logger.debug("Sudoku is completed");
@@ -377,8 +378,7 @@ public class SudokuGame {
                     board.clearNotes();
                     timer.stop();
                     gameboard.setGameBoard(
-                            Objects.requireNonNull(
-                                    algorithmX.getSolutionBoard()));
+                            Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
                     checkCompletionAndOfferNewGame();
                 });
 
@@ -409,8 +409,7 @@ public class SudokuGame {
                     board.requestFocusInWindow();
                     provideHint();
                 });
-        noteButton.addActionListener(
-                e -> board.requestFocusInWindow());
+        noteButton.addActionListener(e -> board.requestFocusInWindow());
         goBackButton.addActionListener(
                 e -> {
 
@@ -471,10 +470,12 @@ public class SudokuGame {
     public void onNumbersBoardClicked(int x, int y) {
         int chosenNumber = numbers.getNumber(x, y);
         board.setChosenNumber(chosenNumber);
-        int[] markedCell = board.getMarkedCell();
-        int row = markedCell[0];
-        int col = markedCell[1];
-        makeMove(row, col, chosenNumber);
+        if (board.isACellMarked()) {
+            int[] markedCell = board.getMarkedCell();
+            int row = markedCell[0];
+            int col = markedCell[1];
+            makeMove(row, col, chosenNumber);
+        }
     }
 
     public JButton getUndoButton() {

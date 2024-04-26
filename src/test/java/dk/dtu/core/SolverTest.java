@@ -1,20 +1,20 @@
+/* (C)2024 */
 package dk.dtu.core;
-
-import dk.dtu.game.core.solver.AlgorithmX.*;
-import dk.dtu.game.core.Board;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
 import static dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm.isValidSudoku;
 import static org.junit.jupiter.api.Assertions.*;
 
+import dk.dtu.game.core.Board;
+import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
+import dk.dtu.game.core.solver.algorithmx.*;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 public class SolverTest {
     List<int[]> coverList;
+
     public SolverTest() {
         coverList = new ArrayList<>();
         int[] coverRow1 = {1, 1, 0, 1};
@@ -55,12 +55,12 @@ public class SolverTest {
         DancingLinks dl = new DancingLinks(coverList);
         ColumnNode c = (ColumnNode) dl.header.right;
         c.cover();
-        assert(isColumnCovered(c));
+        assert (isColumnCovered(c));
     }
 
     @Test
     @DisplayName("Test if a column is correctly uncovered")
-    void testColumnUncoverAssertion () {
+    void testColumnUncoverAssertion() {
         DancingLinks dl = new DancingLinks(coverList);
         ColumnNode c = (ColumnNode) dl.header.right;
         c.cover();
@@ -74,13 +74,12 @@ public class SolverTest {
     void TestExactCoverMatrix() {
         int[][] board = new int[9][9];
 
-        List<algorithmX.Placement> placements = new ArrayList<>();
+        List<AlgorithmXSolver.Placement> placements = new ArrayList<>();
 
-        List<int[]> exactCoverBoard = algorithmX.createExactCoverFromBoard(board, placements);
+        List<int[]> exactCoverBoard = AlgorithmXSolver.createExactCoverFromBoard(board, placements);
 
         assertEquals(729, exactCoverBoard.size());
         assertEquals(324, exactCoverBoard.getFirst().length);
-
 
         for (int i = 0; i < exactCoverBoard.size(); i++) {
             int numsInRow = 0;
@@ -89,8 +88,8 @@ public class SolverTest {
                     numsInRow++;
                 }
             }
-            assertEquals(4, numsInRow); // all rows must have exactly 4 numbers, highlighting the 4 constraints
-
+            assertEquals(4, numsInRow); // all rows must have exactly 4 numbers, highlighting the 4
+            // constraints
         }
 
         for (int i = 0; i < exactCoverBoard.getFirst().length; i++) {
@@ -99,18 +98,22 @@ public class SolverTest {
                 if (exactCoverBoard.get(j)[i] == 1) {
                     numsInCol++;
                 }
-            } assertEquals(board.length, numsInCol); // as there are no placements, all columns must have 9 numbers, highlightning the 9 possible numbers.
+            }
+            assertEquals(
+                    board.length,
+                    numsInCol); // as there are no placements, all columns must have 9 numbers,
+            // highlightning the 9 possible numbers.
         }
     }
 
     @Test
     @DisplayName("Test dancing links are created as expected")
-    void testDancingLinks () {
-        int [][] board = new int[9][9];
+    void testDancingLinks() {
+        int[][] board = new int[9][9];
         int size = board.length;
-        int constraint = size*size*4;
-        List<algorithmX.Placement> placements = new ArrayList<>();
-        List<int[]> exactCoverBoard = algorithmX.createExactCoverFromBoard(board, placements);
+        int constraint = size * size * 4;
+        List<AlgorithmXSolver.Placement> placements = new ArrayList<>();
+        List<int[]> exactCoverBoard = AlgorithmXSolver.createExactCoverFromBoard(board, placements);
         DancingLinks dl = new DancingLinks(exactCoverBoard);
         ColumnNode header = dl.header;
         // all columNodes must have size equal to the number of numbers in the board
@@ -131,11 +134,8 @@ public class SolverTest {
             ColumnNode columnNode = (ColumnNode) node;
             totalNodes += columnNode.size;
         }
-        assertEquals(4*size*size*size, totalNodes);
-
+        assertEquals(4 * size * size * size, totalNodes);
     }
-
-
 
     public static void printMatrix(DancingLinks dl) {
         ColumnNode header = dl.header;
@@ -209,30 +209,27 @@ public class SolverTest {
 
     @Test
     @DisplayName("CreateXSudoku correctly builds a playable sudokuBoard")
-    void testCreateXSudoku () throws Exception {
+    void testCreateXSudoku() throws Exception {
         Board board = new Board(3, 3);
-        algorithmX.createXSudoku(board);
+        AlgorithmXSolver.createXSudoku(board);
         assertTrue(isValidSudoku(board.getBoard()));
-
     }
 
     @Test
     @DisplayName("CreateXSudoku creates a sudoku with a unique solution")
-    void testUniqueXSudoku () throws Exception {
+    void testUniqueXSudoku() throws Exception {
         Board board = new Board(3, 3);
-        algorithmX.createXSudoku(board);
-        assertEquals(1,BruteForceAlgorithm.checkUniqueSolution(board.getBoard()));
-
+        AlgorithmXSolver.createXSudoku(board);
+        assertEquals(1, BruteForceAlgorithm.checkUniqueSolution(board.getBoard()));
     }
 
     @Test
     @DisplayName("Test if solveExistingBoard works")
     void testSolveExistingBoard() throws Exception {
-        Board board = new Board(3,3);
-        algorithmX.createXSudoku(board);
-        int [][] solvedBoard = algorithmX.solveExistingBoard(board);
+        Board board = new Board(3, 3);
+        AlgorithmXSolver.createXSudoku(board);
+        int[][] solvedBoard = AlgorithmXSolver.solveExistingBoard(board);
 
-        assertArrayEquals(algorithmX.getSolutionBoard(), solvedBoard);
-
+        assertArrayEquals(AlgorithmXSolver.getSolutionBoard(), solvedBoard);
     }
 }

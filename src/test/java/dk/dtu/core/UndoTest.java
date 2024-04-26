@@ -7,8 +7,8 @@ import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.SudokuGame;
-import dk.dtu.game.core.solver.AlgorithmX.algorithmX;
 import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
+import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import java.util.Arrays;
 import javax.swing.*;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ class UndoTest {
         game.createBoard(
                 3, 3, 50); // Assuming this is the correct way to initialize the board in your game
 
-        algorithmX.createXSudoku(game.gameboard);
+        AlgorithmXSolver.createXSudoku(game.gameboard);
 
         // No need to call displayNumbersVisually here if it's just for visual representation and
         // not part of the test logic
@@ -63,7 +63,7 @@ class UndoTest {
         game.createBoard(3, 3, 50); // Set up the board
 
         // Generate a solvable Sudoku puzzle
-        algorithmX.createXSudoku(game.gameboard);
+        AlgorithmXSolver.createXSudoku(game.gameboard);
 
         // Remove numbers to generate hints (if not already part of createSudoku)
         // Assuming fillHintList() populates the hintList based on the current board state

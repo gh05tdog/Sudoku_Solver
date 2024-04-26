@@ -58,7 +58,7 @@ public class GameEngine implements Runnable {
 
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
-                // One second has passed - could be used to update a FPS counter, etc.
+                // One second has passed - could be used to update an FPS counter, etc.
             }
         }
     }

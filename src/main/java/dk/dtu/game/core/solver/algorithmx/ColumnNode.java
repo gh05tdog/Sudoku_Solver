@@ -1,4 +1,5 @@
-package dk.dtu.game.core.solver.AlgorithmX;
+/* (C)2024 */
+package dk.dtu.game.core.solver.algorithmx;
 
 public class ColumnNode extends Node {
     public int size;

@@ -1,4 +1,5 @@
-package dk.dtu.game.core.solver.AlgorithmX;
+/* (C)2024 */
+package dk.dtu.game.core.solver.algorithmx;
 
 public class Node {
     public Node left;
@@ -16,7 +17,6 @@ public class Node {
         this.up = this;
         this.down = this;
         this.rowIndex = rowIndex;
-
     }
 
     public Node() {
@@ -33,7 +33,7 @@ public class Node {
         column.size--;
     }
 
-    public void reinsertNode () {
+    public void reinsertNode() {
         // Reinsert the node into the horizontal list
         this.left.right = this;
         this.right.left = this;
@@ -46,4 +46,3 @@ public class Node {
         this.column.size++;
     }
 }
-
