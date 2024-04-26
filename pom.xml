@@ -9,6 +9,8 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <sonar.organization>ghostdog</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
@@ -59,6 +61,7 @@
                     </java>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
     <dependencies>
