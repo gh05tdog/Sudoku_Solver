@@ -132,8 +132,8 @@ public class BruteForceAlgorithm {
 
         while (numRemoved < maxNumRemoved) {
             int possibleSols = 0;
-            int randRow = rand.nextInt() * board.getDimensions();
-            int randCol = rand.nextInt() * board.getDimensions();
+            int randRow = rand.nextInt(board.getDimensions());
+            int randCol = rand.nextInt(board.getDimensions());
 
             int tempNumber = tempBoard[randRow][randCol];
             tempBoard[randRow][randCol] = 0;

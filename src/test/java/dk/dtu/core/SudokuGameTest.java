@@ -212,7 +212,7 @@ class SudokuGameTest {
                     // Assuming the solver updates the board directly and synchronously from the
                     // event handlers
                     int[][] expected = AlgorithmXSolver.getSolutionBoard();
-                    int[][] actual = game.gameboard.getGameBoard();
+                    int[][] actual = game.gameboard.getBoard();
 
                     // Use Arrays.deepEquals to compare multi-dimensional arrays
                     assertTrue(

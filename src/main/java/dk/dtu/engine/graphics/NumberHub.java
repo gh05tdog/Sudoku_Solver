@@ -3,7 +3,7 @@ package dk.dtu.engine.graphics;
 import javax.swing.*;
 import java.awt.*;
 
-public class NumberHub extends JPanel {
+public abstract class NumberHub extends JPanel {
     private static int cellSize;
 
     private final int subGrid;
@@ -88,4 +88,5 @@ public class NumberHub extends JPanel {
     }
 
 
+    public abstract void highlightNumber(int x, int y);
 }

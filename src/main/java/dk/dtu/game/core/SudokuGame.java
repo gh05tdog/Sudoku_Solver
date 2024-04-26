@@ -207,9 +207,14 @@ public class SudokuGame {
 
         board.addKeyListener(keyboardListener);
 
-        gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
+        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
 
-        numbers = new NumberHub(n * k, cellSize);
+        numbers = new NumberHub(n * k, cellSize) {
+            @Override
+            public void highlightNumber(int x, int y) {
+                onNumbersBoardClicked(x, y);
+            }
+        };
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
 
@@ -235,7 +240,7 @@ public class SudokuGame {
         timer.stop();
         timer.reset();
         AlgorithmXSolver.createXSudoku(gameboard);
-        gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
+        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
         gameIsStarted = true;
         fillHintList();
         logger.debug("Hint list size: {}", hintList.size());
