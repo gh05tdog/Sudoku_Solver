@@ -87,7 +87,7 @@ class SudokuGameTest {
                 game.moveList.isEmpty(), "Move list should not be empty after a valid placement.");
         assertEquals(
                 5,
-                game.moveList.peek().getNumber(),
+                game.moveList.peek().number(),
                 "Top of move list should have the placed number 5.");
     }
 

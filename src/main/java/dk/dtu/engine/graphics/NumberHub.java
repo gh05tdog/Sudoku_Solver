@@ -12,16 +12,14 @@ public class NumberHub extends JPanel {
     private static final float STROKE_WIDTH = 3.0f; // Define the thickness of the stroke
 
     private static final int MIN_CELL_SIZE = 50; // Minimum cell size to maintain visibility
-    private static final Color HIGHLIGHT_COLOR = Color.LIGHT_GRAY;
     private static final Color NON_HIGHLIGHT_COLOR = Color.WHITE;
 
-    private static Point selectedCell = null;
 
     public NumberHub(int gridSize, int cellSize) {
         this.subGrid = (int) Math.sqrt(gridSize);
         this.numberArray = new int[subGrid][subGrid];
-        this.cellSize = Math.max(cellSize, MIN_CELL_SIZE); // Ensure cellSize is not too small
-        setPreferredSize(new Dimension(subGrid * this.cellSize, (subGrid + 2) * this.cellSize));
+        NumberHub.cellSize = Math.max(cellSize, MIN_CELL_SIZE); // Ensure cellSize is not too small
+        setPreferredSize(new Dimension(subGrid * NumberHub.cellSize, (subGrid + 2) * NumberHub.cellSize));
 
 
         for(int i = 0; i<subGrid; i++){
@@ -32,11 +30,6 @@ public class NumberHub extends JPanel {
         }
         setAlignmentX(Component.CENTER_ALIGNMENT);
 
-    }
-
-    public void highlightNumber(int x, int y) {
-        selectedCell = new Point(x/cellSize, y/cellSize);
-        repaint();
     }
 
     @Override
@@ -50,11 +43,7 @@ public class NumberHub extends JPanel {
                 int x = i * cellSize;
                 int y = j * cellSize;
 
-                if (selectedCell != null && selectedCell.x == i && selectedCell.y == j) {
-                    g.setColor(HIGHLIGHT_COLOR);
-                } else {
-                    g.setColor(NON_HIGHLIGHT_COLOR);
-                }
+                g.setColor(NON_HIGHLIGHT_COLOR);
 
                 g.fillRect(x, y, cellSize, cellSize);
                 g.setColor(Color.BLACK);

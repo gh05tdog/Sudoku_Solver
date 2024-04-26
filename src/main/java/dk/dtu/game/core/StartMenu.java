@@ -27,7 +27,7 @@ public class StartMenu {
     private final JToggleButton hardButton = new JToggleButton("Hard");
     private final JToggleButton extremeButton = new JToggleButton("Extreme");
 
-    private final CustomBoardPanel twoBytwo = new CustomBoardPanel();
+    private final CustomBoardPanel twoByTwo = new CustomBoardPanel();
     private final CustomBoardPanel threeByThree = new CustomBoardPanel();
     private final CustomBoardPanel fourByFour = new CustomBoardPanel();
     private final CustomBoardPanel customBoardPanel = new CustomBoardPanel();
@@ -178,7 +178,7 @@ public class StartMenu {
 
     private void addSizePanelButtons() {
         // This function adds the small boards for selecting size in game
-        CustomBoardPanel[] boardPanels = {twoBytwo, threeByThree, fourByFour, customBoardPanel};
+        CustomBoardPanel[] boardPanels = {twoByTwo, threeByThree, fourByFour, customBoardPanel};
 
         MouseAdapter mouseAdapter =
                 new MouseAdapter() {
@@ -271,14 +271,14 @@ public class StartMenu {
                     }
                 });
 
-        easyButton.setBounds(5, 5, twoBytwo.getWidth(), 40);
-        mediumButton.setBounds(10 + easyButton.getWidth(), 5, twoBytwo.getWidth(), 40);
+        easyButton.setBounds(5, 5, twoByTwo.getWidth(), 40);
+        mediumButton.setBounds(10 + easyButton.getWidth(), 5, twoByTwo.getWidth(), 40);
         hardButton.setBounds(
-                15 + easyButton.getWidth() + mediumButton.getWidth(), 5, twoBytwo.getWidth(), 40);
+                15 + easyButton.getWidth() + mediumButton.getWidth(), 5, twoByTwo.getWidth(), 40);
         extremeButton.setBounds(
                 20 + easyButton.getWidth() + mediumButton.getWidth() + hardButton.getWidth(),
                 5,
-                twoBytwo.getWidth(),
+                twoByTwo.getWidth(),
                 40);
 
         startMenuWindowManager.addComponent(easyButton, startMenuWindowManager.getDifficultyPanel());

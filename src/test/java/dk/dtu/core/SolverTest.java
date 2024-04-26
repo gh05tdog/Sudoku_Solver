@@ -1,11 +1,11 @@
 /* (C)2024 */
 package dk.dtu.core;
 
-import static dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm.isValidSudoku;
+import static dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm.isValidSudoku;
 import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
+import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.*;
 import java.util.ArrayList;
 import java.util.List;

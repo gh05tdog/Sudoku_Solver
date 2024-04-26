@@ -7,7 +7,7 @@ import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.SudokuGame;
-import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
+import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import java.util.Arrays;
 import javax.swing.*;
@@ -71,7 +71,7 @@ class UndoTest {
 
         // Apply all hints to the board
         for (Move hint : game.getHintList()) {
-            game.gameboard.setNumber(hint.getRow(), hint.getColumn(), hint.getNumber());
+            game.gameboard.setNumber(hint.row(), hint.column(), hint.number());
         }
 
         // Validate the Sudoku board

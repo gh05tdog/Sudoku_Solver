@@ -187,11 +187,11 @@ public class SudokuGame {
     public void undoMove() {
         if (!moveList.isEmpty()) {
             Move move = moveList.pop();
-            int row = move.getRow();
-            int col = move.getColumn();
+            int row = move.row();
+            int col = move.column();
             board.setHiddenProperty(row, col, false);
-            checkCellsForNotes(row, col, move.getNumber(), "show");
-            int prevNumber = move.getPreviousNumber();
+            checkCellsForNotes(row, col, move.number(), "show");
+            int prevNumber = move.previousNumber();
             gameboard.setNumber(row, col, prevNumber);
             board.setCellNumber(row, col, prevNumber);
             logger.debug("Undo move: Row: {}, Column: {}, Number: {}", row, col, prevNumber);
@@ -292,9 +292,9 @@ public class SudokuGame {
             Move hintMove = hintList.get(hintIndex);
             hintList.remove(hintIndex);
 
-            int row = hintMove.getRow();
-            int col = hintMove.getColumn();
-            int number = hintMove.getNumber();
+            int row = hintMove.row();
+            int col = hintMove.column();
+            int number = hintMove.number();
 
             checkCellsForNotes(row, col, number, "hide");
             gameboard.setNumber(row, col, number);
