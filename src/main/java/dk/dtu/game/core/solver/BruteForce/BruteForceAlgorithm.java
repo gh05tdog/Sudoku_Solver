@@ -1,16 +1,21 @@
-package dk.dtu.game.solver;
-
-import dk.dtu.game.core.Board;
-import dk.dtu.game.core.config;
-
-import java.util.*;
+/* (C)2024 */
+package dk.dtu.game.core.solver.BruteForce;
 
 import static java.lang.Math.sqrt;
 
-public class solverAlgorithm {
+import dk.dtu.game.core.Board;
+import dk.dtu.game.core.Config;
+import dk.dtu.game.core.solver.SolverAlgorithm;
+import java.util.*;
 
-    public static void createSudoku(Board board) throws Exception {
+public class BruteForceAlgorithm {
+
+    public static void createSudoku(Board board) {
+        double startTime = System.nanoTime();
         fillBoard(board);
+        double endTime = System.nanoTime();
+        double duration = (endTime - startTime);
+        System.out.println("Time taken to bruteforce board: " + duration / 1000000 + "ms");
         removeNumsRecursive(board);
     }
 
@@ -27,7 +32,7 @@ public class solverAlgorithm {
             int col = chosenCells[1];
 
             for (int c = 1; c <= board.length; c++) {
-                if (checkBoard(board, row, col, c, (int) sqrt(board.length))) {
+                if (SolverAlgorithm.checkBoard(board, row, col, c, (int) sqrt(board.length))) {
                     board[row][col] = c;
                     if (sudoku(board)) {
                         return true;
@@ -42,28 +47,6 @@ public class solverAlgorithm {
         }
     }
 
-    static boolean checkBoard(int[][] board, int row, int col, int c, int constant) {
-        boolean legal_row_col = true;
-        boolean legal_square = true;
-        for (int p = 0; p < board.length; p++) {
-            if (board[row][p] == c || board[p][col] == c) {
-                legal_row_col = false;
-                break;
-            }
-        }
-        for (int p = (row / constant) * constant; p < (row / constant) * constant + constant; p++) {
-            for (int q = (col / constant) * constant; q < (col / constant) * constant + constant; q++) {
-                if (board[p][q] == c) {
-                    legal_square = false;
-                    break;
-                }
-            }
-            if (!legal_square) break;
-        }
-
-        return legal_row_col && legal_square;
-    }
-
     public static int[] pickCell(int[][] arr) {
         ArrayList<int[]> possibleCells = new ArrayList<>();
         int lowestPossibleValue = Integer.MAX_VALUE;
@@ -72,7 +55,7 @@ public class solverAlgorithm {
                 if (arr[i][j] == 0) {
                     int possibleValues = 0;
                     for (int k = 1; k <= arr.length; k++) {
-                        if (checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
+                        if (SolverAlgorithm.checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
                             possibleValues++;
                         }
                     }
@@ -116,23 +99,22 @@ public class solverAlgorithm {
         } else {
             System.out.println("No solution exists");
         }
-
     }
 
     public static void removeNumsRecursive(Board board) {
         int[][] tempBoard = deepCopy(board.getBoard());
         int[][] initialBoard;
         int numRemoved = 0;
-        int maxNumRemoved = 0;
-        String difficulty = config.getDifficulty();
+        int maxNumRemoved;
+        String difficulty = Config.getDifficulty();
 
-        maxNumRemoved = switch (difficulty) {
-            case "easy" -> 30;
-            case "medium" -> 60;
-            case "hard" -> 80;
-            case "extreme" -> 200;
-            default -> 30;
-        };
+        maxNumRemoved =
+                switch (difficulty) {
+                    case "medium" -> 60;
+                    case "hard" -> 80;
+                    case "extreme" -> 200;
+                    default -> 30;
+                };
 
         while (numRemoved < maxNumRemoved) {
             int possibleSols = 0;
@@ -144,7 +126,8 @@ public class solverAlgorithm {
 
             for (int i = 1; i <= board.getDimensions(); i++) {
                 initialBoard = deepCopy(tempBoard);
-                if (checkBoard(initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
+                if (SolverAlgorithm.checkBoard(
+                        initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
                     initialBoard[randRow][randCol] = i;
                     if (sudoku(initialBoard)) {
                         possibleSols++;
@@ -170,7 +153,7 @@ public class solverAlgorithm {
 
     public static boolean isValidSudoku(int[][] board) {
         int size = board.length; // Assuming square board
-        int n = (int) Math.sqrt(size); // Calculate the size of subgrids
+        int n = (int) Math.sqrt(size); // Calculate the size of subGrids
 
         // Check for row and column uniqueness
         for (int i = 0; i < size; i++) {
@@ -179,7 +162,7 @@ public class solverAlgorithm {
             }
         }
 
-        // Check subgrids for uniqueness
+        // Check subGrids for uniqueness
         for (int row = 0; row < size; row += n) {
             for (int col = 0; col < size; col += n) {
                 if (!isSubgridUnique(board, row, col, n)) {
@@ -236,8 +219,65 @@ public class solverAlgorithm {
             return copiedBoard;
         } else {
             return null;
-
         }
     }
 
+    public static int checkUniqueSolution(int[][] board) {
+        simplifyBoard(board);
+        return countSolutions(board, 0);
+    }
+
+    private static void simplifyBoard(int[][] board) {
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board[0].length; j++) {
+                    if (board[i][j] == 0) {
+                        List<Integer> possiblePlacements = SolverAlgorithm.getPossiblePlacements(board, i, j);
+                        if (possiblePlacements.size() == 1) {
+                            board[i][j] = possiblePlacements.getFirst();
+                            changed = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static int countSolutions(int[][] board, int count) {
+        if (count > 1) return count;  // Early exit if more than one solution found
+        int[] cell = findLeastConstrainingCell(board);
+        if (cell == null) return count + 1;  // Increment count when a solution is found
+
+        int row = cell[0];
+        int col = cell[1];
+        List<Integer> possiblePlacements = SolverAlgorithm.getPossiblePlacements(board, row, col);
+
+        for (int value : possiblePlacements) {
+            board[row][col] = value;
+            count = countSolutions(board, count);
+            if (count > 1) return count;  // Early exit
+            board[row][col] = 0;  // Undo placement
+        }
+
+        return count;
+    }
+
+    private static int[] findLeastConstrainingCell(int[][] board) {
+        int minOptions = Integer.MAX_VALUE;
+        int[] cell = null;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == 0) {
+                    int numOptions = SolverAlgorithm.getPossiblePlacements(board, i, j).size();
+                    if (numOptions < minOptions) {
+                        minOptions = numOptions;
+                        cell = new int[] {i, j};
+                    }
+                }
+            }
+        }
+        return cell;
+    }
 }

@@ -1,5 +1,6 @@
 package dk.dtu.engine.core;
 
+import dk.dtu.game.core.Board;
 import dk.dtu.game.core.SudokuGame;
 
 public class GameEngine implements Runnable {
@@ -9,31 +10,30 @@ public class GameEngine implements Runnable {
     private final int n;
     private final int k;
     private final int cellSize;
-    private Thread gameThread;
 
-    public GameEngine(WindowManager windowManager, int n, int k, int cellSize) throws Exception {
+    public GameEngine(WindowManager windowManager, int n, int k, int cellSize) throws Board.BoardNotCreatable {
         this.n = n;
         this.k = k;
         this.cellSize = cellSize;
         this.windowManager = windowManager; // Set your desired window size
-        this.sudokuGame = new SudokuGame(this.windowManager,n,k,cellSize); // Set your desired game parameters
+        try {
+            this.sudokuGame = new SudokuGame(this.windowManager,n,k,cellSize); // Set your desired game parameters
+        } catch (Board.BoardNotCreatable boardNotCreatable) {
+           throw new Board.BoardNotCreatable("This board is not possible to create");
+        }
     }
 
     public void start() {
         if (running) return;
         running = true;
-        gameThread = new Thread(this);
+        Thread gameThread = new Thread(this);
         gameThread.start();
     }
 
 
     @Override
     public void run() {
-        try {
-            initialize();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        initialize();
         long lastTime = System.nanoTime();
         final double nsPerTick = 1000000000D / 60D; // 60 ticks per second
 
@@ -63,7 +63,7 @@ public class GameEngine implements Runnable {
         }
     }
 
-    private void initialize() throws Exception {
+    private void initialize() {
         windowManager.display(); // Show the game window
         sudokuGame.initialize(this.n, this.k, this.cellSize); // Initialize game-specific components
     }

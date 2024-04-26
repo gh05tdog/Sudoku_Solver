@@ -3,13 +3,12 @@ package dk.dtu.engine.graphics;
 import javax.swing.*;
 import java.awt.*;
 
-public class numberHub extends JPanel {
-    private final int gridSize;
+public class NumberHub extends JPanel {
     private static int cellSize;
 
     private final int subGrid;
 
-    private int[][] numberArray;
+    private final int[][] numberArray;
     private static final float STROKE_WIDTH = 3.0f; // Define the thickness of the stroke
 
     private static final int MIN_CELL_SIZE = 50; // Minimum cell size to maintain visibility
@@ -18,8 +17,7 @@ public class numberHub extends JPanel {
 
     private static Point selectedCell = null;
 
-    public numberHub(int gridSize, int cellSize) {
-        this.gridSize = gridSize;
+    public NumberHub(int gridSize, int cellSize) {
         this.subGrid = (int) Math.sqrt(gridSize);
         this.numberArray = new int[subGrid][subGrid];
         this.cellSize = Math.max(cellSize, MIN_CELL_SIZE); // Ensure cellSize is not too small

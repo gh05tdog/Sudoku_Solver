@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SonarLintProjectSettings">
+    <option name="fileExclusions">
+      <list>
+        <option value="FILE:src/main/java/dk/dtu/DropdownButtonExample.java" />
+        <option value="DIRECTORY:src/main/java/dk/dtu/game/core/solver/AlgorithmX" />
+      </list>
+    </option>
+  </component>
+</project>

@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.utility.CustomBoardPanel;
+import dk.dtu.game.core.Board;
 import dk.dtu.game.core.StartMenu;
-import dk.dtu.game.core.config;
+import dk.dtu.game.core.Config;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -17,11 +19,10 @@ import org.junit.jupiter.api.Test;
 
 class StartMenuTest {
     private StartMenu startMenu;
-    private StartMenuWindowManager startMenuWindowManager;
 
     @BeforeEach
     void setUp() {
-        startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 800, 600);
+        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 800, 600);
         startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
     }
@@ -39,14 +40,14 @@ class StartMenuTest {
 
     @Test
     @DisplayName("Start Game Testing")
-    void testStartGame() throws Exception {
-        // Testing the start game button, and if the startmenu closes and the difficulties + size is
+    void testStartGame() throws Board.BoardNotCreatable, InterruptedException, InvocationTargetException {
+        // Testing the start game button, and if the start menu closes and the difficulties + size is
         // the correct
         SwingUtilities.invokeAndWait(() -> startMenu.getStartButton().doClick());
         startMenu.startGame();
-        assertEquals(3, config.getK());
-        assertEquals(3, config.getN());
-        assertEquals(550 / (3 * 3), config.getCellSize());
+        assertEquals(3, Config.getK());
+        assertEquals(3, Config.getN());
+        assertEquals(550 / (3 * 3), Config.getCellSize());
     }
 
     @Test
@@ -78,17 +79,17 @@ class StartMenuTest {
         // Testing the start button
         SwingUtilities.invokeAndWait(() -> startMenu.getStartButton().doClick());
         // Assert the start button is working correctly
-        assertEquals(3, config.getN());
-        assertEquals(3, config.getK());
-        assertEquals("medium", config.getDifficulty());
+        assertEquals(3, Config.getN());
+        assertEquals(3, Config.getK());
+        assertEquals("medium", Config.getDifficulty());
     }
 
     @Test
     @DisplayName("Size Panel Testing")
     void testSizePanelFunctionality() {
         // Tests if the size panel is working correctly
-        assertEquals(3, config.getN());
-        assertEquals(3, config.getK());
+        assertEquals(3, Config.getN());
+        assertEquals(3, Config.getK());
     }
 
     @Test
@@ -98,13 +99,13 @@ class StartMenuTest {
         SwingUtilities.invokeAndWait(
                 () -> {
                     startMenu.getEasyButton().doClick();
-                    assertEquals("easy", config.getDifficulty());
+                    assertEquals("easy", Config.getDifficulty());
                     startMenu.getMediumButton().doClick();
-                    assertEquals("medium", config.getDifficulty());
+                    assertEquals("medium", Config.getDifficulty());
                     startMenu.getHardButton().doClick();
-                    assertEquals("hard", config.getDifficulty());
+                    assertEquals("hard", Config.getDifficulty());
                     startMenu.getExtremeButton().doClick();
-                    assertEquals("extreme", config.getDifficulty());
+                    assertEquals("extreme", Config.getDifficulty());
                 });
     }
 
@@ -112,10 +113,10 @@ class StartMenuTest {
     @DisplayName("Initialization Configuration Test")
     void testInitializationConfiguration() {
         // Tests if the configuration is initialized correctly
-        assertEquals(3, config.getN());
-        assertEquals(3, config.getK());
-        assertEquals("medium", config.getDifficulty());
-        assertEquals(550 / (3 * 3), config.getCellSize());
+        assertEquals(3, Config.getN());
+        assertEquals(3, Config.getK());
+        assertEquals("medium", Config.getDifficulty());
+        assertEquals(550 / (3 * 3), Config.getCellSize());
     }
 
     @Test
@@ -127,8 +128,8 @@ class StartMenuTest {
         StartMenu startMenu = new StartMenu(startMenuManager);
         startMenu.initialize();
         // Assertions to check if the size is set to 3x3
-        assertEquals(3, config.getN(), "N should be set to 3, at the beginning");
-        assertEquals(3, config.getK(), "K should be set to 3, at the beginning");
+        assertEquals(3, Config.getN(), "N should be set to 3, at the beginning");
+        assertEquals(3, Config.getK(), "K should be set to 3, at the beginning");
 
         // Simulate mouse click on the 4x4 CustomBoardPanel
         SwingUtilities.invokeAndWait(
@@ -147,8 +148,8 @@ class StartMenuTest {
                 });
 
         // Assertions to check if the size is set to 4x4
-        assertEquals(4, config.getN(), "N should be set to 4");
-        assertEquals(4, config.getK(), "K should be set to 4");
+        assertEquals(4, Config.getN(), "N should be set to 4");
+        assertEquals(4, Config.getK(), "K should be set to 4");
     }
 
     @Test
@@ -156,9 +157,9 @@ class StartMenuTest {
     void testDifficultyButtonToggles() throws Exception {
         // tests if the difficulty panel works when clicking on the by simulating mouse event
         SwingUtilities.invokeAndWait(() -> startMenu.getMediumButton().doClick());
-        assertEquals("medium", config.getDifficulty());
+        assertEquals("medium", Config.getDifficulty());
         SwingUtilities.invokeAndWait(() -> startMenu.getHardButton().doClick());
-        assertEquals("hard", config.getDifficulty());
+        assertEquals("hard", Config.getDifficulty());
     }
 
     @Test
@@ -170,7 +171,7 @@ class StartMenuTest {
                     simulateTextFieldInput(startMenu.getInputNField(), "invalid");
                     simulateTextFieldInput(startMenu.getInputKField(), "");
                 });
-        assertNotEquals("invalid", config.getN());
-        assertNotEquals("", config.getK());
+        assertInstanceOf(Integer.class, Config.getN());
+        assertInstanceOf(Integer.class, Config.getK());
     }
 }

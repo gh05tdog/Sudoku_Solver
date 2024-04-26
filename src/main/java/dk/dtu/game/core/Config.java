@@ -1,10 +1,14 @@
 package dk.dtu.game.core;
 
-public class config {
+public class Config {
     private static int k;
     private static int n;
     private static int cellSize;
     private static String difficulty;
+
+    private Config() {
+        throw new IllegalStateException("Utility class");
+    }
 
 
     public static int getK() {
@@ -22,16 +26,16 @@ public class config {
     }
 
     public static void setN(int n) {
-        config.n = n;
+        Config.n = n;
     }
     public static void setK(int k) {
-        config.k = k;
+        Config.k = k;
     }
     public static void setCellSize(int cellSize) {
-        config.cellSize = cellSize;
+        Config.cellSize = cellSize;
     }
     public static void setDifficulty(String difficulty) {
-        config.difficulty = difficulty;
+        Config.difficulty = difficulty;
     }
 
 

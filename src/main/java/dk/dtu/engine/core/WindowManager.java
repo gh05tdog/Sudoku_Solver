@@ -1,7 +1,7 @@
 /* (C)2024 */
 package dk.dtu.engine.core;
 
-import dk.dtu.engine.utility.Timer;
+import dk.dtu.engine.utility.TimerFunction;
 import java.awt.*;
 import javax.swing.*;
 
@@ -83,7 +83,7 @@ public class WindowManager {
         whitePanel.repaint();
     }
 
-    public void layoutComponents(Timer timer, Component numberHub) {
+    public void layoutComponents(TimerFunction timer, Component numberHub) {
         JPanel combinedPanel = setupNumberAndTimerPanel(timer, numberHub);
 
         // Layout the combined panel with the number hub and timer
@@ -97,7 +97,7 @@ public class WindowManager {
         frame.setVisible(true);
     }
 
-    public JPanel setupNumberAndTimerPanel(Timer timer, Component numberHub) {
+    public JPanel setupNumberAndTimerPanel(TimerFunction timer, Component numberHub) {
         JPanel combinedPanel = new JPanel();
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
         combinedPanel.setOpaque(false);

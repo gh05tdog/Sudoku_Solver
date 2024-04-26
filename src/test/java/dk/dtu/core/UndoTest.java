@@ -7,7 +7,8 @@ import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.SudokuGame;
-import dk.dtu.game.solver.solverAlgorithm;
+import dk.dtu.game.core.solver.AlgorithmX.algorithmX;
+import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
 import java.util.Arrays;
 import javax.swing.*;
 import org.junit.jupiter.api.DisplayName;
@@ -28,13 +29,13 @@ class UndoTest {
         game.createBoard(
                 3, 3, 50); // Assuming this is the correct way to initialize the board in your game
 
-        solverAlgorithm.createSudoku(game.gameboard);
+        algorithmX.createXSudoku(game.gameboard);
 
         // No need to call displayNumbersVisually here if it's just for visual representation and
         // not part of the test logic
 
         // Deep copy the board for later comparison
-        int[][] initialBoardState = game.deepCopyBoard(game.gameboard.getBoard());
+        int[][] initialBoardState = game.deepCopyBoard(game.gameboard.getGameBoard());
 
         // Make a move on a valid cell
         int row = 2, col = 2, number = 9;
@@ -45,7 +46,7 @@ class UndoTest {
 
         // Assert the board's state is unchanged from the initial state
         assertTrue(
-                Arrays.deepEquals(initialBoardState, game.gameboard.getBoard()),
+                Arrays.deepEquals(initialBoardState, game.gameboard.getGameBoard()),
                 "Board should return to its initial state after undo.");
     }
 
@@ -62,7 +63,7 @@ class UndoTest {
         game.createBoard(3, 3, 50); // Set up the board
 
         // Generate a solvable Sudoku puzzle
-        solverAlgorithm.createSudoku(game.gameboard);
+        algorithmX.createXSudoku(game.gameboard);
 
         // Remove numbers to generate hints (if not already part of createSudoku)
         // Assuming fillHintList() populates the hintList based on the current board state
@@ -75,7 +76,7 @@ class UndoTest {
 
         // Validate the Sudoku board
         assertTrue(
-                solverAlgorithm.isValidSudoku(game.gameboard.getBoard()),
+                BruteForceAlgorithm.isValidSudoku(game.gameboard.getGameBoard()),
                 "Applying all hints should result in a valid Sudoku.");
     }
 }
