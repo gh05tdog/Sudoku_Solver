@@ -62,9 +62,9 @@ public class BruteForceAlgorithm {
                     if (possibleValues < lowestPossibleValue) {
                         lowestPossibleValue = possibleValues;
                         possibleCells.clear();
-                        possibleCells.add(new int[]{i, j});
+                        possibleCells.add(new int[] {i, j});
                     } else if (possibleValues == lowestPossibleValue) {
-                        possibleCells.add(new int[]{i, j});
+                        possibleCells.add(new int[] {i, j});
                     }
                 }
             }
@@ -102,7 +102,7 @@ public class BruteForceAlgorithm {
     }
 
     public static void removeNumsRecursive(Board board) {
-        int[][] tempBoard = deepCopy(board.getBoard());
+        int[][] tempBoard = deepCopy(board.getGameBoard());
         int[][] initialBoard;
         int numRemoved = 0;
         int maxNumRemoved;
@@ -234,7 +234,8 @@ public class BruteForceAlgorithm {
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board[0].length; j++) {
                     if (board[i][j] == 0) {
-                        List<Integer> possiblePlacements = SolverAlgorithm.getPossiblePlacements(board, i, j);
+                        List<Integer> possiblePlacements =
+                                SolverAlgorithm.getPossiblePlacements(board, i, j);
                         if (possiblePlacements.size() == 1) {
                             board[i][j] = possiblePlacements.getFirst();
                             changed = true;
@@ -246,9 +247,9 @@ public class BruteForceAlgorithm {
     }
 
     private static int countSolutions(int[][] board, int count) {
-        if (count > 1) return count;  // Early exit if more than one solution found
+        if (count > 1) return count; // Early exit if more than one solution found
         int[] cell = findLeastConstrainingCell(board);
-        if (cell == null) return count + 1;  // Increment count when a solution is found
+        if (cell == null) return count + 1; // Increment count when a solution is found
 
         int row = cell[0];
         int col = cell[1];
@@ -257,8 +258,8 @@ public class BruteForceAlgorithm {
         for (int value : possiblePlacements) {
             board[row][col] = value;
             count = countSolutions(board, count);
-            if (count > 1) return count;  // Early exit
-            board[row][col] = 0;  // Undo placement
+            if (count > 1) return count; // Early exit
+            board[row][col] = 0; // Undo placement
         }
 
         return count;

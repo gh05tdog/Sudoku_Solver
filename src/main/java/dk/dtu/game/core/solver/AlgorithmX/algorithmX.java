@@ -1,6 +1,5 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver.AlgorithmX;
-
-import static java.lang.Math.sqrt;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.SolverAlgorithm;
@@ -15,8 +14,7 @@ public class algorithmX {
 
     static int[][] solvedBoard;
 
-
-    public record Placement(int row, int col, int value) { }
+    public record Placement(int row, int col, int value) {}
 
     public static void createXSudoku(Board board) {
         int[][] sudokuBoard = solveExistingBoard(board);
@@ -27,14 +25,14 @@ public class algorithmX {
     }
 
     public static int[][] solveExistingBoard(Board board) {
-        int[][] arr = board.getBoard();
+        int[][] arr = board.getGameBoard();
         arraySize = arr.length;
         List<Placement> placements = new ArrayList<>();
         List<int[]> xBoard = createExactCoverFromBoard(arr, placements);
         DancingLinks dl = new DancingLinks(xBoard);
         ColumnNode header = dl.header;
 
-        solution.clear();  // Clear the solution list before each run
+        solution.clear(); // Clear the solution list before each run
 
         if (algorithmXSolver(header)) {
             arr = convertSolutionToBoard(solution, placements);
@@ -98,7 +96,9 @@ public class algorithmX {
             if (checkUniqueSolution(arr) == 1) {
                 numRemoved++; // Only remove the number permanently if there's exactly one solution.
             } else {
-                arr[randRow][randCol] = tempNumber; // Restore the number if removing it doesn't lead to a unique solution.
+                arr[randRow][randCol] =
+                        tempNumber; // Restore the number if removing it doesn't lead to a unique
+                // solution.
             }
         }
     }
@@ -112,10 +112,10 @@ public class algorithmX {
 
     private static int countSolutions(ColumnNode header, int count) {
         if (header.right == header) {
-            return count + 1;  // Found a solution
+            return count + 1; // Found a solution
         }
         if (count > 1) {
-            return count;  // Early exit if more than one solution is found
+            return count; // Early exit if more than one solution is found
         }
 
         ColumnNode c = chooseHeuristicColumn(header);
@@ -127,7 +127,7 @@ public class algorithmX {
             }
 
             count = countSolutions(header, count);
-            if (count > 1) return count;  // Early exit
+            if (count > 1) return count; // Early exit
 
             for (Node j = r.left; j != r; j = j.left) {
                 j.column.uncover();
@@ -176,8 +176,8 @@ public class algorithmX {
         List<ColumnNode> columns = new ArrayList<>();
         int minSize = c.size;
         for (ColumnNode temp = (ColumnNode) header.right;
-             temp != header;
-             temp = (ColumnNode) temp.right) {
+                temp != header;
+                temp = (ColumnNode) temp.right) {
             if (temp.size < minSize) {
                 minSize = temp.size;
                 columns.clear();
@@ -208,8 +208,8 @@ public class algorithmX {
         return board;
     }
 
-    public static int [][] deepSetSolutionBoard(int[][] board) {
-        int [][] copy = new int[board.length][board.length];
+    public static int[][] deepSetSolutionBoard(int[][] board) {
+        int[][] copy = new int[board.length][board.length];
         for (int i = 0; i < board.length; i++) {
             System.arraycopy(board[i], 0, copy[i], 0, board.length);
         }

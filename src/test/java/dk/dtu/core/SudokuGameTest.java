@@ -1,6 +1,8 @@
 /* (C)2024 */
 package dk.dtu.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.NumberHub;
@@ -10,19 +12,15 @@ import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.game.core.solver.AlgorithmX.algorithmX;
-import dk.dtu.game.core.solver.SolverAlgorithm;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.*;
+import javax.swing.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class SudokuGameTest {
 
@@ -33,11 +31,13 @@ class SudokuGameTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 1000, 700);
+        StartMenuWindowManager startMenuWindowManager =
+                new StartMenuWindowManager(new JFrame(), 1000, 700);
         StartMenu startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
         startMenu.getStartButton().doClick();
-        WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
+        WindowManager windowManager =
+                new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         game.initialize(3, 3, 550 / 9);
 
@@ -54,7 +54,6 @@ class SudokuGameTest {
         componentGroup.addComponent(panel3);
 
         sudokuBoardCanvasBoard = game.getBoard();
-
     }
 
     @Test
@@ -204,8 +203,8 @@ class SudokuGameTest {
                 () -> {
                     game.getNewGameButton().doClick();
                     game.gameboard.setGameBoard(
-                            Objects.requireNonNull(
-                                    algorithmX.getSolutionBoard()));});
+                            Objects.requireNonNull(algorithmX.getSolutionBoard()));
+                });
 
         // Now wait for all pending events to be processed
         SwingUtilities.invokeAndWait(
@@ -231,12 +230,6 @@ class SudokuGameTest {
                     @Override
                     public int getNumber(int x, int y) {
                         return 5; // Mock behavior
-                    }
-
-                    @Override
-                    public void highlightNumber(int x, int y) {
-                        // Mock behavior: Test could verify this call
-                        System.out.println("Number highlighted: " + getNumber(x, y));
                     }
                 });
 
@@ -284,12 +277,15 @@ class SudokuGameTest {
 
         game.makeMove(0, 0, 1);
         assertTrue(
-                sudokuBoardCanvasBoard.getNotesInCell(0, 0).contains(1), "Note 1 should be placed at (0,0).");
+                sudokuBoardCanvasBoard.getNotesInCell(0, 0).contains(1),
+                "Note 1 should be placed at (0,0).");
 
         game.getNoteButton().doClick();
         game.checkCellsForNotes(0, 1, 1, "show");
         game.makeMove(0, 1, 1);
-        assertTrue(sudokuBoardCanvasBoard.getHideList(0, 0).contains(1), "Note 1 should be hidden at (0,0).");
+        assertTrue(
+                sudokuBoardCanvasBoard.getHideList(0, 0).contains(1),
+                "Note 1 should be hidden at (0,0).");
 
         game.getNoteButton().doClick();
         game.makeNote(1, 1, 2);
@@ -297,6 +293,8 @@ class SudokuGameTest {
         game.getNoteButton().doClick();
         game.makeMove(1, 1, 2);
 
-        assertTrue(sudokuBoardCanvasBoard.getHiddenProperty(1, 1), "Note 2 should be hidden at (1,1).");
+        assertTrue(
+                sudokuBoardCanvasBoard.getHiddenProperty(1, 1),
+                "Note 2 should be hidden at (1,1).");
     }
 }
