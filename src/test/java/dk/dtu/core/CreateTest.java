@@ -67,7 +67,8 @@ class CreateTest {
         // Ensure the board is completely filled
         for (int x = 0; x < board.getDimensions(); x++) {
             for (int y = 0; y < board.getDimensions(); y++) {
-                assertNotEquals(0, board.getNumber(x, y), "All cells in the board should be filled.");
+                assertNotEquals(
+                        0, board.getNumber(x, y), "All cells in the board should be filled.");
             }
         }
 
