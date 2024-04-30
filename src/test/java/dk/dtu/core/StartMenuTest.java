@@ -22,7 +22,6 @@ class StartMenuTest {
 
     @BeforeEach
     void setUp() {
-        System.setProperty("java.awt.headless", "true");
         StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 800, 600);
         startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();

@@ -11,18 +11,10 @@ import dk.dtu.game.core.solver.AlgorithmX.algorithmX;
 import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
 import java.util.Arrays;
 import javax.swing.*;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class UndoTest {
-
-    @BeforeEach
-    void setUp() {
-        System.setProperty("java.awt.headless", "true");
-    }
-
     @Test
     @DisplayName("Test undo reverses the last move")
     void testUndoReversesLastMove() throws Exception {

@@ -31,8 +31,6 @@ class SudokuGameTest {
 
     @BeforeEach
     void setUp() throws Exception {
-
-        System.setProperty("java.awt.headless", "true");
         StartMenuWindowManager startMenuWindowManager =
                 new StartMenuWindowManager(new JFrame(), 1000, 700);
         StartMenu startMenu = new StartMenu(startMenuWindowManager);

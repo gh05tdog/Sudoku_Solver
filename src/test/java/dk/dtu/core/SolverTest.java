@@ -9,8 +9,6 @@ import dk.dtu.game.core.solver.AlgorithmX.*;
 import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -28,11 +26,6 @@ public class SolverTest {
         coverList.add(coverRow2);
         coverList.add(coverRow3);
         coverList.add(coverRow4);
-    }
-
-    @BeforeEach
-    void setUp() {
-        System.setProperty("java.awt.headless", "true");
     }
 
     @Test
