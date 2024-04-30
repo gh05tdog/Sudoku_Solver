@@ -1,28 +1,31 @@
 /* (C)2024 */
 package dk.dtu.core;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.Config;
-import java.awt.event.MouseEvent;
-import java.lang.reflect.InvocationTargetException;
-import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
+import dk.dtu.game.core.StartMenu;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class StartMenuTest {
     private StartMenu startMenu;
 
     @BeforeEach
     void setUp() {
-        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(new JFrame(), 800, 600);
+        JFrame mockedFrame = mock(JFrame.class);
+        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(mockedFrame, 800, 600);
         startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
     }
@@ -122,11 +125,6 @@ class StartMenuTest {
     @Test
     @DisplayName("Size Panel Button Click Simulation for 4x4 Button")
     void testSizePanelButtonClicks() throws Exception {
-        // tests if the size panel works when clicking on the by simulating mouse event
-        StartMenuWindowManager startMenuManager =
-                new StartMenuWindowManager(new JFrame(), 800, 800);
-        StartMenu startMenu = new StartMenu(startMenuManager);
-        startMenu.initialize();
         // Assertions to check if the size is set to 3x3
         assertEquals(3, Config.getN(), "N should be set to 3, at the beginning");
         assertEquals(3, Config.getK(), "K should be set to 3, at the beginning");

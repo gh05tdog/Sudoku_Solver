@@ -16,7 +16,6 @@ public class StartMenuWindowManager {
         this.frame.setSize(width, height);
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.frame.setResizable(false);
-        this.frame.getContentPane().setBackground(Color.WHITE);
 
         buttonPanel.setOpaque(true);
         sizePanel.setOpaque(true);
@@ -60,10 +59,6 @@ public class StartMenuWindowManager {
 
     public void display() {
         frame.setVisible(true);
-    }
-
-    public void close() {
-        frame.setVisible(false);
     }
 
     public JFrame getFrame() {

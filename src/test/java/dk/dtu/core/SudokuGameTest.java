@@ -2,6 +2,7 @@
 package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
@@ -31,8 +32,10 @@ class SudokuGameTest {
 
     @BeforeEach
     void setUp() throws Exception {
+        JFrame mockedFrame = mock(JFrame.class);
+
         StartMenuWindowManager startMenuWindowManager =
-                new StartMenuWindowManager(new JFrame(), 1000, 700);
+                new StartMenuWindowManager(mockedFrame, 1000, 700);
         StartMenu startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
         startMenu.getStartButton().doClick();
