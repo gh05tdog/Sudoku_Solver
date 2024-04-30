@@ -1,17 +1,16 @@
 /* (C)2024 */
 package dk.dtu.core;
 
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.time.Duration.ofSeconds;
-
 import dk.dtu.engine.utility.TimerFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
+
+import static java.time.Duration.ofSeconds;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TimerTest {
 
