@@ -10,10 +10,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class CreateTest {
+
+    @BeforeEach
+    void setUp() {
+        System.setProperty("java.awt.headless", "true");
+    }
 
     @Test
     @DisplayName("Test creating an empty board is working")

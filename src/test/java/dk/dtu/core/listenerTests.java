@@ -56,6 +56,7 @@ class ListenerTests {
 
     @BeforeEach
     void setUp() throws Exception {
+        System.setProperty("java.awt.headless", "true");
         game = new TestableSudokuGame();
         keyboardListener = new KeyboardListener(game);
         mouseListener = new MouseActionListener(game);

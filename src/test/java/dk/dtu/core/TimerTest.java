@@ -14,6 +14,7 @@ class TimerTest {
 
     @BeforeEach
     void setUp() {
+        System.setProperty("java.awt.headless", "true");
         timer = new TimerFunction();
     }
 
