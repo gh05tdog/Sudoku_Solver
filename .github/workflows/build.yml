@@ -31,11 +31,9 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build and analyze
-        uses: coactions/setup-xvfb@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-         run: mvn -B clean verify sonar:sonar -Dsonar.projectKey=Sudoku_Solver -Djava.awt.headless=true
+        run: mvn -B clean verify sonar:sonar -D sonar.projectKey=Sudoku_Solver
          
          
