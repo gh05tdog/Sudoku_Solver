@@ -1,12 +1,17 @@
 /* (C)2024 */
 package dk.dtu.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.time.Duration.ofSeconds;
 
 import dk.dtu.engine.utility.TimerFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 class TimerTest {
 
@@ -18,15 +23,25 @@ class TimerTest {
     }
 
     @Test
-    @DisplayName("Timer Test")
-    void testTimer() throws InterruptedException {
+    @DisplayName("Timer should count at least 1 second")
+    void testTimer() {
         timer.start();
-        Thread.sleep(1100);
+
+        await().atMost(ofSeconds(2)).until(timerHasReachedOneSecond());
 
         String time = timer.getTimeString();
         System.out.println("Time: " + time);
-        assertTrue(
-                time.compareTo("00:00:01") >= 0,
+        // Assert that the timer string is "00:00:01" or more
+        assertTrue(time.compareTo("00:00:01") >= 0,
                 "Timer should show 1 second or more, but shows:" + time);
+    }
+
+    private Callable<Boolean> timerHasReachedOneSecond() {
+        return new Callable<Boolean>() {
+            public Boolean call() {
+                String time = timer.getTimeString();
+                return time.compareTo("00:00:01") >= 0;
+            }
+        };
     }
 }
