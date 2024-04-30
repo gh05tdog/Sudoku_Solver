@@ -36,11 +36,9 @@ class TimerTest {
     }
 
     private Callable<Boolean> timerHasReachedOneSecond() {
-        return new Callable<Boolean>() {
-            public Boolean call() {
-                String time = timer.getTimeString();
-                return time.compareTo("00:00:01") >= 0;
-            }
+        return () -> {
+            String time = timer.getTimeString();
+            return time.compareTo("00:00:01") >= 0;
         };
     }
 }
