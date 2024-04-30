@@ -1,23 +1,22 @@
 /* (C)2024 */
 package dk.dtu.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.StartMenu;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
+import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import java.awt.event.MouseEvent;
-import java.lang.reflect.InvocationTargetException;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class StartMenuTest {
     private StartMenu startMenu;
@@ -25,7 +24,8 @@ class StartMenuTest {
     @BeforeEach
     void setUp() {
         JFrame mockedFrame = mock(JFrame.class);
-        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(mockedFrame, 800, 600);
+        StartMenuWindowManager startMenuWindowManager =
+                new StartMenuWindowManager(mockedFrame, 800, 600);
         startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
     }
@@ -43,8 +43,10 @@ class StartMenuTest {
 
     @Test
     @DisplayName("Start Game Testing")
-    void testStartGame() throws Board.BoardNotCreatable, InterruptedException, InvocationTargetException {
-        // Testing the start game button, and if the start menu closes and the difficulties + size is
+    void testStartGame()
+            throws Board.BoardNotCreatable, InterruptedException, InvocationTargetException {
+        // Testing the start game button, and if the start menu closes and the difficulties + size
+        // is
         // the correct
         SwingUtilities.invokeAndWait(() -> startMenu.getStartButton().doClick());
         startMenu.startGame();

@@ -25,6 +25,8 @@ class TimerTest {
 
         String time = timer.getTimeString();
         System.out.println("Time: " + time);
-        assertTrue(time.compareTo("00:00:01") >= 0, "Timer should show 1 second or more, but shows:" + time);
+        assertTrue(
+                time.compareTo("00:00:01") >= 0,
+                "Timer should show 1 second or more, but shows:" + time);
     }
 }
