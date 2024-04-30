@@ -1,16 +1,15 @@
 /* (C)2024 */
 package dk.dtu.core;
 
-import dk.dtu.engine.utility.TimerFunction;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.Callable;
-
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import dk.dtu.engine.utility.TimerFunction;
+import java.util.concurrent.Callable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class TimerTest {
 
@@ -31,7 +30,8 @@ class TimerTest {
         String time = timer.getTimeString();
         System.out.println("Time: " + time);
         // Assert that the timer string is "00:00:01" or more
-        assertTrue(time.compareTo("00:00:01") >= 0,
+        assertTrue(
+                time.compareTo("00:00:01") >= 0,
                 "Timer should show 1 second or more, but shows:" + time);
     }
 
