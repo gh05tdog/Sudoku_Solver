@@ -15,6 +15,8 @@ import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
+
+import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,9 @@ public class SudokuGame {
     private final WindowManager windowManager;
     public final Deque<Move> moveList = new ArrayDeque<>();
     private final ArrayList<Move> hintList = new ArrayList<>();
+    private final int nSize;
+
+    private final int kSize;
     int gridSize; // or 9 for a standard Sudoku
     int cellSize; // Adjust based on your window size and desired grid size
     private int placeableNumber = 0;
@@ -55,6 +60,8 @@ public class SudokuGame {
         } catch (Board.BoardNotCreatable e) {
             throw new Board.BoardNotCreatable("This board is not possible to create");
         }
+        this.nSize = n;
+        this.kSize = k;
         this.gridSize = n * k;
         this.cellSize = cellSize;
     }
@@ -239,8 +246,11 @@ public class SudokuGame {
         moveList.clear();
         timer.stop();
         timer.reset();
+        if (nSize == kSize) {
         AlgorithmXSolver.createXSudoku(gameboard);
-        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
+        } else {
+            BruteForceAlgorithm.createSudoku(gameboard);
+        }
         gameIsStarted = true;
         fillHintList();
         logger.debug("Hint list size: {}", hintList.size());
@@ -264,8 +274,12 @@ public class SudokuGame {
     }
 
     public void fillHintList() {
-        int[][] solutionBoard = AlgorithmXSolver.getSolutionBoard();
-
+        int[][] solutionBoard;
+        if (nSize == kSize) {
+            solutionBoard = AlgorithmXSolver.getSolutionBoard();
+        } else {
+            solutionBoard = BruteForceAlgorithm.getSolvedBoard();
+        }
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (gameboard.getInitialNumber(row, col)
