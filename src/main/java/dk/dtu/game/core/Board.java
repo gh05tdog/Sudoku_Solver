@@ -87,8 +87,8 @@ import org.slf4j.LoggerFactory;
         }
 
         public boolean squareContains(int [][] square, int num) {
-            for (int[] ints : square) {
-                for (int anInt : ints) {
+            for (int[] integers : square) {
+                for (int anInt : integers) {
                     if (anInt == num) {
                         logger.info("Found {} in the array", num);
                         return true;
@@ -133,10 +133,6 @@ import org.slf4j.LoggerFactory;
 
         public int getNumber(int x, int y) {
             return gameBoard[x][y];
-        }
-
-        public int[][] getGameBoard() {
-            return gameBoard;
         }
 
         public void setGameBoard(int[][] tempBoard) {

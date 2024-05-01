@@ -1,6 +1,5 @@
-package dk.dtu.game.core.solver.AlgorithmX;
-
-import static java.lang.Math.sqrt;
+/* (C)2024 */
+package dk.dtu.game.core.solver.algorithmx;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.SolverAlgorithm;
@@ -9,14 +8,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class algorithmX {
-    public static List<Node> solution = new ArrayList<>();
+public class AlgorithmXSolver {
+    private static final List<Node> Solution = new ArrayList<>();
     private static int arraySize;
 
     static int[][] solvedBoard;
 
+    private static final Random rand = new Random();
 
-    public record Placement(int row, int col, int value) { }
+    public record Placement(int row, int col, int value) {}
 
     public static void createXSudoku(Board board) {
         int[][] sudokuBoard = solveExistingBoard(board);
@@ -34,10 +34,10 @@ public class algorithmX {
         DancingLinks dl = new DancingLinks(xBoard);
         ColumnNode header = dl.header;
 
-        solution.clear();  // Clear the solution list before each run
+        Solution.clear(); // Clear the solution list before each run
 
         if (algorithmXSolver(header)) {
-            arr = convertSolutionToBoard(solution, placements);
+            arr = convertSolutionToBoard(Solution, placements);
         }
         return arr;
     }
@@ -79,10 +79,9 @@ public class algorithmX {
     }
 
     public static void removeXRecursive(int[][] arr, int maxRemoved) {
-        solution.clear();
+        Solution.clear();
 
         int numRemoved = 0;
-        Random rand = new Random();
 
         while (numRemoved < maxRemoved) {
             int randRow = rand.nextInt(arr.length);
@@ -98,7 +97,9 @@ public class algorithmX {
             if (checkUniqueSolution(arr) == 1) {
                 numRemoved++; // Only remove the number permanently if there's exactly one solution.
             } else {
-                arr[randRow][randCol] = tempNumber; // Restore the number if removing it doesn't lead to a unique solution.
+                arr[randRow][randCol] =
+                        tempNumber; // Restore the number if removing it doesn't lead to a unique
+                // solution.
             }
         }
     }
@@ -112,10 +113,10 @@ public class algorithmX {
 
     private static int countSolutions(ColumnNode header, int count) {
         if (header.right == header) {
-            return count + 1;  // Found a solution
+            return count + 1; // Found a solution
         }
         if (count > 1) {
-            return count;  // Early exit if more than one solution is found
+            return count; // Early exit if more than one solution is found
         }
 
         ColumnNode c = chooseHeuristicColumn(header);
@@ -127,7 +128,7 @@ public class algorithmX {
             }
 
             count = countSolutions(header, count);
-            if (count > 1) return count;  // Early exit
+            if (count > 1) return count; // Early exit
 
             for (Node j = r.left; j != r; j = j.left) {
                 j.column.uncover();
@@ -171,13 +172,12 @@ public class algorithmX {
     }
 
     public static ColumnNode chooseHeuristicColumn(ColumnNode header) {
-        Random rand = new Random();
         ColumnNode c = (ColumnNode) header.right;
         List<ColumnNode> columns = new ArrayList<>();
         int minSize = c.size;
         for (ColumnNode temp = (ColumnNode) header.right;
-             temp != header;
-             temp = (ColumnNode) temp.right) {
+                temp != header;
+                temp = (ColumnNode) temp.right) {
             if (temp.size < minSize) {
                 minSize = temp.size;
                 columns.clear();
@@ -190,11 +190,11 @@ public class algorithmX {
     }
 
     private static void selectRow(Node row) {
-        solution.add(row);
+        Solution.add(row);
     }
 
     private static void deselectRow(Node row) {
-        solution.remove(row);
+        Solution.remove(row);
     }
 
     public static int[][] convertSolutionToBoard(List<Node> solution, List<Placement> placements) {
@@ -208,8 +208,8 @@ public class algorithmX {
         return board;
     }
 
-    public static int [][] deepSetSolutionBoard(int[][] board) {
-        int [][] copy = new int[board.length][board.length];
+    public static int[][] deepSetSolutionBoard(int[][] board) {
+        int[][] copy = new int[board.length][board.length];
         for (int i = 0; i < board.length; i++) {
             System.arraycopy(board[i], 0, copy[i], 0, board.length);
         }

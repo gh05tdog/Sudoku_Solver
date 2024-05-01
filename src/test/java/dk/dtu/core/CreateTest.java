@@ -2,7 +2,7 @@ package dk.dtu.core;
 
 import dk.dtu.game.core.Board;
 
-import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
+import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import dk.dtu.game.core.Config;
 
 import org.junit.jupiter.api.DisplayName;

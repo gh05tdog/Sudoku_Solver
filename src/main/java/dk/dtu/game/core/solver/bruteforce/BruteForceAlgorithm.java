@@ -1,22 +1,33 @@
 /* (C)2024 */
-package dk.dtu.game.core.solver.BruteForce;
+package dk.dtu.game.core.solver.bruteforce;
 
 import static java.lang.Math.sqrt;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.solver.SolverAlgorithm;
+
+
 import java.util.*;
+import java.util.logging.Logger;
 
 public class BruteForceAlgorithm {
 
+    static Random rand = new Random();
+    static Logger logger = Logger.getLogger(BruteForceAlgorithm.class.getName());
+
+    public static int [][] solvedBoard;
+
+    private BruteForceAlgorithm() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void createSudoku(Board board) {
-        double startTime = System.nanoTime();
-        fillBoard(board);
-        double endTime = System.nanoTime();
-        double duration = (endTime - startTime);
-        System.out.println("Time taken to bruteforce board: " + duration / 1000000 + "ms");
-        removeNumsRecursive(board);
+        int [][] sudokuBoard = fillBoard(board);
+        solvedBoard = deepCopy(sudokuBoard);
+        sudokuBoard = removeNumsRecursive(sudokuBoard);
+        board.setInitialBoard(sudokuBoard);
+        board.setBoard(sudokuBoard);
     }
 
     public static boolean sudoku(int[][] board) {
@@ -59,23 +70,31 @@ public class BruteForceAlgorithm {
                             possibleValues++;
                         }
                     }
-                    if (possibleValues < lowestPossibleValue) {
-                        lowestPossibleValue = possibleValues;
-                        possibleCells.clear();
-                        possibleCells.add(new int[]{i, j});
-                    } else if (possibleValues == lowestPossibleValue) {
-                        possibleCells.add(new int[]{i, j});
-                    }
+                    lowestPossibleValue = getLowestPossibleValue(possibleValues, lowestPossibleValue, possibleCells, i, j);
                 }
             }
         }
-        if (possibleCells.isEmpty()) {
-            return null;
-        } else {
-            Random random = new Random();
+        return getPossibleCells(possibleCells);
+    }
 
-            return possibleCells.get(random.nextInt(possibleCells.size()));
+    private static int[] getPossibleCells(ArrayList<int[]> possibleCells) {
+        if (possibleCells.isEmpty()) {
+            return new int[0];
+        } else {
+
+            return possibleCells.get(rand.nextInt(possibleCells.size()));
         }
+    }
+
+    private static int getLowestPossibleValue(int possibleValues, int lowestPossibleValue, ArrayList<int[]> possibleCells, int i, int j) {
+        if (possibleValues < lowestPossibleValue) {
+            lowestPossibleValue = possibleValues;
+            possibleCells.clear();
+            possibleCells.add(new int[]{i, j});
+        } else if (possibleValues == lowestPossibleValue) {
+            possibleCells.add(new int[]{i, j});
+        }
+        return lowestPossibleValue;
     }
 
     public static int emptyCellCount(int[][] arr) {
@@ -90,19 +109,21 @@ public class BruteForceAlgorithm {
         return emptyCells;
     }
 
-    public static void fillBoard(Board board) {
+    public static int [][] fillBoard(Board board) {
         int size = board.getDimensions();
         int[][] arr = new int[size][size];
 
         if (sudoku(arr)) {
             board.setBoard(arr);
         } else {
-            System.out.println("No solution exists");
+            logger.info("No solution exists");
         }
+        return arr;
     }
 
-    public static void removeNumsRecursive(Board board) {
-        int[][] tempBoard = deepCopy(board.getBoard());
+    public static int [][] removeNumsRecursive(int [][] sudokuBoard) {
+        int[][] tempBoard = deepCopy(sudokuBoard);
+        int size = sudokuBoard.length;
         int[][] initialBoard;
         int numRemoved = 0;
         int maxNumRemoved;
@@ -118,16 +139,16 @@ public class BruteForceAlgorithm {
 
         while (numRemoved < maxNumRemoved) {
             int possibleSols = 0;
-            int randRow = (int) (Math.random() * board.getDimensions());
-            int randCol = (int) (Math.random() * board.getDimensions());
+            int randRow = rand.nextInt(size);
+            int randCol = rand.nextInt(size);
 
             int tempNumber = tempBoard[randRow][randCol];
             tempBoard[randRow][randCol] = 0;
 
-            for (int i = 1; i <= board.getDimensions(); i++) {
+            for (int i = 1; i <= size; i++) {
                 initialBoard = deepCopy(tempBoard);
                 if (SolverAlgorithm.checkBoard(
-                        initialBoard, randRow, randCol, i, (int) sqrt(board.getDimensions()))) {
+                        initialBoard, randRow, randCol, i, (int) sqrt(size))) {
                     initialBoard[randRow][randCol] = i;
                     if (sudoku(initialBoard)) {
                         possibleSols++;
@@ -139,8 +160,8 @@ public class BruteForceAlgorithm {
             } else {
                 numRemoved++;
             }
-            board.setBoard(tempBoard);
         }
+        return tempBoard;
     }
 
     public static int[][] deepCopy(int[][] arr) {
@@ -218,7 +239,7 @@ public class BruteForceAlgorithm {
         if (solved) {
             return copiedBoard;
         } else {
-            return null;
+            return new int[0][0];
         }
     }
 
@@ -279,5 +300,9 @@ public class BruteForceAlgorithm {
             }
         }
         return cell;
+    }
+
+    public static int[][] getSolvedBoard() {
+        return solvedBoard;
     }
 }

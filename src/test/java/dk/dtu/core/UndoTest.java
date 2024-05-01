@@ -7,8 +7,8 @@ import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.SudokuGame;
-import dk.dtu.game.core.solver.AlgorithmX.algorithmX;
-import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
+import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import java.util.Arrays;
 import javax.swing.*;
 import org.junit.jupiter.api.DisplayName;
@@ -29,13 +29,13 @@ class UndoTest {
         game.createBoard(
                 3, 3, 50); // Assuming this is the correct way to initialize the board in your game
 
-        algorithmX.createXSudoku(game.gameboard);
+        AlgorithmXSolver.createXSudoku(game.gameboard);
 
         // No need to call displayNumbersVisually here if it's just for visual representation and
         // not part of the test logic
 
         // Deep copy the board for later comparison
-        int[][] initialBoardState = game.deepCopyBoard(game.gameboard.getGameBoard());
+        int[][] initialBoardState = game.deepCopyBoard(game.gameboard.getBoard());
 
         // Make a move on a valid cell
         int row = 2, col = 2, number = 9;
@@ -46,7 +46,7 @@ class UndoTest {
 
         // Assert the board's state is unchanged from the initial state
         assertTrue(
-                Arrays.deepEquals(initialBoardState, game.gameboard.getGameBoard()),
+                Arrays.deepEquals(initialBoardState, game.gameboard.getBoard()),
                 "Board should return to its initial state after undo.");
     }
 
@@ -63,7 +63,7 @@ class UndoTest {
         game.createBoard(3, 3, 50); // Set up the board
 
         // Generate a solvable Sudoku puzzle
-        algorithmX.createXSudoku(game.gameboard);
+        AlgorithmXSolver.createXSudoku(game.gameboard);
 
         // Remove numbers to generate hints (if not already part of createSudoku)
         // Assuming fillHintList() populates the hintList based on the current board state
@@ -71,12 +71,12 @@ class UndoTest {
 
         // Apply all hints to the board
         for (Move hint : game.getHintList()) {
-            game.gameboard.setNumber(hint.getRow(), hint.getColumn(), hint.getNumber());
+            game.gameboard.setNumber(hint.row(), hint.column(), hint.number());
         }
 
         // Validate the Sudoku board
         assertTrue(
-                BruteForceAlgorithm.isValidSudoku(game.gameboard.getGameBoard()),
+                BruteForceAlgorithm.isValidSudoku(game.gameboard.getBoard()),
                 "Applying all hints should result in a valid Sudoku.");
     }
 }
