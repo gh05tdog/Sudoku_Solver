@@ -128,8 +128,8 @@ public class StartMenu {
         // This method adds the N and K fields for the custom board
         Font fieldFont = new Font("SansSerif", Font.BOLD, 20);
 
-        JTextField[] fields = {inputNField, inputKField};
-        String[] initialTexts = {"N", "K"};
+        JTextField[] fields = {inputKField, inputNField};
+        String[] initialTexts = {"K", "N"};
         for (int i = 0; i < fields.length; i++) {
             JTextField field = fields[i];
             field.setFont(fieldFont);

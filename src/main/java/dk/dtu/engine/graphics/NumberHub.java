@@ -15,8 +15,8 @@ public abstract class NumberHub extends JPanel {
     private static final Color NON_HIGHLIGHT_COLOR = Color.WHITE;
 
 
-    public NumberHub(int gridSize, int cellSize) {
-        this.subGrid = (int) Math.sqrt(gridSize);
+    public NumberHub(int n, int cellSize) {
+        this.subGrid = n;
         this.numberArray = new int[subGrid][subGrid];
         NumberHub.cellSize = Math.max(cellSize, MIN_CELL_SIZE); // Ensure cellSize is not too small
         setPreferredSize(new Dimension(subGrid * NumberHub.cellSize, (subGrid + 2) * NumberHub.cellSize));

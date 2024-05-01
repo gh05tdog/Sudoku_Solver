@@ -137,6 +137,7 @@ class Cell implements Serializable{
 public class SudokuBoardCanvas extends JPanel {
     private final int gridSize;
     private final int cellSize;
+    private final int nSize;
     private final Cell[][] cells;
 
     private static final Logger logger = LoggerFactory.getLogger(SudokuBoardCanvas.class);
@@ -146,6 +147,7 @@ public class SudokuBoardCanvas extends JPanel {
     public SudokuBoardCanvas(int n, int k, int cellSize) {
         this.gridSize = n * k;
         this.cellSize = cellSize;
+        this.nSize = n;
         cells = new Cell[gridSize][gridSize];
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -171,7 +173,7 @@ public class SudokuBoardCanvas extends JPanel {
     }
 
     private void drawSubGrids(Graphics g) {
-        int subGridSize = (int) Math.sqrt(gridSize);
+        int subGridSize = nSize;
         g.setColor(Color.BLACK);
 
         for (int i = 0; i <= gridSize; i += subGridSize) {
@@ -196,7 +198,7 @@ public class SudokuBoardCanvas extends JPanel {
 
         if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
             // Calculate the subgrid's top-left coordinates
-            int subGridSize = (int) Math.sqrt(gridSize);
+            int subGridSize = nSize;
             int subGridRowStart = (row / subGridSize) * subGridSize;
             int subGridColStart = (col / subGridSize) * subGridSize;
 

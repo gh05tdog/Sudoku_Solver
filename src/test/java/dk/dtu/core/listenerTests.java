@@ -61,7 +61,7 @@ class ListenerTests {
         mouseListener = new MouseActionListener(game);
 
         boardCanvas = new SudokuBoardCanvas(9, 9, 40); // Assuming constructor parameters as required
-        numbersBoard = new NumberHub(81, 40) {
+        numbersBoard = new NumberHub(9, 40) {
             @Override
             public void highlightNumber(int x, int y) {
                 // Do nothing

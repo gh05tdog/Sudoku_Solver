@@ -60,10 +60,10 @@ public class CustomBoardPanel extends JPanel {
 
         // Draw the subgrid lines (thicker lines)
         g2d.setStroke(new BasicStroke(2));
-        for (int i = 0; i <= n; i++) {
-            int pos = yOffset + i * cellSize * k;
+        for (int i = 0; i <= k; i++) {
+            int pos = yOffset + i * cellSize * n;
             g2d.drawLine(xOffset, pos, xOffset + boardPixelSize, pos); // Horizontal subgrid lines
-            pos = xOffset + i * cellSize * k;
+            pos = xOffset + i * cellSize * n;
             g2d.drawLine(pos, yOffset, pos, yOffset + boardPixelSize); // Vertical subgrid lines
         }
 

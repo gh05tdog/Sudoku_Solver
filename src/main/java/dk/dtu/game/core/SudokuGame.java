@@ -216,7 +216,7 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
 
-        numbers = new NumberHub(n * k, cellSize) {
+        numbers = new NumberHub(n, cellSize) {
             @Override
             public void highlightNumber(int x, int y) {
                 onNumbersBoardClicked(x, y);
@@ -396,8 +396,12 @@ public class SudokuGame {
                 e -> {
                     board.clearNotes();
                     timer.stop();
-                    gameboard.setGameBoard(
-                            Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
+                    if (nSize == kSize) {
+                        gameboard.setGameBoard(
+                                Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
+                    } else {
+                        gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
+                    }
                     checkCompletionAndOfferNewGame();
                 });
 
