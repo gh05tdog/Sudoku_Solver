@@ -27,10 +27,6 @@ public class Board {
         return gameBoard;
     }
 
-    public int[][] getBoard() {
-        return gameBoard;
-    }
-
     public static class BoardNotCreatable extends Exception {
         public BoardNotCreatable(String errorMessage) {
             super(errorMessage);

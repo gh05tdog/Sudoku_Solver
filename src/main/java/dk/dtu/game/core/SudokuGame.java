@@ -213,7 +213,7 @@ public class SudokuGame {
 
         board.addKeyListener(keyboardListener);
 
-        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
+        gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
         numbers = new NumberHub(n * k, cellSize) {};
         numbers.setLocation(50, 50);
