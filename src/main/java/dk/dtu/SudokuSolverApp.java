@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 
 class SudokuSolverApp {
     private static final Logger logger = LoggerFactory.getLogger(SudokuSolverApp.class);
-    public static void main(String[] args) {
-        logger.error("Starting the Sudoku Solver App");
 
+    public static void main(String[] args) {
+        logger.info("Starting the Sudoku Solver App");
 
         StartMenuWindowManager startMenu = new StartMenuWindowManager(new JFrame(), 1000, 1000);
         StartMenu startMenu1 = new StartMenu(startMenu);

@@ -10,13 +10,12 @@ import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
+import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
-
-import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -194,11 +193,11 @@ public class SudokuGame {
     public void undoMove() {
         if (!moveList.isEmpty()) {
             Move move = moveList.pop();
-            int row = move.row();
-            int col = move.column();
+            int row = move.getRow();
+            int col = move.getColumn();
             board.setHiddenProperty(row, col, false);
-            checkCellsForNotes(row, col, move.number(), "show");
-            int prevNumber = move.previousNumber();
+            checkCellsForNotes(row, col, move.getNumber(), "show");
+            int prevNumber = move.getPreviousNumber();
             gameboard.setNumber(row, col, prevNumber);
             board.setCellNumber(row, col, prevNumber);
             logger.debug("Undo move: Row: {}, Column: {}, Number: {}", row, col, prevNumber);
@@ -214,14 +213,9 @@ public class SudokuGame {
 
         board.addKeyListener(keyboardListener);
 
-        gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
+        gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new NumberHub(n * k, cellSize) {
-            @Override
-            public void highlightNumber(int x, int y) {
-                onNumbersBoardClicked(x, y);
-            }
-        };
+        numbers = new NumberHub(n * k, cellSize) {};
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
 
@@ -247,7 +241,7 @@ public class SudokuGame {
         timer.stop();
         timer.reset();
         if (nSize == kSize) {
-        AlgorithmXSolver.createXSudoku(gameboard);
+            AlgorithmXSolver.createXSudoku(gameboard);
         } else {
             BruteForceAlgorithm.createSudoku(gameboard);
         }
@@ -311,9 +305,9 @@ public class SudokuGame {
             Move hintMove = hintList.get(hintIndex);
             hintList.remove(hintIndex);
 
-            int row = hintMove.row();
-            int col = hintMove.column();
-            int number = hintMove.number();
+            int row = hintMove.getRow();
+            int col = hintMove.getColumn();
+            int number = hintMove.getNumber();
 
             checkCellsForNotes(row, col, number, "hide");
             gameboard.setNumber(row, col, number);
