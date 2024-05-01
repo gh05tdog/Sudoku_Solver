@@ -215,7 +215,9 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new NumberHub(n * k, cellSize) {};
+
+        numbers = new NumberHub(n, 40) {};
+
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
 
@@ -390,8 +392,12 @@ public class SudokuGame {
                 e -> {
                     board.clearNotes();
                     timer.stop();
-                    gameboard.setGameBoard(
-                            Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
+                    if (nSize == kSize) {
+                        gameboard.setGameBoard(
+                                Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
+                    } else {
+                        gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
+                    }
                     checkCompletionAndOfferNewGame();
                 });
 

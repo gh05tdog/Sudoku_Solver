@@ -59,9 +59,13 @@ class ListenerTests {
         keyboardListener = new KeyboardListener(game);
         mouseListener = new MouseActionListener(game);
 
-        boardCanvas =
-                new SudokuBoardCanvas(9, 9, 40); // Assuming constructor parameters as required
-        numbersBoard = new NumberHub(81, 40) {}; // Assuming constructor parameters as required
+        boardCanvas = new SudokuBoardCanvas(9, 9, 40); // Assuming constructor parameters as required
+        numbersBoard = new NumberHub(9, 40) {
+            @Override
+            protected void paintComponent(java.awt.Graphics g) {
+                // Do nothing
+            }
+        };
     }
 
     @Test
