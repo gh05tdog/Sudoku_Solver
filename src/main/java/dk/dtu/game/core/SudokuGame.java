@@ -10,13 +10,12 @@ import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
+import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
-
-import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -216,8 +215,7 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
 
-        numbers = new NumberHub(n * k, cellSize) {
-        };
+        numbers = new NumberHub(n * k, cellSize) {};
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
 
@@ -243,7 +241,7 @@ public class SudokuGame {
         timer.stop();
         timer.reset();
         if (nSize == kSize) {
-        AlgorithmXSolver.createXSudoku(gameboard);
+            AlgorithmXSolver.createXSudoku(gameboard);
         } else {
             BruteForceAlgorithm.createSudoku(gameboard);
         }

@@ -234,7 +234,6 @@ class SudokuGameTest {
                     public int getNumber(int x, int y) {
                         return 5; // Mock behavior
                     }
-
                 });
 
         sudokuBoardCanvasBoard =

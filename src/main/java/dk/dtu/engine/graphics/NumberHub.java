@@ -89,5 +89,4 @@ public abstract class NumberHub extends JPanel {
             return 0;
         } else return numberArray[j][i];
     }
-
 }

@@ -6,8 +6,6 @@ import static java.lang.Math.sqrt;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.solver.SolverAlgorithm;
-
-
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -16,14 +14,14 @@ public class BruteForceAlgorithm {
     static Random rand = new Random();
     static Logger logger = Logger.getLogger(BruteForceAlgorithm.class.getName());
 
-    public static int [][] solvedBoard;
+    public static int[][] solvedBoard;
 
     private BruteForceAlgorithm() {
         throw new IllegalStateException("Utility class");
     }
 
     public static void createSudoku(Board board) {
-        int [][] sudokuBoard = fillBoard(board);
+        int[][] sudokuBoard = fillBoard(board);
         solvedBoard = deepCopy(sudokuBoard);
         sudokuBoard = removeNumsRecursive(sudokuBoard);
         board.setInitialBoard(sudokuBoard);
@@ -70,7 +68,9 @@ public class BruteForceAlgorithm {
                             possibleValues++;
                         }
                     }
-                    lowestPossibleValue = getLowestPossibleValue(possibleValues, lowestPossibleValue, possibleCells, i, j);
+                    lowestPossibleValue =
+                            getLowestPossibleValue(
+                                    possibleValues, lowestPossibleValue, possibleCells, i, j);
                 }
             }
         }
@@ -86,13 +86,18 @@ public class BruteForceAlgorithm {
         }
     }
 
-    private static int getLowestPossibleValue(int possibleValues, int lowestPossibleValue, ArrayList<int[]> possibleCells, int i, int j) {
+    private static int getLowestPossibleValue(
+            int possibleValues,
+            int lowestPossibleValue,
+            ArrayList<int[]> possibleCells,
+            int i,
+            int j) {
         if (possibleValues < lowestPossibleValue) {
             lowestPossibleValue = possibleValues;
             possibleCells.clear();
-            possibleCells.add(new int[]{i, j});
+            possibleCells.add(new int[] {i, j});
         } else if (possibleValues == lowestPossibleValue) {
-            possibleCells.add(new int[]{i, j});
+            possibleCells.add(new int[] {i, j});
         }
         return lowestPossibleValue;
     }
@@ -109,7 +114,7 @@ public class BruteForceAlgorithm {
         return emptyCells;
     }
 
-    public static int [][] fillBoard(Board board) {
+    public static int[][] fillBoard(Board board) {
         int size = board.getDimensions();
         int[][] arr = new int[size][size];
 
@@ -121,7 +126,7 @@ public class BruteForceAlgorithm {
         return arr;
     }
 
-    public static int [][] removeNumsRecursive(int [][] sudokuBoard) {
+    public static int[][] removeNumsRecursive(int[][] sudokuBoard) {
         int[][] tempBoard = deepCopy(sudokuBoard);
         int size = sudokuBoard.length;
         int[][] initialBoard;
@@ -251,7 +256,8 @@ public class BruteForceAlgorithm {
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board[0].length; j++) {
                     if (board[i][j] == 0) {
-                        List<Integer> possiblePlacements = SolverAlgorithm.getPossiblePlacements(board, i, j);
+                        List<Integer> possiblePlacements =
+                                SolverAlgorithm.getPossiblePlacements(board, i, j);
                         if (possiblePlacements.size() == 1) {
                             board[i][j] = possiblePlacements.getFirst();
                             changed = true;
@@ -263,9 +269,9 @@ public class BruteForceAlgorithm {
     }
 
     private static int countSolutions(int[][] board, int count) {
-        if (count > 1) return count;  // Early exit if more than one solution found
+        if (count > 1) return count; // Early exit if more than one solution found
         int[] cell = findLeastConstrainingCell(board);
-        if (cell == null) return count + 1;  // Increment count when a solution is found
+        if (cell == null) return count + 1; // Increment count when a solution is found
 
         int row = cell[0];
         int col = cell[1];
@@ -274,8 +280,8 @@ public class BruteForceAlgorithm {
         for (int value : possiblePlacements) {
             board[row][col] = value;
             count = countSolutions(board, count);
-            if (count > 1) return count;  // Early exit
-            board[row][col] = 0;  // Undo placement
+            if (count > 1) return count; // Early exit
+            board[row][col] = 0; // Undo placement
         }
 
         return count;

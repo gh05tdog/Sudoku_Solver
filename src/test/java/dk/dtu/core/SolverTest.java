@@ -1,14 +1,14 @@
 /* (C)2024 */
 package dk.dtu.core;
 
-import dk.dtu.game.core.solver.algorithmx.ColumnNode;
-import dk.dtu.game.core.solver.algorithmx.DancingLinks;
-import dk.dtu.game.core.solver.algorithmx.Node;
-import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
+import dk.dtu.game.core.solver.algorithmx.ColumnNode;
+import dk.dtu.game.core.solver.algorithmx.DancingLinks;
+import dk.dtu.game.core.solver.algorithmx.Node;
+import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
