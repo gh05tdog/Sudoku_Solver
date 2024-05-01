@@ -1,7 +1,8 @@
+/* (C)2024 */
 package dk.dtu.engine.graphics;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public abstract class NumberHub extends JPanel {
     private static int cellSize;
@@ -18,18 +19,22 @@ public abstract class NumberHub extends JPanel {
     public NumberHub(int gridSize, int cellSize) {
         this.subGrid = (int) Math.sqrt(gridSize);
         this.numberArray = new int[subGrid][subGrid];
-        NumberHub.cellSize = Math.max(cellSize, MIN_CELL_SIZE); // Ensure cellSize is not too small
-        setPreferredSize(new Dimension(subGrid * NumberHub.cellSize, (subGrid + 2) * NumberHub.cellSize));
+        NumberHub.setCellSize(
+                Math.max(cellSize, MIN_CELL_SIZE)); // Ensure cellSize is not too small
+        setPreferredSize(
+                new Dimension(subGrid * NumberHub.cellSize, (subGrid + 2) * NumberHub.cellSize));
 
-
-        for(int i = 0; i<subGrid; i++){
-            for(int j = 0; j<subGrid; j++) {
+        for (int i = 0; i < subGrid; i++) {
+            for (int j = 0; j < subGrid; j++) {
 
                 numberArray[i][j] = j + i * subGrid + 1;
             }
         }
         setAlignmentX(Component.CENTER_ALIGNMENT);
+    }
 
+    private static void setCellSize(int size) {
+        cellSize = size;
     }
 
     @Override
@@ -38,8 +43,8 @@ public abstract class NumberHub extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g;
 
-        for(int i = 0; i<subGrid; i++){
-            for(int j = 0; j<subGrid; j++){
+        for (int i = 0; i < subGrid; i++) {
+            for (int j = 0; j < subGrid; j++) {
                 int x = i * cellSize;
                 int y = j * cellSize;
 
@@ -54,39 +59,35 @@ public abstract class NumberHub extends JPanel {
                 Font font = new Font("Arial", Font.BOLD, cellSize / 2);
                 g.setFont(font);
                 g.setColor(Color.BLACK);
-                g.drawString(num, x + cellSize / 2 - g.getFontMetrics().stringWidth(num) / 2,
+                g.drawString(
+                        num,
+                        x + cellSize / 2 - g.getFontMetrics().stringWidth(num) / 2,
                         y + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
-
             }
-
-
         }
 
-        int clearBoxY = (subGrid)*cellSize;
+        int clearBoxY = (subGrid) * cellSize;
         g.setColor(NON_HIGHLIGHT_COLOR);
-        g.fillRect(0, clearBoxY, subGrid * cellSize,2 * cellSize);
+        g.fillRect(0, clearBoxY, subGrid * cellSize, 2 * cellSize);
         g.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(STROKE_WIDTH));
         g.drawRect(0, clearBoxY, subGrid * cellSize, cellSize);
         Font font = new Font("Arial", Font.BOLD, cellSize / 2);
         g.setFont(font);
         g.setColor(Color.BLACK);
-        g.drawString("Clear", subGrid*cellSize/2 - g.getFontMetrics().stringWidth("Clear")/2,
+        g.drawString(
+                "Clear",
+                subGrid * cellSize / 2 - g.getFontMetrics().stringWidth("Clear") / 2,
                 clearBoxY + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
-
     }
 
     public int getNumber(int x, int y) {
 
-        int i = x/cellSize;
-        int j = y/cellSize;
+        int i = x / cellSize;
+        int j = y / cellSize;
 
         if (j == subGrid) {
             return 0;
-        }
-        else return numberArray[j][i];
+        } else return numberArray[j][i];
     }
-
-
-    public abstract void highlightNumber(int x, int y);
 }

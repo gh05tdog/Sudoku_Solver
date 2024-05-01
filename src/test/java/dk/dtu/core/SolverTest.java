@@ -1,10 +1,14 @@
 /* (C)2024 */
 package dk.dtu.core;
 
-import static dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm.isValidSudoku;
+import static dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm.isValidSudoku;
 import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.game.core.Board;
+
+import static dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm.isValidSudoku;
+import static org.junit.jupiter.api.Assertions.*;
+
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.*;
 import java.util.ArrayList;
@@ -55,7 +59,7 @@ public class SolverTest {
         DancingLinks dl = new DancingLinks(coverList);
         ColumnNode c = (ColumnNode) dl.header.right;
         c.cover();
-        assert (isColumnCovered(c));
+        assertTrue (isColumnCovered(c));
     }
 
     @Test
@@ -64,9 +68,9 @@ public class SolverTest {
         DancingLinks dl = new DancingLinks(coverList);
         ColumnNode c = (ColumnNode) dl.header.right;
         c.cover();
-        assert (isColumnCovered(c));
+        assertTrue(isColumnCovered(c));
         c.uncover();
-        assert (isColumnUncovered(c, coverList));
+        assertTrue(isColumnUncovered(c, coverList));
     }
 
     @Test
@@ -94,15 +98,15 @@ public class SolverTest {
 
         for (int i = 0; i < exactCoverBoard.getFirst().length; i++) {
             int numsInCol = 0;
-            for (int j = 0; j < exactCoverBoard.size(); j++) {
-                if (exactCoverBoard.get(j)[i] == 1) {
+            for (int[] nums : exactCoverBoard) {
+                if (nums[i] == 1) {
                     numsInCol++;
                 }
             }
             assertEquals(
                     board.length,
                     numsInCol); // as there are no placements, all columns must have 9 numbers,
-            // highlightning the 9 possible numbers.
+            // highlighting the 9 possible numbers.
         }
     }
 
@@ -212,7 +216,7 @@ public class SolverTest {
     void testCreateXSudoku() throws Exception {
         Board board = new Board(3, 3);
         AlgorithmXSolver.createXSudoku(board);
-        assertTrue(isValidSudoku(board.getBoard()));
+        assertTrue(isValidSudoku(board.getGameBoard()));
     }
 
     @Test
@@ -220,7 +224,7 @@ public class SolverTest {
     void testUniqueXSudoku() throws Exception {
         Board board = new Board(3, 3);
         AlgorithmXSolver.createXSudoku(board);
-        assertEquals(1, BruteForceAlgorithm.checkUniqueSolution(board.getBoard()));
+        assertEquals(1, BruteForceAlgorithm.checkUniqueSolution(board.getGameBoard()));
     }
 
     @Test

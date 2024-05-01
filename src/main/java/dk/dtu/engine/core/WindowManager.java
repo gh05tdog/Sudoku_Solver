@@ -18,7 +18,6 @@ public class WindowManager {
         this.frame.setSize(width, height);
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.frame.setResizable(false);
-        this.frame.getContentPane().setBackground(Color.WHITE);
         whitePanel.setOpaque(true);
         buttonPanel.setOpaque(true);
         mainPanel.setOpaque(true);
