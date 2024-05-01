@@ -216,12 +216,7 @@ public class SudokuGame {
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
 
-        numbers = new NumberHub(n, 40) {
-            @Override
-            protected void paintComponent(java.awt.Graphics g) {
-                // Do nothing
-            }
-        };
+        numbers = new NumberHub(n, 40) {};
 
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
