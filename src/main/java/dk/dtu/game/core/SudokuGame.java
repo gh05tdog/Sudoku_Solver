@@ -194,11 +194,11 @@ public class SudokuGame {
     public void undoMove() {
         if (!moveList.isEmpty()) {
             Move move = moveList.pop();
-            int row = move.row();
-            int col = move.column();
+            int row = move.getRow();
+            int col = move.getColumn();
             board.setHiddenProperty(row, col, false);
-            checkCellsForNotes(row, col, move.number(), "show");
-            int prevNumber = move.previousNumber();
+            checkCellsForNotes(row, col, move.getNumber(), "show");
+            int prevNumber = move.getPreviousNumber();
             gameboard.setNumber(row, col, prevNumber);
             board.setCellNumber(row, col, prevNumber);
             logger.debug("Undo move: Row: {}, Column: {}, Number: {}", row, col, prevNumber);
@@ -217,10 +217,6 @@ public class SudokuGame {
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getBoard()));
 
         numbers = new NumberHub(n * k, cellSize) {
-            @Override
-            public void highlightNumber(int x, int y) {
-                onNumbersBoardClicked(x, y);
-            }
         };
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
@@ -311,9 +307,9 @@ public class SudokuGame {
             Move hintMove = hintList.get(hintIndex);
             hintList.remove(hintIndex);
 
-            int row = hintMove.row();
-            int col = hintMove.column();
-            int number = hintMove.number();
+            int row = hintMove.getRow();
+            int col = hintMove.getColumn();
+            int number = hintMove.getNumber();
 
             checkCellsForNotes(row, col, number, "hide");
             gameboard.setNumber(row, col, number);

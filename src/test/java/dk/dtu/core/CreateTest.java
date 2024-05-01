@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
-import dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm;
+import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;

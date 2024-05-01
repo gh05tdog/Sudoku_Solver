@@ -15,7 +15,6 @@ public abstract class NumberHub extends JPanel {
     private static final int MIN_CELL_SIZE = 50; // Minimum cell size to maintain visibility
     private static final Color NON_HIGHLIGHT_COLOR = Color.WHITE;
 
-
     public NumberHub(int gridSize, int cellSize) {
         this.subGrid = (int) Math.sqrt(gridSize);
         this.numberArray = new int[subGrid][subGrid];
@@ -90,4 +89,5 @@ public abstract class NumberHub extends JPanel {
             return 0;
         } else return numberArray[j][i];
     }
+
 }

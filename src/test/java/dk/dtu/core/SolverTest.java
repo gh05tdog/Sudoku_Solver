@@ -1,16 +1,14 @@
 /* (C)2024 */
 package dk.dtu.core;
 
-import static dk.dtu.game.core.solver.BruteForce.BruteForceAlgorithm.isValidSudoku;
+import dk.dtu.game.core.solver.algorithmx.ColumnNode;
+import dk.dtu.game.core.solver.algorithmx.DancingLinks;
+import dk.dtu.game.core.solver.algorithmx.Node;
+import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.game.core.Board;
-
-import static dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm.isValidSudoku;
-import static org.junit.jupiter.api.Assertions.*;
-
-import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
-import dk.dtu.game.core.solver.algorithmx.*;
+import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -59,7 +57,7 @@ public class SolverTest {
         DancingLinks dl = new DancingLinks(coverList);
         ColumnNode c = (ColumnNode) dl.header.right;
         c.cover();
-        assertTrue (isColumnCovered(c));
+        assertTrue(isColumnCovered(c));
     }
 
     @Test
@@ -216,7 +214,7 @@ public class SolverTest {
     void testCreateXSudoku() throws Exception {
         Board board = new Board(3, 3);
         AlgorithmXSolver.createXSudoku(board);
-        assertTrue(isValidSudoku(board.getGameBoard()));
+        assertTrue(BruteForceAlgorithm.isValidSudoku(board.getGameBoard()));
     }
 
     @Test

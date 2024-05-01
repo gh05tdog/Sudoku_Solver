@@ -27,6 +27,10 @@ public class Board {
         return gameBoard;
     }
 
+    public int[][] getBoard() {
+        return gameBoard;
+    }
+
     public static class BoardNotCreatable extends Exception {
         public BoardNotCreatable(String errorMessage) {
             super(errorMessage);
@@ -135,10 +139,10 @@ public class Board {
     }
 
     public void setGameBoard(int[][] tempBoard) {
-            for (int i = 0; i < tempBoard.length; i++) {
-                System.arraycopy(tempBoard[i], 0, this.gameBoard[i], 0, tempBoard[i].length);
-            }
+        for (int i = 0; i < tempBoard.length; i++) {
+            System.arraycopy(tempBoard[i], 0, this.gameBoard[i], 0, tempBoard[i].length);
         }
+    }
 
     public void setInitialBoard(int[][] tempBoard) {
         for (int i = 0; i < tempBoard.length; i++) {
