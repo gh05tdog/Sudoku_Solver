@@ -1,20 +1,19 @@
+/* (C)2024 */
 package dk.dtu.core;
 
-import dk.dtu.game.core.SudokuGame;
-import dk.dtu.engine.graphics.SudokuBoardCanvas;
+import static org.junit.jupiter.api.Assertions.*;
+
 import dk.dtu.engine.graphics.NumberHub;
+import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
-
+import dk.dtu.game.core.SudokuGame;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import javax.swing.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ListenerTests {
     private TestableSudokuGame game;
@@ -63,16 +62,23 @@ class ListenerTests {
         boardCanvas = new SudokuBoardCanvas(9, 9, 40); // Assuming constructor parameters as required
         numbersBoard = new NumberHub(9, 40) {
             @Override
-            public void highlightNumber(int x, int y) {
+            protected void paintComponent(java.awt.Graphics g) {
                 // Do nothing
             }
-        }; // Assuming constructor parameters as required
+        };
     }
 
     @Test
     @DisplayName("Test Keyboard Input Handling")
     void testKeyboardInputHandling() {
-        KeyEvent keyEvent = new KeyEvent(new JButton(), KeyEvent.KEY_TYPED, System.currentTimeMillis(), 0, KeyEvent.VK_UNDEFINED, '5');
+        KeyEvent keyEvent =
+                new KeyEvent(
+                        new JButton(),
+                        KeyEvent.KEY_TYPED,
+                        System.currentTimeMillis(),
+                        0,
+                        KeyEvent.VK_UNDEFINED,
+                        '5');
         keyboardListener.keyTyped(keyEvent);
         assertTrue(game.numberTyped, "Number should have been typed.");
     }
@@ -80,8 +86,26 @@ class ListenerTests {
     @Test
     @DisplayName("Test Mouse Clicks on Sudoku Board")
     void testMouseClicksOnSudokuBoard() {
-        MouseEvent clickEvent = new MouseEvent(boardCanvas, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 100, 100, 1, false);
-        mouseListener.mouseEntered(new MouseEvent(boardCanvas, MouseEvent.MOUSE_ENTERED, System.currentTimeMillis(), 0, 100, 100, 0, false));
+        MouseEvent clickEvent =
+                new MouseEvent(
+                        boardCanvas,
+                        MouseEvent.MOUSE_CLICKED,
+                        System.currentTimeMillis(),
+                        0,
+                        100,
+                        100,
+                        1,
+                        false);
+        mouseListener.mouseEntered(
+                new MouseEvent(
+                        boardCanvas,
+                        MouseEvent.MOUSE_ENTERED,
+                        System.currentTimeMillis(),
+                        0,
+                        100,
+                        100,
+                        0,
+                        false));
         mouseListener.mouseClicked(clickEvent);
 
         assertTrue(game.boardClicked, "Mouse should have clicked Sudoku board.");
@@ -92,8 +116,26 @@ class ListenerTests {
     @Test
     @DisplayName("Test Mouse Clicks on Numbers Board")
     void testMouseClicksOnNumbersBoard() {
-        MouseEvent clickEvent = new MouseEvent(numbersBoard, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 50, 50, 1, false);
-        mouseListener.mouseEntered(new MouseEvent(numbersBoard, MouseEvent.MOUSE_ENTERED, System.currentTimeMillis(), 0, 50, 50, 0, false));
+        MouseEvent clickEvent =
+                new MouseEvent(
+                        numbersBoard,
+                        MouseEvent.MOUSE_CLICKED,
+                        System.currentTimeMillis(),
+                        0,
+                        50,
+                        50,
+                        1,
+                        false);
+        mouseListener.mouseEntered(
+                new MouseEvent(
+                        numbersBoard,
+                        MouseEvent.MOUSE_ENTERED,
+                        System.currentTimeMillis(),
+                        0,
+                        50,
+                        50,
+                        0,
+                        false));
         mouseListener.mouseClicked(clickEvent);
 
         assertTrue(game.numbersBoardClicked, "Mouse should have clicked Numbers board.");
@@ -104,9 +146,29 @@ class ListenerTests {
     @Test
     @DisplayName("Test Mouse Exit Resets State")
     void testMouseExitResetsState() {
-        mouseListener.mouseEntered(new MouseEvent(boardCanvas, MouseEvent.MOUSE_ENTERED, System.currentTimeMillis(), 0, 100, 100, 0, false));
-        mouseListener.mouseExited(new MouseEvent(boardCanvas, MouseEvent.MOUSE_EXITED, System.currentTimeMillis(), 0, 100, 100, 0, false));
+        mouseListener.mouseEntered(
+                new MouseEvent(
+                        boardCanvas,
+                        MouseEvent.MOUSE_ENTERED,
+                        System.currentTimeMillis(),
+                        0,
+                        100,
+                        100,
+                        0,
+                        false));
+        mouseListener.mouseExited(
+                new MouseEvent(
+                        boardCanvas,
+                        MouseEvent.MOUSE_EXITED,
+                        System.currentTimeMillis(),
+                        0,
+                        100,
+                        100,
+                        0,
+                        false));
 
-        assertFalse(mouseListener.getIsInsideSudokuBoard(), "Mouse should not be considered inside Sudoku board after exit.");
+        assertFalse(
+                mouseListener.getIsInsideSudokuBoard(),
+                "Mouse should not be considered inside Sudoku board after exit.");
     }
 }

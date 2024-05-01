@@ -2,6 +2,7 @@
 package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
@@ -31,8 +32,10 @@ class SudokuGameTest {
 
     @BeforeEach
     void setUp() throws Exception {
+        JFrame mockedFrame = mock(JFrame.class);
+
         StartMenuWindowManager startMenuWindowManager =
-                new StartMenuWindowManager(new JFrame(), 1000, 700);
+                new StartMenuWindowManager(mockedFrame, 1000, 700);
         StartMenu startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
         startMenu.getStartButton().doClick();
@@ -87,7 +90,7 @@ class SudokuGameTest {
                 game.moveList.isEmpty(), "Move list should not be empty after a valid placement.");
         assertEquals(
                 5,
-                game.moveList.peek().number(),
+                game.moveList.peek().getNumber(),
                 "Top of move list should have the placed number 5.");
     }
 
@@ -212,7 +215,7 @@ class SudokuGameTest {
                     // Assuming the solver updates the board directly and synchronously from the
                     // event handlers
                     int[][] expected = AlgorithmXSolver.getSolutionBoard();
-                    int[][] actual = game.gameboard.getBoard();
+                    int[][] actual = game.gameboard.getGameBoard();
 
                     // Use Arrays.deepEquals to compare multi-dimensional arrays
                     assertTrue(
@@ -230,12 +233,6 @@ class SudokuGameTest {
                     @Override
                     public int getNumber(int x, int y) {
                         return 5; // Mock behavior
-                    }
-
-                    @Override
-                    public void highlightNumber(int x, int y) {
-                        // Mock behavior: Test could verify this call
-                        System.out.println("Number highlighted: " + getNumber(x, y));
                     }
                 });
 
