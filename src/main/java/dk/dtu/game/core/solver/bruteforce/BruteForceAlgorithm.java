@@ -15,12 +15,14 @@ public class BruteForceAlgorithm {
     static Logger logger = Logger.getLogger(BruteForceAlgorithm.class.getName());
 
     public static int[][] solvedBoard;
+    public static int n;
 
     private BruteForceAlgorithm() {
         throw new IllegalStateException("Utility class");
     }
 
     public static void createSudoku(Board board) {
+        n = board.getN();
         int[][] sudokuBoard = fillBoard(board);
         solvedBoard = deepCopy(sudokuBoard);
         sudokuBoard = removeNumsRecursive(sudokuBoard);
@@ -40,8 +42,9 @@ public class BruteForceAlgorithm {
             int row = chosenCells[0];
             int col = chosenCells[1];
 
-            for (int c = 1; c <= board.length; c++) {
-                if (SolverAlgorithm.checkBoard(board, row, col, c, (int) sqrt(board.length))) {
+            for (int c = 1; c <= n*n; c++) {
+                if (SolverAlgorithm.checkBoard(board, row, col, c, n)) {
+
                     board[row][col] = c;
                     if (sudoku(board)) {
                         return true;
@@ -64,7 +67,7 @@ public class BruteForceAlgorithm {
                 if (arr[i][j] == 0) {
                     int possibleValues = 0;
                     for (int k = 1; k <= arr.length; k++) {
-                        if (SolverAlgorithm.checkBoard(arr, i, j, k, (int) sqrt(arr.length))) {
+                        if (SolverAlgorithm.checkBoard(arr, i, j, k, n)) {
                             possibleValues++;
                         }
                     }
@@ -153,7 +156,7 @@ public class BruteForceAlgorithm {
             for (int i = 1; i <= size; i++) {
                 initialBoard = deepCopy(tempBoard);
                 if (SolverAlgorithm.checkBoard(
-                        initialBoard, randRow, randCol, i, (int) sqrt(size))) {
+                        initialBoard, randRow, randCol, i, n)) {
                     initialBoard[randRow][randCol] = i;
                     if (sudoku(initialBoard)) {
                         possibleSols++;
@@ -174,8 +177,7 @@ public class BruteForceAlgorithm {
     }
 
     public static boolean isValidSudoku(int[][] board) {
-        int size = board.length; // Assuming square board
-        int n = (int) Math.sqrt(size); // Calculate the size of subGrids
+        int size = board.length; // Assuming square board; // Calculate the size of subGrids
 
         // Check for row and column uniqueness
         for (int i = 0; i < size; i++) {
@@ -187,7 +189,7 @@ public class BruteForceAlgorithm {
         // Check subGrids for uniqueness
         for (int row = 0; row < size; row += n) {
             for (int col = 0; col < size; col += n) {
-                if (!isSubgridUnique(board, row, col, n)) {
+                if (!isSubgridUnique(board, row, col)) {
                     return false;
                 }
             }
@@ -216,7 +218,7 @@ public class BruteForceAlgorithm {
     }
 
     // Check if a subgrid (n by n) is unique
-    private static boolean isSubgridUnique(int[][] board, int startRow, int startCol, int n) {
+    private static boolean isSubgridUnique(int[][] board, int startRow, int startCol) {
         Set<Integer> seen = new HashSet<>();
         for (int row = startRow; row < startRow + n; row++) {
             for (int col = startCol; col < startCol + n; col++) {
@@ -257,7 +259,7 @@ public class BruteForceAlgorithm {
                 for (int j = 0; j < board[0].length; j++) {
                     if (board[i][j] == 0) {
                         List<Integer> possiblePlacements =
-                                SolverAlgorithm.getPossiblePlacements(board, i, j);
+                                SolverAlgorithm.getPossiblePlacements(board, i, j, n);
                         if (possiblePlacements.size() == 1) {
                             board[i][j] = possiblePlacements.getFirst();
                             changed = true;
@@ -275,7 +277,7 @@ public class BruteForceAlgorithm {
 
         int row = cell[0];
         int col = cell[1];
-        List<Integer> possiblePlacements = SolverAlgorithm.getPossiblePlacements(board, row, col);
+        List<Integer> possiblePlacements = SolverAlgorithm.getPossiblePlacements(board, row, col, n);
 
         for (int value : possiblePlacements) {
             board[row][col] = value;
@@ -293,7 +295,7 @@ public class BruteForceAlgorithm {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j] == 0) {
-                    int numOptions = SolverAlgorithm.getPossiblePlacements(board, i, j).size();
+                    int numOptions = SolverAlgorithm.getPossiblePlacements(board, i, j, n).size();
                     if (numOptions < minOptions) {
                         minOptions = numOptions;
                         cell = new int[] {i, j};

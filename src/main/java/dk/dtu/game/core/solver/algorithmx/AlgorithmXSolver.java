@@ -52,7 +52,7 @@ public class AlgorithmXSolver {
                 int num = board[i][j];
                 List<Integer> nums;
                 if (num == 0) {
-                    nums = SolverAlgorithm.getPossiblePlacements(board, i, j);
+                    nums = SolverAlgorithm.getPossiblePlacements(board, i, j, (int) Math.sqrt(board.length));
                 } else {
                     nums = Collections.singletonList(num);
                 }
