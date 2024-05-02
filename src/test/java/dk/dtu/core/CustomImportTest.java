@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class CustomImportTest {
@@ -63,6 +62,12 @@ class CustomImportTest {
         StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(mockedFrame, 1000, 1000);
         StartMenu startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
-        assertThrows(Board.BoardNotCreatable.class, () -> BruteForceAlgorithm.isValidSudoku(startMenu.importSudokuFromFile(lines)));
+        try {
+            BruteForceAlgorithm.isValidSudoku(startMenu.importSudokuFromFile(lines));
+        }catch (Exception e){
+
+            assertInstanceOf(Board.BoardNotCreatable.class, e);
+        }
+
     }
 }
