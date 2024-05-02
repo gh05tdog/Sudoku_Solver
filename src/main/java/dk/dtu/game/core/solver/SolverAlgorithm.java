@@ -40,14 +40,23 @@ public class SolverAlgorithm {
         return copy;
     }
 
-    public static List<Integer> getPossiblePlacements(int[][] board, int row, int col) {
+    public static List<Integer> getPossiblePlacements(int[][] board, int row, int col, int n) {
         List<Integer> possiblePlacements = new java.util.ArrayList<>();
         for (int c = 1; c <= board.length; c++) {
-            if (checkBoard(board, row, col, c, (int) Math.sqrt(board.length))) {
+            if (checkBoard(board, row, col, c, n)) {
                 possiblePlacements.add(c);
             }
         }
         return possiblePlacements;
+    }
+
+    public static void printBoard(int[][] gameBoard) {
+        for (int[] ints : gameBoard) {
+            for (int anInt : ints) {
+                System.out.print(anInt + " ");
+            }
+            System.out.println();
+        }
     }
 }
 

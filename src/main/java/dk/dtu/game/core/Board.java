@@ -161,4 +161,8 @@ public class Board {
     public int getInitialNumber(int x, int y) {
         return initialBoard[x][y];
     }
+
+    public int getN() {
+        return n;
+    }
 }

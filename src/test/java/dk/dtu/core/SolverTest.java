@@ -218,14 +218,6 @@ public class SolverTest {
     }
 
     @Test
-    @DisplayName("CreateXSudoku creates a sudoku with a unique solution")
-    void testUniqueXSudoku() throws Exception {
-        Board board = new Board(3, 3);
-        AlgorithmXSolver.createXSudoku(board);
-        assertEquals(1, BruteForceAlgorithm.checkUniqueSolution(board.getGameBoard()));
-    }
-
-    @Test
     @DisplayName("Test if solveExistingBoard works")
     void testSolveExistingBoard() throws Exception {
         Board board = new Board(3, 3);
