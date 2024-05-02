@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 class CustomImportTest {
 
-   // @Test
+    @Test
     void testCustomBoardValid() throws IOException, Board.BoardNotCreatable {
         List<String> lines =
                 Arrays.asList(
@@ -37,11 +37,12 @@ class CustomImportTest {
         StartMenuWindowManager startMenuWindowManager =
                 new StartMenuWindowManager(mockedFrame, 1000, 1000);
         StartMenu startMenu = new StartMenu(startMenuWindowManager);
+        startMenu.initialize();
 
         assertTrue(BruteForceAlgorithm.isValidSudoku(startMenu.importSudokuFromFile(lines)));
     }
 
-    //@Test
+    @Test
     void testCustomBoardInvalid() throws IOException {
         List<String> lines =
                 Arrays.asList(
