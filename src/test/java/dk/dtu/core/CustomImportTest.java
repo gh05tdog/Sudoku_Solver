@@ -1,21 +1,20 @@
 /* (C)2024 */
 package dk.dtu.core;
 
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+import org.junit.jupiter.api.Test;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import javax.swing.*;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class CustomImportTest {
 
@@ -44,8 +43,8 @@ class CustomImportTest {
         assertTrue(BruteForceAlgorithm.isValidSudoku(startMenu.importSudokuFromFile(lines)));
     }
 
-    //@Test
-    void testCustomBoardInvalid() throws IOException {
+    @Test
+    void testCustomBoardInvalid() {
         List<String> lines =
                 Arrays.asList(
                         "3;3",
@@ -64,14 +63,6 @@ class CustomImportTest {
         StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(mockedFrame, 1000, 1000);
         StartMenu startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
-        try {
-            BruteForceAlgorithm.isValidSudoku(startMenu.importSudokuFromFile(lines));
-        } catch (Board.BoardNotCreatable e) {
-            assertThrowsExactly(
-                    Board.BoardNotCreatable.class,
-                    () -> {
-                        throw new Board.BoardNotCreatable("This board is not possible to create");
-                    });
-        }
+        assertThrows(Board.BoardNotCreatable.class, () -> BruteForceAlgorithm.isValidSudoku(startMenu.importSudokuFromFile(lines)));
     }
 }
