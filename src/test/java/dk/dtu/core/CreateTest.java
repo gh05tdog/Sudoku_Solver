@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
+import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
@@ -133,7 +135,8 @@ class CreateTest {
     @DisplayName("Test solving a small 4x4 Sudoku board")
     void testSmallBoardSolving() throws Exception {
         Board board = new Board(2, 2);
-        BruteForceAlgorithm.fillBoard(board);
+        AlgorithmXSolver.solveExistingBoard(board);
+        SolverAlgorithm.printBoard(board.getGameBoard());
         assertTrue(isValidSudoku(board), "Small board should adhere to Sudoku rules.");
     }
 
@@ -143,7 +146,7 @@ class CreateTest {
         Board board = new Board(4, 4);
         assertNotNull(board, "Large board should be created successfully.");
         // Fill the board with a correct Sudoku solution first
-        BruteForceAlgorithm.fillBoard(board);
+        AlgorithmXSolver.solveExistingBoard(board);
         assertTrue(
                 BruteForceAlgorithm.isValidSudoku(board.getGameBoard()),
                 "Large board should adhere to Sudoku rules.");

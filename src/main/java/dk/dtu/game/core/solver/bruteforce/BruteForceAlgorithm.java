@@ -177,7 +177,7 @@ public class BruteForceAlgorithm {
     }
 
     public static boolean isValidSudoku(int[][] board) {
-        int size = board.length; // Assuming square board; // Calculate the size of subGrids
+        int size = n; // Assuming square board; // Calculate the size of subGrids
 
         // Check for row and column uniqueness
         for (int i = 0; i < size; i++) {

@@ -49,5 +49,14 @@ public class SolverAlgorithm {
         }
         return possiblePlacements;
     }
+
+    public static void printBoard(int[][] gameBoard) {
+        for (int[] ints : gameBoard) {
+            for (int anInt : ints) {
+                System.out.print(anInt + " ");
+            }
+            System.out.println();
+        }
+    }
 }
 
