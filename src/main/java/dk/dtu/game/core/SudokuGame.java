@@ -245,7 +245,7 @@ public class SudokuGame {
         windowManager.layoutComponents(timer, numbers);
         gameboard.setInitialBoard(customBoard);
         gameboard.setGameBoard(customBoard);
-        //Get solution for the custom board
+        // Get solution for the custom board
         if (nSize == kSize) {
             AlgorithmXSolver.createXSudoku(gameboard);
         } else {
@@ -585,5 +585,4 @@ public class SudokuGame {
         gameIsStarted = true;
         board.requestFocusInWindow();
     }
-
 }

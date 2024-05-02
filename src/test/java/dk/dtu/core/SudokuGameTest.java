@@ -1,6 +1,9 @@
 /* (C)2024 */
 package dk.dtu.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.NumberHub;
@@ -10,19 +13,15 @@ import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import javax.swing.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class SudokuGameTest {
 
@@ -190,7 +189,8 @@ class SudokuGameTest {
         assertTrue(game.isSudokuCompleted(), "Game should be solved");
         game.getRestartButton().doClick();
         assertTrue(game.moveList.isEmpty(), "Move list should be empty after restarting the game.");
-        assertFalse(game.isSudokuCompleted(),
+        assertFalse(
+                game.isSudokuCompleted(),
                 "Game should not be marked as completed after restarting.");
     }
 
@@ -303,6 +303,4 @@ class SudokuGameTest {
                 sudokuBoardCanvasBoard.getHiddenProperty(1, 1),
                 "Note 2 should be hidden at (1,1).");
     }
-
-
 }

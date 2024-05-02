@@ -8,19 +8,19 @@ import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.engine.utility.NumberDocumentFilter;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.AbstractDocument;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class StartMenu {
 
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
@@ -43,8 +43,6 @@ public class StartMenu {
     private final ButtonGroup difficultyGroup = new ButtonGroup();
     private final CustomComponentGroup sizeGroup = new CustomComponentGroup();
 
-
-
     private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
 
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
@@ -54,11 +52,17 @@ public class StartMenu {
 
     public void startGame() throws Board.BoardNotCreatable {
 
-        logger.error("startGame: {} {} {} {}", Config.getK(), Config.getN(), Config.getDifficulty(), Config.getCellSize());
+        logger.error(
+                "startGame: {} {} {} {}",
+                Config.getK(),
+                Config.getN(),
+                Config.getDifficulty(),
+                Config.getCellSize());
         int n = Config.getN();
         int k = Config.getK();
         int cellSize = Config.getCellSize();
-        WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
+        WindowManager windowManager =
+                new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
             GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
             windowManager.display();
@@ -66,7 +70,6 @@ public class StartMenu {
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             throw new Board.BoardNotCreatable("This board is not possible to create");
         }
-
     }
 
     public void updateCustomBoardPanel(int n, int k) {
@@ -86,7 +89,6 @@ public class StartMenu {
         addInputPanelButtons();
         addImportButton();
         updateCustomBoardPanel(2, 2);
-
 
         threeByThree.updateBackgroundColor(Color.GRAY);
         Config.setK(3);
@@ -177,7 +179,6 @@ public class StartMenu {
                             logger.error("Board not creatable: {}", ex.getMessage());
                         }
 
-
                     } else {
                         startButton.setBackground(Color.WHITE);
                     }
@@ -205,12 +206,17 @@ public class StartMenu {
 
                 importSudokuFromFile(lines);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Failed to load the Sudoku file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Failed to load the Sudoku file: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    public int[][] importSudokuFromFile(List<String> lines) throws IOException, Board.BoardNotCreatable {
+    public int[][] importSudokuFromFile(List<String> lines)
+            throws IOException, Board.BoardNotCreatable {
 
         if (lines.isEmpty()) {
             throw new IOException("File is empty");
@@ -228,39 +234,46 @@ public class StartMenu {
 
         int[][] board = new int[k * n][k * n];
         if (lines.size() != k * n + 1) {
-            throw new IOException("The number of lines in the file does not match the expected size of k^2 + 1");
+            throw new IOException(
+                    "The number of lines in the file does not match the expected size of k^2 + 1");
         }
 
         for (int i = 1; i < lines.size(); i++) {
             String[] row = lines.get(i).split(";");
             if (row.length != k * n) {
-                throw new IOException("Row " + i + " does not contain the correct number of elements");
+                throw new IOException(
+                        "Row " + i + " does not contain the correct number of elements");
             }
             for (int j = 0; j < row.length; j++) {
                 board[i - 1][j] = row[j].equals(".") ? 0 : Integer.parseInt(row[j].trim());
             }
         }
 
-
         // Assuming GameEngine and WindowManager are properly set to handle new board configuration
-        //Check if board is valid
-        if (BruteForceAlgorithm.isValidSudoku(board)){
+        // Check if board is valid
+        if (BruteForceAlgorithm.isValidSudoku(board)) {
             startGameWithBoard(board);
             return board;
-        }else {
+        } else {
             throw new Board.BoardNotCreatable("This board is not possible to create");
         }
-
-
     }
 
     private void startGameWithBoard(int[][] board) {
         Config.setCellSize(550 / (Config.getK() * Config.getN()));
-        logger.error("startGame: {} {} {} {}", Config.getK(), Config.getN(), Config.getDifficulty(), Config.getCellSize());
+        logger.error(
+                "startGame: {} {} {} {}",
+                Config.getK(),
+                Config.getN(),
+                Config.getDifficulty(),
+                Config.getCellSize());
 
-        WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
+        WindowManager windowManager =
+                new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
-            GameEngine gameEngine = new GameEngine(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
+            GameEngine gameEngine =
+                    new GameEngine(
+                            windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
             gameEngine.startCustom(board);
 
@@ -268,7 +281,6 @@ public class StartMenu {
             logger.error("Board not creatable: {}", boardNotCreatable.getMessage());
         }
     }
-
 
     private void addSizePanelButtons() {
         // This function adds the small boards for selecting size in game
@@ -306,7 +318,8 @@ public class StartMenu {
             xPosition += 150 + 5; // Increment for the next panel
 
             startMenuWindowManager.addComponent(
-                    panel, startMenuWindowManager.getSizePanel()); // Add the panel to the size panel
+                    panel,
+                    startMenuWindowManager.getSizePanel()); // Add the panel to the size panel
             sizeGroup.addComponent(panel); // Add the panel to the custom component group
         }
     }
@@ -375,10 +388,14 @@ public class StartMenu {
                 twoByTwo.getWidth(),
                 40);
 
-        startMenuWindowManager.addComponent(easyButton, startMenuWindowManager.getDifficultyPanel());
-        startMenuWindowManager.addComponent(mediumButton, startMenuWindowManager.getDifficultyPanel());
-        startMenuWindowManager.addComponent(hardButton, startMenuWindowManager.getDifficultyPanel());
-        startMenuWindowManager.addComponent(extremeButton, startMenuWindowManager.getDifficultyPanel());
+        startMenuWindowManager.addComponent(
+                easyButton, startMenuWindowManager.getDifficultyPanel());
+        startMenuWindowManager.addComponent(
+                mediumButton, startMenuWindowManager.getDifficultyPanel());
+        startMenuWindowManager.addComponent(
+                hardButton, startMenuWindowManager.getDifficultyPanel());
+        startMenuWindowManager.addComponent(
+                extremeButton, startMenuWindowManager.getDifficultyPanel());
     }
 
     // Getters used for testing the startMenu

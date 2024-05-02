@@ -51,8 +51,6 @@ public class StartMenuWindowManager {
         frame.setContentPane(mainPanel); // Add the main panel to the frame
     }
 
-
-
     public void addComponent(Component component, JPanel panel) {
         panel.add(component);
         panel.revalidate();
