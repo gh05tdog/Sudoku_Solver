@@ -15,7 +15,7 @@ public class Board {
 
     private int[][] gameBoard;
 
-    private final int[][] initialBoard;
+    private int[][] initialBoard;
 
     public void setBoard(int[][] arr) {
         for (int i = 0; i < arr.length; i++) {
@@ -25,6 +25,10 @@ public class Board {
 
     public int[][] getGameBoard() {
         return gameBoard;
+    }
+
+    public void clearInitialBoard() {
+        this.initialBoard = new int[size][size];
     }
 
     public static class BoardNotCreatable extends Exception {
