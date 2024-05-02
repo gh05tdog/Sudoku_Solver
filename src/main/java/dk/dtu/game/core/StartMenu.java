@@ -52,7 +52,7 @@ public class StartMenu {
 
     public void startGame() throws Board.BoardNotCreatable {
 
-        logger.error(
+        logger.info(
                 "startGame: {} {} {} {}",
                 Config.getK(),
                 Config.getN(),
@@ -261,7 +261,7 @@ public class StartMenu {
 
     private void startGameWithBoard(int[][] board) {
         Config.setCellSize(550 / (Config.getK() * Config.getN()));
-        logger.error(
+        logger.info(
                 "startGame: {} {} {} {}",
                 Config.getK(),
                 Config.getN(),
