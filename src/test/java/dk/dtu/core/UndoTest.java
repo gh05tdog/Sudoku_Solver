@@ -26,8 +26,7 @@ class UndoTest {
     void setUp() throws Board.BoardNotCreatable {
         // Mock the JFrame to avoid real GUI initialization
         JFrame mockedFrame = mock(JFrame.class);
-        StartMenuWindowManager startMenuManager =
-                new StartMenuWindowManager(mockedFrame, 1000, 700);
+        StartMenuWindowManager startMenuManager = new StartMenuWindowManager(mockedFrame, 1000, 700);
         StartMenu startMenu = new StartMenu(startMenuManager);
         startMenu.initialize();
         startMenu.getStartButton().doClick();

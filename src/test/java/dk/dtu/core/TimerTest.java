@@ -23,7 +23,7 @@ class TimerTest {
 
     @Test
     @DisplayName("Timer should count at least 1 second")
-    void testTimer() throws InterruptedException {
+    void testTimer() {
         timer.start();
 
         /* Use Awaitility to wait up to 2 seconds until the timer counts at least 1 second */
