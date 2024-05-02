@@ -242,12 +242,13 @@ public class SudokuGame {
         moveList.clear();
         timer.stop();
         timer.reset();
+        //Clear initial board
+        gameboard.clearInitialBoard();
         if (nSize == kSize) {
             AlgorithmXSolver.createXSudoku(gameboard);
         } else {
             BruteForceAlgorithm.createSudoku(gameboard);
         }
-        gameIsStarted = true;
         fillHintList();
         logger.debug("Hint list size: {}", hintList.size());
 
@@ -344,7 +345,7 @@ public class SudokuGame {
 
             if (response == JOptionPane.YES_OPTION) {
                 try {
-                    newGame();
+                    startGame();
                 } catch (Exception e) {
                     logger.error("Error creating new game: {}", e.getMessage());
                 }
@@ -370,22 +371,21 @@ public class SudokuGame {
                 e -> {
                     newGame();
                     displayNumbersVisually();
+                    setInitialBoardColor();
                     gameIsStarted = true;
                     board.requestFocusInWindow();
                     solveButton.setEnabled(true);
+
                 });
         restartButton.addActionListener(
                 e -> {
                     // set the numbers to the initial board
-                    gameIsStarted = false;
-                    board.clearNotes();
-                    timer.stop();
-                    gameboard.setGameBoard(deepCopyBoard(gameboard.getInitialBoard()));
-                    board.requestFocusInWindow();
+                    newGame();
+                    displayNumbersVisually();
+                    setInitialBoardColor();
                     gameIsStarted = true;
-                    windowManager.updateBoard();
-                    timer.reset();
-                    timer.start();
+                    board.requestFocusInWindow();
+                    solveButton.setEnabled(true);
                 });
 
         solveButton.addActionListener(
@@ -402,14 +402,7 @@ public class SudokuGame {
                 });
 
         newGameButton.addActionListener(
-                e -> {
-                    gameIsStarted = false;
-                    board.clearNotes();
-                    newGame();
-                    board.requestFocusInWindow();
-
-                    windowManager.updateBoard();
-                });
+                e -> startGame());
 
         eraseButton.addActionListener(
                 e -> {
@@ -466,6 +459,19 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(noteButton);
 
         windowManager.addGoBackButton(goBackButton);
+    }
+
+    private void setInitialBoardColor() {
+
+        for (int row = 0; row < gameboard.getDimensions(); row++) {
+            for (int col = 0; col < gameboard.getDimensions(); col++) {
+                if (gameboard.getInitialNumber(row, col) != 0) {
+                    board.setCellTextColor(row, col, Color.GRAY);
+                }else {
+                    board.setCellTextColor(row, col, Color.BLACK);
+                }
+            }
+        }
     }
 
     public int[][] deepCopyBoard(int[][] original) {
@@ -543,5 +549,13 @@ public class SudokuGame {
 
     public void setGameIsStarted(boolean b) {
         gameIsStarted = b;
+    }
+
+    public void startGame(){
+        newGame();
+        displayNumbersVisually();
+        setInitialBoardColor();
+        gameIsStarted = true;
+        board.requestFocusInWindow();
     }
 }

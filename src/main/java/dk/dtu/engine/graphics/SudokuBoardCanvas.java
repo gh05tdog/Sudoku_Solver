@@ -147,6 +147,8 @@ public class SudokuBoardCanvas extends JPanel {
                 };
 
         new Timer(delay, fadeAction).start();
+        //Set the cell color to the start color
+        cell.setTextColor(Color.BLUE);
     }
 
     private void clearHighlights() {
@@ -253,5 +255,8 @@ public class SudokuBoardCanvas extends JPanel {
         return cells[row][col].shouldHideNotes;
     }
 
-
+    public void setCellTextColor(int row, int col, Color color) {
+        cells[row][col].setTextColor(color);
+        repaint();
+    }
 }

@@ -20,10 +20,12 @@ class Cell implements Serializable {
     transient Set<Integer> hideList;
 
     boolean shouldHideNotes = false;
+    private Color textColor;
 
     public Cell() {
         this.notes = new HashSet<>();
         this.hideList = new HashSet<>();
+        this.textColor = Color.BLACK;
     }
 
     public void startHintVisualization() {
@@ -40,9 +42,7 @@ class Cell implements Serializable {
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
         if (isHighlighted) {
             g.setColor(new Color(225, 223, 221));
-            if (isMarked) {
-                g.setColor(new Color(149, 149, 149));
-            }
+
         } else {
             g.setColor(backgroundColor);
         }
@@ -52,7 +52,7 @@ class Cell implements Serializable {
             if (number == currentNumber) {
                 g.setColor(Color.BLUE);
             } else {
-                g.setColor(Color.BLACK);
+                g.setColor(textColor);
             }
             Font font = new Font("Arial", Font.BOLD, cellSize / 2);
             g.setFont(font);
@@ -63,7 +63,7 @@ class Cell implements Serializable {
                     y + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
         }
 
-        g.setColor(Color.BLACK);
+        g.setColor(textColor);
         g.drawRect(x, y, cellSize, cellSize);
     }
 
@@ -72,7 +72,7 @@ class Cell implements Serializable {
         if (shouldHideNotes) {
             return;
         }
-        g.setColor(new Color(21, 80, 213, 255));
+        g.setColor(textColor);
         Font font = new Font("Arial", Font.BOLD, cellSize / 5);
         g.setFont(font);
         int subCellSize = cellSize / 3; // Divide the cellSize by 3 to get the size of each sub-cell
@@ -92,7 +92,7 @@ class Cell implements Serializable {
                     x + col * subCellSize + offsetX - g.getFontMetrics().stringWidth(noteStr) / 2,
                     y + row * subCellSize + offsetY);
         }
-        g.setColor(Color.BLACK);
+        g.setColor(textColor);
         g.drawRect(x, y, cellSize, cellSize);
     }
 
@@ -114,6 +114,10 @@ class Cell implements Serializable {
 
     public void setBackgroundColor(Color color) {
         backgroundColor = color;
+    }
+
+    public void setTextColor(Color color) {
+        this.textColor = color;
     }
 
     public void setHighlighted(boolean highlighted) {
