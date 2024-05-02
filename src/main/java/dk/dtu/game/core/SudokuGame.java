@@ -13,6 +13,7 @@ import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -47,9 +48,10 @@ public class SudokuGame {
 
     private JButton newGameButton;
     private JButton eraseButton;
+    private JButton solveButton;
     private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
 
-    Random random = new Random();
+    Random random = new SecureRandom();
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -302,7 +304,6 @@ public class SudokuGame {
 
     public void provideHint() {
         if (!hintList.isEmpty()) {
-
             int hintIndex = random.nextInt(hintList.size());
             Move hintMove = hintList.get(hintIndex);
             hintList.remove(hintIndex);
@@ -325,7 +326,7 @@ public class SudokuGame {
     }
 
     public void checkCompletionAndOfferNewGame() {
-        if (isSudokuCompleted()) {
+        if (isSudokuCompleted() && !testMode()) {
             timer.stop();
             Object[] options = {"New Game", "Close"};
             int response =
@@ -352,8 +353,12 @@ public class SudokuGame {
         }
     }
 
+    private boolean testMode() {
+        return System.getProperty("testMode") != null;
+    }
+
     private void displayButtons() {
-        JButton solveButton;
+
         startButton = createButton("Start", 30);
         restartButton = createButton("Restart", 30);
         solveButton = createButton("Solve", 30);
@@ -459,7 +464,6 @@ public class SudokuGame {
     }
 
     private void setInitialBoardColor() {
-
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
                 if (gameboard.getInitialNumber(row, col) != 0) {
@@ -520,6 +524,10 @@ public class SudokuGame {
         return startButton;
     }
 
+    public JButton getSolveButton() {
+        return solveButton;
+    }
+
     public JButton getRestartButton() {
         return restartButton;
     }
@@ -555,4 +563,5 @@ public class SudokuGame {
         gameIsStarted = true;
         board.requestFocusInWindow();
     }
+
 }
