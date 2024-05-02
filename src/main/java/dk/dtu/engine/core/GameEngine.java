@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.engine.core;
 
 import dk.dtu.game.core.Board;
@@ -11,35 +12,28 @@ public class GameEngine implements Runnable {
     private final int k;
     private final int cellSize;
 
-    public GameEngine(WindowManager windowManager, int n, int k, int cellSize) throws Board.BoardNotCreatable {
+    public GameEngine(WindowManager windowManager, int n, int k, int cellSize)
+            throws Board.BoardNotCreatable {
         this.n = n;
         this.k = k;
         this.cellSize = cellSize;
-        this.windowManager = windowManager; // Set your desired window size
+        this.windowManager = windowManager;
         try {
-            this.sudokuGame = new SudokuGame(this.windowManager,n,k,cellSize); // Set your desired game parameters
+            this.sudokuGame =
+                    new SudokuGame(
+                            this.windowManager, n, k, cellSize); // Set your desired game parameters
         } catch (Board.BoardNotCreatable boardNotCreatable) {
-           throw new Board.BoardNotCreatable("This board is not possible to create");
+            throw new Board.BoardNotCreatable("This board is not possible to create");
         }
     }
 
-    public void start() {
-        if (running) return;
-        running = true;
-        Thread gameThread = new Thread(this);
-        gameThread.start();
-    }
-
-
     @Override
     public void run() {
-        initialize();
         long lastTime = System.nanoTime();
         final double nsPerTick = 1000000000D / 60D; // 60 ticks per second
 
         long lastTimer = System.currentTimeMillis();
         double delta = 0;
-
         while (running) {
             long now = System.nanoTime();
             delta += (now - lastTime) / nsPerTick;
@@ -68,4 +62,24 @@ public class GameEngine implements Runnable {
         sudokuGame.initialize(this.n, this.k, this.cellSize); // Initialize game-specific components
     }
 
+    private void initializeCustom(int[][] board) {
+        windowManager.display();
+        sudokuGame.initializeCustom(board);
+    }
+
+    public void start() {
+        if (running) return;
+        running = true;
+        Thread gameThread = new Thread(this);
+        initialize();
+        gameThread.start();
+    }
+
+    public void startCustom(int[][] board) {
+        if (running) return;
+        running = true;
+        Thread gameThread = new Thread(this);
+        initializeCustom(board);
+        gameThread.start();
+    }
 }

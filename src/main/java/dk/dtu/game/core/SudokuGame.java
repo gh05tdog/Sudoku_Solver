@@ -237,6 +237,29 @@ public class SudokuGame {
         windowManager.layoutComponents(timer, numbers);
     }
 
+    public void initializeCustom(int[][] customBoard) {
+        createBoard(Config.getN(), Config.getK(), Config.getCellSize());
+        displayButtons();
+        windowManager.drawBoard(board);
+        windowManager.setupNumberAndTimerPanel(timer, numbers);
+        windowManager.layoutComponents(timer, numbers);
+        gameboard.setInitialBoard(customBoard);
+        gameboard.setGameBoard(customBoard);
+        // Get solution for the custom board
+        if (nSize == kSize) {
+            AlgorithmXSolver.createXSudoku(gameboard);
+        } else {
+            BruteForceAlgorithm.createSudoku(gameboard);
+        }
+        fillHintList();
+        timer.start();
+        displayNumbersVisually();
+        setInitialBoardColor();
+        gameIsStarted = true;
+        board.requestFocusInWindow();
+        solveButton.setEnabled(true);
+    }
+
     public void newGame() {
         gameboard.clear();
         hintList.clear();
@@ -252,7 +275,6 @@ public class SudokuGame {
         }
         fillHintList();
         logger.debug("Hint list size: {}", hintList.size());
-
         timer.start();
     }
 
@@ -563,5 +585,4 @@ public class SudokuGame {
         gameIsStarted = true;
         board.requestFocusInWindow();
     }
-
 }

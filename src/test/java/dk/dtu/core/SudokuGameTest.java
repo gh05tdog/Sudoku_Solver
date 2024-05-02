@@ -13,14 +13,12 @@ import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.swing.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -191,7 +189,8 @@ class SudokuGameTest {
         assertTrue(game.isSudokuCompleted(), "Game should be solved");
         game.getRestartButton().doClick();
         assertTrue(game.moveList.isEmpty(), "Move list should be empty after restarting the game.");
-        assertFalse(game.isSudokuCompleted(),
+        assertFalse(
+                game.isSudokuCompleted(),
                 "Game should not be marked as completed after restarting.");
     }
 
