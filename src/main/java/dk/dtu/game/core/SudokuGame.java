@@ -13,6 +13,7 @@ import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -47,9 +48,10 @@ public class SudokuGame {
 
     private JButton newGameButton;
     private JButton eraseButton;
+    private JButton solveButton;
     private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
 
-    Random random = new Random();
+    Random random = new SecureRandom();
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -215,7 +217,6 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-
         numbers = new NumberHub(n, 40) {};
 
         numbers.setLocation(50, 50);
@@ -242,12 +243,13 @@ public class SudokuGame {
         moveList.clear();
         timer.stop();
         timer.reset();
+        // Clear initial board
+        gameboard.clearInitialBoard();
         if (nSize == kSize) {
             AlgorithmXSolver.createXSudoku(gameboard);
         } else {
             BruteForceAlgorithm.createSudoku(gameboard);
         }
-        gameIsStarted = true;
         fillHintList();
         logger.debug("Hint list size: {}", hintList.size());
 
@@ -302,7 +304,6 @@ public class SudokuGame {
 
     public void provideHint() {
         if (!hintList.isEmpty()) {
-
             int hintIndex = random.nextInt(hintList.size());
             Move hintMove = hintList.get(hintIndex);
             hintList.remove(hintIndex);
@@ -325,7 +326,7 @@ public class SudokuGame {
     }
 
     public void checkCompletionAndOfferNewGame() {
-        if (isSudokuCompleted()) {
+        if (isSudokuCompleted() && !testMode()) {
             timer.stop();
             Object[] options = {"New Game", "Close"};
             int response =
@@ -344,7 +345,7 @@ public class SudokuGame {
 
             if (response == JOptionPane.YES_OPTION) {
                 try {
-                    newGame();
+                    startGame();
                 } catch (Exception e) {
                     logger.error("Error creating new game: {}", e.getMessage());
                 }
@@ -352,8 +353,12 @@ public class SudokuGame {
         }
     }
 
+    private boolean testMode() {
+        return System.getProperty("testMode") != null;
+    }
+
     private void displayButtons() {
-        JButton solveButton;
+
         startButton = createButton("Start", 30);
         restartButton = createButton("Restart", 30);
         solveButton = createButton("Solve", 30);
@@ -370,6 +375,7 @@ public class SudokuGame {
                 e -> {
                     newGame();
                     displayNumbersVisually();
+                    setInitialBoardColor();
                     gameIsStarted = true;
                     board.requestFocusInWindow();
                     solveButton.setEnabled(true);
@@ -377,15 +383,12 @@ public class SudokuGame {
         restartButton.addActionListener(
                 e -> {
                     // set the numbers to the initial board
-                    gameIsStarted = false;
-                    board.clearNotes();
-                    timer.stop();
-                    gameboard.setGameBoard(deepCopyBoard(gameboard.getInitialBoard()));
-                    board.requestFocusInWindow();
+                    newGame();
+                    displayNumbersVisually();
+                    setInitialBoardColor();
                     gameIsStarted = true;
-                    windowManager.updateBoard();
-                    timer.reset();
-                    timer.start();
+                    board.requestFocusInWindow();
+                    solveButton.setEnabled(true);
                 });
 
         solveButton.addActionListener(
@@ -401,15 +404,7 @@ public class SudokuGame {
                     checkCompletionAndOfferNewGame();
                 });
 
-        newGameButton.addActionListener(
-                e -> {
-                    gameIsStarted = false;
-                    board.clearNotes();
-                    newGame();
-                    board.requestFocusInWindow();
-
-                    windowManager.updateBoard();
-                });
+        newGameButton.addActionListener(e -> startGame());
 
         eraseButton.addActionListener(
                 e -> {
@@ -468,6 +463,18 @@ public class SudokuGame {
         windowManager.addGoBackButton(goBackButton);
     }
 
+    private void setInitialBoardColor() {
+        for (int row = 0; row < gameboard.getDimensions(); row++) {
+            for (int col = 0; col < gameboard.getDimensions(); col++) {
+                if (gameboard.getInitialNumber(row, col) != 0) {
+                    board.setCellTextColor(row, col, Color.GRAY);
+                } else {
+                    board.setCellTextColor(row, col, Color.BLACK);
+                }
+            }
+        }
+    }
+
     public int[][] deepCopyBoard(int[][] original) {
         return SolverAlgorithm.deepCopyBoard(original);
     }
@@ -517,6 +524,10 @@ public class SudokuGame {
         return startButton;
     }
 
+    public JButton getSolveButton() {
+        return solveButton;
+    }
+
     public JButton getRestartButton() {
         return restartButton;
     }
@@ -544,4 +555,13 @@ public class SudokuGame {
     public void setGameIsStarted(boolean b) {
         gameIsStarted = b;
     }
+
+    public void startGame() {
+        newGame();
+        displayNumbersVisually();
+        setInitialBoardColor();
+        gameIsStarted = true;
+        board.requestFocusInWindow();
+    }
+
 }
