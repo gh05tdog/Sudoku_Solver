@@ -1,14 +1,13 @@
 /* (C)2024 */
 package dk.dtu.engine.graphics;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
+import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SudokuBoardCanvas extends JPanel {
     private final int gridSize;
@@ -147,7 +146,7 @@ public class SudokuBoardCanvas extends JPanel {
                 };
 
         new Timer(delay, fadeAction).start();
-        //Set the cell color to the start color
+        // Set the cell color to the start color
         cell.setTextColor(Color.BLUE);
     }
 
@@ -178,8 +177,6 @@ public class SudokuBoardCanvas extends JPanel {
         }
         cells[row][col].isMarked = true;
         logger.debug("Setting the marked cell {} {}", row, col);
-
-
     }
 
     public boolean isACellMarked() {

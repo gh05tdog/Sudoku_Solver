@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import java.awt.*;
@@ -67,7 +68,6 @@ class Cell implements Serializable {
         g.drawRect(x, y, cellSize, cellSize);
     }
 
-
     public void paintNotes(Graphics g, int x, int y, int cellSize) {
         if (shouldHideNotes) {
             return;
@@ -131,5 +131,4 @@ class Cell implements Serializable {
     public int getNumber() {
         return number;
     }
-
 }

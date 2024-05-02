@@ -215,7 +215,6 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-
         numbers = new NumberHub(n, 40) {};
 
         numbers.setLocation(50, 50);
@@ -242,7 +241,7 @@ public class SudokuGame {
         moveList.clear();
         timer.stop();
         timer.reset();
-        //Clear initial board
+        // Clear initial board
         gameboard.clearInitialBoard();
         if (nSize == kSize) {
             AlgorithmXSolver.createXSudoku(gameboard);
@@ -375,7 +374,6 @@ public class SudokuGame {
                     gameIsStarted = true;
                     board.requestFocusInWindow();
                     solveButton.setEnabled(true);
-
                 });
         restartButton.addActionListener(
                 e -> {
@@ -401,8 +399,7 @@ public class SudokuGame {
                     checkCompletionAndOfferNewGame();
                 });
 
-        newGameButton.addActionListener(
-                e -> startGame());
+        newGameButton.addActionListener(e -> startGame());
 
         eraseButton.addActionListener(
                 e -> {
@@ -467,7 +464,7 @@ public class SudokuGame {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
                 if (gameboard.getInitialNumber(row, col) != 0) {
                     board.setCellTextColor(row, col, Color.GRAY);
-                }else {
+                } else {
                     board.setCellTextColor(row, col, Color.BLACK);
                 }
             }
@@ -551,7 +548,7 @@ public class SudokuGame {
         gameIsStarted = b;
     }
 
-    public void startGame(){
+    public void startGame() {
         newGame();
         displayNumbersVisually();
         setInitialBoardColor();
