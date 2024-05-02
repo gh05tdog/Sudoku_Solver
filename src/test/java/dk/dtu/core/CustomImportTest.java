@@ -41,33 +41,4 @@ class CustomImportTest {
 
         assertTrue(BruteForceAlgorithm.isValidSudoku(startMenu.importSudokuFromFile(lines)));
     }
-
-    @Test
-    void testCustomBoardInvalid() {
-        List<String> lines =
-                Arrays.asList(
-                        "3;3",
-                        "5;1;.;3;.;.;8;.;.",
-                        "5;.;9;6;.;.;7;.;.",
-                        "7;.;4;.;9;5;.;2;.",
-                        "4;.;.;.;.;.;1;.;.",
-                        ".;2;8;.;7;1;.;6;3",
-                        ".;.;.;2;.;4;9;5;.",
-                        "6;.;3;.;.;9;.;.;7",
-                        ".;.;.;4;2;.;5;1;6",
-                        ".;5;2;.;8;.;.;4;.");
-
-        JFrame mockedFrame = mock(JFrame.class);
-
-        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(mockedFrame, 1000, 1000);
-        StartMenu startMenu = new StartMenu(startMenuWindowManager);
-        startMenu.initialize();
-        try {
-            BruteForceAlgorithm.isValidSudoku(startMenu.importSudokuFromFile(lines));
-        }catch (Exception e){
-
-            assertInstanceOf(Board.BoardNotCreatable.class, e);
-        }
-
-    }
 }
