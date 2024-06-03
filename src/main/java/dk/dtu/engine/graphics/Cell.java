@@ -64,7 +64,7 @@ class Cell implements Serializable {
                     y + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
         }
 
-        g.setColor(textColor);
+        g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
     }
 
@@ -92,7 +92,7 @@ class Cell implements Serializable {
                     x + col * subCellSize + offsetX - g.getFontMetrics().stringWidth(noteStr) / 2,
                     y + row * subCellSize + offsetY);
         }
-        g.setColor(textColor);
+        g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
     }
 

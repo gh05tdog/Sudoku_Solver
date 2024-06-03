@@ -27,6 +27,8 @@ public class SudokuGame {
     private final WindowManager windowManager;
     public final Deque<Move> moveList = new ArrayDeque<>();
     private final ArrayList<Move> hintList = new ArrayList<>();
+    public final Stack<Move> wrongMoveList = new Stack<>();
+
     private final int nSize;
 
     private final int kSize;
@@ -155,6 +157,12 @@ public class SudokuGame {
                 gameboard.setNumber(row, col, number);
                 Move move = new Move(row, col, number, previousNumber);
                 moveList.push(move); // Log the move for undo functionality
+
+                int[][] solutionB = AlgorithmXSolver.getSolutionBoard();
+
+                if (gameboard.getNumber(row, col) != solutionB[row][col]) {
+                    wrongMoveList.push(move);
+                }
             }
         }
     }
@@ -194,6 +202,7 @@ public class SudokuGame {
     public void undoMove() {
         if (!moveList.isEmpty()) {
             Move move = moveList.pop();
+            wrongMoveList.pop();
             int row = move.getRow();
             int col = move.getColumn();
             board.setHiddenProperty(row, col, false);
@@ -237,7 +246,6 @@ public class SudokuGame {
         startGame();
     }
 
-
     // This method is used to initialize the game with a custom imported board
     public void initializeCustom(int[][] customBoard) {
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
@@ -266,8 +274,10 @@ public class SudokuGame {
         gameboard.clear();
         hintList.clear();
         moveList.clear();
+        wrongMoveList.clear();
         timer.stop();
         timer.reset();
+        board.clearNotes();
         // Clear initial board
         gameboard.clearInitialBoard();
         if (nSize == kSize) {
@@ -327,7 +337,19 @@ public class SudokuGame {
     }
 
     public void provideHint() {
-        if (!hintList.isEmpty()) {
+        if (!wrongMoveList.isEmpty()) {
+            Move wrongMove = wrongMoveList.pop();
+            int row = wrongMove.getRow();
+            int col = wrongMove.getColumn();
+            int number = wrongMove.getNumber();
+
+            gameboard.setNumber(row, col, 0);
+            board.setCellNumber(row, col, 0);
+            board.visualizeCell(row, col, Color.red);
+            board.setHiddenProperty(row, col, false);
+            checkCellsForNotes(row, col, number, "show");
+
+        } else if (!hintList.isEmpty()) {
             int hintIndex = random.nextInt(hintList.size());
             Move hintMove = hintList.get(hintIndex);
             hintList.remove(hintIndex);
@@ -376,8 +398,6 @@ public class SudokuGame {
             }
         }
     }
-
-
 
     private boolean testMode() {
         return System.getProperty("testMode") != null;
@@ -534,7 +554,6 @@ public class SudokuGame {
         return eraseButton;
     }
 
-
     public JButton getSolveButton() {
         return solveButton;
     }
@@ -584,6 +603,4 @@ public class SudokuGame {
         board.requestFocusInWindow();
         solveButton.setEnabled(true);
     }
-
-
 }
