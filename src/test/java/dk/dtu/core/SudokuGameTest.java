@@ -168,18 +168,17 @@ class SudokuGameTest {
                 "Game board should not be empty after providing a hint.");
         assertTrue(game.getHintList().size() < game.getHintList().size() + 1);
     }
+
     @Test
-    void testProvideRemoveWrongNumber(){
+    void testProvideRemoveWrongNumber() {
         game.getNewGameButton().doClick();
-        Move wrongMove = new Move(0, 0, 5,0);
+        Move wrongMove = new Move(0, 0, 5, 0);
         game.wrongMoveList.push(wrongMove);
         int hintListSize = game.getHintList().size();
         game.getHintButton().doClick(); // Provide a hint
 
         assertTrue(game.wrongMoveList.isEmpty());
         assertEquals(game.getHintList().size(), hintListSize);
-
-
     }
 
     @Test
@@ -189,7 +188,6 @@ class SudokuGameTest {
         game.getEraseButton().doClick();
         assertEquals(0, game.gameboard.getNumber(0, 0), "Cell should be empty after erasing.");
     }
-
 
     @Test
     void testDisplayNumbersVisually() {
@@ -317,7 +315,4 @@ class SudokuGameTest {
                 sudokuBoardCanvasBoard.getHiddenProperty(1, 1),
                 "Note 2 should be hidden at (1,1).");
     }
-
-
-
 }

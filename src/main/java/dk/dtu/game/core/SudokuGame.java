@@ -160,11 +160,10 @@ public class SudokuGame {
 
                 int[][] solutionB = AlgorithmXSolver.getSolutionBoard();
 
-                if(gameboard.getNumber(row, col) != solutionB[row][col]){
+                if (gameboard.getNumber(row, col) != solutionB[row][col]) {
                     wrongMoveList.push(move);
                 }
             }
-
         }
     }
 
@@ -246,7 +245,6 @@ public class SudokuGame {
         windowManager.layoutComponents(timer, numbers);
         startGame();
     }
-
 
     // This method is used to initialize the game with a custom imported board
     public void initializeCustom(int[][] customBoard) {
@@ -339,12 +337,11 @@ public class SudokuGame {
     }
 
     public void provideHint() {
-        if (!wrongMoveList.isEmpty()){
+        if (!wrongMoveList.isEmpty()) {
             Move wrongMove = wrongMoveList.pop();
             int row = wrongMove.getRow();
             int col = wrongMove.getColumn();
             int number = wrongMove.getNumber();
-
 
             gameboard.setNumber(row, col, 0);
             board.setCellNumber(row, col, 0);
@@ -401,8 +398,6 @@ public class SudokuGame {
             }
         }
     }
-
-
 
     private boolean testMode() {
         return System.getProperty("testMode") != null;
@@ -559,7 +554,6 @@ public class SudokuGame {
         return eraseButton;
     }
 
-
     public JButton getSolveButton() {
         return solveButton;
     }
@@ -609,6 +603,4 @@ public class SudokuGame {
         board.requestFocusInWindow();
         solveButton.setEnabled(true);
     }
-
-
 }
