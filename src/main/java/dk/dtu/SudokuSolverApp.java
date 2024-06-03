@@ -4,15 +4,12 @@ package dk.dtu;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.utility.DatabaseSetup;
 import dk.dtu.game.core.StartMenu;
+
 import javax.swing.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class SudokuSolverApp {
-    private static final Logger logger = LoggerFactory.getLogger(SudokuSolverApp.class);
 
     public static void main(String[] args) {
-        logger.info("Starting the Sudoku Solver App");
 
         // Generate the database
         DatabaseSetup.setup("jdbc:sqlite:sudoku.db");
