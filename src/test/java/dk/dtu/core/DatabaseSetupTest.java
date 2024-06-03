@@ -38,17 +38,6 @@ class DatabaseSetupTest {
     }
 
     @Test
-    void testGameTableCreation() {
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='game'")) {
-            assertTrue(rs.next(), "Game table should be created");
-        } catch (SQLException e) {
-            fail("An error occurred while checking the game table: " + e.getMessage());
-        }
-    }
-
-    @Test
     void testLeaderboardTableCreation() {
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();

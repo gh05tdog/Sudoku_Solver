@@ -393,7 +393,7 @@ public class SudokuGame {
 
                     // Add the completion details to the leaderboard
                     String difficulty = Config.getDifficulty();
-                    int time = timer.getTime(); // returns time in seconds or suitable format
+                    int time = timer.getTimeToInt(); // returns time in seconds or suitable format
 
                     UpdateLeaderboard.addScore(username, difficulty, time);
                 }

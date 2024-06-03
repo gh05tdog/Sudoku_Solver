@@ -135,7 +135,7 @@ public class StartMenu {
             rowData.add(new String[]{
                     entry.username(),
                     entry.difficulty(),
-                    String.valueOf(entry.time()),
+                    String.format("%02d:%02d:%02d", entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
                     entry.timestamp()
             });
         }

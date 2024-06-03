@@ -19,13 +19,6 @@ public class DatabaseSetup {
 
     public static void setup(String dbUrl) {
 
-        String createGameTable = "CREATE TABLE IF NOT EXISTS game (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "state TEXT NOT NULL," +
-                "difficulty TEXT NOT NULL," +
-                "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
-                ");";
-
         String createLeaderboardTable = "CREATE TABLE IF NOT EXISTS leaderboard (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "username TEXT NOT NULL," +
@@ -36,7 +29,6 @@ public class DatabaseSetup {
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
              Statement stmt = conn.createStatement()) {
-            stmt.execute(createGameTable);
             stmt.execute(createLeaderboardTable);
             logger.info("Database setup complete");
         } catch (SQLException e) {
