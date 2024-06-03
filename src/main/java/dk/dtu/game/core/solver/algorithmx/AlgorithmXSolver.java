@@ -24,6 +24,7 @@ public class AlgorithmXSolver {
         removeXRecursive(sudokuBoard, arraySize * arraySize / 2);
         board.setInitialBoard(sudokuBoard);
         board.setBoard(sudokuBoard);
+        board.setSolvedBoard(solvedBoard);
     }
 
     public static int[][] solveExistingBoard(Board board) {

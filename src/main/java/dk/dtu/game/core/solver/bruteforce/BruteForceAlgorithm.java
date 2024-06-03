@@ -28,6 +28,7 @@ public class BruteForceAlgorithm {
         sudokuBoard = removeNumsRecursive(sudokuBoard);
         board.setInitialBoard(sudokuBoard);
         board.setBoard(sudokuBoard);
+        board.setSolvedBoard(solvedBoard);
     }
 
     public static boolean sudoku(int[][] board) {

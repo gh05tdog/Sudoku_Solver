@@ -158,7 +158,7 @@ public class SudokuGame {
                 Move move = new Move(row, col, number, previousNumber);
                 moveList.push(move); // Log the move for undo functionality
 
-                int[][] solutionB = AlgorithmXSolver.getSolutionBoard();
+                int[][] solutionB = gameboard.getSolvedBoard();
 
                 if (gameboard.getNumber(row, col) != solutionB[row][col]) {
                     wrongMoveList.push(move);
