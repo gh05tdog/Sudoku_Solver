@@ -41,7 +41,6 @@ public class SudokuGame {
     private TimerFunction timer;
     private boolean gameIsStarted = false;
 
-    private JButton startButton;
     private JButton undoButton;
     private JButton hintButton;
     private JButton restartButton;
@@ -235,8 +234,11 @@ public class SudokuGame {
         windowManager.drawBoard(board);
         windowManager.setupNumberAndTimerPanel(timer, numbers);
         windowManager.layoutComponents(timer, numbers);
+        startGame();
     }
 
+
+    // This method is used to initialize the game with a custom imported board
     public void initializeCustom(int[][] customBoard) {
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -245,7 +247,7 @@ public class SudokuGame {
         windowManager.layoutComponents(timer, numbers);
         gameboard.setInitialBoard(customBoard);
         gameboard.setGameBoard(customBoard);
-        // Get solution for the custom board
+        // Get a solution for the custom board
         if (nSize == kSize) {
             AlgorithmXSolver.createXSudoku(gameboard);
         } else {
@@ -375,13 +377,14 @@ public class SudokuGame {
         }
     }
 
+
+
     private boolean testMode() {
         return System.getProperty("testMode") != null;
     }
 
     private void displayButtons() {
 
-        startButton = createButton("Start", 30);
         restartButton = createButton("Restart", 30);
         solveButton = createButton("Solve", 30);
         newGameButton = createButton("New Game", 30);
@@ -393,15 +396,6 @@ public class SudokuGame {
         // Set the solved button to be disabled at the start of the game
         solveButton.setEnabled(false);
 
-        startButton.addActionListener(
-                e -> {
-                    newGame();
-                    displayNumbersVisually();
-                    setInitialBoardColor();
-                    gameIsStarted = true;
-                    board.requestFocusInWindow();
-                    solveButton.setEnabled(true);
-                });
         restartButton.addActionListener(
                 e -> {
                     // set the numbers to the initial board
@@ -466,8 +460,6 @@ public class SudokuGame {
                     }
                 });
 
-        windowManager.addComponentToButtonPanel(startButton);
-        windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
         windowManager.addComponentToButtonPanel(restartButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
         windowManager.addComponentToButtonPanel(solveButton);
@@ -542,9 +534,6 @@ public class SudokuGame {
         return eraseButton;
     }
 
-    public JButton getStartButton() {
-        return startButton;
-    }
 
     public JButton getSolveButton() {
         return solveButton;
@@ -560,6 +549,15 @@ public class SudokuGame {
 
     public void setPlaceableNumber(int i) {
         placeableNumber = i;
+    }
+
+    public void clearBoard() {
+        gameboard.clear();
+        hintList.clear();
+        moveList.clear();
+        timer.stop();
+        timer.reset();
+        gameboard.clearInitialBoard();
     }
 
     public SudokuBoardCanvas getBoard() {
@@ -584,5 +582,8 @@ public class SudokuGame {
         setInitialBoardColor();
         gameIsStarted = true;
         board.requestFocusInWindow();
+        solveButton.setEnabled(true);
     }
+
+
 }
