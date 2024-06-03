@@ -21,7 +21,16 @@ import javax.swing.text.AbstractDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.dtu.engine.utility.Leaderboard;
+import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+
 public class StartMenu {
+
 
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
 
@@ -88,6 +97,7 @@ public class StartMenu {
         addButtonPanelButtons();
         addInputPanelButtons();
         addImportButton();
+        addLeaderboard();
         updateCustomBoardPanel(2, 2);
 
         threeByThree.updateBackgroundColor(Color.GRAY);
@@ -98,6 +108,34 @@ public class StartMenu {
         addChangeListenerToField(inputNField);
         addChangeListenerToField(inputKField);
     }
+
+    private void addLeaderboard() {
+        JTable leaderboardTable;
+        // Column names for the leaderboard table
+        String[] columnNames = {"Username", "Difficulty", "Time", "Timestamp"};
+
+        // Fetch leaderboard data
+        List<LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard();
+        List<String[]> rowData = new ArrayList<>();
+        for (LeaderboardEntry entry : leaderboard) {
+            rowData.add(new String[]{
+                    entry.getUsername(),
+                    entry.getDifficulty(),
+                    String.valueOf(entry.getTime()),
+                    entry.getTimestamp()
+            });
+        }
+
+        // Create a table model and set it to the JTable
+        DefaultTableModel model = new DefaultTableModel(rowData.toArray(new String[0][0]), columnNames);
+        leaderboardTable = new JTable(model);
+
+        // Create a JScrollPane containing the JTable
+        JScrollPane leaderboardScrollPane = new JScrollPane(leaderboardTable);
+        leaderboardScrollPane.setBounds(5, 135, 190, 200); // Adjust the size and position as needed
+        startMenuWindowManager.addComponent(leaderboardScrollPane, startMenuWindowManager.getButtonPanel());
+    }
+
 
     private void addChangeListenerToField(JTextField field) {
         // This method adds a document listener to the input fields, so that the board is updated
