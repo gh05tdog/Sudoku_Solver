@@ -2,6 +2,8 @@
 package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
+import dk.dtu.game.core.Config;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -102,7 +104,9 @@ public class WindowManager {
         combinedPanel.setOpaque(false);
 
         timer.setAlignmentX(Component.CENTER_ALIGNMENT);
-        combinedPanel.add(timer);
+        if(Config.getEnableTimer()){
+            combinedPanel.add(timer);
+        }
         combinedPanel.add(
                 Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
 

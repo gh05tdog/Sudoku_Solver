@@ -4,6 +4,7 @@ package dk.dtu.game.core;
 import dk.dtu.engine.core.GameEngine;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
+import dk.dtu.engine.graphics.GameRulePopup;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.engine.utility.NumberDocumentFilter;
@@ -31,6 +32,8 @@ public class StartMenu {
     private final JToggleButton mediumButton = new JToggleButton("Medium", true);
     private final JToggleButton hardButton = new JToggleButton("Hard");
     private final JToggleButton extremeButton = new JToggleButton("Extreme");
+
+    private final JButton gameRuleButton = new JButton("Game Rules");
 
     private final CustomBoardPanel twoByTwo = new CustomBoardPanel();
     private final CustomBoardPanel threeByThree = new CustomBoardPanel();
@@ -89,6 +92,7 @@ public class StartMenu {
         addInputPanelButtons();
         addImportButton();
         updateCustomBoardPanel(2, 2);
+        addGameruleButton();
 
         threeByThree.updateBackgroundColor(Color.GRAY);
         Config.setK(3);
@@ -162,6 +166,22 @@ public class StartMenu {
             startMenuWindowManager.addComponent(field, startMenuWindowManager.getInputPanel());
         }
     }
+
+    private void addGameruleButton() {
+        gameRuleButton.setBounds(5, 5, 150, 40); // Set bounds appropriately if needed
+        gameRuleButton.setBackground(Color.WHITE);
+        gameRuleButton.setFocusPainted(false);
+        startMenuWindowManager.addComponent(gameRuleButton, startMenuWindowManager.getGameRulePanel());
+
+        gameRuleButton.addActionListener(e -> {
+            GameRulePopup gameRules = new GameRulePopup();
+            gameRules.setVisible(true);
+            gameRules.addJSwitchBox("Enable lives", Config.getEnableLives(), Config::setEnableLives);
+            gameRules.addJSwitchBox("Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
+
+        });
+    }
+
 
     private void addButtonPanelButtons() {
         // This method adds the start button and in the future different buttons

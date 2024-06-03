@@ -6,6 +6,10 @@ public class Config {
     private static int cellSize;
     private static String difficulty;
 
+    //Game rules
+    private static boolean enableLives = true;
+    private static boolean enableTimer = false;
+
     private Config() {
         throw new IllegalStateException("Utility class");
     }
@@ -36,6 +40,24 @@ public class Config {
     }
     public static void setDifficulty(String difficulty) {
         Config.difficulty = difficulty;
+    }
+
+
+    //Game rules:
+    public static void setEnableLives(boolean enableLives) {
+        Config.enableLives = enableLives;
+    }
+
+    public static boolean getEnableLives() {
+        return enableLives;
+    }
+
+    public static void setEnableTimer(boolean enableTimer) {
+        Config.enableTimer = enableTimer;
+    }
+
+    public static boolean getEnableTimer() {
+        return enableTimer;
     }
 
 

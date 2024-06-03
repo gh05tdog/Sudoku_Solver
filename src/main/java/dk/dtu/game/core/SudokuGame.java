@@ -262,7 +262,9 @@ public class SudokuGame {
             BruteForceAlgorithm.createSudoku(gameboard);
         }
         fillHintList();
-        timer.start();
+        if(Config.getEnableTimer()){
+            timer.start();
+        }
         displayNumbersVisually();
         setInitialBoardColor();
         gameIsStarted = true;
@@ -287,7 +289,9 @@ public class SudokuGame {
         }
         fillHintList();
         logger.debug("Hint list size: {}", hintList.size());
-        timer.start();
+        if(Config.getEnableTimer()){
+            timer.start();
+        }
     }
 
     private JButton createButton(String text, int height) {
