@@ -206,7 +206,9 @@ public class SudokuGame {
     public void undoMove() {
         if (!moveList.isEmpty()) {
             Move move = moveList.pop();
-            wrongMoveList.removeFirst();
+            if(!wrongMoveList.isEmpty()) {
+                wrongMoveList.removeFirst();
+            }
             int row = move.getRow();
             int col = move.getColumn();
             board.setHiddenProperty(row, col, false);
