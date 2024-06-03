@@ -28,6 +28,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import javax.swing.JDialog;
+
+
 
 public class StartMenu {
 
@@ -97,7 +100,7 @@ public class StartMenu {
         addButtonPanelButtons();
         addInputPanelButtons();
         addImportButton();
-        addLeaderboard();
+        addLeaderboardButton();
         updateCustomBoardPanel(2, 2);
 
         threeByThree.updateBackgroundColor(Color.GRAY);
@@ -109,8 +112,16 @@ public class StartMenu {
         addChangeListenerToField(inputKField);
     }
 
-    private void addLeaderboard() {
-        JTable leaderboardTable;
+    private void addLeaderboardButton() {
+        JButton leaderboardButton = new JButton("Show Leaderboard");
+        leaderboardButton.addActionListener(this::onShowLeaderboard);
+        leaderboardButton.setBounds(5, 180, 190, 40); // Adjust the size and position as needed
+        leaderboardButton.setBackground(Color.WHITE);
+        leaderboardButton.setFocusPainted(false);
+        startMenuWindowManager.addComponent(leaderboardButton, startMenuWindowManager.getButtonPanel());
+    }
+
+    private void onShowLeaderboard(ActionEvent e) {
         // Column names for the leaderboard table
         String[] columnNames = {"Username", "Difficulty", "Time", "Timestamp"};
 
@@ -128,13 +139,20 @@ public class StartMenu {
 
         // Create a table model and set it to the JTable
         DefaultTableModel model = new DefaultTableModel(rowData.toArray(new String[0][0]), columnNames);
-        leaderboardTable = new JTable(model);
+        JTable leaderboardTable = new JTable(model);
 
         // Create a JScrollPane containing the JTable
         JScrollPane leaderboardScrollPane = new JScrollPane(leaderboardTable);
-        leaderboardScrollPane.setBounds(5, 135, 190, 200); // Adjust the size and position as needed
-        startMenuWindowManager.addComponent(leaderboardScrollPane, startMenuWindowManager.getButtonPanel());
+
+        // Create a JDialog to display the leaderboard
+        JDialog leaderboardDialog = new JDialog();
+        leaderboardDialog.setTitle("Leaderboard");
+        leaderboardDialog.setSize(400, 300); // Adjust the size as needed
+        leaderboardDialog.setLocationRelativeTo(null);
+        leaderboardDialog.add(leaderboardScrollPane);
+        leaderboardDialog.setVisible(true);
     }
+
 
 
     private void addChangeListenerToField(JTextField field) {
