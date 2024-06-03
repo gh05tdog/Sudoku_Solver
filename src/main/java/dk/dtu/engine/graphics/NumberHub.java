@@ -23,7 +23,7 @@ public abstract class NumberHub extends JPanel {
                 Math.max(cellSize, MIN_CELL_SIZE)); // Ensure cellSize is not too small
         setPreferredSize(
                 new Dimension(subGrid * NumberHub.cellSize, (subGrid + 2) * NumberHub.cellSize));
-
+        setBackground(Color.WHITE);
         for (int i = 0; i < subGrid; i++) {
             for (int j = 0; j < subGrid; j++) {
 
@@ -49,7 +49,6 @@ public abstract class NumberHub extends JPanel {
                 int y = j * cellSize;
 
                 g.setColor(NON_HIGHLIGHT_COLOR);
-
                 g.fillRect(x, y, cellSize, cellSize);
                 g.setColor(Color.BLACK);
                 g2d.setStroke(new BasicStroke(STROKE_WIDTH));

@@ -10,6 +10,7 @@ import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.engine.utility.CustomComponentGroup;
+import dk.dtu.game.core.Move;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
@@ -161,10 +162,24 @@ class SudokuGameTest {
     void testProvideHint() {
         game.getNewGameButton().doClick();
         game.getHintButton().doClick(); // Provide a hint
+
         assertFalse(
                 game.getHintList().isEmpty(),
                 "Game board should not be empty after providing a hint.");
         assertTrue(game.getHintList().size() < game.getHintList().size() + 1);
+    }
+    @Test
+    void testProvideRemoveWrongNumber(){
+        game.getNewGameButton().doClick();
+        Move wrongMove = new Move(0, 0, 5,0);
+        game.wrongMoveList.push(wrongMove);
+        int hintListSize = game.getHintList().size();
+        game.getHintButton().doClick(); // Provide a hint
+
+        assertTrue(game.wrongMoveList.isEmpty());
+        assertEquals(game.getHintList().size(), hintListSize);
+
+
     }
 
     @Test

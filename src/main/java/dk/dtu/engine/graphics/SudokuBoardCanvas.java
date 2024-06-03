@@ -100,7 +100,7 @@ public class SudokuBoardCanvas extends JPanel {
 
     public void visualizeCell(int row, int col, Color startColor) {
 
-        final int totalSteps = 10; // Total steps to fade color
+        final int totalSteps = 5; // Total steps to fade color
         final int delay = 100;
         Cell cell = cells[row][col];
         cell.startHintVisualization();
