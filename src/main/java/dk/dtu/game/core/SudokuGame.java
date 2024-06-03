@@ -551,6 +551,15 @@ public class SudokuGame {
         placeableNumber = i;
     }
 
+    public void clearBoard() {
+        gameboard.clear();
+        hintList.clear();
+        moveList.clear();
+        timer.stop();
+        timer.reset();
+        gameboard.clearInitialBoard();
+    }
+
     public SudokuBoardCanvas getBoard() {
         return board;
     }
@@ -575,4 +584,6 @@ public class SudokuGame {
         board.requestFocusInWindow();
         solveButton.setEnabled(true);
     }
+
+
 }

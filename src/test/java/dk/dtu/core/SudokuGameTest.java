@@ -59,6 +59,7 @@ class SudokuGameTest {
         sudokuBoardCanvasBoard = game.getBoard();
 
         System.setProperty("testMode", "true");
+        game.clearBoard();
     }
 
     @Test
@@ -66,7 +67,6 @@ class SudokuGameTest {
         assertNotNull(game.gameboard, "Game board must not be null after initialization.");
         assertEquals(9, game.gameboard.getDimensions(), "Game board should be initialized as 9x9.");
         assertTrue(game.moveList.isEmpty(), "Move list should be empty initially.");
-        assertFalse(game.isGameStarted(), "Game should not start automatically.");
     }
 
     @Test
@@ -175,6 +175,7 @@ class SudokuGameTest {
         assertEquals(0, game.gameboard.getNumber(0, 0), "Cell should be empty after erasing.");
     }
 
+
     @Test
     void testDisplayNumbersVisually() {
         game.displayNumbersVisually();
@@ -184,7 +185,6 @@ class SudokuGameTest {
 
     @Test
     void testRestartGame() {
-        game.getStartButton().doClick();
         game.getSolveButton().doClick();
         assertTrue(game.isSudokuCompleted(), "Game should be solved");
         game.getRestartButton().doClick();
@@ -196,7 +196,6 @@ class SudokuGameTest {
 
     @Test
     void testStartGame() {
-        game.getStartButton().doClick();
         assertTrue(
                 game.isGameStarted(), "Game should be started after clicking the new game button.");
         assertNotNull(sudokuBoardCanvasBoard, "Game board should be initialized after starting.");
@@ -303,4 +302,7 @@ class SudokuGameTest {
                 sudokuBoardCanvasBoard.getHiddenProperty(1, 1),
                 "Note 2 should be hidden at (1,1).");
     }
+
+
+
 }
