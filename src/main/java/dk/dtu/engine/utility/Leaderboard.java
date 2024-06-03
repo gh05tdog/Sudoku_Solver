@@ -16,15 +16,14 @@ public class Leaderboard {
     private Leaderboard() {
         throw new IllegalStateException("Utility class");
     }
-    private static final String DB_URL = "jdbc:sqlite:sudoku.db";
 
     private static final Logger logger = LoggerFactory.getLogger(Leaderboard.class);
 
-    public static List<LeaderboardEntry> loadLeaderboard() {
+    public static List<LeaderboardEntry> loadLeaderboard(String dbUrl) {
         List<LeaderboardEntry> leaderboard = new ArrayList<>();
         String sql = "SELECT username, difficulty, time, timestamp FROM leaderboard ORDER BY time ";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = DriverManager.getConnection(dbUrl);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 

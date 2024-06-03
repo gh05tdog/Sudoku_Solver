@@ -126,7 +126,7 @@ public class StartMenu {
         String[] columnNames = {"Username", "Difficulty", "Time", "Timestamp"};
 
         // Fetch leaderboard data
-        List<LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard();
+        List<LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard("jdbc:sqlite:sudoku.db");
         List<String[]> rowData = new ArrayList<>();
         for (LeaderboardEntry entry : leaderboard) {
             rowData.add(new String[]{
