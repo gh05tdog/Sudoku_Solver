@@ -53,4 +53,8 @@ public class TimerFunction extends JPanel {
     public String getTimeString() {
         return timeLabel.getText();
     }
+
+    public int getTime() {
+        return (int) (System.currentTimeMillis() - startTime) / 1000;
+    }
 }

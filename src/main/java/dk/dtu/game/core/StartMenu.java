@@ -130,10 +130,10 @@ public class StartMenu {
         List<String[]> rowData = new ArrayList<>();
         for (LeaderboardEntry entry : leaderboard) {
             rowData.add(new String[]{
-                    entry.getUsername(),
-                    entry.getDifficulty(),
-                    String.valueOf(entry.getTime()),
-                    entry.getTimestamp()
+                    entry.username(),
+                    entry.difficulty(),
+                    String.valueOf(entry.time()),
+                    entry.timestamp()
             });
         }
 
@@ -152,7 +152,6 @@ public class StartMenu {
         leaderboardDialog.add(leaderboardScrollPane);
         leaderboardDialog.setVisible(true);
     }
-
 
 
     private void addChangeListenerToField(JTextField field) {

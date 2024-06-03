@@ -8,7 +8,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-class UpdateLeaderboard {
+public class UpdateLeaderboard {
+
+    private UpdateLeaderboard() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(UpdateLeaderboard.class);
     public static void addScore(String username, String difficulty, int time) {
         String url = "jdbc:sqlite:sudoku.db";

@@ -13,11 +13,11 @@ import java.util.List;
 
 public class Leaderboard {
 
+    private static final Logger logger = LoggerFactory.getLogger(Leaderboard.class);
+
     private Leaderboard() {
         throw new IllegalStateException("Utility class");
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(Leaderboard.class);
 
     public static List<LeaderboardEntry> loadLeaderboard(String dbUrl) {
         List<LeaderboardEntry> leaderboard = new ArrayList<>();
@@ -45,35 +45,7 @@ public class Leaderboard {
     }
 
     // Leaderboard entry class to represent each row in the leaderboard
-    public static class LeaderboardEntry {
-        private final String username;
-        private final String difficulty;
-        private final int time;
-        private final String timestamp;
-
-        public LeaderboardEntry(String username, String difficulty, int time, String timestamp) {
-            this.username = username;
-            this.difficulty = difficulty;
-            this.time = time;
-            this.timestamp = timestamp;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getDifficulty() {
-            return difficulty;
-        }
-
-        public int getTime() {
-            return time;
-        }
-
-        public String getTimestamp() {
-            return timestamp;
-        }
-
+    public record LeaderboardEntry(String username, String difficulty, int time, String timestamp) {
 
         @Override
         public String toString() {

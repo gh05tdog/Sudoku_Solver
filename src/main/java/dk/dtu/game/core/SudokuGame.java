@@ -8,6 +8,7 @@ import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.engine.utility.TimerFunction;
+import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
@@ -352,6 +353,17 @@ public class SudokuGame {
     public void checkCompletionAndOfferNewGame() {
         if (isSudokuCompleted() && !testMode()) {
             timer.stop();
+
+            // Add the completion details to the leaderboard
+            String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", "Username", JOptionPane.PLAIN_MESSAGE);
+            if (username != null && !username.trim().isEmpty()) {
+                String difficulty = Config.getDifficulty();
+                int time = timer.getTime();
+                // returns time in seconds or suitable format
+
+                UpdateLeaderboard.addScore(username, difficulty, time);
+            }
+
             Object[] options = {"New Game", "Close"};
             int response =
                     JOptionPane.showOptionDialog(
@@ -376,6 +388,7 @@ public class SudokuGame {
             }
         }
     }
+
 
 
 
