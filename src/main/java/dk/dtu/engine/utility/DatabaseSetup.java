@@ -17,8 +17,7 @@ public class DatabaseSetup {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    public static void setup() {
-        String url = "jdbc:sqlite:sudoku.db";
+    public static void setup(String dbUrl) {
 
         String createGameTable = "CREATE TABLE IF NOT EXISTS game (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -35,7 +34,7 @@ public class DatabaseSetup {
                 "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
                 ");";
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(dbUrl);
              Statement stmt = conn.createStatement()) {
             stmt.execute(createGameTable);
             stmt.execute(createLeaderboardTable);
