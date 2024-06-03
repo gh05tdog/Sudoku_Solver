@@ -20,6 +20,7 @@ import java.util.List;
 import javax.swing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.prefs.Preferences;
 
 public class SudokuGame {
 
@@ -50,6 +51,8 @@ public class SudokuGame {
     private JButton eraseButton;
     private JButton solveButton;
     private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
+
+    private boolean usedSolveButton = false;
 
     Random random = new SecureRandom();
 
@@ -352,32 +355,38 @@ public class SudokuGame {
 
     public void checkCompletionAndOfferNewGame() {
         if (isSudokuCompleted() && !testMode()) {
-            timer.stop();
+            if(!usedSolveButton) {
+                timer.stop();
+                // Preferences object to store and retrieve the username
+                Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+                String storedUsername = prefs.get("username", "");
 
-            // Add the completion details to the leaderboard
-            String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", "Username", JOptionPane.PLAIN_MESSAGE);
-            if (username != null && !username.trim().isEmpty()) {
-                String difficulty = Config.getDifficulty();
-                int time = timer.getTime();
-                // returns time in seconds or suitable format
+                // Prompt user for their username
+                String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", storedUsername);
+                if (username != null && !username.trim().isEmpty()) {
+                    // Store the username in preferences
+                    prefs.put("username", username.trim());
 
-                UpdateLeaderboard.addScore(username, difficulty, time);
+                    // Add the completion details to the leaderboard
+                    String difficulty = Config.getDifficulty();
+                    int time = timer.getTime(); // returns time in seconds or suitable format
+
+                    UpdateLeaderboard.addScore(username, difficulty, time);
+                }
             }
 
+            // Offer the user to start a new game or close the application
             Object[] options = {"New Game", "Close"};
-            int response =
-                    JOptionPane.showOptionDialog(
-                            null,
-                            "Congratulations! You've completed the Sudoku in\n"
-                                    + timer.getTimeString()
-                                    + "\n\n"
-                                    + "Would you like to start a new game?",
-                            "Game Completed",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE,
-                            null,
-                            options,
-                            options[0]);
+            int response = JOptionPane.showOptionDialog(
+                    null,
+                    "Congratulations! You've completed the Sudoku in\n" + timer.getTimeString() + "\n\n" + "Would you like to start a new game?",
+                    "Game Completed",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+            );
 
             if (response == JOptionPane.YES_OPTION) {
                 try {
@@ -388,6 +397,7 @@ public class SudokuGame {
             }
         }
     }
+
 
 
 
@@ -430,7 +440,12 @@ public class SudokuGame {
                     } else {
                         gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
                     }
+                    //set usedSolveButton to true
+                    usedSolveButton = true;
+
                     checkCompletionAndOfferNewGame();
+                    usedSolveButton = false;
+
                 });
 
         newGameButton.addActionListener(e -> startGame());
