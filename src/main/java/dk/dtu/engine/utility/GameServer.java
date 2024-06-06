@@ -1,5 +1,10 @@
 package dk.dtu.engine.utility;
 
+import dk.dtu.game.core.Board;
+import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,24 +15,33 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import dk.dtu.game.core.Board;
-import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 public class GameServer {
     private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
     private static final int PORT = 12345;
     private final ExecutorService threadPool = Executors.newFixedThreadPool(4);
-    private final ConcurrentHashMap<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>();
     private final Object lock = new Object();
     private int clientCount = 0;
+    public ServerSocket serverSocket;
+    private boolean running = true;
 
     public void start() {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Server started on port " + PORT);
-            while (true) {
+        startServerSocket();
+        acceptClients();
+    }
+
+    protected void startServerSocket() {
+        try {
+            serverSocket = new ServerSocket(PORT);
+            System.out.println("Server started on port " + serverSocket.getLocalPort());
+        } catch (IOException e) {
+            System.out.println("Error starting server: " + e.getMessage());
+        }
+    }
+
+    private void acceptClients() {
+        while (running) {
+            try {
                 Socket clientSocket = serverSocket.accept();
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
                 clientWriters.put(clientSocket, writer);
@@ -39,16 +53,28 @@ public class GameServer {
                     if (clientCount == 2) {
                         sendInitialBoard();
                         broadcastMessage("READY"); // Notify all clients that the game is ready to start
-                        return;
                     }
                 }
+            } catch (IOException | Board.BoardNotCreatable e) {
+                if (running) {
+                    logger.error("Error accepting client: {}", e.getMessage());
+                }
             }
-        } catch (IOException | Board.BoardNotCreatable e) {
-            System.out.println("Error starting server: " + e.getMessage());
         }
     }
 
-    private void sendInitialBoard() throws Board.BoardNotCreatable {
+    public void stop() {
+        running = false;
+        try {
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+            }
+        } catch (IOException e) {
+            logger.error("Error closing server socket: {}", e.getMessage());
+        }
+    }
+
+    public void sendInitialBoard() throws Board.BoardNotCreatable {
         StringBuilder boardString = new StringBuilder("INITIAL_BOARD ");
 
         Board board = new Board(3, 3);
@@ -90,7 +116,6 @@ public class GameServer {
                 }
             } catch (IOException e) {
                 logger.error("Error handling client message: {}", e.getMessage());
-
             } finally {
                 try {
                     clientSocket.close();

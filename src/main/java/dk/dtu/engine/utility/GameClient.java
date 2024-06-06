@@ -13,6 +13,7 @@ import java.net.Socket;
 public class GameClient {
     private final String serverAddress;
     private final WindowManager windowManager;
+    private SudokuGame game;
 
     public GameClient(String serverAddress, WindowManager windowManager) {
         this.serverAddress = serverAddress;
@@ -20,28 +21,29 @@ public class GameClient {
     }
 
     public void start() throws IOException, Board.BoardNotCreatable {
-        try (Socket socket = new Socket(serverAddress, 12345)) {
-            System.out.println("Connected to server at " + serverAddress);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        Socket socket = createSocket(serverAddress);
+        System.out.println("Connected to server at " + serverAddress);
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            SudokuGame game = new SudokuGame(windowManager, 3, 3, 550 / 9); // Adjust as needed
-            game.setNetworkOut(out); // Pass the network output stream to the game
+        game = new SudokuGame(windowManager, 3, 3, 550 / 9); // Adjust as needed
+        game.setNetworkOut(out); // Pass the network output stream to the game
 
-            game.setNetworkGame(true);
+        game.setNetworkGame(true);
 
-            String message;
-            while ((message = in.readLine()) != null) {
-                System.out.println("Received message: " + message); // Display the message in the console
-                processNetworkMessage(message, game);
-            }
-        } catch (IOException e) {
-            System.out.println("Error connecting to server: " + e.getMessage());
-        } finally {
-            System.out.println("Connection closed");
+        String message;
+        while ((message = in.readLine()) != null) {
+            System.out.println("Received message: " + message); // Display the message in the console
+            processNetworkMessage(message, game);
         }
+    }
 
+    protected Socket createSocket(String serverAddress) throws IOException {
+        return new Socket(serverAddress, 12345);
+    }
 
+    public SudokuGame getGame() {
+        return game;
     }
 
     private void processNetworkMessage(String message, SudokuGame game) {
