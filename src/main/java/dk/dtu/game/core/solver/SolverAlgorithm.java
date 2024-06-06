@@ -1,5 +1,7 @@
 package dk.dtu.game.core.solver;
 
+import dk.dtu.game.core.Config;
+
 import java.util.List;
 
 public class SolverAlgorithm {
@@ -48,6 +50,19 @@ public class SolverAlgorithm {
             }
         }
         return possiblePlacements;
+    }
+    public static int setNumsRemoved (int [][] arr) {
+        int numOfCells = arr.length*arr.length;
+        String difficulty = Config.getDifficulty();
+        int maxNumRemoved;
+        maxNumRemoved =
+                switch (difficulty) {
+                    case "medium" -> numOfCells/2;
+                    case "hard" -> 2*numOfCells/3;
+                    case "extreme" -> 4*numOfCells/5;
+                    default -> numOfCells/3;
+                };
+        return maxNumRemoved;
     }
 }
 

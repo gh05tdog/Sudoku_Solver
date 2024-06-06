@@ -17,6 +17,8 @@ public class Board {
 
     private int[][] initialBoard;
 
+    private int[][] solvedBoard;
+
     public void setBoard(int[][] arr) {
         for (int i = 0; i < arr.length; i++) {
             System.arraycopy(arr[i], 0, this.gameBoard[i], 0, arr[i].length);
@@ -164,5 +166,13 @@ public class Board {
 
     public int getN() {
         return n;
+    }
+
+    public void setSolvedBoard(int[][] solvedBoard) {
+        this.solvedBoard = solvedBoard;
+    }
+
+    public int[][] getSolvedBoard() {
+        return solvedBoard;
     }
 }

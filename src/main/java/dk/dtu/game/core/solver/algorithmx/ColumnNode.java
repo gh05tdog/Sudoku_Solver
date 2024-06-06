@@ -2,38 +2,58 @@
 package dk.dtu.game.core.solver.algorithmx;
 
 public class ColumnNode extends Node {
-    public int size;
-    public String name;
+    private int size;
+    private final String name;
 
     public ColumnNode(String name) {
         super();
         this.size = 0;
         this.name = name;
-        this.column = this;
+        this.setColumn(this);
     }
 
     public void cover() {
 
-        left.right = right;
-        right.left = left;
+        getLeft().setRight(getRight());
+        getRight().setLeft(getLeft());
 
         // If the loop starts now, there should be nodes to cover
-        for (Node row = this.down; row != this; row = row.down) {
-            for (Node node = row.right; node != row; node = node.right) {
+        for (Node row = this.getDown(); row != this; row = row.getDown()) {
+            for (Node node = row.getRight(); node != row; node = node.getRight()) {
                 node.removeNode();
             }
         }
     }
 
     public void uncover() {
-        for (Node row = this.up; row != this; row = row.up) {
-            for (Node node = row.left; node != row; node = node.left) {
+        for (Node row = this.getUp(); row != this; row = row.getUp()) {
+            for (Node node = row.getLeft(); node != row; node = node.getLeft()) {
                 node.reinsertNode();
             }
         }
 
         // Reconnect this column to the header list
-        this.left.right = this;
-        this.right.left = this;
+        this.getLeft().setRight(this);
+        this.getRight().setLeft(this);
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void incrementSize() {
+        size++;
+    }
+
+    public void decrementSize() {
+        size--;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setSize(int val) {
+        size = val;
     }
 }
