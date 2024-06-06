@@ -445,15 +445,25 @@ public class SudokuGame {
 
         restartButton.addActionListener(
                 e -> {
-                    // set the numbers to the initial board
-                    newGame();
+                    // Reset the game state to the initial board configuration
+                    moveList.clear();
+                    wrongMoveList.clear();
+                    timer.stop();
+                    timer.reset();
+                    board.clearNotes();
+
+                    // Reinitialize the board with the initial puzzle
+                    gameboard.setGameBoard(deepCopyBoard(gameboard.getInitialBoard()));
                     displayNumbersVisually();
                     setInitialBoardColor();
+
+                    // Restart the timer
+                    timer.start();
+
                     gameIsStarted = true;
                     board.requestFocusInWindow();
                     solveButton.setEnabled(true);
                 });
-
         solveButton.addActionListener(
                 e -> {
                     board.clearNotes();
