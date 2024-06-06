@@ -37,7 +37,8 @@ public class StartMenuWindowManager {
                 (frame.getWidth()) - 250,
                 (frame.getHeight() / 2) - 150,
                 200,
-                difficultyPanel.getHeight() + sizePanel.getHeight() + 50);
+                difficultyPanel.getHeight() + sizePanel.getHeight() + 300);
+
         buttonPanel.setBackground(Color.WHITE);
 
         inputPanel.setBounds(525, (frame.getHeight() / 2) - 205, 140, 50);

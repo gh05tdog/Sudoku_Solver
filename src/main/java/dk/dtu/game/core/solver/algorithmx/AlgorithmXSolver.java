@@ -40,6 +40,7 @@ public class AlgorithmXSolver {
         if (algorithmXSolver(header)) {
             arr = convertSolutionToBoard(Solution, placements);
         }
+        solvedBoard = arr;
         return arr;
     }
 
