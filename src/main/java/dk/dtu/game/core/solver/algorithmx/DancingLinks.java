@@ -1,4 +1,3 @@
-/* (C)2024 */
 package dk.dtu.game.core.solver.algorithmx;
 
 import java.util.List;
@@ -7,57 +6,54 @@ public class DancingLinks {
     private final ColumnNode header;
 
     public DancingLinks(List<int[]> matrix) {
-        if (matrix == null || matrix.isEmpty() || matrix.getFirst().length == 0) {
-            throw new IllegalArgumentException("Matrix must not be null or empty");
+        if (matrix == null || matrix.isEmpty() || matrix.getFirst().length != 4) {
+            System.out.println(matrix.get(0).length);
+            throw new IllegalArgumentException("Matrix must not be null or empty and must have 4 columns");
         }
 
+        // Determine the number of columns needed based on the maximum index in the sparse matrix
+        int numCols = setNumCols(matrix);
+
         header = new ColumnNode("header");
-
-
-        ColumnNode[] columnNodes = new ColumnNode[matrix.getFirst().length];
+        ColumnNode[] columnNodes = new ColumnNode[numCols];
 
         columnNodes = setColumnNodes(columnNodes);
 
-        // Setting up the column nodes and linking them into a circular list
-
-        // Setting up nodes for each 1 in the matrix and linking them
+        // Setting up nodes for each constraint in the sparse matrix and linking them
         for (int row = 0; row < matrix.size(); row++) {
+            int[] constraints = matrix.get(row);
             Node firstNodeInRow = null;
             Node lastNodeInRow = null;
 
-            for (int col = 0; col < matrix.getFirst().length; col++) {
-                if (matrix.get(row)[col] == 1) {
-                    Node newNode =
-                            new Node(row); // Assuming Node constructor sets column and row indexes
-                    // correctly
-                    newNode.setColumn(columnNodes[col]); // Linking node to its column
+            for (int col : constraints) {
+                Node newNode = new Node(row);
+                newNode.setColumn(columnNodes[col]); // Linking node to its column
 
-                    // Link nodes horizontally
-                    if (firstNodeInRow == null) {
-                        firstNodeInRow = newNode; // This is the first node in this row
-                    } else {
-                        lastNodeInRow.setRight(newNode);
-                        newNode.setLeft(lastNodeInRow); // Link new node back to the last node
-                    }
-                    lastNodeInRow = newNode; // Update this node to be the last in the row
-
-                    // Vertical linking within the column
-                    verticalLinkNodes(columnNodes[col], newNode);
-
-                    columnNodes[col].incrementSize();
+                // Link nodes horizontally
+                if (firstNodeInRow == null) {
+                    firstNodeInRow = newNode;
+                } else {
+                    lastNodeInRow.setRight(newNode);
+                    newNode.setLeft(lastNodeInRow);
                 }
+                lastNodeInRow = newNode;
+
+                // Vertical linking within the column
+                verticalLinkNodes(columnNodes[col], newNode);
+
+                columnNodes[col].incrementSize();
             }
 
             // Close the horizontal row loop
             if (firstNodeInRow != null) {
-                lastNodeInRow.setRight(firstNodeInRow); // Last node links back to the first
-                firstNodeInRow.setLeft(lastNodeInRow); // First node links back to the last
+                lastNodeInRow.setRight(firstNodeInRow);
+                firstNodeInRow.setLeft(lastNodeInRow);
             }
         }
         linkColumnNodes(columnNodes); // circularly link the columnNodes
     }
 
-    public void linkColumnNodes (ColumnNode [] columnNodes) {
+    public void linkColumnNodes(ColumnNode[] columnNodes) {
         for (ColumnNode colNode : columnNodes) {
             if (colNode.getUp() == colNode) {
                 colNode.setDown(colNode);
@@ -65,7 +61,19 @@ public class DancingLinks {
         }
     }
 
-    public void verticalLinkNodes (ColumnNode colNode, Node node) {
+    public static int setNumCols(List<int[]> matrix) {
+       int numCols = 0;
+        for (int[] row : matrix) {
+            for (int col : row) {
+                if (col >= numCols) {
+                    numCols = col + 1;
+                }
+            }
+        }
+        return numCols;
+    }
+
+    public void verticalLinkNodes(ColumnNode colNode, Node node) {
         if (colNode.getDown() == colNode) { // Column is empty
             colNode.setDown(node);
             node.setUp(colNode);
@@ -79,7 +87,7 @@ public class DancingLinks {
         }
     }
 
-    public ColumnNode [] setColumnNodes (ColumnNode [] columnNodes) {
+    public ColumnNode[] setColumnNodes(ColumnNode[] columnNodes) {
         ColumnNode last = header;
         for (int i = 0; i < columnNodes.length; i++) {
             columnNodes[i] = new ColumnNode(Integer.toString(i));
@@ -94,7 +102,6 @@ public class DancingLinks {
         header.setLeft(last);
         return columnNodes;
     }
-
 
     public ColumnNode getHeader() {
         return header;

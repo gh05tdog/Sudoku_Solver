@@ -46,7 +46,6 @@ public class AlgorithmXSolver {
     public static List<int[]> createExactCoverFromBoard(int[][] board, List<Placement> placements) {
 
         List<int[]> coverList = new ArrayList<>();
-        int constraints = board.length * board.length * 4;
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
@@ -58,8 +57,8 @@ public class AlgorithmXSolver {
                     nums = Collections.singletonList(num);
                 }
                 for (int n : nums) {
-                    int[] cover = new int[constraints];
-                    setCoverRow(board, coverList, i, j, n, cover);
+                    int[] cover = new int[4];
+                    setCoverRow(coverList, i, j, n, cover, board.length, (int) Math.sqrt(board.length));
                     placements.add(new Placement(i, j, n));
                 }
             }
@@ -69,13 +68,12 @@ public class AlgorithmXSolver {
     }
 
     private static void setCoverRow(
-            int[][] board, List<int[]> coverList, int i, int j, int n, int[] cover) {
-        cover[i * board.length + j] = 1;
-        cover[board.length * board.length + i * board.length + n - 1] = 1;
-        cover[2 * board.length * board.length + j * board.length + n - 1] = 1;
-        int subSize = (int) Math.sqrt(board.length);
-        int subGridID = (i / subSize) * subSize + (j / subSize);
-        cover[3 * board.length * board.length + subGridID * board.length + n - 1] = 1;
+            List<int[]> coverList, int i, int j, int n, int[] cover, int boardSize, int subGridSize) {
+        cover[0] = i * boardSize + j; // Cell constraint
+        cover[1] = boardSize * boardSize + i * boardSize + n - 1; // Row constraint
+        cover[2] = 2 * boardSize * boardSize + j * boardSize + n - 1; // Column constraint
+        int subGridID = (i / subGridSize) * subGridSize + (j / subGridSize);
+        cover[3] = 3 * boardSize * boardSize + subGridID * boardSize + n - 1; // Sub-grid constraint
         coverList.add(cover);
     }
 
