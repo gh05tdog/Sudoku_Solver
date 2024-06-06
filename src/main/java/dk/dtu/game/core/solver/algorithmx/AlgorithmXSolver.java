@@ -22,7 +22,7 @@ public class AlgorithmXSolver {
         int[][] sudokuBoard = solveExistingBoard(board);
         solvedBoard = deepSetSolutionBoard(sudokuBoard);
         board.setSolvedBoard(solvedBoard);
-        removeXRecursive(sudokuBoard, arraySize * arraySize / 2);
+        removeXNumbers(sudokuBoard);
         board.setInitialBoard(sudokuBoard);
         board.setBoard(sudokuBoard);
     }
@@ -79,28 +79,61 @@ public class AlgorithmXSolver {
         coverList.add(cover);
     }
 
-    public static void removeXRecursive(int[][] arr, int maxRemoved) {
+    public static void removeXNumbers(int[][] arr) {
+        long maxTime = 0;
         Solution.clear();
 
         int numRemoved = 0;
+        long startTime;
+        long endTime = 0;
+        int maxRemoved = SolverAlgorithm.setNumsRemoved(arr);
 
-        while (numRemoved < maxRemoved) {
-            int randRow = rand.nextInt(arr.length);
-            int randCol = rand.nextInt(arr.length);
+        int[] randRow = fisherYatesShuffle(arr.length);
+        int[] randCol = fisherYatesShuffle(arr.length);
 
-            if (arr[randRow][randCol] == 0) {
-                continue; // Skip already removed numbers.
+        int x = 0;
+        int y = 0;
+
+        while (numRemoved < maxRemoved && y < arr.length) {
+            startTime = System.nanoTime();
+            if (arr[randRow[x]][randCol[y]] != 0) {
+
+                int tempNumber = arr[randRow[x]][randCol[y]];
+                arr[randRow[x]][randCol[y]] = 0;
+
+                if (checkUniqueSolution(arr) == 1) {
+                    endTime = System.nanoTime();
+                    numRemoved++;
+                    randRow = fisherYatesShuffle(arr.length);
+                    randCol = fisherYatesShuffle(arr.length);
+                    x = 0;
+                    y = 0;
+
+                    maxTime = ((maxTime * (numRemoved - 1) + (endTime - startTime)) / numRemoved);
+
+                    System.out.println((endTime - startTime));
+
+                    if (endTime - startTime > maxTime * 10) {
+                        System.out.println("Time exceeded");
+                        System.out.println("Time taken: " + (endTime - startTime));
+                        System.out.println("Start time: " + startTime);
+                        System.out.println("End time: " + endTime);
+                        System.out.println("Limit: " + maxTime * 20);
+                        break;
+                    }
+                } else {
+                    arr[randRow[x]][randCol[y]] = tempNumber; // Restore the number if removing it doesn't lead to a unique solution.
+                    x++;
+                    if (x == arr.length) {
+                        x = 0;
+                        y++;
+                    }
+                }
             }
-
-            int tempNumber = arr[randRow][randCol];
-            arr[randRow][randCol] = 0;
-
-            if (checkUniqueSolution(arr) == 1) {
-                numRemoved++; // Only remove the number permanently if there's exactly one solution.
-            } else {
-                arr[randRow][randCol] =
-                        tempNumber; // Restore the number if removing it doesn't lead to a unique
-                // solution.
+            x ++;
+            if (x == arr.length) {
+                x = 0;
+                y++;
             }
         }
     }
@@ -219,5 +252,19 @@ public class AlgorithmXSolver {
 
     public static int[][] getSolutionBoard() {
         return solvedBoard;
+    }
+
+    public static int[] fisherYatesShuffle(int n) {
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = i;
+        }
+        for (int i = n - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1);
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+        return arr;
     }
 }
