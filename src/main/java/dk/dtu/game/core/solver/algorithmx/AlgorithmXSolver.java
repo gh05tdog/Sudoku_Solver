@@ -1,4 +1,3 @@
-/* (C)2024 */
 package dk.dtu.game.core.solver.algorithmx;
 
 import dk.dtu.game.core.Board;
@@ -81,10 +80,9 @@ public class AlgorithmXSolver {
 
     public static void removeXNumbers(int[][] arr) {
         long maxTime = 0;
-        Solution.clear();
         int numRemoved = 0;
         long startTime;
-        long endTime = 0;
+        long endTime;
         int maxRemoved = SolverAlgorithm.setNumsRemoved(arr);
 
         int [] randRow = fisherYatesShuffle(arr.length);
@@ -110,14 +108,7 @@ public class AlgorithmXSolver {
 
                     maxTime = ((maxTime*(numRemoved-1) + (endTime - startTime)) /  numRemoved);
 
-                    System.out.println((endTime - startTime));
-
                     if (endTime - startTime > maxTime*10) {
-                        System.out.println("Time exceeded");
-                        System.out.println("Time taken: " + (endTime - startTime));
-                        System.out.println("Start time: " + startTime);
-                        System.out.println("End time: " + endTime);
-                        System.out.println("Limit: " + maxTime*20);
                         break;
                     }
                 } else {
@@ -210,8 +201,8 @@ public class AlgorithmXSolver {
         List<ColumnNode> columns = new ArrayList<>();
         int minSize = c.size;
         for (ColumnNode temp = (ColumnNode) header.right;
-                temp != header;
-                temp = (ColumnNode) temp.right) {
+             temp != header;
+             temp = (ColumnNode) temp.right) {
             if (temp.size < minSize) {
                 minSize = temp.size;
                 columns.clear();
