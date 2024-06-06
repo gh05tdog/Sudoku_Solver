@@ -1,10 +1,13 @@
-/* (C)2024 */
 package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.Config;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class WindowManager {
@@ -46,6 +49,45 @@ public class WindowManager {
         mainPanel.add(buttonPanel, buttonConstraints);
 
         this.frame.setContentPane(mainPanel); // Add the main panel to the frame
+        addHeartLabels();
+    }
+
+    private void addHeartLabels() {
+        try {
+            // Load the image
+            BufferedImage heartImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/460px-Heart8.png")));
+            System.out.println("Image loaded successfully"); // Debug message
+
+            // Resize the image
+            Image scaledHeartImage = heartImage.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            ImageIcon heartIcon = new ImageIcon(scaledHeartImage);
+
+            // Create a panel to hold the hearts
+            JPanel heartsPanel = new JPanel();
+            heartsPanel.setBackground(Color.WHITE);
+            heartsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0)); // Horizontal layout with small gaps
+
+            // Add 5 heart labels to the panel
+            for (int i = 0; i < 5; i++) {
+                JLabel heartLabel = new JLabel(heartIcon);
+                heartsPanel.add(heartLabel);
+            }
+
+            // Set constraints for the hearts panel
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.NORTHWEST;
+            gbc.insets = new Insets(10, 10, 10, 10);
+
+            // Add the hearts panel to the whitePanel
+            whitePanel.add(heartsPanel, gbc);
+            System.out.println("Heart labels added to whitePanel"); // Debug message
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            System.out.println("Image not found, check the path."); // Debug message
+        }
     }
 
     public void addComponentToButtonPanel(Component component) {
@@ -74,7 +116,7 @@ public class WindowManager {
         // This method is used to add the Sudoku board itself, centered in the boardPanel
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; // Align component at the grid's center
-        gbc.gridy = 0; // Align component at the grid's center
+        gbc.gridy = 1; // Align component at the grid's center (below the heart label)
         gbc.weightx = 0.5; // Give column some weight so the component will be centered
         gbc.weighty = 1; // Give row some weight so the component will be centered
         gbc.fill = GridBagConstraints.BOTH; // Let component fill its display area

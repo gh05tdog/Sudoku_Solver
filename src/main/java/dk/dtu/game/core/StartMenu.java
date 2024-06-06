@@ -178,7 +178,6 @@ public class StartMenu {
             gameRules.setVisible(true);
             gameRules.addJSwitchBox("Enable lives", Config.getEnableLives(), Config::setEnableLives);
             gameRules.addJSwitchBox("Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
-
         });
     }
 

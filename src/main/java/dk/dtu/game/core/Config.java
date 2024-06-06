@@ -6,9 +6,7 @@ public class Config {
     private static int cellSize;
     private static String difficulty;
 
-    //Game rules
-    private static boolean enableLives = true;
-    private static boolean enableTimer = false;
+
 
     private Config() {
         throw new IllegalStateException("Utility class");
@@ -43,6 +41,9 @@ public class Config {
     }
 
 
+    //Game rules
+    private static boolean enableLives = false;
+    private static boolean enableTimer = true;
     //Game rules:
     public static void setEnableLives(boolean enableLives) {
         Config.enableLives = enableLives;
