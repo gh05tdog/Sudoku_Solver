@@ -1,10 +1,6 @@
 /* (C)2024 */
 package dk.dtu.game.core.solver.bruteforce;
-
-import static java.lang.Math.sqrt;
-
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.Config;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import java.util.*;
 import java.util.logging.Logger;
@@ -13,9 +9,9 @@ public class BruteForceAlgorithm {
 
     static Random rand = new Random();
     static Logger logger = Logger.getLogger(BruteForceAlgorithm.class.getName());
-    public static int[][] solvedBoard;
+    private static int[][] solvedBoard;
 
-    public static int n;
+    private static int n;
 
     private BruteForceAlgorithm() {
         throw new IllegalStateException("Utility class");
@@ -225,18 +221,6 @@ public class BruteForceAlgorithm {
             }
         }
         return true;
-    }
-
-    public static int[][] getSolutionBoard(int[][] board) {
-        int[][] copiedBoard = deepCopy(board);
-
-        boolean solved = sudoku(copiedBoard);
-
-        if (solved) {
-            return copiedBoard;
-        } else {
-            return new int[0][0];
-        }
     }
 
     public static int checkUniqueSolution(int[][] board) {
