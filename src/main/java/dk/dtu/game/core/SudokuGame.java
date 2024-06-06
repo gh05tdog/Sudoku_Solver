@@ -333,6 +333,7 @@ public class SudokuGame {
 
         if(isNetworkGame) {
             solveButton.setEnabled(false);
+            hintButton.setEnabled(false);
         }
         isNetworkGame = false;
 
