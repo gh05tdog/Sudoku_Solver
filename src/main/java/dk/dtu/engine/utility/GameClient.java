@@ -1,8 +1,8 @@
 package dk.dtu.engine.utility;
 
+import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.SudokuGame;
-import dk.dtu.engine.core.WindowManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,9 +13,6 @@ import java.net.Socket;
 public class GameClient {
     private final String serverAddress;
     private final WindowManager windowManager;
-    private Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
 
     public GameClient(String serverAddress, WindowManager windowManager) {
         this.serverAddress = serverAddress;
@@ -23,41 +20,32 @@ public class GameClient {
     }
 
     public void start() throws IOException, Board.BoardNotCreatable {
-        socket = new Socket(serverAddress, 12345);
+        Socket socket = new Socket(serverAddress, 12345);
         System.out.println("Connected to server at " + serverAddress);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+        SudokuGame game = new SudokuGame(windowManager, 3, 3, 550 / 9); // Adjust as needed
+        game.setNetworkOut(out); // Pass the network output stream to the game
 
         String message;
         while ((message = in.readLine()) != null) {
             System.out.println("Received message: " + message); // Display the message in the console
-            processNetworkMessage(message);
+            processNetworkMessage(message, game);
         }
     }
 
-    private void processNetworkMessage(String message) throws Board.BoardNotCreatable {
+    private void processNetworkMessage(String message, SudokuGame game) {
         String[] parts = message.split(" ", 2);
         String command = parts[0];
 
         switch (command) {
             case "INITIAL_BOARD":
                 int[][] board = stringToBoard(parts[1]);
-                // Print the board to the console
-                for (int[] row : board) {
-                    for (int num : row) {
-                        System.out.print(num + " ");
-                    }
-                    System.out.println();
-                }
-                SudokuGame game = new SudokuGame(windowManager, 3, 3, 550 / 9); // Adjust as needed
                 game.initializeCustom(board);
                 break;
-            case "READY":
-                System.out.println("Server is ready. Starting game...");
-                break;
             case "WINNER":
-                String winner = parts[1];
-                announceWinner(winner);
+                game.processNetworkMessage(message);
                 break;
             // Handle other commands if needed
         }
@@ -73,9 +61,5 @@ public class GameClient {
             }
         }
         return board;
-    }
-
-    private void announceWinner(String winner) {
-        System.out.println("The winner is: " + winner);
     }
 }

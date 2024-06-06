@@ -14,7 +14,6 @@ import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.security.SecureRandom;
 import java.util.*;
@@ -61,8 +60,7 @@ public class SudokuGame {
     Random random = new SecureRandom();
 
     private PrintWriter networkOut;
-    private BufferedReader networkIn;
-    private BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
 
     private boolean isCustomBoard = false;
 
@@ -88,9 +86,13 @@ public class SudokuGame {
                 String message = messageQueue.take();
                 processNetworkMessage(message);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Error processing network message: {}", e.getMessage());
             }
         }
+    }
+
+    public void setNetworkOut(PrintWriter networkOut) {
+        this.networkOut = networkOut;
     }
 
     public void processNetworkMessage(String message) {
@@ -116,10 +118,7 @@ public class SudokuGame {
 
 
 
-    private String getPlayerName() {
-        Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-        return prefs.get("username", "Unknown");
-    }
+
 
     public void onSudokuBoardClicked(int x, int y) {
         int row = y / (board.getWidth() / gridSize); // Adjust for variable cell size
@@ -469,14 +468,15 @@ public class SudokuGame {
 
     public void checkCompletionAndOfferNewGame() {
         if (isSudokuCompleted() && !testMode()) {
-            if(!usedSolveButton) {
+            if (!usedSolveButton) {
                 timer.stop();
                 // Preferences object to store and retrieve the username
                 Preferences prefs = Preferences.userNodeForPackage(this.getClass());
                 String storedUsername = prefs.get("username", "");
 
-                networkOut.println("COMPLETED " + "Player1");
-
+                if (networkOut != null) {
+                    networkOut.println("COMPLETED " + "Player1");
+                }
 
                 // Prompt user for their username
                 String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", storedUsername);
@@ -489,8 +489,10 @@ public class SudokuGame {
                     int time = timer.getTimeToInt(); // returns time in seconds or suitable format
 
                     UpdateLeaderboard.addScore(username, difficulty, time);
-                    // Send completion message to server
-
+                    // Send a completion message to server
+                    if (networkOut != null) {
+                        networkOut.println("COMPLETED " + username);
+                    }
                 }
             }
 
