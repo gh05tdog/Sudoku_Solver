@@ -11,12 +11,15 @@ import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +76,8 @@ public class SudokuGame {
         int column = x / (board.getHeight() / gridSize); // Adjust for variable cell size
         board.setMarkedCell(row, column);
         board.setChosenNumber(gameboard.getNumber(row, column));
+
+
 
         makeMove(row, column, placeableNumber);
 
@@ -145,10 +150,11 @@ public class SudokuGame {
                     && number != 0) {
                 makeNote(row, col, number);
             }
+
             if (gameboard.validPlace(row, col, number)
                     && gameboard.getInitialNumber(row, col) == 0
                     && !noteButton.isSelected()
-                    && number != 0) {
+                    && number != 0 ) {
                 board.setHiddenProperty(row, col, true);
                 checkCellsForNotes(row, col, number, "hide");
                 int previousNumber = gameboard.getNumber(row, col);
@@ -160,7 +166,11 @@ public class SudokuGame {
 
                 int[][] solutionB = AlgorithmXSolver.getSolutionBoard();
 
-                if (gameboard.getNumber(row, col) != solutionB[row][col]) {
+                if (Config.getEnableLives() && gameboard.getNumber(row, col) != solutionB[row][col]) {
+                    windowManager.removeHeart();
+                    board.setWrongNumber(row, col, number);
+
+                } else {
                     wrongMoveList.push(move);
                 }
             }
@@ -225,7 +235,8 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new NumberHub(n, 40) {};
+        numbers = new NumberHub(n, 40) {
+        };
 
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
@@ -262,7 +273,7 @@ public class SudokuGame {
             BruteForceAlgorithm.createSudoku(gameboard);
         }
         fillHintList();
-        if(Config.getEnableTimer()){
+        if (Config.getEnableTimer()) {
             timer.start();
         }
         displayNumbersVisually();
@@ -289,7 +300,7 @@ public class SudokuGame {
         }
         fillHintList();
         logger.debug("Hint list size: {}", hintList.size());
-        if(Config.getEnableTimer()){
+        if (Config.getEnableTimer()) {
             timer.start();
         }
     }
@@ -462,6 +473,7 @@ public class SudokuGame {
                 e -> {
                     board.requestFocusInWindow();
                     provideHint();
+
                 });
         noteButton.addActionListener(e -> board.requestFocusInWindow());
         goBackButton.addActionListener(

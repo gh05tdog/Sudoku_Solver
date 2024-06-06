@@ -42,7 +42,7 @@ public class Config {
 
 
     //Game rules
-    private static boolean enableLives = false;
+    private static boolean enableLives = true;
     private static boolean enableTimer = true;
     //Game rules:
     public static void setEnableLives(boolean enableLives) {

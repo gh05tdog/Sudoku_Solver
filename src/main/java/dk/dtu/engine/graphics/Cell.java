@@ -13,6 +13,7 @@ class Cell implements Serializable {
     private Color backgroundColor = Color.WHITE;
 
     private int number = 0; // 0 indicates no number
+    private int wrongNumber = 0;
 
     boolean isVisualizingHint = false;
     boolean wasHighlightedBeforeHint = false;
@@ -41,16 +42,20 @@ class Cell implements Serializable {
     }
 
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
-        if (isHighlighted) {
+        if(isMarked){
+            g.setColor(new Color(155, 155, 147));
+        }
+        else if (isHighlighted) {
             g.setColor(new Color(225, 223, 221));
-
         } else {
             g.setColor(backgroundColor);
         }
         g.fillRect(x, y, cellSize, cellSize);
 
         if (number > 0) {
-            if (number == currentNumber) {
+            if (number == wrongNumber) {
+                g.setColor(Color.RED);
+            } else if (number == currentNumber) {
                 g.setColor(Color.BLUE);
             } else {
                 g.setColor(textColor);
@@ -126,6 +131,10 @@ class Cell implements Serializable {
 
     public void setNumber(int number) {
         this.number = number;
+    }
+
+    public void setWrongNumber(int number) {
+        this.wrongNumber = number;
     }
 
     public int getNumber() {

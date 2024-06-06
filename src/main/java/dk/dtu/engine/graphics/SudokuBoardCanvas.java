@@ -201,6 +201,12 @@ public class SudokuBoardCanvas extends JPanel {
         chosenNumber = number;
     }
 
+    public void setWrongNumber(int row, int column, int number) {
+        if (row >= 0 && row < gridSize && column >= 0 && column < gridSize) {
+            cells[row][column].setWrongNumber(number);
+        }
+    }
+
     public int getMarkedNumber() {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
