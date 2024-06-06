@@ -53,4 +53,13 @@ public class TimerFunction extends JPanel {
     public String getTimeString() {
         return timeLabel.getText();
     }
+
+    //Convert the timestring to seconds
+    public int getTimeToInt() {
+        String[] time = timeLabel.getText().split(":");
+        int hours = Integer.parseInt(time[0]);
+        int minutes = Integer.parseInt(time[1]);
+        int seconds = Integer.parseInt(time[2]);
+        return hours * 3600 + minutes * 60 + seconds;
+    }
 }
