@@ -475,7 +475,8 @@ public class SudokuGame {
                     String difficulty = Config.getDifficulty();
                     int time = timer.getTimeToInt(); // returns time in seconds or suitable format
 
-                    UpdateLeaderboard.addScore(username, difficulty, time);
+                    UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db" ,username, difficulty, time);
+
                     // Send a completion message to server
                     if (networkOut != null) {
                         networkOut.println("COMPLETED " + username);

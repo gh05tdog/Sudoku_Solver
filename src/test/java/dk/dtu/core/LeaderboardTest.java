@@ -2,6 +2,7 @@ package dk.dtu.core;
 
 import dk.dtu.engine.utility.DatabaseSetup;
 import dk.dtu.engine.utility.Leaderboard;
+import dk.dtu.engine.utility.UpdateLeaderboard;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,4 +69,17 @@ class LeaderboardTest {
         assertEquals(3, leaderboard.size(), "Leaderboard should contain 3 entries");
     }
 
+    @Test
+    void updateLeaderboard(){
+        // Test that the leaderboard can be updated
+        // Arrange
+        DatabaseSetup.setup(DB_URL);
+        // Act
+        UpdateLeaderboard.addScore( DB_URL, "TEST", "easy", 100);
+        List<Leaderboard.LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard("jdbc:sqlite:test_sudoku.db");
+        // Assert
+        assertEquals(1, leaderboard.size(), "Leaderboard should contain 1 entry");
+        assertEquals("TEST", leaderboard.getFirst().username(), "Username should be TEST");
+        assertEquals("easy", leaderboard.getFirst().difficulty(), "Difficulty should be easy");
+    }
 }

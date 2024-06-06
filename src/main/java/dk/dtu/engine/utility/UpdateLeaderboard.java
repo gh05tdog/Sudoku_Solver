@@ -15,8 +15,7 @@ public class UpdateLeaderboard {
     }
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateLeaderboard.class);
-    public static void addScore(String username, String difficulty, int time) {
-        String url = "jdbc:sqlite:sudoku.db";
+    public static void addScore(String url, String username, String difficulty, int time) {
         String sql = "INSERT INTO leaderboard(username, difficulty, time) VALUES(?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(url);
