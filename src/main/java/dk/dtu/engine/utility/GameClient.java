@@ -20,19 +20,28 @@ public class GameClient {
     }
 
     public void start() throws IOException, Board.BoardNotCreatable {
-        Socket socket = new Socket(serverAddress, 12345);
-        System.out.println("Connected to server at " + serverAddress);
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        try (Socket socket = new Socket(serverAddress, 12345)) {
+            System.out.println("Connected to server at " + serverAddress);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-        SudokuGame game = new SudokuGame(windowManager, 3, 3, 550 / 9); // Adjust as needed
-        game.setNetworkOut(out); // Pass the network output stream to the game
+            SudokuGame game = new SudokuGame(windowManager, 3, 3, 550 / 9); // Adjust as needed
+            game.setNetworkOut(out); // Pass the network output stream to the game
 
-        String message;
-        while ((message = in.readLine()) != null) {
-            System.out.println("Received message: " + message); // Display the message in the console
-            processNetworkMessage(message, game);
+            game.setNetworkGame(true);
+
+            String message;
+            while ((message = in.readLine()) != null) {
+                System.out.println("Received message: " + message); // Display the message in the console
+                processNetworkMessage(message, game);
+            }
+        } catch (IOException e) {
+            System.out.println("Error connecting to server: " + e.getMessage());
+        } finally {
+            System.out.println("Connection closed");
         }
+
+
     }
 
     private void processNetworkMessage(String message, SudokuGame game) {

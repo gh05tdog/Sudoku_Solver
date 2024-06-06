@@ -132,8 +132,6 @@ public class StartMenu {
     }
 
     private void onCreateGame(ActionEvent e) {
-        // Create a loading dialog
-        JDialog loadingDialog = createLoadingDialog();
 
         // Start the server in a separate thread
         new Thread(() -> {
@@ -142,23 +140,19 @@ public class StartMenu {
         }).start();
 
         // Allow some time for the server to start before connecting the client
-        Timer time = new Timer(1000, event -> {
-            connectClient("localhost", loadingDialog);
-        });
+        Timer time = new Timer(1000, event -> connectClient("localhost"));
         time.setRepeats(false);
         time.start();
-       // loadingDialog.setVisible(true); // Show the loading dialog
     }
 
     private void onJoinGame(ActionEvent e) {
         String serverAddress = JOptionPane.showInputDialog("Enter server address:");
         if (serverAddress != null && !serverAddress.isEmpty()) {
-            JDialog loadingDialog = createLoadingDialog();
-            connectClient(serverAddress, loadingDialog);
+            connectClient(serverAddress);
         }
     }
 
-    private void connectClient(String serverAddress, JDialog loadingDialog) {
+    private void connectClient(String serverAddress) {
         new Thread(() -> {
             WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
             GameClient client = new GameClient(serverAddress, windowManager);
@@ -166,21 +160,10 @@ public class StartMenu {
                 client.start();
             } catch (IOException | Board.BoardNotCreatable ex) {
                 throw new RuntimeException(ex);
-            } finally {
-                SwingUtilities.invokeLater(loadingDialog::dispose); // Close the loading dialog
             }
         }).start();
     }
 
-    private JDialog createLoadingDialog() {
-        JDialog loadingDialog = new JDialog(startMenuWindowManager.getFrame(), "Connecting", true);
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("Starting server and connecting..."));
-        loadingDialog.getContentPane().add(panel);
-        loadingDialog.setSize(300, 100);
-        loadingDialog.setLocationRelativeTo(startMenuWindowManager.getFrame());
-        return loadingDialog;
-    }
 
 
     private void addLeaderboardButton() {
@@ -363,7 +346,7 @@ public class StartMenu {
             throw new IOException("File is empty");
         }
 
-        String[] firstLine = lines.get(0).split(";");
+        String[] firstLine = lines.getFirst().split(";");
         if (firstLine.length < 2) {
             throw new IOException("First line format should be 'k;n'");
         }

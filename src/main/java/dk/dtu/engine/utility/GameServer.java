@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import dk.dtu.game.core.Board;
+import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,17 +23,6 @@ public class GameServer {
     private final ConcurrentHashMap<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>();
     private final Object lock = new Object();
     private int clientCount = 0;
-    private final int[][] initialBoard = {
-            {3, 0, 9, 0, 0, 2, 5, 1, 6},
-            {0, 7, 0, 0, 0, 9, 2, 4, 8},
-            {1, 8, 2, 0, 0, 6, 9, 3, 0},
-            {5, 3, 0, 6, 7, 0, 8, 2, 0},
-            {0, 6, 7, 9, 0, 0, 0, 5, 3},
-            {9, 0, 0, 3, 0, 0, 6, 7, 4},
-            {0, 0, 0, 4, 5, 0, 3, 8, 1},
-            {0, 0, 0, 0, 9, 1, 0, 6, 0},
-            {8, 1, 4, 2, 0, 0, 7, 9, 5}
-    };
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -48,17 +39,24 @@ public class GameServer {
                     if (clientCount == 2) {
                         sendInitialBoard();
                         broadcastMessage("READY"); // Notify all clients that the game is ready to start
+                        return;
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | Board.BoardNotCreatable e) {
             System.out.println("Error starting server: " + e.getMessage());
         }
     }
 
-    private void sendInitialBoard() {
+    private void sendInitialBoard() throws Board.BoardNotCreatable {
         StringBuilder boardString = new StringBuilder("INITIAL_BOARD ");
-        for (int[] row : initialBoard) {
+
+        Board board = new Board(3, 3);
+
+        // Generate a initial board
+        AlgorithmXSolver.createXSudoku(board);
+
+        for (int[] row : board.getGameBoard()) {
             for (int num : row) {
                 boardString.append(num).append(",");
             }
@@ -110,11 +108,9 @@ public class GameServer {
             String[] parts = message.split(" ");
             String command = parts[0];
 
-            switch (command) {
-                case "COMPLETED":
-                    String playerName = parts[1];
-                    announceWinner(playerName);
-                    break;
+            if (command.equals("COMPLETED")) {
+                String playerName = parts[1];
+                announceWinner(playerName);
                 // Handle other commands if needed
             }
         }

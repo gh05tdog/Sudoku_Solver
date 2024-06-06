@@ -64,6 +64,8 @@ public class SudokuGame {
 
     private boolean isCustomBoard = false;
 
+    private boolean isNetworkGame = false;
+
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
         this.windowManager = windowManager;
@@ -91,6 +93,10 @@ public class SudokuGame {
         }
     }
 
+    public void setNetworkGame(boolean networkGame) {
+        isNetworkGame = networkGame;
+    }
+
     public void setNetworkOut(PrintWriter networkOut) {
         this.networkOut = networkOut;
     }
@@ -101,24 +107,21 @@ public class SudokuGame {
 
         switch (command) {
             case "WINNER":
+                timer.stop();
                 String winner = parts[1];
                 SwingUtilities.invokeLater(() -> announceWinner(winner));
                 break;
             case "COMPLETED":
+                timer.stop();
                 String playerName = parts[1];
                 SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, playerName + " has completed the Sudoku!"));
                 break;
-            // Handle other commands if needed
         }
     }
 
     private void announceWinner(String winner) {
         JOptionPane.showMessageDialog(null, "The winner is: " + winner);
     }
-
-
-
-
 
     public void onSudokuBoardClicked(int x, int y) {
         int row = y / (board.getWidth() / gridSize); // Adjust for variable cell size
@@ -312,24 +315,11 @@ public class SudokuGame {
         gameboard.setInitialBoard(customBoard);
         gameboard.setGameBoard(deepCopyBoard(customBoard)); // Use deepCopy to avoid reference issues
 
-        int[][] board  = gameboard.getGameBoard();
-
-        for (int[] ints : board) {
-            for (int j = 0; j < board.length; j++) {
-                System.out.print(ints[j] + " ");
-            }
-            System.out.println();
-        }
-
-        // Get a solution for the custom board
 
 
         if (nSize == kSize) {
-            System.out.println("Solving XSudoku");
-             AlgorithmXSolver.solveExistingBoard(gameboard);
+            AlgorithmXSolver.solveExistingBoard(gameboard);
 
-            //
-            System.out.println("XSudoku solved");
         } else {
             BruteForceAlgorithm.createSudoku(gameboard);
         }
@@ -341,14 +331,11 @@ public class SudokuGame {
         //board.requestFocusInWindow();
         solveButton.setEnabled(true);
 
-        board = gameboard.getInitialBoard();
-
-        for (int[] ints : board) {
-            for (int j = 0; j < board.length; j++) {
-                System.out.print(ints[j] + " ");
-            }
-            System.out.println();
+        if(isNetworkGame) {
+            solveButton.setEnabled(false);
         }
+        isNetworkGame = false;
+
     }
 
     public void newGame() {
@@ -518,11 +505,6 @@ public class SudokuGame {
             }
         }
     }
-
-
-
-
-
     private boolean testMode() {
         return System.getProperty("testMode") != null;
     }
@@ -566,16 +548,6 @@ public class SudokuGame {
                     board.clearNotes();
                     timer.stop();
                     if (nSize == kSize) {
-                       int[][] solutionBoard = AlgorithmXSolver.getSolutionBoard();
-                        // Print the solution board to the console
-
-                        System.out.println("Solution board");
-                        for (int[] ints : solutionBoard) {
-                            for (int j = 0; j < solutionBoard.length; j++) {
-                                System.out.print(ints[j] + " ");
-                            }
-                            System.out.println();
-                        }
 
 
                         gameboard.setGameBoard(
@@ -584,14 +556,6 @@ public class SudokuGame {
                         gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
                     }
 
-                    System.out.println("Printing gameboard");
-                    int[][] board = gameboard.getGameBoard();
-                    for (int[] ints : board) {
-                        for (int j = 0; j < board.length; j++) {
-                            System.out.print(ints[j] + " ");
-                        }
-                        System.out.println();
-                    }
 
                     usedSolveButton = true;
                     checkCompletionAndOfferNewGame();
