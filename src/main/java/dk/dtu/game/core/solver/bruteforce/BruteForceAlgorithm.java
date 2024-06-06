@@ -135,16 +135,8 @@ public class BruteForceAlgorithm {
         int size = sudokuBoard.length;
         int[][] initialBoard;
         int numRemoved = 0;
-        int maxNumRemoved;
-        String difficulty = Config.getDifficulty();
+        int maxNumRemoved = SolverAlgorithm.setNumsRemoved(sudokuBoard);
 
-        maxNumRemoved =
-                switch (difficulty) {
-                    case "medium" -> 60;
-                    case "hard" -> 80;
-                    case "extreme" -> 200;
-                    default -> 30;
-                };
 
         while (numRemoved < maxNumRemoved) {
             int possibleSols = 0;
