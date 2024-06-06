@@ -260,11 +260,11 @@ public class SudokuGame {
             if(!wrongMoveList.isEmpty()) {
                 wrongMoveList.removeFirst();
             }
-            int row = move.getRow();
-            int col = move.getColumn();
+            int row = move.row();
+            int col = move.column();
             board.setHiddenProperty(row, col, false);
-            checkCellsForNotes(row, col, move.getNumber(), "show");
-            int prevNumber = move.getPreviousNumber();
+            checkCellsForNotes(row, col, move.number(), "show");
+            int prevNumber = move.previousNumber();
             gameboard.setNumber(row, col, prevNumber);
             board.setCellNumber(row, col, prevNumber);
             logger.debug("Undo move: Row: {}, Column: {}, Number: {}", row, col, prevNumber);
@@ -421,9 +421,9 @@ public class SudokuGame {
     public void provideHint() {
         if (!wrongMoveList.isEmpty()) {
             Move wrongMove = wrongMoveList.removeFirst();
-            int row = wrongMove.getRow();
-            int col = wrongMove.getColumn();
-            int number = wrongMove.getNumber();
+            int row = wrongMove.row();
+            int col = wrongMove.column();
+            int number = wrongMove.number();
 
             gameboard.setNumber(row, col, 0);
             board.setCellNumber(row, col, 0);
@@ -436,9 +436,9 @@ public class SudokuGame {
             Move hintMove = hintList.get(hintIndex);
             hintList.remove(hintIndex);
 
-            int row = hintMove.getRow();
-            int col = hintMove.getColumn();
-            int number = hintMove.getNumber();
+            int row = hintMove.row();
+            int col = hintMove.column();
+            int number = hintMove.number();
 
             checkCellsForNotes(row, col, number, "hide");
             gameboard.setNumber(row, col, number);
@@ -458,8 +458,8 @@ public class SudokuGame {
             if (!usedSolveButton) {
                 timer.stop();
                 // Preferences object to store and retrieve the username
-                Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-                String storedUsername = prefs.get("username", "");
+                Preferences pref = Preferences.userNodeForPackage(this.getClass());
+                String storedUsername = pref.get("username", "");
 
                 if (networkOut != null) {
                     networkOut.println("COMPLETED " + "Player1");
@@ -469,7 +469,7 @@ public class SudokuGame {
                 String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", storedUsername);
                 if (username != null && !username.trim().isEmpty()) {
                     // Store the username in preferences
-                    prefs.put("username", username.trim());
+                    pref.put("username", username.trim());
 
                     // Add the completion details to the leaderboard
                     String difficulty = Config.getDifficulty();
