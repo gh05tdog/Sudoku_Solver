@@ -13,8 +13,8 @@ public class BruteForceAlgorithm {
 
     static Random rand = new Random();
     static Logger logger = Logger.getLogger(BruteForceAlgorithm.class.getName());
-
     public static int[][] solvedBoard;
+
     public static int n;
 
     private BruteForceAlgorithm() {

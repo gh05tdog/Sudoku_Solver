@@ -64,6 +64,7 @@ class SudokuGameTest {
     }
 
     @Test
+    @DisplayName("Test if the game is initialized correctly")
     void testGameInitialization() {
         assertNotNull(game.gameboard, "Game board must not be null after initialization.");
         assertEquals(9, game.gameboard.getDimensions(), "Game board should be initialized as 9x9.");
@@ -221,7 +222,7 @@ class SudokuGameTest {
                 () -> {
                     game.getNewGameButton().doClick();
                     game.gameboard.setGameBoard(
-                            Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
+                            Objects.requireNonNull(game.gameboard.getSolvedBoard()));
                 });
 
         // Now wait for all pending events to be processed
@@ -229,7 +230,7 @@ class SudokuGameTest {
                 () -> {
                     // Assuming the solver updates the board directly and synchronously from the
                     // event handlers
-                    int[][] expected = AlgorithmXSolver.getSolutionBoard();
+                    int[][] expected = game.gameboard.getSolvedBoard();
                     int[][] actual = game.gameboard.getGameBoard();
 
                     // Use Arrays.deepEquals to compare multi-dimensional arrays

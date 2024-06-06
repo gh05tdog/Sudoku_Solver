@@ -63,6 +63,7 @@ public class SolverAlgorithm {
                     case "extreme" -> 4*numOfCells/5;
                     default -> numOfCells/3;
                 };
+        System.out.println(maxNumRemoved);
         return maxNumRemoved;
     }
 }

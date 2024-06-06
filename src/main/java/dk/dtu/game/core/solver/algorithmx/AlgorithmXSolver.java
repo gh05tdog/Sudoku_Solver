@@ -21,6 +21,7 @@ public class AlgorithmXSolver {
     public static void createXSudoku(Board board) {
         int[][] sudokuBoard = solveExistingBoard(board);
         solvedBoard = deepSetSolutionBoard(sudokuBoard);
+        board.setSolvedBoard(solvedBoard);
         removeXRecursive(sudokuBoard, arraySize * arraySize / 2);
         board.setInitialBoard(sudokuBoard);
         board.setBoard(sudokuBoard);
