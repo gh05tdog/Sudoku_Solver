@@ -1,4 +1,3 @@
-/* (C)2024 */
 package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,16 +35,16 @@ public class SolverTest {
 
         DancingLinks dl = new DancingLinks(coverList);
         printMatrix(dl);
-        ColumnNode c = (ColumnNode) dl.header.right;
+        ColumnNode c = (ColumnNode) dl.getHeader().getRight();
 
         c.cover();
-        System.out.println("Covered column: " + c.name);
+        System.out.println("Covered column: " + c.getName());
         System.out.println("After covering:");
         printMatrix(dl);
         assertTrue(isColumnCovered(c));
 
         c.uncover();
-        System.out.println("Uncovered column: " + c.name);
+        System.out.println("Uncovered column: " + c.getName());
         System.out.println("After uncovering:");
         printMatrix(dl);
         assertFalse(isColumnCovered(c));
@@ -55,7 +54,7 @@ public class SolverTest {
     @DisplayName("Test if a column is correctly covered")
     void testCover() {
         DancingLinks dl = new DancingLinks(coverList);
-        ColumnNode c = (ColumnNode) dl.header.right;
+        ColumnNode c = (ColumnNode) dl.getHeader().getRight();
         c.cover();
         assertTrue(isColumnCovered(c));
     }
@@ -64,7 +63,7 @@ public class SolverTest {
     @DisplayName("Test if a column is correctly uncovered")
     void testColumnUncoverAssertion() {
         DancingLinks dl = new DancingLinks(coverList);
-        ColumnNode c = (ColumnNode) dl.header.right;
+        ColumnNode c = (ColumnNode) dl.getHeader().getRight();
         c.cover();
         assertTrue(isColumnCovered(c));
         c.uncover();
@@ -117,67 +116,67 @@ public class SolverTest {
         List<AlgorithmXSolver.Placement> placements = new ArrayList<>();
         List<int[]> exactCoverBoard = AlgorithmXSolver.createExactCoverFromBoard(board, placements);
         DancingLinks dl = new DancingLinks(exactCoverBoard);
-        ColumnNode header = dl.header;
+        ColumnNode header = dl.getHeader();
         // all columNodes must have size equal to the number of numbers in the board
-        for (Node node = header.right; node != header; node = node.right) {
+        for (Node node = header.getRight(); node != header; node = node.getRight()) {
             ColumnNode columnNode = (ColumnNode) node;
-            assertEquals(9, columnNode.size);
+            assertEquals(9, columnNode.getSize());
         }
         // there must columns equal to the size of the constraint:
         int totalColumns = 0;
-        for (Node node = header.right; node != header; node = node.right) {
+        for (Node node = header.getRight(); node != header; node = node.getRight()) {
             totalColumns++;
         }
         assertEquals(constraint, totalColumns);
 
         // The number of rows must then be 4*size*size*size
         int totalNodes = 0;
-        for (Node node = header.right; node != header; node = node.right) {
+        for (Node node = header.getRight(); node != header; node = node.getRight()) {
             ColumnNode columnNode = (ColumnNode) node;
-            totalNodes += columnNode.size;
+            totalNodes += columnNode.getSize();
         }
         assertEquals(4 * size * size * size, totalNodes);
     }
 
     public static void printMatrix(DancingLinks dl) {
-        ColumnNode header = dl.header;
-        ColumnNode columnNode = (ColumnNode) header.right;
+        ColumnNode header = dl.getHeader();
+        ColumnNode columnNode = (ColumnNode) header.getRight();
 
         // Traverse all columns from the header
         while (columnNode != header) {
-            System.out.println("Column " + columnNode.name + " size: " + columnNode.size);
-            Node rowNode = columnNode.down;
+            System.out.println("Column " + columnNode.getName() + " size: " + columnNode.getSize());
+            Node rowNode = columnNode.getDown();
 
             // Traverse all rows in the current column
             while (rowNode != columnNode) {
                 // Print details about each node in the row for the current column
                 System.out.print("Row " + getRowIndex(rowNode) + " -> ");
-                Node rightNode = rowNode.right;
+                Node rightNode = rowNode.getRight();
 
                 // Traverse all nodes in this row (right direction from the current column's node)
                 while (rightNode != rowNode) {
-                    System.out.print(rightNode.column.name + " ");
-                    rightNode = rightNode.right;
+                    System.out.print(rightNode.getColumn().getName() + " ");
+                    rightNode = rightNode.getRight();
                 }
 
                 System.out.println(); // New line for each row
-                rowNode = rowNode.down;
+                rowNode = rowNode.getDown();
             }
-            columnNode = (ColumnNode) columnNode.right;
+            columnNode = (ColumnNode) columnNode.getRight();
         }
     }
 
     // Utility function to check if a column is correctly covered
     public static boolean isColumnCovered(ColumnNode column) {
         // Check that the column's left and right links bypass this column
-        if (column.left.right != column.right || column.right.left != column.left) {
+        if (column.getLeft().getRight() != column.getRight() || column.getRight().getLeft() != column.getLeft()) {
             return false;
         }
 
         // Ensure no node in this column is accessible from other parts of the matrix
-        for (Node node = column.down; node != column; node = node.down) {
-            for (Node rightNode = node.right; rightNode != node; rightNode = rightNode.right) {
-                if (rightNode.column == column) {
+        for (Node node = column.getDown(); node != column; node = node.getDown()) {
+            for (Node rightNode = node.getRight(); rightNode != node; rightNode = rightNode.getRight()) {
+                if (rightNode.getColumn() == column) {
                     // If any node still points back to this column, it's not fully covered
                     return false;
                 }
@@ -190,14 +189,14 @@ public class SolverTest {
     // Utility function to check if a column is correctly uncovered
     public static boolean isColumnUncovered(ColumnNode column, List<int[]> matrix) {
         // Verify column links are restored
-        if (column.left.right != column || column.right.left != column) {
+        if (column.getLeft().getRight() != column || column.getRight().getLeft() != column) {
             return false;
         }
 
         // Check if all nodes are restored in the column as per the matrix definition
         int currentRow = 0;
-        for (Node node = column.down; node != column; node = node.down, currentRow++) {
-            if (matrix.get(node.rowIndex)[Integer.parseInt(column.name)] != 1) {
+        for (Node node = column.getDown(); node != column; node = node.getDown(), currentRow++) {
+            if (matrix.get(node.getRowIndex())[Integer.parseInt(column.getName())] != 1) {
                 return false; // The node exists where matrix indicates there should be no node
             }
         }
@@ -206,7 +205,7 @@ public class SolverTest {
     }
 
     private static int getRowIndex(Node node) {
-        return node.rowIndex; // Directly return the stored row index
+        return node.getRowIndex(); // Directly return the stored row index
     }
 
     @Test

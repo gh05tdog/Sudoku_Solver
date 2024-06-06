@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver.algorithmx;
 
 import dk.dtu.game.core.Board;
@@ -20,10 +21,9 @@ public class AlgorithmXSolver {
     public static void createXSudoku(Board board) {
         int[][] sudokuBoard = solveExistingBoard(board);
         solvedBoard = deepSetSolutionBoard(sudokuBoard);
-        removeXNumbers(sudokuBoard);
+        removeXRecursive(sudokuBoard, arraySize * arraySize / 2);
         board.setInitialBoard(sudokuBoard);
         board.setBoard(sudokuBoard);
-        board.setSolvedBoard(solvedBoard);
     }
 
     public static int[][] solveExistingBoard(Board board) {
@@ -32,7 +32,7 @@ public class AlgorithmXSolver {
         List<Placement> placements = new ArrayList<>();
         List<int[]> xBoard = createExactCoverFromBoard(arr, placements);
         DancingLinks dl = new DancingLinks(xBoard);
-        ColumnNode header = dl.header;
+        ColumnNode header = dl.getHeader();
 
         Solution.clear(); // Clear the solution list before each run
 
@@ -78,54 +78,29 @@ public class AlgorithmXSolver {
         coverList.add(cover);
     }
 
-    public static void removeXNumbers(int[][] arr) {
-        long maxTime = 0;
+    public static void removeXRecursive(int[][] arr, int maxRemoved) {
+        Solution.clear();
+
         int numRemoved = 0;
-        long startTime;
-        long endTime;
-        int maxRemoved = SolverAlgorithm.setNumsRemoved(arr);
 
-        int [] randRow = fisherYatesShuffle(arr.length);
-        int [] randCol = fisherYatesShuffle(arr.length);
+        while (numRemoved < maxRemoved) {
+            int randRow = rand.nextInt(arr.length);
+            int randCol = rand.nextInt(arr.length);
 
-        int x = 0;
-        int y = 0;
-
-        while (numRemoved < maxRemoved && y < arr.length) {
-            startTime = System.nanoTime();
-            if (arr[randRow[x]][randCol[y]] != 0) {
-
-                int tempNumber = arr[randRow[x]][randCol[y]];
-                arr[randRow[x]][randCol[y]] = 0;
-
-                if (checkUniqueSolution(arr) == 1) {
-                    endTime = System.nanoTime();
-                    numRemoved++;
-                    randRow = fisherYatesShuffle(arr.length);
-                    randCol = fisherYatesShuffle(arr.length);
-                    x = 0;
-                    y = 0;
-
-                    maxTime = ((maxTime*(numRemoved-1) + (endTime - startTime)) /  numRemoved);
-
-                    if (endTime - startTime > maxTime*10) {
-                        break;
-                    }
-                } else {
-                    arr[randRow[x]][randCol[y]] = tempNumber; // Restore the number if removing it doesn't lead to a unique solution.
-                    x++;
-                    if (x == arr.length) {
-                        x = 0;
-                        y++;
-                    }
-                }
-            }
-            x ++;
-            if (x == arr.length) {
-                x = 0;
-                y++;
+            if (arr[randRow][randCol] == 0) {
+                continue; // Skip already removed numbers.
             }
 
+            int tempNumber = arr[randRow][randCol];
+            arr[randRow][randCol] = 0;
+
+            if (checkUniqueSolution(arr) == 1) {
+                numRemoved++; // Only remove the number permanently if there's exactly one solution.
+            } else {
+                arr[randRow][randCol] =
+                        tempNumber; // Restore the number if removing it doesn't lead to a unique
+                // solution.
+            }
         }
     }
 
@@ -133,11 +108,11 @@ public class AlgorithmXSolver {
         List<Placement> placements = new ArrayList<>();
         List<int[]> xBoard = createExactCoverFromBoard(board, placements);
         DancingLinks dl = new DancingLinks(xBoard);
-        return countSolutions(dl.header, 0);
+        return countSolutions(dl.getHeader(), 0);
     }
 
     private static int countSolutions(ColumnNode header, int count) {
-        if (header.right == header) {
+        if (header.getRight() == header) {
             return count + 1; // Found a solution
         }
         if (count > 1) {
@@ -147,16 +122,16 @@ public class AlgorithmXSolver {
         ColumnNode c = chooseHeuristicColumn(header);
         c.cover();
 
-        for (Node r = c.down; r != c; r = r.down) {
-            for (Node j = r.right; j != r; j = j.right) {
-                j.column.cover();
+        for (Node r = c.getDown(); r != c; r = r.getDown()) {
+            for (Node j = r.getRight(); j != r; j = j.getRight()) {
+                j.getColumn().cover();
             }
 
             count = countSolutions(header, count);
             if (count > 1) return count; // Early exit
 
-            for (Node j = r.left; j != r; j = j.left) {
-                j.column.uncover();
+            for (Node j = r.getLeft(); j != r; j = j.getLeft()) {
+                j.getColumn().uncover();
             }
         }
 
@@ -165,7 +140,7 @@ public class AlgorithmXSolver {
     }
 
     public static boolean algorithmXSolver(ColumnNode header) {
-        if (header.right == header) {
+        if (header.getRight() == header) {
             return true; // Return true indicating the solution was found
         }
 
@@ -175,18 +150,18 @@ public class AlgorithmXSolver {
 
         // Optionally, display the state of the linked list or affected columns here
 
-        for (Node r = c.down; r != c; r = r.down) {
+        for (Node r = c.getDown(); r != c; r = r.getDown()) {
             selectRow(r);
-            for (Node j = r.right; j != r; j = j.right) {
-                j.column.cover();
+            for (Node j = r.getRight(); j != r; j = j.getRight()) {
+                j.getColumn().cover();
             }
 
             if (algorithmXSolver(header)) {
                 return true; // Return immediately if solution was found
             }
 
-            for (Node j = r.left; j != r; j = j.left) {
-                j.column.uncover();
+            for (Node j = r.getLeft(); j != r; j = j.getLeft()) {
+                j.getColumn().uncover();
             }
             deselectRow(r);
         }
@@ -197,17 +172,17 @@ public class AlgorithmXSolver {
     }
 
     public static ColumnNode chooseHeuristicColumn(ColumnNode header) {
-        ColumnNode c = (ColumnNode) header.right;
+        ColumnNode c = (ColumnNode) header.getRight();
         List<ColumnNode> columns = new ArrayList<>();
-        int minSize = c.size;
-        for (ColumnNode temp = (ColumnNode) header.right;
+        int minSize = c.getSize();
+        for (ColumnNode temp = (ColumnNode) header.getRight();
              temp != header;
-             temp = (ColumnNode) temp.right) {
-            if (temp.size < minSize) {
-                minSize = temp.size;
+             temp = (ColumnNode) temp.getRight()) {
+            if (temp.getSize() < minSize) {
+                minSize = temp.getSize();
                 columns.clear();
                 columns.add(temp);
-            } else if (temp.size == minSize) {
+            } else if (temp.getSize() == minSize) {
                 columns.add(temp);
             }
         }
@@ -226,7 +201,7 @@ public class AlgorithmXSolver {
         int[][] board = new int[arraySize][arraySize];
 
         for (Node node : solution) {
-            Placement placement = placements.get(node.rowIndex);
+            Placement placement = placements.get(node.getRowIndex());
             board[placement.row][placement.col] = placement.value;
         }
 
@@ -243,19 +218,5 @@ public class AlgorithmXSolver {
 
     public static int[][] getSolutionBoard() {
         return solvedBoard;
-    }
-
-    public static int[] fisherYatesShuffle(int n) {
-        int[] arr = new int[n];
-        for (int i = 0; i < n; i++) {
-            arr[i] = i;
-        }
-        for (int i = n - 1; i > 0; i--) {
-            int j = rand.nextInt(i + 1);
-            int temp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = temp;
-        }
-        return arr;
     }
 }
