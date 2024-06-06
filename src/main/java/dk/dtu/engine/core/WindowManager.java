@@ -20,6 +20,8 @@ public class WindowManager {
     JPanel heartsPanel = new JPanel();
     BufferedImage emptyHeartImage = null;
     ImageIcon emptyHeartIcon = null;
+    BufferedImage heartImage = null;
+    ImageIcon heartIcon = null;
 
     public WindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
@@ -60,20 +62,12 @@ public class WindowManager {
     private void addHeartLabels() {
         heartStates = new boolean[5]; // Assuming 5 hearts as maximum
         try {
-            // Load the image
-            BufferedImage heartImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/redHeart.png")));
-            System.out.println("Image loaded successfully"); // Debug message
-
-            // Resize the image
-            Image scaledHeartImage = heartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-            ImageIcon heartIcon = new ImageIcon(scaledHeartImage);
-
             heartsPanel.setBackground(Color.WHITE);
             heartsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0)); // Horizontal layout with small gaps
 
             if (Config.getEnableLives()) {
                 for (int i = 0; i < 5; i++) {
-                    JLabel heartLabel = new JLabel(heartIcon);
+                    JLabel heartLabel = new JLabel();
                     heartsPanel.add(heartLabel);
                     heartStates[i] = true; // Mark the heart as full
                 }
@@ -87,9 +81,8 @@ public class WindowManager {
             gbc.insets = new Insets(10, 10, 10, 10);
             whitePanel.add(heartsPanel, gbc);
             System.out.println("Heart labels added to whitePanel"); // Debug message
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
+        }
+        catch (NullPointerException e) {
             System.out.println("Image not found, check the path."); // Debug message
         }
     }
@@ -118,8 +111,7 @@ public class WindowManager {
 
         if (lastIndex != -1) {
             Component comp = heartsPanel.getComponent(lastIndex);
-            if (comp instanceof JLabel) {
-                JLabel label = (JLabel) comp;
+            if (comp instanceof JLabel label) {
                 label.setIcon(emptyHeartIcon);
                 heartStates[lastIndex] = false; // Update state to empty
                 System.out.println("Heart emptied at index: " + lastIndex);
@@ -128,6 +120,32 @@ public class WindowManager {
             System.out.println("No full heart found to replace");
         }
 
+        heartsPanel.revalidate();
+        heartsPanel.repaint();
+    }
+
+    public void setHeart(){
+        try {
+            if (heartImage == null){
+                heartImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/redHeart.png")));
+                Image scaledHeartImage = heartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+                heartIcon = new ImageIcon(scaledHeartImage);
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            System.out.println("Image not found, check the path."); // Debug message
+        }
+
+        for (int i = 0; i < heartsPanel.getComponentCount(); i++) {
+            Component comp = heartsPanel.getComponent(i);
+            if (comp instanceof JLabel label) {
+                label.setIcon(heartIcon); // Set each heart to full
+                heartStates[i] = true; // Mark the heart as full
+            }
+        }
         heartsPanel.revalidate();
         heartsPanel.repaint();
     }

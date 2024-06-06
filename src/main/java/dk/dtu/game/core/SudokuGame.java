@@ -169,7 +169,6 @@ public class SudokuGame {
                 if (Config.getEnableLives() && gameboard.getNumber(row, col) != solutionB[row][col]) {
                     windowManager.removeHeart();
                     board.setWrongNumber(row, col, number);
-
                 } else {
                     wrongMoveList.push(move);
                 }
@@ -212,7 +211,9 @@ public class SudokuGame {
     public void undoMove() {
         if (!moveList.isEmpty()) {
             Move move = moveList.pop();
-            wrongMoveList.pop();
+            if(!Config.getEnableLives()){
+                wrongMoveList.pop();
+            }
             int row = move.getRow();
             int col = move.getColumn();
             board.setHiddenProperty(row, col, false);
@@ -263,6 +264,7 @@ public class SudokuGame {
         displayButtons();
         windowManager.drawBoard(board);
         windowManager.setupNumberAndTimerPanel(timer, numbers);
+        windowManager.setHeart();
         windowManager.layoutComponents(timer, numbers);
         gameboard.setInitialBoard(customBoard);
         gameboard.setGameBoard(customBoard);
@@ -288,6 +290,8 @@ public class SudokuGame {
         hintList.clear();
         moveList.clear();
         wrongMoveList.clear();
+        windowManager.setHeart();
+        board.clearWrongNumbers();
         timer.stop();
         timer.reset();
         board.clearNotes();

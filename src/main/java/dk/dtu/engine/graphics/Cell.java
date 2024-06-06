@@ -43,7 +43,7 @@ class Cell implements Serializable {
 
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
         if(isMarked){
-            g.setColor(new Color(155, 155, 147));
+            g.setColor(new Color(169, 169, 167));
         }
         else if (isHighlighted) {
             g.setColor(new Color(225, 223, 221));

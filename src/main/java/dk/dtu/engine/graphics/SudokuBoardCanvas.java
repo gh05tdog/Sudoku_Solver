@@ -262,4 +262,12 @@ public class SudokuBoardCanvas extends JPanel {
         cells[row][col].setTextColor(color);
         repaint();
     }
+
+    public void clearWrongNumbers() {
+        for(int i = 0; i < gridSize; i++) {
+            for(int j = 0; j < gridSize; j++) {
+                cells[i][j].setWrongNumber(0);
+            }
+        }
+    }
 }
