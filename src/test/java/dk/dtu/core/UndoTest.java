@@ -68,7 +68,7 @@ class UndoTest {
 
         // Apply all hints to the board
         for (Move hint : game.getHintList()) {
-            game.gameboard.setNumber(hint.getRow(), hint.getColumn(), hint.getNumber());
+            game.gameboard.setNumber(hint.row(), hint.column(), hint.number());
         }
 
         // Validate the Sudoku board
