@@ -17,11 +17,24 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.AbstractDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.dtu.engine.utility.Leaderboard;
+import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+import javax.swing.JDialog;
+
+
+
 public class StartMenu {
+
 
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
 
@@ -42,6 +55,8 @@ public class StartMenu {
 
     private final ButtonGroup difficultyGroup = new ButtonGroup();
     private final CustomComponentGroup sizeGroup = new CustomComponentGroup();
+
+    private static final String FONT = "SansSerif";
 
     private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
 
@@ -88,6 +103,7 @@ public class StartMenu {
         addButtonPanelButtons();
         addInputPanelButtons();
         addImportButton();
+        addLeaderboardButton();
         updateCustomBoardPanel(2, 2);
 
         threeByThree.updateBackgroundColor(Color.GRAY);
@@ -97,6 +113,65 @@ public class StartMenu {
 
         addChangeListenerToField(inputNField);
         addChangeListenerToField(inputKField);
+    }
+
+    private void addLeaderboardButton() {
+        JButton leaderboardButton = new JButton("Show Leaderboard");
+        leaderboardButton.addActionListener(this::onShowLeaderboard);
+        leaderboardButton.setBounds(5, 180, 190, 40); // Adjust the size and position as needed
+        leaderboardButton.setBackground(Color.WHITE);
+        leaderboardButton.setFocusPainted(false);
+        startMenuWindowManager.addComponent(leaderboardButton, startMenuWindowManager.getButtonPanel());
+    }
+
+    private void onShowLeaderboard(ActionEvent e) {
+        // Column names for the leaderboard table
+        String[] columnNames = {"Username", "Difficulty", "Time", "Timestamp"};
+
+        // Fetch leaderboard data
+        List<LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard("jdbc:sqlite:sudoku.db");
+        List<String[]> rowData = new ArrayList<>();
+        for (LeaderboardEntry entry : leaderboard) {
+            rowData.add(new String[]{
+                    entry.username(),
+                    entry.difficulty(),
+                    String.format("%02d:%02d:%02d", entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
+                    entry.timestamp()
+            });
+        }
+
+        // Create a non-editable table model
+        DefaultTableModel model = new DefaultTableModel(rowData.toArray(new String[0][0]), columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable leaderboardTable = new JTable(model);
+        leaderboardTable.setFillsViewportHeight(true);
+        leaderboardTable.setRowHeight(30);
+        leaderboardTable.getTableHeader().setFont(new Font(FONT, Font.BOLD, 14));
+        leaderboardTable.setFont(new Font(FONT, Font.PLAIN, 12));
+        leaderboardTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Center align the table cell contents
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < leaderboardTable.getColumnCount(); i++) {
+            leaderboardTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+
+        // Create a JScrollPane containing the JTable
+        JScrollPane leaderboardScrollPane = new JScrollPane(leaderboardTable);
+
+        // Create a JDialog to display the leaderboard
+        JDialog leaderboardDialog = new JDialog();
+        leaderboardDialog.setTitle("Leaderboard");
+        leaderboardDialog.setSize(600, 400); // Adjust the size as needed
+        leaderboardDialog.setLocationRelativeTo(null);
+        leaderboardDialog.add(leaderboardScrollPane);
+        leaderboardDialog.setVisible(true);
     }
 
     private void addChangeListenerToField(JTextField field) {
@@ -137,7 +212,7 @@ public class StartMenu {
 
     private void addInputPanelButtons() {
         // This method adds the N and K fields for the custom board
-        Font fieldFont = new Font("SansSerif", Font.BOLD, 20);
+        Font fieldFont = new Font(FONT, Font.BOLD, 20);
 
         JTextField[] fields = {inputKField, inputNField};
         String[] initialTexts = {"K", "N"};

@@ -51,7 +51,6 @@ public class SolverAlgorithm {
         }
         return possiblePlacements;
     }
-
     public static int setNumsRemoved (int [][] arr) {
         int numOfCells = arr.length*arr.length;
         String difficulty = Config.getDifficulty();
@@ -63,7 +62,6 @@ public class SolverAlgorithm {
                     case "extreme" -> 4*numOfCells/5;
                     default -> numOfCells/3;
                 };
-        System.out.println(maxNumRemoved);
         return maxNumRemoved;
     }
 }
