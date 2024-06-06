@@ -151,6 +151,15 @@ public class WindowManager {
     }
 
 
+    public boolean checkGameOver() {
+        for (boolean heartState : heartStates) {
+            if (heartState) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
 
 

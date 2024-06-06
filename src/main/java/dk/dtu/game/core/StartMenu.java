@@ -171,6 +171,14 @@ public class StartMenu {
         gameRuleButton.setBounds(5, 5, 150, 40); // Set bounds appropriately if needed
         gameRuleButton.setBackground(Color.WHITE);
         gameRuleButton.setFocusPainted(false);
+        gameRuleButton.addMouseListener(new java.awt.event.MouseAdapter(){
+            public void mouseEntered(java.awt.event.MouseEvent evt){
+                gameRuleButton.setBackground(Color.LIGHT_GRAY);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt){
+                gameRuleButton.setBackground(Color.WHITE);
+            }
+        });
         startMenuWindowManager.addComponent(gameRuleButton, startMenuWindowManager.getGameRulePanel());
 
         gameRuleButton.addActionListener(e -> {

@@ -391,22 +391,32 @@ public class SudokuGame {
     }
 
     public void checkCompletionAndOfferNewGame() {
-        if (isSudokuCompleted() && !testMode()) {
+        boolean completedSuccessfully = isSudokuCompleted() && !testMode();
+        boolean isGameOver = isGameOver();
+
+        if (completedSuccessfully || isGameOver) {
             timer.stop();
+            String message;
+            if (completedSuccessfully) {
+                message = "Congratulations! You've completed the Sudoku in\n"
+                        + timer.getTimeString()
+                        + "\n\n"
+                        + "Would you like to start a new game?";
+            } else { // This is the game over scenario
+                message = "Game Over! You've run out of hearts.\n\n"
+                        + "Would you like to start a new game?";
+            }
+
             Object[] options = {"New Game", "Close"};
-            int response =
-                    JOptionPane.showOptionDialog(
-                            null,
-                            "Congratulations! You've completed the Sudoku in\n"
-                                    + timer.getTimeString()
-                                    + "\n\n"
-                                    + "Would you like to start a new game?",
-                            "Game Completed",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE,
-                            null,
-                            options,
-                            options[0]);
+            int response = JOptionPane.showOptionDialog(
+                    null,
+                    message,
+                    completedSuccessfully ? "Game Completed" : "Game Over",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
 
             if (response == JOptionPane.YES_OPTION) {
                 try {
@@ -416,6 +426,10 @@ public class SudokuGame {
                 }
             }
         }
+    }
+
+    private boolean isGameOver(){
+        return windowManager.checkGameOver();
     }
 
     private boolean testMode() {
