@@ -21,6 +21,7 @@ public class AlgorithmXSolver {
     public static void createXSudoku(Board board) {
         int[][] sudokuBoard = solveExistingBoard(board);
         solvedBoard = deepSetSolutionBoard(sudokuBoard);
+        board.setSolvedBoard(solvedBoard);
         removeXRecursive(sudokuBoard, arraySize * arraySize / 2);
         board.setInitialBoard(sudokuBoard);
         board.setBoard(sudokuBoard);
@@ -32,7 +33,7 @@ public class AlgorithmXSolver {
         List<Placement> placements = new ArrayList<>();
         List<int[]> xBoard = createExactCoverFromBoard(arr, placements);
         DancingLinks dl = new DancingLinks(xBoard);
-        ColumnNode header = dl.header;
+        ColumnNode header = dl.getHeader();
 
         Solution.clear(); // Clear the solution list before each run
 
@@ -108,11 +109,11 @@ public class AlgorithmXSolver {
         List<Placement> placements = new ArrayList<>();
         List<int[]> xBoard = createExactCoverFromBoard(board, placements);
         DancingLinks dl = new DancingLinks(xBoard);
-        return countSolutions(dl.header, 0);
+        return countSolutions(dl.getHeader(), 0);
     }
 
     private static int countSolutions(ColumnNode header, int count) {
-        if (header.right == header) {
+        if (header.getRight() == header) {
             return count + 1; // Found a solution
         }
         if (count > 1) {
@@ -122,16 +123,16 @@ public class AlgorithmXSolver {
         ColumnNode c = chooseHeuristicColumn(header);
         c.cover();
 
-        for (Node r = c.down; r != c; r = r.down) {
-            for (Node j = r.right; j != r; j = j.right) {
-                j.column.cover();
+        for (Node r = c.getDown(); r != c; r = r.getDown()) {
+            for (Node j = r.getRight(); j != r; j = j.getRight()) {
+                j.getColumn().cover();
             }
 
             count = countSolutions(header, count);
             if (count > 1) return count; // Early exit
 
-            for (Node j = r.left; j != r; j = j.left) {
-                j.column.uncover();
+            for (Node j = r.getLeft(); j != r; j = j.getLeft()) {
+                j.getColumn().uncover();
             }
         }
 
@@ -140,7 +141,7 @@ public class AlgorithmXSolver {
     }
 
     public static boolean algorithmXSolver(ColumnNode header) {
-        if (header.right == header) {
+        if (header.getRight() == header) {
             return true; // Return true indicating the solution was found
         }
 
@@ -150,18 +151,18 @@ public class AlgorithmXSolver {
 
         // Optionally, display the state of the linked list or affected columns here
 
-        for (Node r = c.down; r != c; r = r.down) {
+        for (Node r = c.getDown(); r != c; r = r.getDown()) {
             selectRow(r);
-            for (Node j = r.right; j != r; j = j.right) {
-                j.column.cover();
+            for (Node j = r.getRight(); j != r; j = j.getRight()) {
+                j.getColumn().cover();
             }
 
             if (algorithmXSolver(header)) {
                 return true; // Return immediately if solution was found
             }
 
-            for (Node j = r.left; j != r; j = j.left) {
-                j.column.uncover();
+            for (Node j = r.getLeft(); j != r; j = j.getLeft()) {
+                j.getColumn().uncover();
             }
             deselectRow(r);
         }
@@ -172,17 +173,17 @@ public class AlgorithmXSolver {
     }
 
     public static ColumnNode chooseHeuristicColumn(ColumnNode header) {
-        ColumnNode c = (ColumnNode) header.right;
+        ColumnNode c = (ColumnNode) header.getRight();
         List<ColumnNode> columns = new ArrayList<>();
-        int minSize = c.size;
-        for (ColumnNode temp = (ColumnNode) header.right;
-                temp != header;
-                temp = (ColumnNode) temp.right) {
-            if (temp.size < minSize) {
-                minSize = temp.size;
+        int minSize = c.getSize();
+        for (ColumnNode temp = (ColumnNode) header.getRight();
+             temp != header;
+             temp = (ColumnNode) temp.getRight()) {
+            if (temp.getSize() < minSize) {
+                minSize = temp.getSize();
                 columns.clear();
                 columns.add(temp);
-            } else if (temp.size == minSize) {
+            } else if (temp.getSize() == minSize) {
                 columns.add(temp);
             }
         }
@@ -201,7 +202,7 @@ public class AlgorithmXSolver {
         int[][] board = new int[arraySize][arraySize];
 
         for (Node node : solution) {
-            Placement placement = placements.get(node.rowIndex);
+            Placement placement = placements.get(node.getRowIndex());
             board[placement.row][placement.col] = placement.value;
         }
 

@@ -13,8 +13,8 @@ public class BruteForceAlgorithm {
 
     static Random rand = new Random();
     static Logger logger = Logger.getLogger(BruteForceAlgorithm.class.getName());
-
     public static int[][] solvedBoard;
+
     public static int n;
 
     private BruteForceAlgorithm() {
@@ -28,6 +28,7 @@ public class BruteForceAlgorithm {
         sudokuBoard = removeNumsRecursive(sudokuBoard);
         board.setInitialBoard(sudokuBoard);
         board.setBoard(sudokuBoard);
+        board.setSolvedBoard(solvedBoard);
     }
 
     public static boolean sudoku(int[][] board) {
@@ -134,16 +135,8 @@ public class BruteForceAlgorithm {
         int size = sudokuBoard.length;
         int[][] initialBoard;
         int numRemoved = 0;
-        int maxNumRemoved;
-        String difficulty = Config.getDifficulty();
+        int maxNumRemoved = SolverAlgorithm.setNumsRemoved(sudokuBoard);
 
-        maxNumRemoved =
-                switch (difficulty) {
-                    case "medium" -> 60;
-                    case "hard" -> 80;
-                    case "extreme" -> 200;
-                    default -> 30;
-                };
 
         while (numRemoved < maxNumRemoved) {
             int possibleSols = 0;

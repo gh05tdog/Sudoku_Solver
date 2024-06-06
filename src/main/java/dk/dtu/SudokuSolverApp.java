@@ -2,16 +2,17 @@
 package dk.dtu;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
-import dk.dtu.game.core.Board;
+import dk.dtu.engine.utility.DatabaseSetup;
 import dk.dtu.game.core.StartMenu;
+
 import javax.swing.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class SudokuSolverApp {
-    private static final Logger logger = LoggerFactory.getLogger(SudokuSolverApp.class);
 
-    public static void main(String[] args) throws Board.BoardNotCreatable {
+    public static void main(String[] args) {
+
+        // Generate the database
+        DatabaseSetup.setup("jdbc:sqlite:sudoku.db");
 
         StartMenuWindowManager startMenu = new StartMenuWindowManager(new JFrame(), 1000, 1000);
         StartMenu startMenu1 = new StartMenu(startMenu);

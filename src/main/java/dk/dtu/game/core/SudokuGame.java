@@ -8,6 +8,7 @@ import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
 import dk.dtu.engine.utility.TimerFunction;
+import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
@@ -22,6 +23,7 @@ import javax.swing.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.prefs.Preferences;
 
 public class SudokuGame {
 
@@ -30,7 +32,7 @@ public class SudokuGame {
     private final WindowManager windowManager;
     public final Deque<Move> moveList = new ArrayDeque<>();
     private final ArrayList<Move> hintList = new ArrayList<>();
-    public final Stack<Move> wrongMoveList = new Stack<>();
+    public final List<Move> wrongMoveList = new ArrayList<>();
 
     private final int nSize;
 
@@ -54,6 +56,8 @@ public class SudokuGame {
     private JButton eraseButton;
     private JButton solveButton;
     private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
+
+    private boolean usedSolveButton = false;
 
     Random random = new SecureRandom();
 
@@ -164,13 +168,13 @@ public class SudokuGame {
                 Move move = new Move(row, col, number, previousNumber);
                 moveList.push(move); // Log the move for undo functionality
 
-                int[][] solutionB = AlgorithmXSolver.getSolutionBoard();
+                int[][] solutionB = gameboard.getSolvedBoard();
 
                 if (Config.getEnableLives() && gameboard.getNumber(row, col) != solutionB[row][col]) {
                     windowManager.removeHeart();
                     board.setWrongNumber(row, col, number);
                 } else {
-                    wrongMoveList.push(move);
+                    wrongMoveList.add(move);
                 }
             }
         }
@@ -211,9 +215,10 @@ public class SudokuGame {
     public void undoMove() {
         if (!moveList.isEmpty()) {
             Move move = moveList.pop();
-            if(!Config.getEnableLives()){
-                wrongMoveList.pop();
+            if(!wrongMoveList.isEmpty() && !Config.getEnableLives()) {
+                wrongMoveList.removeFirst();
             }
+
             int row = move.getRow();
             int col = move.getColumn();
             board.setHiddenProperty(row, col, false);
@@ -357,7 +362,7 @@ public class SudokuGame {
 
     public void provideHint() {
         if (!wrongMoveList.isEmpty()) {
-            Move wrongMove = wrongMoveList.pop();
+            Move wrongMove = wrongMoveList.removeFirst();
             int row = wrongMove.getRow();
             int col = wrongMove.getColumn();
             int number = wrongMove.getNumber();
@@ -395,6 +400,9 @@ public class SudokuGame {
         boolean isGameOver = isGameOver();
 
         if (completedSuccessfully || isGameOver) {
+            if(!usedSolveButton){
+
+
             timer.stop();
             String message;
             if (completedSuccessfully) {
@@ -405,6 +413,7 @@ public class SudokuGame {
             } else { // This is the game over scenario
                 message = "Game Over! You've run out of hearts.\n\n"
                         + "Would you like to start a new game?";
+            }
             }
 
             Object[] options = {"New Game", "Close"};
@@ -451,15 +460,25 @@ public class SudokuGame {
 
         restartButton.addActionListener(
                 e -> {
-                    // set the numbers to the initial board
-                    newGame();
+                    // Reset the game state to the initial board configuration
+                    moveList.clear();
+                    wrongMoveList.clear();
+                    timer.stop();
+                    timer.reset();
+                    board.clearNotes();
+
+                    // Reinitialize the board with the initial puzzle
+                    gameboard.setGameBoard(deepCopyBoard(gameboard.getInitialBoard()));
                     displayNumbersVisually();
                     setInitialBoardColor();
+
+                    // Restart the timer
+                    timer.start();
+
                     gameIsStarted = true;
                     board.requestFocusInWindow();
                     solveButton.setEnabled(true);
                 });
-
         solveButton.addActionListener(
                 e -> {
                     board.clearNotes();
@@ -470,7 +489,12 @@ public class SudokuGame {
                     } else {
                         gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
                     }
+                    //set usedSolveButton to true
+                    usedSolveButton = true;
+
                     checkCompletionAndOfferNewGame();
+                    usedSolveButton = false;
+
                 });
 
         newGameButton.addActionListener(e -> startGame());
