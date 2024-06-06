@@ -1,10 +1,8 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +12,8 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GameServer {
     private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
@@ -52,7 +52,8 @@ public class GameServer {
                     broadcastMessage("A new player has connected!");
                     if (clientCount == 2) {
                         sendInitialBoard();
-                        broadcastMessage("READY"); // Notify all clients that the game is ready to start
+                        broadcastMessage(
+                                "READY"); // Notify all clients that the game is ready to start
                     }
                 }
             } catch (IOException | Board.BoardNotCreatable e) {
@@ -109,7 +110,8 @@ public class GameServer {
         @Override
         public void run() {
             try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                BufferedReader in =
+                        new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String message;
                 while ((message = in.readLine()) != null) {
                     processMessage(message);

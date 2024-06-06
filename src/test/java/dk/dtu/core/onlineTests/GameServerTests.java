@@ -1,16 +1,16 @@
+/* (C)2024 */
 package dk.dtu.core.onlineTests;
+
+import static org.mockito.Mockito.*;
 
 import dk.dtu.engine.utility.GameServer;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
-import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 
 class GameServerTest {
     private GameServer server;
@@ -18,17 +18,21 @@ class GameServerTest {
 
     @BeforeEach
     void setUp() {
-        server = Mockito.spy(new GameServer() {
-            @Override
-            protected void startServerSocket() {
-                try {
-                    serverSocket = new ServerSocket(0); // Use any available port
-                    System.out.println("Server started on port " + serverSocket.getLocalPort());
-                } catch (IOException e) {
-                    System.out.println("Error starting server: " + e.getMessage());
-                }
-            }
-        });
+        server =
+                Mockito.spy(
+                        new GameServer() {
+                            @Override
+                            protected void startServerSocket() {
+                                try {
+                                    serverSocket = new ServerSocket(0); // Use any available port
+                                    System.out.println(
+                                            "Server started on port "
+                                                    + serverSocket.getLocalPort());
+                                } catch (IOException e) {
+                                    System.out.println("Error starting server: " + e.getMessage());
+                                }
+                            }
+                        });
 
         serverThread = new Thread(() -> server.start());
         serverThread.start();
@@ -56,7 +60,7 @@ class GameServerTest {
 
     @Test
     void testClientConnection() {
-        try (Socket clientSocket = new Socket("localhost", server.serverSocket.getLocalPort())){
+        try (Socket clientSocket = new Socket("localhost", server.serverSocket.getLocalPort())) {
 
             OutputStream outputStream = clientSocket.getOutputStream();
             InputStream inputStream = clientSocket.getInputStream();
@@ -73,7 +77,6 @@ class GameServerTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     @Test

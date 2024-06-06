@@ -1,17 +1,17 @@
+/* (C)2024 */
 package dk.dtu.core.onlineTests;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.utility.GameClient;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.SudokuGame;
-import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 
 class GameClientTest {
     private GameClient client;
@@ -42,13 +42,15 @@ class GameClientTest {
     @Test
     void testInitialBoardReceived() throws Exception {
         // Start the client in a separate thread to prevent blocking
-        Thread clientThread = new Thread(() -> {
-            try {
-                client.start();
-            } catch (IOException | Board.BoardNotCreatable e) {
-                e.printStackTrace();
-            }
-        });
+        Thread clientThread =
+                new Thread(
+                        () -> {
+                            try {
+                                client.start();
+                            } catch (IOException | Board.BoardNotCreatable e) {
+                                e.printStackTrace();
+                            }
+                        });
         clientThread.start();
 
         // Accept the client connection on the server side

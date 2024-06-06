@@ -18,13 +18,12 @@ import java.io.PrintWriter;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.List;
-import javax.swing.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.prefs.Preferences;
+import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SudokuGame {
     private static final Logger logger = LoggerFactory.getLogger(SudokuGame.class);
@@ -114,7 +113,10 @@ public class SudokuGame {
             case "COMPLETED":
                 timer.stop();
                 String playerName = parts[1];
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, playerName + " has completed the Sudoku!"));
+                SwingUtilities.invokeLater(
+                        () ->
+                                JOptionPane.showMessageDialog(
+                                        null, playerName + " has completed the Sudoku!"));
                 break;
         }
     }
@@ -257,7 +259,7 @@ public class SudokuGame {
     public void undoMove() {
         if (!moveList.isEmpty()) {
             Move move = moveList.pop();
-            if(!wrongMoveList.isEmpty()) {
+            if (!wrongMoveList.isEmpty()) {
                 wrongMoveList.removeFirst();
             }
             int row = move.row();
@@ -313,9 +315,8 @@ public class SudokuGame {
         windowManager.layoutComponents(timer, numbers);
 
         gameboard.setInitialBoard(customBoard);
-        gameboard.setGameBoard(deepCopyBoard(customBoard)); // Use deepCopy to avoid reference issues
-
-
+        gameboard.setGameBoard(
+                deepCopyBoard(customBoard)); // Use deepCopy to avoid reference issues
 
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
@@ -328,15 +329,14 @@ public class SudokuGame {
         displayNumbersVisually();
         setInitialBoardColor();
         gameIsStarted = true;
-        //board.requestFocusInWindow();
+        // board.requestFocusInWindow();
         solveButton.setEnabled(true);
 
-        if(isNetworkGame) {
+        if (isNetworkGame) {
             solveButton.setEnabled(false);
             hintButton.setEnabled(false);
         }
         isNetworkGame = false;
-
     }
 
     public void newGame() {
@@ -356,9 +356,11 @@ public class SudokuGame {
             }
             fillHintList();
         } else {
-            gameboard.setGameBoard(deepCopyBoard(gameboard.getInitialBoard())); // Reset to custom board
+            gameboard.setGameBoard(
+                    deepCopyBoard(gameboard.getInitialBoard())); // Reset to custom board
             gameboard.clearInitialBoard(); // Clear previous initial state
-            gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard())); // Set current state as initial
+            gameboard.setInitialBoard(
+                    deepCopyBoard(gameboard.getGameBoard())); // Set current state as initial
             moveList.clear();
             wrongMoveList.clear();
             timer.stop();
@@ -467,7 +469,9 @@ public class SudokuGame {
                 }
 
                 // Prompt user for their username
-                String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", storedUsername);
+                String username =
+                        JOptionPane.showInputDialog(
+                                null, "Enter your name for the leaderboard:", storedUsername);
                 if (username != null && !username.trim().isEmpty()) {
                     // Store the username in preferences
                     pref.put("username", username.trim());
@@ -476,7 +480,7 @@ public class SudokuGame {
                     String difficulty = Config.getDifficulty();
                     int time = timer.getTimeToInt(); // returns time in seconds or suitable format
 
-                    UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db" ,username, difficulty, time);
+                    UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db", username, difficulty, time);
 
                     // Send a completion message to server
                     if (networkOut != null) {
@@ -487,16 +491,19 @@ public class SudokuGame {
 
             // Offer the user to start a new game or close the application
             Object[] options = {"New Game", "Close"};
-            int response = JOptionPane.showOptionDialog(
-                    null,
-                    "Congratulations! You've completed the Sudoku in\n" + timer.getTimeString() + "\n\n" + "Would you like to start a new game?",
-                    "Game Completed",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    options,
-                    options[0]
-            );
+            int response =
+                    JOptionPane.showOptionDialog(
+                            null,
+                            "Congratulations! You've completed the Sudoku in\n"
+                                    + timer.getTimeString()
+                                    + "\n\n"
+                                    + "Would you like to start a new game?",
+                            "Game Completed",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.INFORMATION_MESSAGE,
+                            null,
+                            options,
+                            options[0]);
 
             if (response == JOptionPane.YES_OPTION) {
                 try {
@@ -507,6 +514,7 @@ public class SudokuGame {
             }
         }
     }
+
     private boolean testMode() {
         return System.getProperty("testMode") != null;
     }
@@ -551,13 +559,11 @@ public class SudokuGame {
                     timer.stop();
                     if (nSize == kSize) {
 
-
                         gameboard.setGameBoard(
                                 Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
                     } else {
                         gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
                     }
-
 
                     usedSolveButton = true;
                     checkCompletionAndOfferNewGame();

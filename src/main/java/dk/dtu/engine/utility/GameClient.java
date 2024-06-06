@@ -1,9 +1,9 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.SudokuGame;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,7 +33,8 @@ public class GameClient {
 
         String message;
         while ((message = in.readLine()) != null) {
-            System.out.println("Received message: " + message); // Display the message in the console
+            System.out.println(
+                    "Received message: " + message); // Display the message in the console
             processNetworkMessage(message, game);
         }
     }
@@ -58,7 +59,7 @@ public class GameClient {
             case "WINNER":
                 game.processNetworkMessage(message);
                 break;
-            // Handle other commands if needed
+                // Handle other commands if needed
         }
     }
 

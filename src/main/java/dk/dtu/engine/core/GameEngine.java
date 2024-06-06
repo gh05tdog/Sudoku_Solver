@@ -13,7 +13,8 @@ public class GameEngine implements Runnable {
     private final int k;
     private final int cellSize;
 
-    public GameEngine(WindowManager windowManager, int n, int k, int cellSize) throws Board.BoardNotCreatable {
+    public GameEngine(WindowManager windowManager, int n, int k, int cellSize)
+            throws Board.BoardNotCreatable {
         this.n = n;
         this.k = k;
         this.cellSize = cellSize;
@@ -71,7 +72,8 @@ public class GameEngine implements Runnable {
     public void startCustom(int[][] customBoard) throws Board.BoardNotCreatable {
         if (running) return;
         running = true;
-        sudokuGame = new SudokuGame(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
+        sudokuGame =
+                new SudokuGame(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
         sudokuGame.initializeCustom(customBoard);
         windowManager.display();
         Thread gameThread = new Thread(this);

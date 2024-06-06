@@ -5,33 +5,28 @@ import dk.dtu.engine.core.GameEngine;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.utility.*;
+import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.JDialog;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
-import java.util.ArrayList;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-
-import javax.swing.JDialog;
-
-
-
 public class StartMenu {
-
 
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
 
@@ -127,17 +122,21 @@ public class StartMenu {
         joinGameButton.setFocusPainted(false);
         joinGameButton.addActionListener(this::onJoinGame);
 
-        startMenuWindowManager.addComponent(createGameButton, startMenuWindowManager.getButtonPanel());
-        startMenuWindowManager.addComponent(joinGameButton, startMenuWindowManager.getButtonPanel());
+        startMenuWindowManager.addComponent(
+                createGameButton, startMenuWindowManager.getButtonPanel());
+        startMenuWindowManager.addComponent(
+                joinGameButton, startMenuWindowManager.getButtonPanel());
     }
 
     private void onCreateGame(ActionEvent e) {
 
         // Start the server in a separate thread
-        new Thread(() -> {
-            GameServer server = new GameServer();
-            server.start();
-        }).start();
+        new Thread(
+                        () -> {
+                            GameServer server = new GameServer();
+                            server.start();
+                        })
+                .start();
 
         // Allow some time for the server to start before connecting the client
         Timer time = new Timer(1000, event -> connectClient("localhost"));
@@ -153,18 +152,20 @@ public class StartMenu {
     }
 
     private void connectClient(String serverAddress) {
-        new Thread(() -> {
-            WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
-            GameClient client = new GameClient(serverAddress, windowManager);
-            try {
-                client.start();
-            } catch (IOException | Board.BoardNotCreatable ex) {
-                throw new RuntimeException(ex);
-            }
-        }).start();
+        new Thread(
+                        () -> {
+                            WindowManager windowManager =
+                                    new WindowManager(
+                                            startMenuWindowManager.getFrame(), 1000, 1000);
+                            GameClient client = new GameClient(serverAddress, windowManager);
+                            try {
+                                client.start();
+                            } catch (IOException | Board.BoardNotCreatable ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        })
+                .start();
     }
-
-
 
     private void addLeaderboardButton() {
         JButton leaderboardButton = new JButton("Show Leaderboard");
@@ -172,7 +173,8 @@ public class StartMenu {
         leaderboardButton.setBounds(5, 180, 190, 40); // Adjust the size and position as needed
         leaderboardButton.setBackground(Color.WHITE);
         leaderboardButton.setFocusPainted(false);
-        startMenuWindowManager.addComponent(leaderboardButton, startMenuWindowManager.getButtonPanel());
+        startMenuWindowManager.addComponent(
+                leaderboardButton, startMenuWindowManager.getButtonPanel());
     }
 
     private void onShowLeaderboard(ActionEvent e) {
@@ -183,21 +185,25 @@ public class StartMenu {
         List<LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard("jdbc:sqlite:sudoku.db");
         List<String[]> rowData = new ArrayList<>();
         for (LeaderboardEntry entry : leaderboard) {
-            rowData.add(new String[]{
-                    entry.username(),
-                    entry.difficulty(),
-                    String.format("%02d:%02d:%02d", entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
-                    entry.timestamp()
-            });
+            rowData.add(
+                    new String[] {
+                        entry.username(),
+                        entry.difficulty(),
+                        String.format(
+                                "%02d:%02d:%02d",
+                                entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
+                        entry.timestamp()
+                    });
         }
 
         // Create a non-editable table model
-        DefaultTableModel model = new DefaultTableModel(rowData.toArray(new String[0][0]), columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        DefaultTableModel model =
+                new DefaultTableModel(rowData.toArray(new String[0][0]), columnNames) {
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        return false;
+                    }
+                };
 
         JTable leaderboardTable = new JTable(model);
         leaderboardTable.setFillsViewportHeight(true);
@@ -341,7 +347,8 @@ public class StartMenu {
         }
     }
 
-    public int[][] importSudokuFromFile(List<String> lines) throws IOException, Board.BoardNotCreatable {
+    public int[][] importSudokuFromFile(List<String> lines)
+            throws IOException, Board.BoardNotCreatable {
         if (lines.isEmpty()) {
             throw new IOException("File is empty");
         }
@@ -358,13 +365,15 @@ public class StartMenu {
 
         int[][] board = new int[k * n][k * n];
         if (lines.size() != k * n + 1) {
-            throw new IOException("The number of lines in the file does not match the expected size of k^2 + 1");
+            throw new IOException(
+                    "The number of lines in the file does not match the expected size of k^2 + 1");
         }
 
         for (int i = 1; i < lines.size(); i++) {
             String[] row = lines.get(i).split(";");
             if (row.length != k * n) {
-                throw new IOException("Row " + i + " does not contain the correct number of elements");
+                throw new IOException(
+                        "Row " + i + " does not contain the correct number of elements");
             }
             for (int j = 0; j < row.length; j++) {
                 board[i - 1][j] = row[j].equals(".") ? 0 : Integer.parseInt(row[j].trim());
@@ -382,11 +391,19 @@ public class StartMenu {
     private void startGameWithBoard(int[][] board) {
 
         Config.setCellSize(550 / (Config.getK() * Config.getN()));
-        logger.info("startGame: {} {} {} {}", Config.getK(), Config.getN(), Config.getDifficulty(), Config.getCellSize());
+        logger.info(
+                "startGame: {} {} {} {}",
+                Config.getK(),
+                Config.getN(),
+                Config.getDifficulty(),
+                Config.getCellSize());
 
-        WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
+        WindowManager windowManager =
+                new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
-            GameEngine gameEngine = new GameEngine(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
+            GameEngine gameEngine =
+                    new GameEngine(
+                            windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
             gameEngine.startCustom(board); // Pass the custom board to the game engine
         } catch (Board.BoardNotCreatable boardNotCreatable) {
