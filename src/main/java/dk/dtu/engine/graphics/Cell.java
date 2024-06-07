@@ -11,6 +11,7 @@ class Cell implements Serializable {
     boolean isMarked = false;
     boolean isHighlighted = false;
     private Color backgroundColor = Color.WHITE;
+    boolean isUnplacable = false;
 
     private int number = 0; // 0 indicates no number
     private int wrongNumber = 0;
@@ -42,7 +43,10 @@ class Cell implements Serializable {
     }
 
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
-        if(isMarked){
+        if(isUnplacable && currentNumber != 0){
+            g.setColor(new Color(250, 200, 200));
+        }
+        else if(isMarked){
             g.setColor(new Color(169, 169, 167));
         }
         else if (isHighlighted) {
@@ -140,4 +144,9 @@ class Cell implements Serializable {
     public int getNumber() {
         return number;
     }
+
+    public void setUnplaceableCell(boolean isUnplacable){
+        this.isUnplacable = isUnplacable;
+    }
+
 }

@@ -179,6 +179,67 @@ public class SudokuBoardCanvas extends JPanel {
         logger.debug("Setting the marked cell {} {}", row, col);
     }
 
+    public void highlightPlaceableCells(int number) {
+        clearUnplacableCells();
+        boolean[][] unplaceable = new boolean[gridSize][gridSize];
+
+        if (number == 0) {
+            return;
+        }
+
+        // Mark all cells as unplaceable initially
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                unplaceable[row][col] = false;
+            }
+        }
+
+        // Iterate through all cells to find the number
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                if (cells[row][col].getNumber() == number) {
+                    // Mark entire row and column as unplaceable
+                    for (int i = 0; i < gridSize; i++) {
+                        unplaceable[row][i] = true;
+                        unplaceable[i][col] = true;
+                    }
+
+                    // Mark entire subgrid as unplaceable
+                    int subgridSize = (int) Math.sqrt(gridSize); // Assuming a standard square Sudoku board
+                    int startRow = (row / subgridSize) * subgridSize;
+                    int startCol = (col / subgridSize) * subgridSize;
+                    for (int i = startRow; i < startRow + subgridSize; i++) {
+                        for (int j = startCol; j < startCol + subgridSize; j++) {
+                            unplaceable[i][j] = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Apply highlights only to placeable cells (i.e., not marked as unplaceable)
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                if (!unplaceable[row][col] && cells[row][col].getNumber() == 0) {
+                    cells[row][col].setUnplaceableCell(true);
+                }
+            }
+        }
+    }
+
+    public void clearUnplacableCells() {
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                cells[i][j].setUnplaceableCell(false);
+
+            }
+        }
+    }
+
+
+
+
+
     public boolean isACellMarked() {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {

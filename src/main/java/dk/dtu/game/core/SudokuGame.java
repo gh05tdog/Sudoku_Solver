@@ -81,6 +81,8 @@ public class SudokuGame {
 
         makeMove(row, column, placeableNumber);
 
+        board.highlightPlaceableCells(gameboard.getNumber(row, column));
+
         if (column >= 0 && column < gridSize && row >= 0 && row < gridSize) {
             int cellIndex = row * gridSize + column; // Calculate the cell index
             logger.debug("Cell {} clicked. Row: {}, Column: {}", cellIndex, row, column);
@@ -102,6 +104,9 @@ public class SudokuGame {
             int col = markedCell[1];
 
             makeMove(row, col, number);
+
+            board.highlightPlaceableCells(number);
+            checkCompletionAndOfferNewGame();
         }
 
         checkCompletionAndOfferNewGame();
@@ -320,6 +325,7 @@ public class SudokuGame {
         moveList.clear();
         wrongMoveList.clear();
         windowManager.setHeart();
+        board.clearUnplacableCells();
         board.clearWrongNumbers();
         timer.stop();
         timer.reset();
@@ -428,24 +434,25 @@ public class SudokuGame {
             if (!usedSolveButton) {
 
                 timer.stop();
-                // Preferences object to store and retrieve the username
-                Preferences pref = Preferences.userNodeForPackage(this.getClass());
-                String storedUsername = pref.get("username", "");
-
-                // Prompt user for their username
-                String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", storedUsername);
-                if (username != null && !username.trim().isEmpty()) {
-                    // Store the username in preferences
-                    pref.put("username", username.trim());
-
-                    // Add the completion details to the leaderboard
-                    String difficulty = Config.getDifficulty();
-                    int time = timer.getTimeToInt(); // returns time in seconds or suitable format
-
-                    UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db" ,username, difficulty, time);
-                }
 
                 if (completedSuccessfully) {
+                    // Preferences object to store and retrieve the username
+                    Preferences pref = Preferences.userNodeForPackage(this.getClass());
+                    String storedUsername = pref.get("username", "");
+
+                    // Prompt user for their username
+                    String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", storedUsername);
+                    if (username != null && !username.trim().isEmpty()) {
+                        // Store the username in preferences
+                        pref.put("username", username.trim());
+
+                        // Add the completion details to the leaderboard
+                        String difficulty = Config.getDifficulty();
+                        int time = timer.getTimeToInt(); // returns time in seconds or suitable format
+
+                        UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db" ,username, difficulty, time);
+                    }
+
                     message = "Congratulations! You've completed the Sudoku in\n"
                             + timer.getTimeString()
                             + "\n\n"
@@ -635,6 +642,8 @@ public class SudokuGame {
             int row = markedCell[0];
             int col = markedCell[1];
             makeMove(row, col, chosenNumber);
+
+            board.highlightPlaceableCells(chosenNumber);
         }
     }
 
