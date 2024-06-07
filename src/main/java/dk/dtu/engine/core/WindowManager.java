@@ -80,11 +80,8 @@ public class WindowManager {
             gbc.anchor = GridBagConstraints.NORTHWEST;
             gbc.insets = new Insets(10, 10, 10, 10);
             whitePanel.add(heartsPanel, gbc);
-            System.out.println("Heart labels added to whitePanel"); // Debug message
         }
-        catch (NullPointerException e) {
-            System.out.println("Image not found, check the path."); // Debug message
-        }
+        catch (NullPointerException ignored) {}
     }
 
 
