@@ -5,9 +5,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.engine.graphics.GameRulePopup;
 import dk.dtu.game.core.Config;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class GameRulePopupTest {
+
+    @BeforeAll
+    public static void setUp() {
+        System.setProperty("java.awt.headless", "true");
+    }
 
     @Test
     public void testAddJSwitchBox() {

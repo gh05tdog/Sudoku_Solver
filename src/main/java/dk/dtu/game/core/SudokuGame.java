@@ -108,8 +108,6 @@ public class SudokuGame {
             if (Config.getEnableEasyMode()) {
                 board.highlightPlaceableCells(number);
             }
-
-
         }
         checkCompletionAndOfferNewGame();
     }
