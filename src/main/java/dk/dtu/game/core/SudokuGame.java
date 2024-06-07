@@ -81,7 +81,9 @@ public class SudokuGame {
 
         makeMove(row, column, placeableNumber);
 
-        board.highlightPlaceableCells(gameboard.getNumber(row, column));
+        if(Config.getEnableEasyMode()){
+            board.highlightPlaceableCells(gameboard.getNumber(row, column));
+        }
 
         if (column >= 0 && column < gridSize && row >= 0 && row < gridSize) {
             int cellIndex = row * gridSize + column; // Calculate the cell index
@@ -105,7 +107,10 @@ public class SudokuGame {
 
             makeMove(row, col, number);
 
-            board.highlightPlaceableCells(number);
+            if(Config.getEnableEasyMode()){
+                board.highlightPlaceableCells(number);
+            }
+
             checkCompletionAndOfferNewGame();
         }
 
@@ -643,7 +648,9 @@ public class SudokuGame {
             int col = markedCell[1];
             makeMove(row, col, chosenNumber);
 
-            board.highlightPlaceableCells(chosenNumber);
+            if(Config.getEnableEasyMode()){
+                board.highlightPlaceableCells(chosenNumber);
+            }
         }
     }
 

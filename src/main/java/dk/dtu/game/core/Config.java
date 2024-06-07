@@ -44,6 +44,7 @@ public class Config {
     //Game rules
     private static boolean enableLives = true;
     private static boolean enableTimer = true;
+    private static boolean enableEasyMode = true;
     //Game rules:
     public static void setEnableLives(boolean enableLives) {
         Config.enableLives = enableLives;
@@ -59,6 +60,13 @@ public class Config {
 
     public static boolean getEnableTimer() {
         return enableTimer;
+    }
+
+    public static void setEnableEasyMode(boolean enableEasyMode) {
+        Config.enableEasyMode = enableEasyMode;
+    }
+    public static boolean getEnableEasyMode() {
+        return enableEasyMode;
     }
 
 
