@@ -4,6 +4,9 @@ package dk.dtu.engine.utility;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.SudokuGame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +17,10 @@ public class GameClient {
     private final String serverAddress;
     private final WindowManager windowManager;
     private SudokuGame game;
+    private boolean isGameStarted = false;
+
+    // Implement logger
+    private static final Logger logger = LoggerFactory.getLogger(GameClient.class);
 
     public GameClient(String serverAddress, WindowManager windowManager) {
         this.serverAddress = serverAddress;
@@ -21,20 +28,24 @@ public class GameClient {
     }
 
     public void start() throws IOException, Board.BoardNotCreatable {
+        if (isGameStarted) return;
+        isGameStarted = true;
+
         Socket socket = createSocket(serverAddress);
         System.out.println("Connected to server at " + serverAddress);
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
+        // Send connect signal
+        out.println("CONNECT");
+
         game = new SudokuGame(windowManager, 3, 3, 550 / 9); // Adjust as needed
         game.setNetworkOut(out); // Pass the network output stream to the game
-
         game.setNetworkGame(true);
 
         String message;
         while ((message = in.readLine()) != null) {
-            System.out.println(
-                    "Received message: " + message); // Display the message in the console
+            System.out.println("Received message: " + message); // Display the message in the console
             processNetworkMessage(message, game);
         }
     }
@@ -59,7 +70,7 @@ public class GameClient {
             case "WINNER":
                 game.processNetworkMessage(message);
                 break;
-                // Handle other commands if needed
+            // Handle other commands if needed
         }
     }
 
@@ -74,4 +85,14 @@ public class GameClient {
         }
         return board;
     }
+
+    public boolean testGameConnection() {
+        try (Socket ignored = createSocket(serverAddress)) {
+            return true;
+        } catch (IOException e) {
+            logger.error("Failed to connect to server at {}: {}", serverAddress, e.getMessage());
+            return false;
+        }
+    }
 }
+

@@ -7,6 +7,7 @@ import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.utility.*;
 import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -23,36 +24,30 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StartMenu {
 
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
-
+    private static final String FONT = "SansSerif";
     private final StartMenuWindowManager startMenuWindowManager;
     private final JToggleButton startButton = new JToggleButton("Start Game");
     private final JToggleButton easyButton = new JToggleButton("Easy");
     private final JToggleButton mediumButton = new JToggleButton("Medium", true);
     private final JToggleButton hardButton = new JToggleButton("Hard");
     private final JToggleButton extremeButton = new JToggleButton("Extreme");
-
     private final CustomBoardPanel twoByTwo = new CustomBoardPanel();
     private final CustomBoardPanel threeByThree = new CustomBoardPanel();
     private final CustomBoardPanel fourByFour = new CustomBoardPanel();
     private final CustomBoardPanel customBoardPanel = new CustomBoardPanel();
-
     private final JButton createGameButton = new JButton("Create Game");
     private final JButton joinGameButton = new JButton("Join Game");
-
     private final JTextField inputNField = new JTextField("N", 1);
     private final JTextField inputKField = new JTextField("K", 1);
-
     private final ButtonGroup difficultyGroup = new ButtonGroup();
     private final CustomComponentGroup sizeGroup = new CustomComponentGroup();
-
-    private static final String FONT = "SansSerif";
-
     private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
 
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
@@ -134,10 +129,10 @@ public class StartMenu {
 
         // Start the server in a separate thread
         new Thread(
-                        () -> {
-                            GameServer server = new GameServer();
-                            server.start();
-                        })
+                () -> {
+                    GameServer server = new GameServer();
+                    server.start();
+                })
                 .start();
 
         // Allow some time for the server to start before connecting the client
@@ -151,23 +146,38 @@ public class StartMenu {
         createGameButton.setEnabled(false);
         String serverAddress = JOptionPane.showInputDialog("Enter server address:");
         if (serverAddress != null && !serverAddress.isEmpty()) {
-            connectClient(serverAddress);
+            // Test the connection
+            GameClient client = new GameClient(serverAddress, null);
+            if (client.testGameConnection()) {
+                connectClient(serverAddress);
+            } else {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Failed to connect to the server. Please check the server address and try again.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                joinGameButton.setEnabled(true);
+                createGameButton.setEnabled(true);
+            }
+        } else {
+            joinGameButton.setEnabled(true);
+            createGameButton.setEnabled(true);
         }
     }
 
     private void connectClient(String serverAddress) {
         new Thread(
-                        () -> {
-                            WindowManager windowManager =
-                                    new WindowManager(
-                                            startMenuWindowManager.getFrame(), 1000, 1000);
-                            GameClient client = new GameClient(serverAddress, windowManager);
-                            try {
-                                client.start();
-                            } catch (IOException | Board.BoardNotCreatable ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        })
+                () -> {
+                    WindowManager windowManager =
+                            new WindowManager(
+                                    startMenuWindowManager.getFrame(), 1000, 1000);
+                    GameClient client = new GameClient(serverAddress, windowManager);
+                    try {
+                        client.start();
+                    } catch (IOException | Board.BoardNotCreatable ex) {
+                        throw new RuntimeException(ex);
+                    }
+                })
                 .start();
     }
 
@@ -190,13 +200,13 @@ public class StartMenu {
         List<String[]> rowData = new ArrayList<>();
         for (LeaderboardEntry entry : leaderboard) {
             rowData.add(
-                    new String[] {
-                        entry.username(),
-                        entry.difficulty(),
-                        String.format(
-                                "%02d:%02d:%02d",
-                                entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
-                        entry.timestamp()
+                    new String[]{
+                            entry.username(),
+                            entry.difficulty(),
+                            String.format(
+                                    "%02d:%02d:%02d",
+                                    entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
+                            entry.timestamp()
                     });
         }
 
@@ -260,7 +270,7 @@ public class StartMenu {
                                     int k = Integer.parseInt(inputKField.getText().trim());
                                     if (n * k <= n * n) {
                                         updateCustomBoardPanel(n, k);
-                                        boardConfigs[3] = new int[] {n, k};
+                                        boardConfigs[3] = new int[]{n, k};
                                     }
                                 } catch (NumberFormatException ex) {
                                     // Handle the case where one of the fields is empty or does not

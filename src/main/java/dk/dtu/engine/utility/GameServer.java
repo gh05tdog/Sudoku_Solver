@@ -21,7 +21,7 @@ public class GameServer {
     private final ExecutorService threadPool = Executors.newFixedThreadPool(4);
     public final ConcurrentHashMap<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>();
     private final Object lock = new Object();
-    private int clientCount = 0;
+    private int connectedPlayers = 0;
     public ServerSocket serverSocket;
     private boolean running = true;
 
@@ -46,17 +46,7 @@ public class GameServer {
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
                 clientWriters.put(clientSocket, writer);
                 threadPool.execute(new ClientHandler(clientSocket));
-
-                synchronized (lock) {
-                    clientCount++;
-                    broadcastMessage("A new player has connected!");
-                    if (clientCount == 2) {
-                        sendInitialBoard();
-                        broadcastMessage(
-                                "READY"); // Notify all clients that the game is ready to start
-                    }
-                }
-            } catch (IOException | Board.BoardNotCreatable e) {
+            } catch (IOException e) {
                 if (running) {
                     logger.error("Error accepting client: {}", e.getMessage());
                 }
@@ -80,7 +70,7 @@ public class GameServer {
 
         Board board = new Board(3, 3);
 
-        // Generate a initial board
+        // Generate an initial board
         AlgorithmXSolver.createXSudoku(board);
 
         for (int[] row : board.getGameBoard()) {
@@ -110,8 +100,7 @@ public class GameServer {
         @Override
         public void run() {
             try {
-                BufferedReader in =
-                        new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String message;
                 while ((message = in.readLine()) != null) {
                     processMessage(message);
@@ -122,7 +111,6 @@ public class GameServer {
                 try {
                     clientSocket.close();
                     synchronized (lock) {
-                        clientCount--;
                         clientWriters.remove(clientSocket);
                     }
                 } catch (IOException e) {
@@ -135,10 +123,22 @@ public class GameServer {
             String[] parts = message.split(" ");
             String command = parts[0];
 
-            if (command.equals("COMPLETED")) {
+            if (command.equals("CONNECT")) {
+                synchronized (lock) {
+                    connectedPlayers++;
+                    int totalPlayers = 2;
+                    if (connectedPlayers == totalPlayers) {
+                        try {
+                            sendInitialBoard();
+                            broadcastMessage("READY"); // Notify all clients that the game is ready to start
+                        } catch (Board.BoardNotCreatable e) {
+                            logger.error("Error creating board: {}", e.getMessage());
+                        }
+                    }
+                }
+            } else if (command.equals("COMPLETED")) {
                 String playerName = parts[1];
                 announceWinner(playerName);
-                // Handle other commands if needed
             }
         }
 
