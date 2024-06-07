@@ -335,6 +335,8 @@ public class SudokuGame {
         if (isNetworkGame) {
             solveButton.setEnabled(false);
             hintButton.setEnabled(false);
+            newGameButton.setEnabled(false);
+            restartButton.setEnabled(false);
         }
         isNetworkGame = false;
     }
@@ -483,9 +485,6 @@ public class SudokuGame {
                     UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db", username, difficulty, time);
 
                     // Send a completion message to server
-                    if (networkOut != null) {
-                        networkOut.println("COMPLETED " + username);
-                    }
                 }
             }
 
@@ -732,5 +731,8 @@ public class SudokuGame {
         gameIsStarted = true;
         board.requestFocusInWindow();
         solveButton.setEnabled(true);
+        restartButton.setEnabled(true);
+        hintButton.setEnabled(true);
+        newGameButton.setEnabled(true);
     }
 }

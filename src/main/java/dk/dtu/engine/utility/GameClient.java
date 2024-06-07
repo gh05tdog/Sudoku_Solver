@@ -70,7 +70,6 @@ public class GameClient {
             case "WINNER":
                 game.processNetworkMessage(message);
                 break;
-            // Handle other commands if needed
         }
     }
 
