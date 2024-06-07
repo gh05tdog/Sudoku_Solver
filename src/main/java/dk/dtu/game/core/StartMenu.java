@@ -129,6 +129,8 @@ public class StartMenu {
     }
 
     private void onCreateGame(ActionEvent e) {
+        createGameButton.setEnabled(false);
+        joinGameButton.setEnabled(false);
 
         // Start the server in a separate thread
         new Thread(
@@ -145,6 +147,8 @@ public class StartMenu {
     }
 
     private void onJoinGame(ActionEvent e) {
+        joinGameButton.setEnabled(false);
+        createGameButton.setEnabled(false);
         String serverAddress = JOptionPane.showInputDialog("Enter server address:");
         if (serverAddress != null && !serverAddress.isEmpty()) {
             connectClient(serverAddress);
