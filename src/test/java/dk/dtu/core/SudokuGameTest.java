@@ -13,7 +13,7 @@ import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.Move;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
-import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -94,7 +94,7 @@ class SudokuGameTest {
                 game.moveList.isEmpty(), "Move list should not be empty after a valid placement.");
         assertEquals(
                 5,
-                game.moveList.peek().getNumber(),
+                game.moveList.peek().number(),
                 "Top of move list should have the placed number 5.");
     }
 

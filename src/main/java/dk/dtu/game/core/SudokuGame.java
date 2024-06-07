@@ -12,7 +12,6 @@ import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -20,7 +19,6 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.prefs.Preferences;
@@ -82,7 +80,6 @@ public class SudokuGame {
         board.setChosenNumber(gameboard.getNumber(row, column));
 
         makeMove(row, column, placeableNumber);
-
 
         if (column >= 0 && column < gridSize && row >= 0 && row < gridSize) {
             int cellIndex = row * gridSize + column; // Calculate the cell index
@@ -220,12 +217,11 @@ public class SudokuGame {
             if(!wrongMoveList.isEmpty() && !Config.getEnableLives()) {
                 wrongMoveList.removeFirst();
             }
-
-            int row = move.getRow();
-            int col = move.getColumn();
+            int row = move.row();
+            int col = move.column();
             board.setHiddenProperty(row, col, false);
-            checkCellsForNotes(row, col, move.getNumber(), "show");
-            int prevNumber = move.getPreviousNumber();
+            checkCellsForNotes(row, col, move.number(), "show");
+            int prevNumber = move.previousNumber();
             gameboard.setNumber(row, col, prevNumber);
             board.setCellNumber(row, col, prevNumber);
             logger.debug("Undo move: Row: {}, Column: {}, Number: {}", row, col, prevNumber);
@@ -365,9 +361,9 @@ public class SudokuGame {
     public void provideHint() {
         if (!wrongMoveList.isEmpty()) {
             Move wrongMove = wrongMoveList.removeFirst();
-            int row = wrongMove.getRow();
-            int col = wrongMove.getColumn();
-            int number = wrongMove.getNumber();
+            int row = wrongMove.row();
+            int col = wrongMove.column();
+            int number = wrongMove.number();
 
             gameboard.setNumber(row, col, 0);
             board.setCellNumber(row, col, 0);
@@ -380,9 +376,9 @@ public class SudokuGame {
             Move hintMove = hintList.get(hintIndex);
             hintList.remove(hintIndex);
 
-            int row = hintMove.getRow();
-            int col = hintMove.getColumn();
-            int number = hintMove.getNumber();
+            int row = hintMove.row();
+            int col = hintMove.column();
+            int number = hintMove.number();
 
             checkCellsForNotes(row, col, number, "hide");
             gameboard.setNumber(row, col, number);
@@ -406,6 +402,23 @@ public class SudokuGame {
             if (!usedSolveButton) {
 
                 timer.stop();
+                // Preferences object to store and retrieve the username
+                Preferences pref = Preferences.userNodeForPackage(this.getClass());
+                String storedUsername = pref.get("username", "");
+
+                // Prompt user for their username
+                String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", storedUsername);
+                if (username != null && !username.trim().isEmpty()) {
+                    // Store the username in preferences
+                    pref.put("username", username.trim());
+
+                    // Add the completion details to the leaderboard
+                    String difficulty = Config.getDifficulty();
+                    int time = timer.getTimeToInt(); // returns time in seconds or suitable format
+
+                    UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db" ,username, difficulty, time);
+                }
+
                 if (completedSuccessfully) {
                     message = "Congratulations! You've completed the Sudoku in\n"
                             + timer.getTimeString()

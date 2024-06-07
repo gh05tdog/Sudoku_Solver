@@ -1,4 +1,3 @@
-/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import java.awt.*;
@@ -15,7 +14,7 @@ public abstract class NumberHub extends JPanel {
     private static final int MIN_CELL_SIZE = 50; // Minimum cell size to maintain visibility
     private static final Color NON_HIGHLIGHT_COLOR = Color.WHITE;
 
-    public NumberHub(int n, int cellSize) {
+    protected NumberHub(int n, int cellSize) {
         this.subGrid = n;
 
         this.numberArray = new int[subGrid][subGrid];
