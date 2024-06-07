@@ -679,6 +679,10 @@ public class SudokuGame {
         gameboard.clearInitialBoard();
     }
 
+    public int getLives(){
+        return windowManager.getHearts();
+    }
+
     public SudokuBoardCanvas getBoard() {
         return board;
     }

@@ -246,4 +246,14 @@ public class WindowManager {
     public JFrame getFrame() {
         return frame;
     }
+
+    public int getHearts() {
+        int hearts = 0;
+        for (boolean heartState : heartStates) {
+            if (heartState) {
+                hearts++;
+            }
+        }
+        return hearts;
+    }
 }
