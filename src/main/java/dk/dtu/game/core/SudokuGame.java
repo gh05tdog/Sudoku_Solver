@@ -131,6 +131,12 @@ public class SudokuGame {
         board.setMarkedCell(row, column);
         board.setChosenNumber(gameboard.getNumber(row, column));
 
+        // If the cell is already filled with an initial number, do not make it invisible
+        if (gameboard.getInitialNumber(row, column) != 0) {
+            logger.debug("Clicked on an initial number at Row: {}, Column: {}", row, column);
+            return;
+        }
+
         makeMove(row, column, placeableNumber);
 
         if (column >= 0 && column < gridSize && row >= 0 && row < gridSize) {
@@ -143,6 +149,7 @@ public class SudokuGame {
             logger.debug("Click outside the Sudoku board or on another component");
         }
     }
+
 
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
