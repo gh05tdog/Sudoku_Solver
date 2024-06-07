@@ -19,12 +19,15 @@ public class AlgorithmXSolver {
     public record Placement(int row, int col, int value) {}
 
     public static void createXSudoku(Board board) {
+        long starttime = System.currentTimeMillis();
         int[][] sudokuBoard = solveExistingBoard(board);
         solvedBoard = deepSetSolutionBoard(sudokuBoard);
         board.setSolvedBoard(solvedBoard);
         removeXNumbers(sudokuBoard);
         board.setInitialBoard(sudokuBoard);
         board.setBoard(sudokuBoard);
+        long endtime = System.currentTimeMillis();
+        System.out.println("Time taken to solve: " + (endtime - starttime));
     }
 
     public static int[][] solveExistingBoard(Board board) {
