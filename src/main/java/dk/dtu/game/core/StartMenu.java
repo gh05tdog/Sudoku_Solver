@@ -151,28 +151,11 @@ public class StartMenu {
         createGameButton.setEnabled(false);
         String serverAddress = JOptionPane.showInputDialog("Enter server address:");
         if (serverAddress != null && !serverAddress.isEmpty()) {
-
-            // Firstly, test the connection to the server
-            GameClient client = new GameClient(serverAddress, null);
-            if(client.testConnection()) {
-
-
-                connectClient(serverAddress);
-            } else {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Failed to connect to the server at " + serverAddress,
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                joinGameButton.setEnabled(true);
-                createGameButton.setEnabled(true);
-
-            }
+            connectClient(serverAddress);
         }
     }
 
     private void connectClient(String serverAddress) {
-
         new Thread(
                         () -> {
                             WindowManager windowManager =

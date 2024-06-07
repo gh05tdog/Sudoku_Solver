@@ -74,16 +74,4 @@ public class GameClient {
         }
         return board;
     }
-
-    public boolean testConnection() {
-        try {
-            Socket socket = createSocket(serverAddress);
-            System.out.println("Connected to server at " + serverAddress);
-            socket.close();
-            return true;
-        } catch (IOException e) {
-            System.out.println("Failed to connect to server at " + serverAddress);
-            return false;
-        }
-    }
 }
