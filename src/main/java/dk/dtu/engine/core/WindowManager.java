@@ -1,8 +1,8 @@
+/* (C)2024 */
 package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.Config;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -63,7 +63,8 @@ public class WindowManager {
         heartStates = new boolean[5]; // Assuming 5 hearts as maximum
         try {
             heartsPanel.setBackground(Color.WHITE);
-            heartsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0)); // Horizontal layout with small gaps
+            heartsPanel.setLayout(
+                    new FlowLayout(FlowLayout.LEFT, 5, 0)); // Horizontal layout with small gaps
 
             if (Config.getEnableLives()) {
                 for (int i = 0; i < 5; i++) {
@@ -80,16 +81,19 @@ public class WindowManager {
             gbc.anchor = GridBagConstraints.NORTHWEST;
             gbc.insets = new Insets(10, 10, 10, 10);
             whitePanel.add(heartsPanel, gbc);
+        } catch (NullPointerException ignored) {
         }
-        catch (NullPointerException ignored) {}
     }
 
-
-    public void removeHeart(){
+    public void removeHeart() {
         try {
             if (emptyHeartImage == null) {
-                emptyHeartImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/pixil-frame-0.png")));
-                Image scaledEmptyHeartImage = emptyHeartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+                emptyHeartImage =
+                        ImageIO.read(
+                                Objects.requireNonNull(
+                                        getClass().getResource("/pixil-frame-0.png")));
+                Image scaledEmptyHeartImage =
+                        emptyHeartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                 emptyHeartIcon = new ImageIcon(scaledEmptyHeartImage);
             }
         } catch (IOException e) {
@@ -121,14 +125,15 @@ public class WindowManager {
         heartsPanel.repaint();
     }
 
-    public void setHeart(){
+    public void setHeart() {
         try {
-            if (heartImage == null){
-                heartImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/redHeart.png")));
+            if (heartImage == null) {
+                heartImage =
+                        ImageIO.read(
+                                Objects.requireNonNull(getClass().getResource("/redHeart.png")));
                 Image scaledHeartImage = heartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                 heartIcon = new ImageIcon(scaledHeartImage);
             }
-
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -147,9 +152,8 @@ public class WindowManager {
         heartsPanel.repaint();
     }
 
-
     public boolean checkGameOver() {
-        if(!Config.getEnableLives()){
+        if (!Config.getEnableLives()) {
             return false;
         }
         for (boolean heartState : heartStates) {
@@ -159,10 +163,6 @@ public class WindowManager {
         }
         return true;
     }
-
-
-
-
 
     public void addComponentToButtonPanel(Component component) {
         // Adds a component (like a button) to the button panel
@@ -220,7 +220,7 @@ public class WindowManager {
         combinedPanel.setOpaque(false);
 
         timer.setAlignmentX(Component.CENTER_ALIGNMENT);
-        if(Config.getEnableTimer()){
+        if (Config.getEnableTimer()) {
             combinedPanel.add(timer);
         }
         combinedPanel.add(

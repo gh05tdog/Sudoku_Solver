@@ -1,10 +1,11 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.function.Consumer;
+import javax.swing.*;
 
 public class JSwitchBox extends JComponent {
     private boolean selected;
@@ -19,14 +20,15 @@ public class JSwitchBox extends JComponent {
         this.selected = initialState;
         this.toggleAction = toggleAction;
         setPreferredSize(new Dimension(width, height));
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (new Rectangle(getPreferredSize()).contains(e.getPoint())) {
-                    toggle();
-                }
-            }
-        });
+        addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        if (new Rectangle(getPreferredSize()).contains(e.getPoint())) {
+                            toggle();
+                        }
+                    }
+                });
     }
 
     private void toggle() {

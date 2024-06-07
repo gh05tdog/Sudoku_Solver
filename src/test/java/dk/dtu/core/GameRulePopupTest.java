@@ -1,12 +1,11 @@
+/* (C)2024 */
 package dk.dtu.core;
 
-import com.diffplug.common.collect.Table;
+import static org.junit.jupiter.api.Assertions.*;
+
 import dk.dtu.engine.graphics.GameRulePopup;
-import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class GameRulePopupTest {
 

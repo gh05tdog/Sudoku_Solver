@@ -1,10 +1,10 @@
+/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import dk.dtu.engine.utility.JSwitchBox;
-
-import javax.swing.*;
 import java.awt.*;
 import java.util.function.Consumer;
+import javax.swing.*;
 
 public class GameRulePopup extends JFrame {
 
@@ -17,7 +17,8 @@ public class GameRulePopup extends JFrame {
         setLayout(new GridBagLayout());
     }
 
-    public void addJSwitchBox(String description, boolean initialState, Consumer<Boolean> toggleAction) {
+    public void addJSwitchBox(
+            String description, boolean initialState, Consumer<Boolean> toggleAction) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.WEST;

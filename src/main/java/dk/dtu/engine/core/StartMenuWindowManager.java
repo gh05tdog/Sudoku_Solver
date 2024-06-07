@@ -77,6 +77,7 @@ public class StartMenuWindowManager {
     public JPanel getDifficultyPanel() {
         return difficultyPanel;
     }
+
     public JPanel getGameRulePanel() {
         return gameRulePanel;
     }

@@ -7,6 +7,8 @@ import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.GameRulePopup;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.engine.utility.CustomComponentGroup;
+import dk.dtu.engine.utility.Leaderboard;
+import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.engine.utility.NumberDocumentFilter;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 import java.awt.*;
@@ -14,28 +16,21 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.JDialog;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.dtu.engine.utility.Leaderboard;
-import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
-import java.util.ArrayList;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-
-import javax.swing.JDialog;
-
-
-
 public class StartMenu {
-
 
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
 
@@ -125,7 +120,8 @@ public class StartMenu {
         leaderboardButton.setBounds(5, 180, 190, 40); // Adjust the size and position as needed
         leaderboardButton.setBackground(Color.WHITE);
         leaderboardButton.setFocusPainted(false);
-        startMenuWindowManager.addComponent(leaderboardButton, startMenuWindowManager.getButtonPanel());
+        startMenuWindowManager.addComponent(
+                leaderboardButton, startMenuWindowManager.getButtonPanel());
     }
 
     private void onShowLeaderboard(ActionEvent e) {
@@ -136,21 +132,25 @@ public class StartMenu {
         List<LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard("jdbc:sqlite:sudoku.db");
         List<String[]> rowData = new ArrayList<>();
         for (LeaderboardEntry entry : leaderboard) {
-            rowData.add(new String[]{
-                    entry.username(),
-                    entry.difficulty(),
-                    String.format("%02d:%02d:%02d", entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
-                    entry.timestamp()
-            });
+            rowData.add(
+                    new String[] {
+                        entry.username(),
+                        entry.difficulty(),
+                        String.format(
+                                "%02d:%02d:%02d",
+                                entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
+                        entry.timestamp()
+                    });
         }
 
         // Create a non-editable table model
-        DefaultTableModel model = new DefaultTableModel(rowData.toArray(new String[0][0]), columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        DefaultTableModel model =
+                new DefaultTableModel(rowData.toArray(new String[0][0]), columnNames) {
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        return false;
+                    }
+                };
 
         JTable leaderboardTable = new JTable(model);
         leaderboardTable.setFillsViewportHeight(true);
@@ -246,25 +246,33 @@ public class StartMenu {
         gameRuleButton.setBounds(5, 5, 150, 40); // Set bounds appropriately if needed
         gameRuleButton.setBackground(Color.WHITE);
         gameRuleButton.setFocusPainted(false);
-        gameRuleButton.addMouseListener(new java.awt.event.MouseAdapter(){
-            public void mouseEntered(java.awt.event.MouseEvent evt){
-                gameRuleButton.setBackground(Color.LIGHT_GRAY);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt){
-                gameRuleButton.setBackground(Color.WHITE);
-            }
-        });
-        startMenuWindowManager.addComponent(gameRuleButton, startMenuWindowManager.getGameRulePanel());
+        gameRuleButton.addMouseListener(
+                new java.awt.event.MouseAdapter() {
+                    public void mouseEntered(java.awt.event.MouseEvent evt) {
+                        gameRuleButton.setBackground(Color.LIGHT_GRAY);
+                    }
 
-        gameRuleButton.addActionListener(e -> {
-            GameRulePopup gameRules = new GameRulePopup();
-            gameRules.setVisible(true);
-            gameRules.addJSwitchBox("Enable lives", Config.getEnableLives(), Config::setEnableLives);
-            gameRules.addJSwitchBox("Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
-            gameRules.addJSwitchBox("Enable easy mode", Config.getEnableEasyMode(), Config::setEnableEasyMode);
-        });
+                    public void mouseExited(java.awt.event.MouseEvent evt) {
+                        gameRuleButton.setBackground(Color.WHITE);
+                    }
+                });
+        startMenuWindowManager.addComponent(
+                gameRuleButton, startMenuWindowManager.getGameRulePanel());
+
+        gameRuleButton.addActionListener(
+                e -> {
+                    GameRulePopup gameRules = new GameRulePopup();
+                    gameRules.setVisible(true);
+                    gameRules.addJSwitchBox(
+                            "Enable lives", Config.getEnableLives(), Config::setEnableLives);
+                    gameRules.addJSwitchBox(
+                            "Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
+                    gameRules.addJSwitchBox(
+                            "Enable easy mode",
+                            Config.getEnableEasyMode(),
+                            Config::setEnableEasyMode);
+                });
     }
-
 
     private void addButtonPanelButtons() {
         // This method adds the start button and in the future different buttons

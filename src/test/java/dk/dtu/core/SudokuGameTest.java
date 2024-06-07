@@ -11,7 +11,6 @@ import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.*;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -212,10 +211,17 @@ class SudokuGameTest {
         game.clearBoard();
 
         sudokuBoardCanvasBoard.setSize(550, 550);
-        int[][] tempboard = {{0,1,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,5,0},{0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0}};
-
+        int[][] tempboard = {
+            {0, 1, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 5, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0}
+        };
 
         game.getNewGameButton().doClick();
 
@@ -224,17 +230,24 @@ class SudokuGameTest {
 
         game.makeMove(0, 0, 5);
 
-
         assertEquals(4, game.getLives());
     }
 
     @Test
-    void testPlaceWrongNumberWithoutLives(){
+    void testPlaceWrongNumberWithoutLives() {
         sudokuBoardCanvasBoard.setSize(550, 550);
 
-        int[][] tempboard = {{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0}};
+        int[][] tempboard = {
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0}
+        };
 
         Config.setEnableLives(false);
         game.getNewGameButton().doClick();
@@ -244,10 +257,7 @@ class SudokuGameTest {
         game.makeMove(2, 2, 5);
 
         assertEquals(1, game.moveList.size());
-
     }
-
-
 
     @Test
     void testEraseNumber() {

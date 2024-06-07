@@ -205,7 +205,8 @@ public class SudokuBoardCanvas extends JPanel {
                     }
 
                     // Mark entire subgrid as unplaceable
-                    int subgridSize = (int) Math.sqrt(gridSize); // Assuming a standard square Sudoku board
+                    int subgridSize =
+                            (int) Math.sqrt(gridSize); // Assuming a standard square Sudoku board
                     int startRow = (row / subgridSize) * subgridSize;
                     int startCol = (col / subgridSize) * subgridSize;
                     for (int i = startRow; i < startRow + subgridSize; i++) {
@@ -231,14 +232,9 @@ public class SudokuBoardCanvas extends JPanel {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 cells[i][j].setUnplaceableCell(false);
-
             }
         }
     }
-
-
-
-
 
     public boolean isACellMarked() {
         for (int row = 0; row < gridSize; row++) {
@@ -325,8 +321,8 @@ public class SudokuBoardCanvas extends JPanel {
     }
 
     public void clearWrongNumbers() {
-        for(int i = 0; i < gridSize; i++) {
-            for(int j = 0; j < gridSize; j++) {
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
                 cells[i][j].setWrongNumber(0);
             }
         }

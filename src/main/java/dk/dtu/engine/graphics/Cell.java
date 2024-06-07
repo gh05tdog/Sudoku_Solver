@@ -43,13 +43,11 @@ class Cell implements Serializable {
     }
 
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
-        if(isUnplacable && currentNumber != 0){
+        if (isUnplacable && currentNumber != 0) {
             g.setColor(new Color(250, 200, 200));
-        }
-        else if(isMarked){
+        } else if (isMarked) {
             g.setColor(new Color(169, 169, 167));
-        }
-        else if (isHighlighted) {
+        } else if (isHighlighted) {
             g.setColor(new Color(225, 223, 221));
         } else {
             g.setColor(backgroundColor);
@@ -145,8 +143,7 @@ class Cell implements Serializable {
         return number;
     }
 
-    public void setUnplaceableCell(boolean isUnplacable){
+    public void setUnplaceableCell(boolean isUnplacable) {
         this.isUnplacable = isUnplacable;
     }
-
 }
