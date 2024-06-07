@@ -425,8 +425,10 @@ public class SudokuGame {
                             + "\n\n"
                             + "Would you like to start a new game?";
                 } else { // This is the game over scenario
-                    message = "Game Over! You've run out of hearts.\n\n"
-                            + "Would you like to start a new game?";
+                    message = """
+                            Game Over! You've run out of hearts.
+
+                            Would you like to start a new game?""";
                 }
             }
 
