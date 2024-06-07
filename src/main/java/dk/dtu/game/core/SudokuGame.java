@@ -92,6 +92,7 @@ public class SudokuGame {
         }
     }
 
+
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
         if (Character.isDigit(keyChar)) {
@@ -100,11 +101,12 @@ public class SudokuGame {
             int row = markedCell[0];
             int col = markedCell[1];
 
-            makeMove(row,col,number);
+            makeMove(row, col, number);
         }
 
         checkCompletionAndOfferNewGame();
     }
+
 
     public void checkCellsForNotes(int row, int col, int number, String mode) {
         checkRowAndColumnForNotes(row, col, number, mode);
@@ -147,37 +149,61 @@ public class SudokuGame {
         if (row >= 0 && col >= 0) {
             if (noteButton.isSelected()
                     && gameboard.getInitialNumber(row, col) == 0
-                    && (gameboard.getNumber(row, col) == 0)
+                    && gameboard.getNumber(row, col) == 0
                     && number != 0) {
                 makeNote(row, col, number);
-            }
-
-            if(!Config.getEnableLives()){
-                gameboard.validPlace(row, col, number);
-
-            } else if (gameboard.getInitialNumber(row, col) == 0
-                    && !noteButton.isSelected()
-                    && number != 0 ) {
-                board.setHiddenProperty(row, col, true);
-                checkCellsForNotes(row, col, number, "hide");
-                int previousNumber = gameboard.getNumber(row, col);
-                board.setCellNumber(row, col, number);
-                board.setChosenNumber(number);
-                gameboard.setNumber(row, col, number);
-                Move move = new Move(row, col, number, previousNumber);
-                moveList.push(move); // Log the move for undo functionality
-
-                int[][] solutionB = gameboard.getSolvedBoard();
-
-                if (Config.getEnableLives() && gameboard.getNumber(row, col) != solutionB[row][col]) {
-                    windowManager.removeHeart();
-                    board.setWrongNumber(row, col, number);
+            } else {
+                if (Config.getEnableLives()) {
+                    makeMoveWithLives(row, col, number);
                 } else {
-                    wrongMoveList.add(move);
+                    makeMoveWithoutLives(row, col, number);
                 }
             }
         }
     }
+
+    private void makeMoveWithLives(int row, int col, int number) {
+        if (gameboard.getInitialNumber(row, col) == 0 && !noteButton.isSelected() && number != 0) {
+            board.setHiddenProperty(row, col, true);
+            checkCellsForNotes(row, col, number, "hide");
+            int previousNumber = gameboard.getNumber(row, col);
+            board.setCellNumber(row, col, number);
+            board.setChosenNumber(number);
+            gameboard.setNumber(row, col, number);
+            Move move = new Move(row, col, number, previousNumber);
+            moveList.push(move); // Log the move for undo functionality
+
+            int[][] solutionB = gameboard.getSolvedBoard();
+
+            if (gameboard.getNumber(row, col) != solutionB[row][col]) {
+                windowManager.removeHeart();
+                board.setWrongNumber(row, col, number);
+            }
+        }
+    }
+
+    private void makeMoveWithoutLives(int row, int col, int number) {
+        if (gameboard.getInitialNumber(row, col) == 0
+                && !noteButton.isSelected()
+                && number != 0
+                && gameboard.validPlace(row, col, number)) {
+            board.setHiddenProperty(row, col, true);
+            checkCellsForNotes(row, col, number, "hide");
+            int previousNumber = gameboard.getNumber(row, col);
+            board.setCellNumber(row, col, number);
+            board.setChosenNumber(number);
+            gameboard.setNumber(row, col, number);
+            Move move = new Move(row, col, number, previousNumber);
+            moveList.push(move); // Log the move for undo functionality
+
+            int[][] solutionB = gameboard.getSolvedBoard();
+
+            if (gameboard.getNumber(row, col) != solutionB[row][col]) {
+                wrongMoveList.add(move);
+            }
+        }
+    }
+
 
     public void makeNote(int row, int col, int number) {
         if (gameIsStarted) {
