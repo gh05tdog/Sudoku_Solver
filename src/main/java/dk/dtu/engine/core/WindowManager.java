@@ -152,6 +152,9 @@ public class WindowManager {
 
 
     public boolean checkGameOver() {
+        if(!Config.getEnableLives()){
+            return false;
+        }
         for (boolean heartState : heartStates) {
             if (heartState) {
                 return false;

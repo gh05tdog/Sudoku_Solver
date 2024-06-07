@@ -81,9 +81,8 @@ public class SudokuGame {
         board.setMarkedCell(row, column);
         board.setChosenNumber(gameboard.getNumber(row, column));
 
-
-
         makeMove(row, column, placeableNumber);
+
 
         if (column >= 0 && column < gridSize && row >= 0 && row < gridSize) {
             int cellIndex = row * gridSize + column; // Calculate the cell index
@@ -103,7 +102,8 @@ public class SudokuGame {
             int[] markedCell = board.getMarkedCell();
             int row = markedCell[0];
             int col = markedCell[1];
-            makeMove(row, col, number);
+
+            makeMove(row,col,number);
         }
 
         checkCompletionAndOfferNewGame();
@@ -155,8 +155,10 @@ public class SudokuGame {
                 makeNote(row, col, number);
             }
 
-            if (gameboard.validPlace(row, col, number)
-                    && gameboard.getInitialNumber(row, col) == 0
+            if(!Config.getEnableLives()){
+                gameboard.validPlace(row, col, number);
+
+            } else if (gameboard.getInitialNumber(row, col) == 0
                     && !noteButton.isSelected()
                     && number != 0 ) {
                 board.setHiddenProperty(row, col, true);
@@ -400,20 +402,19 @@ public class SudokuGame {
         boolean isGameOver = isGameOver();
 
         if (completedSuccessfully || isGameOver) {
-            if(!usedSolveButton){
+            String message = null;
+            if (!usedSolveButton) {
 
-
-            timer.stop();
-            String message;
-            if (completedSuccessfully) {
-                message = "Congratulations! You've completed the Sudoku in\n"
-                        + timer.getTimeString()
-                        + "\n\n"
-                        + "Would you like to start a new game?";
-            } else { // This is the game over scenario
-                message = "Game Over! You've run out of hearts.\n\n"
-                        + "Would you like to start a new game?";
-            }
+                timer.stop();
+                if (completedSuccessfully) {
+                    message = "Congratulations! You've completed the Sudoku in\n"
+                            + timer.getTimeString()
+                            + "\n\n"
+                            + "Would you like to start a new game?";
+                } else { // This is the game over scenario
+                    message = "Game Over! You've run out of hearts.\n\n"
+                            + "Would you like to start a new game?";
+                }
             }
 
             Object[] options = {"New Game", "Close"};
