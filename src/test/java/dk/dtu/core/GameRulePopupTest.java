@@ -17,15 +17,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.*;
-import java.awt.*;
+
 
 public class GameRulePopupTest {
 
-    private SudokuGame game;
-    private CustomComponentGroup componentGroup;
-    private CustomBoardPanel panel2;
-    private SudokuBoardCanvas sudokuBoardCanvasBoard;
+
 
     @BeforeAll
     static void setUpHeadless() {
@@ -33,30 +29,9 @@ public class GameRulePopupTest {
     }
 
     @BeforeEach
-    void setUp() throws Board.BoardNotCreatable {
-        JFrame mockedFrame = mock(JFrame.class);
-
-        StartMenuWindowManager startMenuWindowManager =
-                new StartMenuWindowManager(mockedFrame, 1000, 700);
-        StartMenu startMenu = new StartMenu(startMenuWindowManager);
-        startMenu.initialize();
-        startMenu.getStartButton().doClick();
-        WindowManager windowManager =
-                new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
-        game = new SudokuGame(windowManager, 3, 3, 550 / 9);
-        game.initialize(3, 3, 550 / 9);
-        windowManager.setHeart();
-        componentGroup = new CustomComponentGroup();
-
-        // Create mock panels
-        CustomBoardPanel panel1 = new CustomBoardPanel();
-        panel2 = new CustomBoardPanel();
-        CustomBoardPanel panel3 = new CustomBoardPanel();
-
-        // Add panels to the group
-        componentGroup.addComponent(panel1);
-        componentGroup.addComponent(panel2);
-        componentGroup.addComponent(panel3);
+    void setUp() {
+        GameRulePopup gameRulePopup = new GameRulePopup();
+        gameRulePopup.setVisible(true);
     }
 
     @Test
