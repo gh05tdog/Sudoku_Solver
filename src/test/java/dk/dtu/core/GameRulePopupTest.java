@@ -3,8 +3,10 @@ package dk.dtu.core;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.graphics.GameRulePopup;
 import dk.dtu.game.core.Config;
+import dk.dtu.game.core.StartMenu;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GameRulePopupTest {
+    private StartMenu startMenu;
 
     @BeforeAll
     static void setUpHeadless() {
@@ -21,7 +24,11 @@ public class GameRulePopupTest {
 
     @BeforeEach
     void setUp() {
-        // Ensure headless mode is set before any GUI operations
+        JFrame mockedFrame = mock(JFrame.class);
+        StartMenuWindowManager startMenuWindowManager =
+                new StartMenuWindowManager(mockedFrame, 800, 600);
+        startMenu = new StartMenu(startMenuWindowManager);
+        startMenu.initialize();
     }
 
     @Test
