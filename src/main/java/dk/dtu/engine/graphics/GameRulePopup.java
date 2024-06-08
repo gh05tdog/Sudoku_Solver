@@ -1,4 +1,3 @@
-/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import dk.dtu.engine.utility.JSwitchBox;
@@ -10,6 +9,12 @@ public class GameRulePopup extends JFrame {
 
     public GameRulePopup() {
         super("Game Rules");
+        if (!GraphicsEnvironment.isHeadless()) {
+            initialize();
+        }
+    }
+
+    private void initialize() {
         setSize(400, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -17,8 +22,11 @@ public class GameRulePopup extends JFrame {
         setLayout(new GridBagLayout());
     }
 
-    public void addJSwitchBox(
-            String description, boolean initialState, Consumer<Boolean> toggleAction) {
+    public void addJSwitchBox(String description, boolean initialState, Consumer<Boolean> toggleAction) {
+        if (GraphicsEnvironment.isHeadless()) {
+            return;
+        }
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.WEST;

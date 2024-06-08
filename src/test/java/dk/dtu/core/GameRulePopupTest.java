@@ -1,18 +1,8 @@
 package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import dk.dtu.engine.core.StartMenuWindowManager;
-import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.GameRulePopup;
-import dk.dtu.engine.graphics.SudokuBoardCanvas;
-import dk.dtu.engine.utility.CustomBoardPanel;
-import dk.dtu.engine.utility.CustomComponentGroup;
-import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
-import dk.dtu.game.core.StartMenu;
-import dk.dtu.game.core.SudokuGame;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +10,6 @@ import org.junit.jupiter.api.Test;
 
 
 public class GameRulePopupTest {
-
-
 
     @BeforeAll
     static void setUpHeadless() {
