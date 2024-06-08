@@ -19,7 +19,7 @@ public class GameRulePopupTest {
 
     @BeforeAll
     static void setUpHeadless() {
-        System.setProperty("java.awt.headless", "true");
+        System.setProperty("java.awt.headless", "false");
     }
 
     @BeforeEach
