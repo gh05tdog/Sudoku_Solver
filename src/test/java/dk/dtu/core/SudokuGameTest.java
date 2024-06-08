@@ -58,6 +58,7 @@ class SudokuGameTest {
 
         System.setProperty("testMode", "true");
         game.clearBoard();
+        Config.setEnableLives(true);
     }
 
     @Test
@@ -181,34 +182,6 @@ class SudokuGameTest {
     @Test
     void testPlaceWrongNumberWithLives() throws Board.BoardNotCreatable {
         Config.setEnableLives(true);
-        JFrame mockedFrame = mock(JFrame.class);
-
-        StartMenuWindowManager startMenuWindowManager =
-                new StartMenuWindowManager(mockedFrame, 1000, 700);
-        StartMenu startMenu = new StartMenu(startMenuWindowManager);
-        startMenu.initialize();
-        startMenu.getStartButton().doClick();
-        WindowManager windowManager =
-                new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
-        game = new SudokuGame(windowManager, 3, 3, 550 / 9);
-        game.initialize(3, 3, 550 / 9);
-        windowManager.setHeart();
-        componentGroup = new CustomComponentGroup();
-
-        // Create mock panels
-        CustomBoardPanel panel1 = new CustomBoardPanel();
-        panel2 = new CustomBoardPanel();
-        CustomBoardPanel panel3 = new CustomBoardPanel();
-
-        // Add panels to the group
-        componentGroup.addComponent(panel1);
-        componentGroup.addComponent(panel2);
-        componentGroup.addComponent(panel3);
-
-        sudokuBoardCanvasBoard = game.getBoard();
-
-        System.setProperty("testMode", "true");
-        game.clearBoard();
 
         sudokuBoardCanvasBoard.setSize(550, 550);
         int[][] tempboard = {
@@ -223,7 +196,6 @@ class SudokuGameTest {
             {0, 0, 0, 0, 0, 0, 0, 0, 0}
         };
 
-        game.getNewGameButton().doClick();
 
         game.gameboard.setGameBoard(tempboard);
         game.gameboard.setInitialBoard(tempboard);
