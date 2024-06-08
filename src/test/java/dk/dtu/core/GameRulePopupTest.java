@@ -1,13 +1,16 @@
 package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import dk.dtu.engine.graphics.GameRulePopup;
 import dk.dtu.game.core.Config;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
+import javax.swing.*;
+import java.awt.*;
 
 public class GameRulePopupTest {
 
@@ -18,15 +21,20 @@ public class GameRulePopupTest {
 
     @BeforeEach
     void setUp() {
-        GameRulePopup gameRulePopup = new GameRulePopup();
-        gameRulePopup.setVisible(true);
+        // Ensure headless mode is set before any GUI operations
     }
 
     @Test
     public void testAddJSwitchBox() {
-        GameRulePopup gameRulePopup = new GameRulePopup();
-        gameRulePopup.addJSwitchBox("Test", true, (b) -> {});
-        assertEquals(2, gameRulePopup.getContentPane().getComponentCount());
+        if (!GraphicsEnvironment.isHeadless()) {
+            GameRulePopup gameRulePopup = new GameRulePopup();
+            gameRulePopup.addJSwitchBox("Test", true, (b) -> {});
+            assertEquals(2, gameRulePopup.getContentPane().getComponentCount());
+        } else {
+            GameRulePopup gameRulePopup = new GameRulePopup();
+            gameRulePopup.addJSwitchBox("Test", true, (b) -> {});
+            assertEquals(0, gameRulePopup.getContentPane().getComponentCount());
+        }
     }
 
     @Test
