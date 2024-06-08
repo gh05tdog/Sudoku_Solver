@@ -23,6 +23,8 @@ public class GameRulePopupTest {
                 new StartMenuWindowManager(mockedFrame, 800, 600);
         StartMenu startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
+
+        System.setProperty("java.awt.headless", "true");
     }
 
     @Test
