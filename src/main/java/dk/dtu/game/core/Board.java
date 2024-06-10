@@ -55,7 +55,7 @@ public class Board {
         fillZeros(initialBoard);
     }
 
-    private boolean boardIsPossible(int k, int n) {
+    public boolean boardIsPossible(int k, int n) {
         return (k * n) <= (n * n);
     }
 

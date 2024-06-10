@@ -4,7 +4,10 @@ package dk.dtu.game.core;
 import dk.dtu.engine.core.GameEngine;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
+import dk.dtu.engine.graphics.GameRulePopup;
 import dk.dtu.engine.utility.*;
+import dk.dtu.engine.utility.Leaderboard;
+import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 
@@ -38,6 +41,9 @@ public class StartMenu {
     private final JToggleButton mediumButton = new JToggleButton("Medium", true);
     private final JToggleButton hardButton = new JToggleButton("Hard");
     private final JToggleButton extremeButton = new JToggleButton("Extreme");
+
+    private final JButton gameRuleButton = new JButton("Game Rules");
+
     private final CustomBoardPanel twoByTwo = new CustomBoardPanel();
     private final CustomBoardPanel threeByThree = new CustomBoardPanel();
     private final CustomBoardPanel fourByFour = new CustomBoardPanel();
@@ -96,6 +102,7 @@ public class StartMenu {
         addLeaderboardButton();
         updateCustomBoardPanel(2, 2);
         addNetworkGameButtons();
+        addGameruleButton();
 
         threeByThree.updateBackgroundColor(Color.GRAY);
         Config.setK(3);
@@ -307,6 +314,38 @@ public class StartMenu {
             field.setBounds(i == 0 ? 5 : 85, 5, 50, 40);
             startMenuWindowManager.addComponent(field, startMenuWindowManager.getInputPanel());
         }
+    }
+
+    private void addGameruleButton() {
+        gameRuleButton.setBounds(5, 5, 150, 40); // Set bounds appropriately if needed
+        gameRuleButton.setBackground(Color.WHITE);
+        gameRuleButton.setFocusPainted(false);
+        gameRuleButton.addMouseListener(
+                new java.awt.event.MouseAdapter() {
+                    public void mouseEntered(java.awt.event.MouseEvent evt) {
+                        gameRuleButton.setBackground(Color.LIGHT_GRAY);
+                    }
+
+                    public void mouseExited(java.awt.event.MouseEvent evt) {
+                        gameRuleButton.setBackground(Color.WHITE);
+                    }
+                });
+        startMenuWindowManager.addComponent(
+                gameRuleButton, startMenuWindowManager.getGameRulePanel());
+
+        gameRuleButton.addActionListener(
+                e -> {
+                    GameRulePopup gameRules = new GameRulePopup();
+                    gameRules.setVisible(true);
+                    gameRules.addJSwitchBox(
+                            "Enable lives", Config.getEnableLives(), Config::setEnableLives);
+                    gameRules.addJSwitchBox(
+                            "Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
+                    gameRules.addJSwitchBox(
+                            "Enable easy mode",
+                            Config.getEnableEasyMode(),
+                            Config::setEnableEasyMode);
+                });
     }
 
     private void addButtonPanelButtons() {

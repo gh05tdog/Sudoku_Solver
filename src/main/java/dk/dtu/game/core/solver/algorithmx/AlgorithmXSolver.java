@@ -3,10 +3,8 @@ package dk.dtu.game.core.solver.algorithmx;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.SolverAlgorithm;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+
+import java.util.*;
 
 public class AlgorithmXSolver {
     private static final List<Node> Solution = new ArrayList<>();
@@ -80,6 +78,7 @@ public class AlgorithmXSolver {
         int subGridID = (i / subSize) * subSize + (j / subSize);
         cover[3 * board.length * board.length + subGridID * board.length + n - 1] = 1;
         coverList.add(cover);
+
     }
 
     public static void removeXRecursive(int[][] arr, int maxRemoved) {

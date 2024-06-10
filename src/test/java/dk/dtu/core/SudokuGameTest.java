@@ -10,9 +10,7 @@ import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.engine.utility.CustomComponentGroup;
-import dk.dtu.game.core.Move;
-import dk.dtu.game.core.StartMenu;
-import dk.dtu.game.core.SudokuGame;
+import dk.dtu.game.core.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -43,7 +41,7 @@ class SudokuGameTest {
                 new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         game.initialize(3, 3, 550 / 9);
-
+        windowManager.setHeart();
         componentGroup = new CustomComponentGroup();
 
         // Create mock panels
@@ -60,6 +58,7 @@ class SudokuGameTest {
 
         System.setProperty("testMode", "true");
         game.clearBoard();
+        Config.setEnableLives(true);
     }
 
     @Test
@@ -178,6 +177,58 @@ class SudokuGameTest {
 
         assertTrue(game.wrongMoveList.isEmpty());
         assertEquals(game.getHintList().size(), hintListSize);
+    }
+
+    @Test
+    void testPlaceWrongNumberWithLives() throws Board.BoardNotCreatable {
+        Config.setEnableLives(true);
+
+        sudokuBoardCanvasBoard.setSize(550, 550);
+        int[][] tempboard = {
+            {0, 5, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0}
+        };
+
+
+        game.gameboard.setGameBoard(tempboard);
+        game.gameboard.setInitialBoard(tempboard);
+
+        game.makeMove(0, 0, 5);
+
+        assertEquals(4, game.getLives());
+    }
+
+    @Test
+    void testPlaceWrongNumberWithoutLives() {
+        sudokuBoardCanvasBoard.setSize(550, 550);
+
+        int[][] tempboard = {
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0}
+        };
+
+        Config.setEnableLives(false);
+        game.getNewGameButton().doClick();
+        game.gameboard.setGameBoard(tempboard);
+        game.gameboard.setInitialBoard(tempboard);
+
+        game.makeMove(2, 2, 5);
+
+        assertEquals(1, game.moveList.size());
     }
 
     @Test
