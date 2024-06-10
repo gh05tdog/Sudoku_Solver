@@ -65,7 +65,6 @@ public class SudokuGame {
 
     private boolean isNetworkGame = false;
 
-    private final Map<Integer, Integer> numberCountMap = new HashMap<>();
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -80,10 +79,6 @@ public class SudokuGame {
         this.gridSize = n * k;
         this.cellSize = cellSize;
 
-        // Used to keep track of the number of times a number is placed on the board
-        for (int i = 1; i <= n * k; i++) {
-            numberCountMap.put(i, 0);
-        }
 
         new Thread(this::processNetworkMessages).start();
     }
@@ -157,6 +152,7 @@ public class SudokuGame {
 
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
+
         if (Character.isDigit(keyChar)) {
             int number = keyChar - '0'; // Convert character to integer
             int[] markedCell = board.getMarkedCell();
@@ -169,6 +165,7 @@ public class SudokuGame {
                 board.highlightPlaceableCells(number);
             }
         }
+        updateNumberCount();
         checkCompletionAndOfferNewGame();
     }
 
@@ -177,22 +174,6 @@ public class SudokuGame {
         checkSubSquareForNotes(row, col, number, mode);
     }
 
-    private void updateInitialNumberCounts() {
-        // Clear previous counts
-        numberCountMap.clear();
-        for (int i = 1; i <= nSize * kSize; i++) {
-            numberCountMap.put(i, 0);
-        }
-        // Count numbers in the initial board
-        for (int row = 0; row < gameboard.getDimensions(); row++) {
-            for (int col = 0; col < gameboard.getDimensions(); col++) {
-                int number = gameboard.getInitialNumber(row, col);
-                if (number > 0) {
-                    updateNumberCount(number, 1);
-                }
-            }
-        }
-    }
 
     private void checkRowAndColumnForNotes(int row, int col, int number, String mode) {
         for (int i = 0; i < gridSize; i++) {
@@ -226,21 +207,24 @@ public class SudokuGame {
         }
     }
 
-    private void updateNumberCount(int number, int increment) {
-        if (number > 0) {
-            int newCount = numberCountMap.getOrDefault(number, 0) + increment;
-            numberCountMap.put(number, newCount);
+    private void updateNumberCount() {
 
-            // Get the maximum count for the numbers based on the grid size
-            int maxCount = gridSize; // For example, 9 for a 9x9 grid
-
-            // Update the display based on the new count
-            if (newCount >= maxCount) {
-                getNumbersBoard().updateNumberDisplay(number, false); // Grey out the number
-            } else if (newCount >= 0) {
-                getNumbersBoard().updateNumberDisplay(number, true); // Ungrey the number
+        //Loop through the board and add all the numbers to a list,
+        // then check if each number is equal to the max needed number,
+        // if it is, then update the number display
+        List<Integer> numbers = new ArrayList<>();
+        for (int row = 0; row < gameboard.getDimensions(); row++) {
+            for (int col = 0; col < gameboard.getDimensions(); col++) {
+                numbers.add(gameboard.getNumber(row, col));
             }
         }
+
+
+        for (int i = 1; i <= gameboard.getDimensions(); i++) {
+            int count = Collections.frequency(numbers, i);
+            getNumbersBoard().updateNumberDisplay(i, count != gameboard.getDimensions());
+        }
+
     }
 
 
@@ -258,9 +242,6 @@ public class SudokuGame {
                     makeMoveWithoutLives(row, col, number);
                 }
 
-                if (number != 0 && gameboard.getInitialNumber(row, col) == 0) {
-                    updateNumberCount(number, 1);
-                }
             }
         }
     }
@@ -323,9 +304,7 @@ public class SudokuGame {
             int[] cell = board.getMarkedCell();
             int row = cell[0];
             int col = cell[1];
-            int number = gameboard.getNumber(row, col);
             if (gameboard.getInitialNumber(row, col) == 0) {
-                updateNumberCount(number, -1);
                 board.setHiddenProperty(row, col, false);
                 board.removeNumber(row, col);
                 gameboard.setNumber(row, col, 0);
@@ -355,10 +334,6 @@ public class SudokuGame {
             board.setHiddenProperty(row, col, false);
             checkCellsForNotes(row, col, move.number(), "show");
             int prevNumber = move.previousNumber();
-            int number = move.number();
-
-            updateNumberCount(number, -1);
-            updateNumberCount(prevNumber, 1);
             gameboard.setNumber(row, col, prevNumber);
             board.setCellNumber(row, col, prevNumber);
             logger.debug("Undo move: Row: {}, Column: {}, Number: {}", row, col, prevNumber);
@@ -416,7 +391,6 @@ public class SudokuGame {
             BruteForceAlgorithm.createSudoku(gameboard);
         }
 
-        updateInitialNumberCounts();
         fillHintList();
         if (Config.getEnableTimer()) {
             timer.start();
@@ -468,7 +442,6 @@ public class SudokuGame {
             timer.reset();
             board.clearNotes();
         }
-        updateInitialNumberCounts();
         displayNumbersVisually();
         setInitialBoardColor();
         gameIsStarted = true;
@@ -481,6 +454,7 @@ public class SudokuGame {
         if (!isCustomBoard) {
             newGameButton.setText("New Game");
         }
+        updateNumberCount();
     }
 
     private JButton createButton(String text, int height) {
@@ -542,7 +516,6 @@ public class SudokuGame {
             board.visualizeCell(row, col, Color.red);
             board.setHiddenProperty(row, col, false);
             checkCellsForNotes(row, col, number, "show");
-            updateNumberCount(number, -1);
 
         } else if (!hintList.isEmpty()) {
             int hintIndex = random.nextInt(hintList.size());
@@ -560,9 +533,6 @@ public class SudokuGame {
 
             // Visualize the hint
             board.visualizeCell(row, col, Color.blue);
-
-            // Update the number count
-            updateNumberCount(number, 1);
 
             checkCompletionAndOfferNewGame();
         } else {
