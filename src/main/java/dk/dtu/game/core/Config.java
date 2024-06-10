@@ -1,6 +1,8 @@
 /* (C)2024 */
 package dk.dtu.game.core;
 
+import java.util.prefs.Preferences;
+
 public class Config {
     private static int k;
     private static int n;
@@ -43,42 +45,53 @@ public class Config {
         Config.difficulty = difficulty;
     }
 
-    // Game rules
-    private static boolean enableLives = true;
-    private static boolean enableTimer = true;
-    private static boolean enableEasyMode = true;
-    private static int numberOfLives = 3;
 
     // Game rules:
     public static void setEnableLives(boolean enableLives) {
-        Config.enableLives = enableLives;
+        // Store the value in the system preferences
+        Preferences pref = Preferences.userRoot();
+        pref.put("enableLives", String.valueOf(enableLives));
     }
 
     public static boolean getEnableLives() {
-        return enableLives;
+        Preferences pref = Preferences.userRoot();
+        String enableLives = pref.get("enableLives", String.valueOf(true));
+        return Boolean.parseBoolean(enableLives);
     }
 
     public static void setEnableTimer(boolean enableTimer) {
-        Config.enableTimer = enableTimer;
+        // Store the value in the system preferences
+        Preferences pref = Preferences.userRoot();
+        pref.put("enableTimer", String.valueOf(enableTimer));
     }
 
     public static boolean getEnableTimer() {
-        return enableTimer;
+        Preferences pref = Preferences.userRoot();
+        String enableTimer = pref.get("enableTimer", String.valueOf(true));
+        return Boolean.parseBoolean(enableTimer);
     }
 
     public static void setEnableEasyMode(boolean enableEasyMode) {
-        Config.enableEasyMode = enableEasyMode;
+        // Store the value in the system preferences
+        Preferences pref = Preferences.userRoot();
+        pref.put("enableEasyMode", String.valueOf(enableEasyMode));
     }
 
     public static boolean getEnableEasyMode() {
-        return enableEasyMode;
+        Preferences pref = Preferences.userRoot();
+        String enableEasyMode = pref.get("enableEasyMode", String.valueOf(true));
+        return Boolean.parseBoolean(enableEasyMode);
     }
 
     public static void setNumberOfLives(int numberOfLives) {
-        Config.numberOfLives = numberOfLives;
+        // Store the value in the system preferences
+        Preferences pref = Preferences.userRoot();
+        pref.put("numberOfLives", String.valueOf(numberOfLives));
     }
 
     public static int getNumberOfLives() {
-        return numberOfLives;
+        Preferences pref = Preferences.userRoot();
+        String numberOfLives = pref.get("numberOfLives", String.valueOf(3));
+        return Integer.parseInt(numberOfLives);
     }
 }
