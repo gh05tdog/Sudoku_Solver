@@ -10,6 +10,7 @@ public class StartMenuWindowManager {
     private final JPanel difficultyPanel = new JPanel(null); // Panel for difficulty buttons
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
+    private final JPanel gameRulePanel = new JPanel(null); // Panel for game rules
 
     public StartMenuWindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
@@ -37,16 +38,21 @@ public class StartMenuWindowManager {
                 (frame.getWidth()) - 250,
                 (frame.getHeight() / 2) - 150,
                 200,
-                difficultyPanel.getHeight() + sizePanel.getHeight() + 50);
+                difficultyPanel.getHeight() + sizePanel.getHeight() + 300);
+
         buttonPanel.setBackground(Color.WHITE);
 
         inputPanel.setBounds(525, (frame.getHeight() / 2) - 205, 140, 50);
         inputPanel.setBackground(Color.WHITE);
 
+        gameRulePanel.setBounds(50, 50, 200, 50);
+        gameRulePanel.setBackground(Color.WHITE);
+
         mainPanel.add(buttonPanel);
         mainPanel.add(sizePanel);
         mainPanel.add(difficultyPanel);
         mainPanel.add(inputPanel);
+        mainPanel.add(gameRulePanel);
 
         frame.setContentPane(mainPanel); // Add the main panel to the frame
     }
@@ -71,6 +77,10 @@ public class StartMenuWindowManager {
 
     public JPanel getDifficultyPanel() {
         return difficultyPanel;
+    }
+
+    public JPanel getGameRulePanel() {
+        return gameRulePanel;
     }
 
     public JPanel getSizePanel() {

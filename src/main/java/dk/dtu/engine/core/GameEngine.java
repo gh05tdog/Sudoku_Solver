@@ -2,11 +2,12 @@
 package dk.dtu.engine.core;
 
 import dk.dtu.game.core.Board;
+import dk.dtu.game.core.Config;
 import dk.dtu.game.core.SudokuGame;
 
 public class GameEngine implements Runnable {
     private final WindowManager windowManager;
-    private final SudokuGame sudokuGame;
+    private SudokuGame sudokuGame;
     private boolean running = false;
     private final int n;
     private final int k;
@@ -19,9 +20,7 @@ public class GameEngine implements Runnable {
         this.cellSize = cellSize;
         this.windowManager = windowManager;
         try {
-            this.sudokuGame =
-                    new SudokuGame(
-                            this.windowManager, n, k, cellSize); // Set your desired game parameters
+            this.sudokuGame = new SudokuGame(this.windowManager, n, k, cellSize);
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             throw new Board.BoardNotCreatable("This board is not possible to create");
         }
@@ -62,11 +61,6 @@ public class GameEngine implements Runnable {
         sudokuGame.initialize(this.n, this.k, this.cellSize); // Initialize game-specific components
     }
 
-    private void initializeCustom(int[][] board) {
-        windowManager.display();
-        sudokuGame.initializeCustom(board);
-    }
-
     public void start() {
         if (running) return;
         running = true;
@@ -75,11 +69,14 @@ public class GameEngine implements Runnable {
         gameThread.start();
     }
 
-    public void startCustom(int[][] board) {
+    public void startCustom(int[][] customBoard) throws Board.BoardNotCreatable {
         if (running) return;
         running = true;
+        sudokuGame =
+                new SudokuGame(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
+        sudokuGame.initializeCustom(customBoard);
+        windowManager.display();
         Thread gameThread = new Thread(this);
-        initializeCustom(board);
         gameThread.start();
     }
 }

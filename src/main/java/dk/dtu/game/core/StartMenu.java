@@ -4,40 +4,37 @@ package dk.dtu.game.core;
 import dk.dtu.engine.core.GameEngine;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
-import dk.dtu.engine.utility.CustomBoardPanel;
-import dk.dtu.engine.utility.CustomComponentGroup;
-import dk.dtu.engine.utility.NumberDocumentFilter;
+import dk.dtu.engine.graphics.GameRulePopup;
+import dk.dtu.engine.utility.*;
+import dk.dtu.engine.utility.Leaderboard;
+import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
+import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.JDialog;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.dtu.engine.utility.Leaderboard;
-import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
-import java.util.ArrayList;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-
-import javax.swing.JDialog;
-
-
-
 public class StartMenu {
 
-
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
-
+    private static final String FONT = "SansSerif";
     private final StartMenuWindowManager startMenuWindowManager;
     private final JToggleButton startButton = new JToggleButton("Start Game");
     private final JToggleButton easyButton = new JToggleButton("Easy");
@@ -45,19 +42,18 @@ public class StartMenu {
     private final JToggleButton hardButton = new JToggleButton("Hard");
     private final JToggleButton extremeButton = new JToggleButton("Extreme");
 
+    private final JButton gameRuleButton = new JButton("Game Rules");
+
     private final CustomBoardPanel twoByTwo = new CustomBoardPanel();
     private final CustomBoardPanel threeByThree = new CustomBoardPanel();
     private final CustomBoardPanel fourByFour = new CustomBoardPanel();
     private final CustomBoardPanel customBoardPanel = new CustomBoardPanel();
-
+    private final JButton createGameButton = new JButton("Create Game");
+    private final JButton joinGameButton = new JButton("Join Game");
     private final JTextField inputNField = new JTextField("N", 1);
     private final JTextField inputKField = new JTextField("K", 1);
-
     private final ButtonGroup difficultyGroup = new ButtonGroup();
     private final CustomComponentGroup sizeGroup = new CustomComponentGroup();
-
-    private static final String FONT = "SansSerif";
-
     private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
 
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
@@ -105,6 +101,8 @@ public class StartMenu {
         addImportButton();
         addLeaderboardButton();
         updateCustomBoardPanel(2, 2);
+        addNetworkGameButtons();
+        addGameruleButton();
 
         threeByThree.updateBackgroundColor(Color.GRAY);
         Config.setK(3);
@@ -115,13 +113,89 @@ public class StartMenu {
         addChangeListenerToField(inputKField);
     }
 
+    private void addNetworkGameButtons() {
+        createGameButton.setBounds(5, 400 - 90, 190, 40); // Adjust the size and position as needed
+        createGameButton.setBackground(Color.WHITE);
+        createGameButton.setFocusPainted(false);
+        createGameButton.addActionListener(this::onCreateGame);
+
+        joinGameButton.setBounds(5, 400 - 45, 190, 40); // Adjust the size and position as needed
+        joinGameButton.setBackground(Color.WHITE);
+        joinGameButton.setFocusPainted(false);
+        joinGameButton.addActionListener(this::onJoinGame);
+
+        startMenuWindowManager.addComponent(
+                createGameButton, startMenuWindowManager.getButtonPanel());
+        startMenuWindowManager.addComponent(
+                joinGameButton, startMenuWindowManager.getButtonPanel());
+    }
+
+    private void onCreateGame(ActionEvent e) {
+        createGameButton.setEnabled(false);
+        joinGameButton.setEnabled(false);
+
+        // Start the server in a separate thread
+        new Thread(
+                () -> {
+                    GameServer server = new GameServer();
+                    server.start();
+                })
+                .start();
+
+        // Allow some time for the server to start before connecting the client
+        Timer time = new Timer(1000, event -> connectClient("localhost"));
+        time.setRepeats(false);
+        time.start();
+    }
+
+    private void onJoinGame(ActionEvent e) {
+        joinGameButton.setEnabled(false);
+        createGameButton.setEnabled(false);
+        String serverAddress = JOptionPane.showInputDialog("Enter server address:");
+        if (serverAddress != null && !serverAddress.isEmpty()) {
+            // Test the connection
+            GameClient client = new GameClient(serverAddress, null);
+            if (client.testGameConnection()) {
+                connectClient(serverAddress);
+            } else {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Failed to connect to the server. Please check the server address and try again.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                joinGameButton.setEnabled(true);
+                createGameButton.setEnabled(true);
+            }
+        } else {
+            joinGameButton.setEnabled(true);
+            createGameButton.setEnabled(true);
+        }
+    }
+
+    private void connectClient(String serverAddress) {
+        new Thread(
+                () -> {
+                    WindowManager windowManager =
+                            new WindowManager(
+                                    startMenuWindowManager.getFrame(), 1000, 1000);
+                    GameClient client = new GameClient(serverAddress, windowManager);
+                    try {
+                        client.start();
+                    } catch (IOException | Board.BoardNotCreatable ex) {
+                        throw new RuntimeException(ex);
+                    }
+                })
+                .start();
+    }
+
     private void addLeaderboardButton() {
         JButton leaderboardButton = new JButton("Show Leaderboard");
         leaderboardButton.addActionListener(this::onShowLeaderboard);
         leaderboardButton.setBounds(5, 180, 190, 40); // Adjust the size and position as needed
         leaderboardButton.setBackground(Color.WHITE);
         leaderboardButton.setFocusPainted(false);
-        startMenuWindowManager.addComponent(leaderboardButton, startMenuWindowManager.getButtonPanel());
+        startMenuWindowManager.addComponent(
+                leaderboardButton, startMenuWindowManager.getButtonPanel());
     }
 
     private void onShowLeaderboard(ActionEvent e) {
@@ -132,21 +206,25 @@ public class StartMenu {
         List<LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard("jdbc:sqlite:sudoku.db");
         List<String[]> rowData = new ArrayList<>();
         for (LeaderboardEntry entry : leaderboard) {
-            rowData.add(new String[]{
-                    entry.username(),
-                    entry.difficulty(),
-                    String.format("%02d:%02d:%02d", entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
-                    entry.timestamp()
-            });
+            rowData.add(
+                    new String[]{
+                            entry.username(),
+                            entry.difficulty(),
+                            String.format(
+                                    "%02d:%02d:%02d",
+                                    entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
+                            entry.timestamp()
+                    });
         }
 
         // Create a non-editable table model
-        DefaultTableModel model = new DefaultTableModel(rowData.toArray(new String[0][0]), columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        DefaultTableModel model =
+                new DefaultTableModel(rowData.toArray(new String[0][0]), columnNames) {
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        return false;
+                    }
+                };
 
         JTable leaderboardTable = new JTable(model);
         leaderboardTable.setFillsViewportHeight(true);
@@ -199,7 +277,7 @@ public class StartMenu {
                                     int k = Integer.parseInt(inputKField.getText().trim());
                                     if (n * k <= n * n) {
                                         updateCustomBoardPanel(n, k);
-                                        boardConfigs[3] = new int[] {n, k};
+                                        boardConfigs[3] = new int[]{n, k};
                                     }
                                 } catch (NumberFormatException ex) {
                                     // Handle the case where one of the fields is empty or does not
@@ -236,6 +314,38 @@ public class StartMenu {
             field.setBounds(i == 0 ? 5 : 85, 5, 50, 40);
             startMenuWindowManager.addComponent(field, startMenuWindowManager.getInputPanel());
         }
+    }
+
+    private void addGameruleButton() {
+        gameRuleButton.setBounds(5, 5, 150, 40); // Set bounds appropriately if needed
+        gameRuleButton.setBackground(Color.WHITE);
+        gameRuleButton.setFocusPainted(false);
+        gameRuleButton.addMouseListener(
+                new java.awt.event.MouseAdapter() {
+                    public void mouseEntered(java.awt.event.MouseEvent evt) {
+                        gameRuleButton.setBackground(Color.LIGHT_GRAY);
+                    }
+
+                    public void mouseExited(java.awt.event.MouseEvent evt) {
+                        gameRuleButton.setBackground(Color.WHITE);
+                    }
+                });
+        startMenuWindowManager.addComponent(
+                gameRuleButton, startMenuWindowManager.getGameRulePanel());
+
+        gameRuleButton.addActionListener(
+                e -> {
+                    GameRulePopup gameRules = new GameRulePopup();
+                    gameRules.setVisible(true);
+                    gameRules.addJSwitchBox(
+                            "Enable lives", Config.getEnableLives(), Config::setEnableLives);
+                    gameRules.addJSwitchBox(
+                            "Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
+                    gameRules.addJSwitchBox(
+                            "Enable easy mode",
+                            Config.getEnableEasyMode(),
+                            Config::setEnableEasyMode);
+                });
     }
 
     private void addButtonPanelButtons() {
@@ -278,8 +388,8 @@ public class StartMenu {
             File selectedFile = fileChooser.getSelectedFile();
             try {
                 List<String> lines = Files.readAllLines(selectedFile.toPath());
-
-                importSudokuFromFile(lines);
+                int[][] customBoard = importSudokuFromFile(lines);
+                startGameWithBoard(customBoard); // Start game with custom board
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                         null,
@@ -292,7 +402,6 @@ public class StartMenu {
 
     public int[][] importSudokuFromFile(List<String> lines)
             throws IOException, Board.BoardNotCreatable {
-
         if (lines.isEmpty()) {
             throw new IOException("File is empty");
         }
@@ -324,10 +433,8 @@ public class StartMenu {
             }
         }
 
-        // Assuming GameEngine and WindowManager are properly set to handle new board configuration
         // Check if board is valid
         if (BruteForceAlgorithm.isValidSudoku(board)) {
-            startGameWithBoard(board);
             return board;
         } else {
             throw new Board.BoardNotCreatable("This board is not possible to create");
@@ -335,6 +442,7 @@ public class StartMenu {
     }
 
     private void startGameWithBoard(int[][] board) {
+
         Config.setCellSize(550 / (Config.getK() * Config.getN()));
         logger.info(
                 "startGame: {} {} {} {}",
@@ -350,8 +458,7 @@ public class StartMenu {
                     new GameEngine(
                             windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
-            gameEngine.startCustom(board);
-
+            gameEngine.startCustom(board); // Pass the custom board to the game engine
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             logger.error("Board not creatable: {}", boardNotCreatable.getMessage());
         }
