@@ -8,7 +8,6 @@ import dk.dtu.engine.graphics.GameRulePopup;
 import dk.dtu.engine.utility.*;
 import dk.dtu.engine.utility.Leaderboard;
 import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
-import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 
 import java.awt.*;
@@ -175,16 +174,14 @@ public class StartMenu {
         new Thread(
                 () -> {
                     WindowManager windowManager =
-                            new WindowManager(
-                                    startMenuWindowManager.getFrame(), 1000, 1000);
+                            new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
                     GameClient client = new GameClient(serverAddress, windowManager);
                     try {
                         client.start();
                     } catch (IOException | Board.BoardNotCreatable ex) {
                         throw new RuntimeException(ex);
                     }
-                })
-                .start();
+                }).start();
     }
 
     private void addLeaderboardButton() {
@@ -454,8 +451,7 @@ public class StartMenu {
                 new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
 
-            GameEngine gameEngine =
-                    new GameEngine(
+            GameEngine gameEngine = new GameEngine(
                             windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
             gameEngine.startCustom(board); // Pass the custom board to the game engine

@@ -40,8 +40,8 @@ public class GameClient {
         // Send connect signal
         out.println("CONNECT");
 
-        game = new SudokuGame(windowManager, 3, 3, 550 / 9); // Adjust as needed
-        game.setNetworkOut(out); // Pass the network output stream to the game
+        game = new SudokuGame(windowManager, 3, 3, 550 / 9);
+        game.setNetworkOut(out);
         game.setNetworkGame(true);
 
         String message;
@@ -65,6 +65,7 @@ public class GameClient {
         Config.setEnableLives(false);
         switch (command) {
             case "INITIAL_BOARD":
+                System.out.println("Received initial board: " + parts[1]);
                 int[][] board = stringToBoard(parts[1]);
                 game.initializeCustom(board);
                 break;

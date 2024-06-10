@@ -12,6 +12,7 @@ import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
@@ -22,50 +23,42 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.prefs.Preferences;
 import javax.swing.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SudokuGame {
     private static final Logger logger = LoggerFactory.getLogger(SudokuGame.class);
-    private final WindowManager windowManager;
     public final Board gameboard;
     public final Deque<Move> moveList = new ArrayDeque<>();
-    private final ArrayList<Move> hintList = new ArrayList<>();
     public final List<Move> wrongMoveList = new ArrayList<>();
-
+    private final WindowManager windowManager;
+    private final ArrayList<Move> hintList = new ArrayList<>();
     private final int nSize;
     private final int kSize;
+    private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
+    private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
+    private final Map<Integer, Integer> numberCountMap = new HashMap<>();
     int gridSize;
     int cellSize;
-    private int placeableNumber = 0;
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
-
+    Random random = new SecureRandom();
+    private int placeableNumber = 0;
     private SudokuBoardCanvas board;
     private NumberHub numbers;
     private TimerFunction timer;
     private boolean gameIsStarted = false;
-
     private JButton undoButton;
     private JButton hintButton;
     private JButton restartButton;
     private JButton newGameButton;
     private JButton eraseButton;
     private JButton solveButton;
-    private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
-
     private boolean usedSolveButton = false;
-
-    Random random = new SecureRandom();
-
     private PrintWriter networkOut;
-    private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
-
     private boolean isCustomBoard = false;
-
     private boolean isNetworkGame = false;
-
-    private final Map<Integer, Integer> numberCountMap = new HashMap<>();
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -133,27 +126,33 @@ public class SudokuGame {
     }
 
     public void onSudokuBoardClicked(int x, int y) {
-        int row = y / (board.getWidth() / gridSize);
-        int column = x / (board.getHeight() / gridSize);
-        board.setMarkedCell(row, column);
-        board.setChosenNumber(gameboard.getNumber(row, column));
-
-        makeMove(row, column, placeableNumber);
-
-        if (Config.getEnableEasyMode()) {
-            board.highlightPlaceableCells(gameboard.getNumber(row, column));
-        }
-
+        int row = y / (board.getHeight() / gridSize);
+        int column = x / (board.getWidth() / gridSize);
         if (column >= 0 && column < gridSize && row >= 0 && row < gridSize) {
-            int cellIndex = row * gridSize + column; // Calculate the cell index
+            board.setMarkedCell(row, column);
+            board.setChosenNumber(gameboard.getNumber(row, column));
+
+            // Ensure placeableNumber is set correctly and the cell is empty before making a move
+            if (placeableNumber != 0 && gameboard.getInitialNumber(row, column) == 0 && gameboard.getNumber(row, column) == 0) {
+                makeMove(row, column, placeableNumber);
+            }
+
+            if (Config.getEnableEasyMode()) {
+                board.highlightPlaceableCells(gameboard.getNumber(row, column));
+            }
+
+            int cellIndex = row * gridSize + column;
             logger.info("Cell {} clicked. Row: {}, Column: {}", cellIndex, row, column);
-            board.removeNumber(row, column);
+
             board.highlightCell(row, column, true);
             checkCompletionAndOfferNewGame();
         } else {
             logger.debug("Click outside the Sudoku board or on another component");
         }
     }
+
+
+
 
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
@@ -245,25 +244,28 @@ public class SudokuGame {
 
 
     public void makeMove(int row, int col, int number) {
-        if (row >= 0 && col >= 0) {
+        if (row >= 0 && col >= 0 && row < gridSize && col < gridSize) {
             if (noteButton.isSelected()
                     && gameboard.getInitialNumber(row, col) == 0
                     && gameboard.getNumber(row, col) == 0
                     && number != 0) {
                 makeNote(row, col, number);
             } else {
-                if (Config.getEnableLives()) {
-                    makeMoveWithLives(row, col, number);
-                } else {
-                    makeMoveWithoutLives(row, col, number);
+                if (number != 0) {
+                    if (Config.getEnableLives()) {
+                        makeMoveWithLives(row, col, number);
+                    } else {
+                        makeMoveWithoutLives(row, col, number);
+                    }
                 }
-
                 if (number != 0 && gameboard.getInitialNumber(row, col) == 0) {
                     updateNumberCount(number, 1);
                 }
             }
         }
     }
+
+
 
 
     private void makeMoveWithLives(int row, int col, int number) {
@@ -377,7 +379,8 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new NumberHub(n, 40) {};
+        numbers = new NumberHub(n, 40) {
+        };
 
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
@@ -407,10 +410,8 @@ public class SudokuGame {
         windowManager.setupNumberAndTimerPanel(timer, numbers);
 
         windowManager.layoutComponents(timer, numbers);
-
         gameboard.setInitialBoard(customBoard);
-        gameboard.setGameBoard(
-                deepCopyBoard(customBoard));
+        gameboard.setGameBoard(deepCopyBoard(customBoard));
 
 
         if (nSize == kSize) {
@@ -615,9 +616,9 @@ public class SudokuGame {
                 } else { // This is the game over scenario
                     message =
                             """
-                            Game Over! You've run out of hearts.
+                                    Game Over! You've run out of hearts.
 
-                            Would you like to start a new game?""";
+                                    Would you like to start a new game?""";
                 }
             }
 
@@ -852,12 +853,12 @@ public class SudokuGame {
         return board;
     }
 
-    public void setNumbersBoard(NumberHub numberHub) {
-        this.numbers = numberHub;
-    }
-
     public NumberHub getNumbersBoard() {
         return numbers;
+    }
+
+    public void setNumbersBoard(NumberHub numberHub) {
+        this.numbers = numberHub;
     }
 
     public boolean isGameStarted() {
