@@ -1,13 +1,14 @@
 package dk.dtu.game.core.solver.algorithmx;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DancingLinks {
     private final ColumnNode header;
 
     public DancingLinks(List<int[]> matrix) {
         if (matrix == null || matrix.isEmpty() || matrix.getFirst().length != 4) {
-            System.out.println(matrix.get(0).length);
             throw new IllegalArgumentException("Matrix must not be null or empty and must have 4 columns");
         }
 
@@ -62,16 +63,17 @@ public class DancingLinks {
     }
 
     public static int setNumCols(List<int[]> matrix) {
-       int numCols = 0;
+        Set<Integer> uniqueColumns = new HashSet<>();
         for (int[] row : matrix) {
             for (int col : row) {
-                if (col >= numCols) {
-                    numCols = col + 1;
+                if (col >= 0) {
+                    uniqueColumns.add(col);
                 }
             }
         }
-        return numCols;
+        return uniqueColumns.size();
     }
+
 
     public void verticalLinkNodes(ColumnNode colNode, Node node) {
         if (colNode.getDown() == colNode) { // Column is empty

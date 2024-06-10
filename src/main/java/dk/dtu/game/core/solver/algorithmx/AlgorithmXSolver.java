@@ -20,15 +20,12 @@ public class AlgorithmXSolver {
     public record Placement(int row, int col, int value) {}
 
     public static void createXSudoku(Board board) {
-        long startTime = System.currentTimeMillis();
         int[][] sudokuBoard = solveExistingBoard(board);
         solvedBoard = deepSetSolutionBoard(sudokuBoard);
         board.setSolvedBoard(solvedBoard);
         removeXNumbers(sudokuBoard);
         board.setInitialBoard(sudokuBoard);
         board.setBoard(sudokuBoard);
-        long endTime = System.currentTimeMillis();
-        System.out.println("Time taken to solve: " + (endTime - startTime));
     }
 
     public static int[][] solveExistingBoard(Board board) {
@@ -88,27 +85,21 @@ public class AlgorithmXSolver {
 
         int numRemoved = 0;
         int maxRemoved = SolverAlgorithm.setNumsRemoved(arr);
+        int size = arr.length;
+        int[] shuffleIndices = fisherYatesShuffle(size * size); // Shuffle all cell indices
 
-        // Fisher-Yates shuffle for rows and columns
-        int[] randRow = fisherYatesShuffle(arr.length);
-        int[] randCol = fisherYatesShuffle(arr.length);
+        for (int i = 0; i < size * size && numRemoved < maxRemoved; i++) {
+            int row = shuffleIndices[i] / size;
+            int col = shuffleIndices[i] % size;
 
-        // Using a systematic approach to iterate over shuffled positions
-        for (int y = 0; y < arr.length; y++) {
-            for (int x = 0; x < arr.length; x++) {
-                if (numRemoved >= maxRemoved) {
-                    break;
-                }
-                if (arr[randRow[x]][randCol[y]] != 0) {
-                    int tempNumber = arr[randRow[x]][randCol[y]];
-                    arr[randRow[x]][randCol[y]] = 0;
+            if (arr[row][col] != 0) {
+                int tempNumber = arr[row][col];
+                arr[row][col] = 0;
 
-                    if (checkUniqueSolution(arr) == 1) {
-                        numRemoved++;
-                        System.out.println("Removed: " + numRemoved);
-                    } else {
-                        arr[randRow[x]][randCol[y]] = tempNumber; // Restore the number if removing it doesn't lead to a unique solution.
-                    }
+                if (checkUniqueSolution(arr) == 1) {
+                    numRemoved++;
+                } else {
+                    arr[row][col] = tempNumber; // Restore the number if removing it doesn't lead to a unique solution.
                 }
             }
         }
