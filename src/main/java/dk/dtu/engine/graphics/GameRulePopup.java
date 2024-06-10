@@ -1,9 +1,15 @@
 package dk.dtu.engine.graphics;
 
 import dk.dtu.engine.utility.JSwitchBox;
+import dk.dtu.engine.utility.NumberDocumentFilter;
+import dk.dtu.game.core.Config;
+
+import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.function.Consumer;
-import javax.swing.*;
 
 public class GameRulePopup extends JFrame {
 
@@ -44,7 +50,48 @@ public class GameRulePopup extends JFrame {
         gbc.insets = new Insets(0, 5, 10, 5); // Adjust spacing for better visual separation
         add(switchBox, gbc);
 
+        // If the description is "Enable lives", add a JTextField next to the switch box
+        if (description.equalsIgnoreCase("Enable lives")) {
+            gbc.gridx = 1;
+            gbc.insets = new Insets(0, 5, 10, 5); // Adjust spacing for better visual separation
+            JTextField livesField = createLivesField();
+            add(livesField, gbc);
+        }
+
         revalidate();
         repaint();
+    }
+
+    private JTextField createLivesField() {
+        JTextField livesField = new JTextField(1);
+        livesField.setText(String.valueOf(Config.getNumberOfLives()));
+        livesField.setPreferredSize(new Dimension(30, 30)); // Make the box a square
+
+        // Apply the NumberDocumentFilter to restrict input to one digit only
+        ((AbstractDocument) livesField.getDocument()).setDocumentFilter(new NumberDocumentFilter());
+
+        // Add a DocumentListener to update the number of lives in the Config
+        livesField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                updateNumberOfLives();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                updateNumberOfLives();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                updateNumberOfLives();
+            }
+
+            private void updateNumberOfLives() {
+                String text = livesField.getText();
+                if (!text.isEmpty() && text.matches("[1-9]")) {
+                    Config.setNumberOfLives(Integer.parseInt(text));
+                }
+            }
+        });
+
+        return livesField;
     }
 }

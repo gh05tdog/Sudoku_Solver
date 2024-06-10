@@ -60,14 +60,14 @@ public class WindowManager {
     private boolean[] heartStates; // true if the heart is full, false if empty
 
     private void addHeartLabels() {
-        heartStates = new boolean[5]; // Assuming 5 hearts as maximum
+        heartStates = new boolean[Config.getNumberOfLives()]; // Assuming 5 hearts as maximum
         try {
             heartsPanel.setBackground(Color.WHITE);
             heartsPanel.setLayout(
                     new FlowLayout(FlowLayout.LEFT, 5, 0)); // Horizontal layout with small gaps
 
             if (Config.getEnableLives()) {
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < Config.getNumberOfLives(); i++) {
                     JLabel heartLabel = new JLabel();
                     heartsPanel.add(heartLabel);
                     heartStates[i] = true; // Mark the heart as full

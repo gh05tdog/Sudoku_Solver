@@ -412,15 +412,12 @@ public class SudokuGame {
         displayButtons();
         windowManager.drawBoard(board);
         windowManager.setupNumberAndTimerPanel(timer, numbers);
-
         windowManager.layoutComponents(timer, numbers);
         gameboard.setInitialBoard(customBoard);
         gameboard.setGameBoard(deepCopyBoard(customBoard));
 
-
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
-
         } else {
             BruteForceAlgorithm.createSudoku(gameboard);
         }
@@ -445,6 +442,8 @@ public class SudokuGame {
             windowManager.setHeart();
         }
         isNetworkGame = false;
+
+        newGameButton.setText("Replay");
     }
 
     public void newGame() {
@@ -467,14 +466,10 @@ public class SudokuGame {
             }
             fillHintList();
         } else {
-            newGameButton.setEnabled(false);
-            gameboard.setGameBoard(
-                    deepCopyBoard(gameboard.getInitialBoard())); // Reset to custom board
-            gameboard.clearInitialBoard(); // Clear previous initial state
-            gameboard.setInitialBoard(
-                    deepCopyBoard(gameboard.getGameBoard())); // Set the current state as initial
+            gameboard.setGameBoard(deepCopyBoard(gameboard.getInitialBoard())); // Reset to custom board
             moveList.clear();
             wrongMoveList.clear();
+            windowManager.setHeart();
             timer.stop();
             timer.reset();
             board.clearNotes();
@@ -487,6 +482,10 @@ public class SudokuGame {
         solveButton.setEnabled(true);
         if (Config.getEnableTimer()) {
             timer.start();
+        }
+
+        if (!isCustomBoard) {
+            newGameButton.setText("New Game");
         }
     }
 
@@ -625,12 +624,16 @@ public class SudokuGame {
                     message =
                             """
                                     Game Over! You've run out of hearts.
-
+    
                                     Would you like to start a new game?""";
                 }
             }
 
             Object[] options = {"New Game", "Close"};
+            if (isCustomBoard) {
+                options[0] = "Replay";
+            }
+
             int response =
                     JOptionPane.showOptionDialog(
                             null,
@@ -648,6 +651,12 @@ public class SudokuGame {
                 } catch (Exception e) {
                     logger.error("Error creating new game: {}", e.getMessage());
                 }
+            } else {
+                JFrame frame = windowManager.getFrame();
+                StartMenuWindowManager startMenu =
+                        new StartMenuWindowManager(frame, 1000, 1000);
+                StartMenu startMenu1 = new StartMenu(startMenu);
+                startMenu1.initialize();
             }
         }
     }
@@ -661,7 +670,6 @@ public class SudokuGame {
     }
 
     private void displayButtons() {
-
         restartButton = createButton("Restart", 30);
         solveButton = createButton("Solve", 30);
         newGameButton = createButton("New Game", 30);
@@ -670,24 +678,20 @@ public class SudokuGame {
         hintButton = createButton("Hint", 30);
         JButton goBackButton = createButton("Go Back", 30);
 
-        // Set the solved button to be disabled at the start of the game
         solveButton.setEnabled(false);
 
         restartButton.addActionListener(
                 e -> {
-                    // Reset the game state to the initial board configuration
                     moveList.clear();
                     wrongMoveList.clear();
                     timer.stop();
                     timer.reset();
                     board.clearNotes();
 
-                    // Reinitialize the board with the initial puzzle
                     gameboard.setGameBoard(deepCopyBoard(gameboard.getInitialBoard()));
                     displayNumbersVisually();
                     setInitialBoardColor();
 
-                    // Restart the timer
                     timer.start();
 
                     gameIsStarted = true;
@@ -699,7 +703,6 @@ public class SudokuGame {
                     board.clearNotes();
                     timer.stop();
                     if (nSize == kSize) {
-
                         gameboard.setGameBoard(
                                 Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
                     } else {
@@ -740,10 +743,6 @@ public class SudokuGame {
                                     "Go back to main menu",
                                     JOptionPane.YES_NO_OPTION);
                     if (response == JOptionPane.YES_OPTION) {
-                        if (isNetworkGame && gameClient != null) {
-                            gameClient.disconnect(); // Disconnect from the server
-                        }
-                        // Get the frame
                         JFrame frame = windowManager.getFrame();
                         StartMenuWindowManager startMenu =
                                 new StartMenuWindowManager(frame, 1000, 1000);

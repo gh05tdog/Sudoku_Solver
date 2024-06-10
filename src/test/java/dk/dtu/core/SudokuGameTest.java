@@ -199,10 +199,11 @@ class SudokuGameTest {
 
         game.gameboard.setGameBoard(tempboard);
         game.gameboard.setInitialBoard(tempboard);
+        game.gameboard.setSolvedBoard(tempboard);
 
         game.makeMove(0, 0, 5);
 
-        assertEquals(4, game.getLives());
+        assertEquals(2, game.getLives());
     }
 
     @Test
