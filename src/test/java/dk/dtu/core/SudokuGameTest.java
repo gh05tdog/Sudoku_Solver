@@ -182,7 +182,6 @@ class SudokuGameTest {
     @Test
     void testPlaceWrongNumberWithLives() throws Board.BoardNotCreatable {
         Config.setEnableLives(true);
-        Config.setNumberOfLives(5);
 
         sudokuBoardCanvasBoard.setSize(550, 550);
         int[][] tempboard = {
@@ -204,7 +203,7 @@ class SudokuGameTest {
 
         game.makeMove(0, 0, 5);
 
-        assertEquals(4, game.getLives());
+        assertEquals(2, game.getLives());
     }
 
     @Test
