@@ -425,7 +425,7 @@ public class SudokuGame {
         timer.setFocusable(true);
     }
 
-    public void generateRandomCages() {
+    public void generateKillerSudokuCages() {
         int[][] solvedBoard = gameboard.getSolvedBoard();
         board.clearCages();
         Random rand = new Random();
@@ -543,10 +543,10 @@ public class SudokuGame {
         windowManager.layoutComponents(timer, numbers);
         startGame();
         if(Config.getEnableKillerSudoku()){
-            generateRandomCages();
+            generateKillerSudokuCages();
         }
 
-        if (Config.getEnableKillerSudoku()) {
+        if (Config.getEnableKillerSudoku() && Objects.equals(Config.getDifficulty(), "extreme")) {
             for (int row = 0; row < gridSize; row++) {
                 for (int col = 0; col < gridSize; col++) {
                     gameboard.setInitialNumber(row, col, 0);
@@ -649,8 +649,8 @@ public class SudokuGame {
         if (Config.getEnableTimer()) {
             timer.start();
         }
-        if(Config.getEnableKillerSudoku()){
-            generateRandomCages();
+        if(Config.getEnableKillerSudoku() && Objects.equals(Config.getDifficulty(), "extreme")){
+            generateKillerSudokuCages();
             for(int row = 0; row < gridSize; row++){
                 for(int col = 0; col < gridSize; col++){
                     gameboard.setInitialNumber(row, col, 0);
