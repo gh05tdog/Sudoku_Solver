@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.prefs.Preferences;
-import java.util.prefs.Preferences;
 import javax.swing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -416,7 +415,7 @@ public class SudokuGame {
                     deepCopyBoard(gameboard.getInitialBoard())); // Reset to custom board
             gameboard.clearInitialBoard(); // Clear previous initial state
             gameboard.setInitialBoard(
-                    deepCopyBoard(gameboard.getGameBoard())); // Set current state as initial
+                    deepCopyBoard(gameboard.getGameBoard())); // Set the current state as initial
             moveList.clear();
             wrongMoveList.clear();
             timer.stop();
