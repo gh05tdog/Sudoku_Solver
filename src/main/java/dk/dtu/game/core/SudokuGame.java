@@ -352,17 +352,18 @@ public class SudokuGame {
 
     // This method is used to initialize the game with a custom imported board
     public void initializeCustom(int[][] customBoard) {
+        Config.setEnableLives(false);
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
         windowManager.drawBoard(board);
         windowManager.setupNumberAndTimerPanel(timer, numbers);
-        windowManager.setHeart();
+
         windowManager.layoutComponents(timer, numbers);
 
         gameboard.setInitialBoard(customBoard);
         gameboard.setGameBoard(
-                deepCopyBoard(customBoard)); // Use deepCopy to avoid reference issues
+                deepCopyBoard(customBoard));
 
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
@@ -377,7 +378,7 @@ public class SudokuGame {
         displayNumbersVisually();
         setInitialBoardColor();
         gameIsStarted = true;
-        // board.requestFocusInWindow();
+
         solveButton.setEnabled(true);
 
         if (isNetworkGame) {
@@ -385,8 +386,11 @@ public class SudokuGame {
             hintButton.setEnabled(false);
             newGameButton.setEnabled(false);
             restartButton.setEnabled(false);
+        }else{
+            windowManager.setHeart();
         }
         isNetworkGame = false;
+
     }
 
     public void newGame() {
