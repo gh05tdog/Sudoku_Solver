@@ -133,16 +133,10 @@ public class SudokuGame {
     }
 
     public void onSudokuBoardClicked(int x, int y) {
-        int row = y / (board.getWidth() / gridSize); // Adjust for variable cell size
-        int column = x / (board.getHeight() / gridSize); // Adjust for variable cell size
+        int row = y / (board.getWidth() / gridSize);
+        int column = x / (board.getHeight() / gridSize);
         board.setMarkedCell(row, column);
         board.setChosenNumber(gameboard.getNumber(row, column));
-
-        // If the cell is already filled with an initial number, do not make it invisible
-        if (gameboard.getInitialNumber(row, column) != 0) {
-            logger.debug("Clicked on an initial number at Row: {}, Column: {}", row, column);
-            return;
-        }
 
         makeMove(row, column, placeableNumber);
 
@@ -152,7 +146,7 @@ public class SudokuGame {
 
         if (column >= 0 && column < gridSize && row >= 0 && row < gridSize) {
             int cellIndex = row * gridSize + column; // Calculate the cell index
-            logger.debug("Cell {} clicked. Row: {}, Column: {}", cellIndex, row, column);
+            logger.info("Cell {} clicked. Row: {}, Column: {}", cellIndex, row, column);
             board.removeNumber(row, column);
             board.highlightCell(row, column, true);
             checkCompletionAndOfferNewGame();
@@ -252,7 +246,6 @@ public class SudokuGame {
 
     public void makeMove(int row, int col, int number) {
         if (row >= 0 && col >= 0) {
-            int previousNumber = gameboard.getNumber(row, col);
             if (noteButton.isSelected()
                     && gameboard.getInitialNumber(row, col) == 0
                     && gameboard.getNumber(row, col) == 0
@@ -265,9 +258,6 @@ public class SudokuGame {
                     makeMoveWithoutLives(row, col, number);
                 }
 
-                if (previousNumber != 0) {
-                    updateNumberCount(previousNumber, -1);
-                }
                 if (number != 0) {
                     updateNumberCount(number, 1);
                 }
