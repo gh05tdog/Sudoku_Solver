@@ -38,6 +38,7 @@ public class AlgorithmXSolver {
         if (algorithmXSolver(header)) {
             arr = convertSolutionToBoard(Solution, placements);
         }
+        solvedBoard = arr;
         return arr;
     }
 
@@ -51,7 +52,9 @@ public class AlgorithmXSolver {
                 int num = board[i][j];
                 List<Integer> nums;
                 if (num == 0) {
-                    nums = SolverAlgorithm.getPossiblePlacements(board, i, j, (int) Math.sqrt(board.length));
+                    nums =
+                            SolverAlgorithm.getPossiblePlacements(
+                                    board, i, j, (int) Math.sqrt(board.length));
                 } else {
                     nums = Collections.singletonList(num);
                 }
@@ -176,8 +179,8 @@ public class AlgorithmXSolver {
         List<ColumnNode> columns = new ArrayList<>();
         int minSize = c.getSize();
         for (ColumnNode temp = (ColumnNode) header.getRight();
-             temp != header;
-             temp = (ColumnNode) temp.getRight()) {
+                temp != header;
+                temp = (ColumnNode) temp.getRight()) {
             if (temp.getSize() < minSize) {
                 minSize = temp.getSize();
                 columns.clear();
@@ -209,11 +212,7 @@ public class AlgorithmXSolver {
     }
 
     public static int[][] deepSetSolutionBoard(int[][] board) {
-        int[][] copy = new int[board.length][board.length];
-        for (int i = 0; i < board.length; i++) {
-            System.arraycopy(board[i], 0, copy[i], 0, board.length);
-        }
-        return copy;
+        return SolverAlgorithm.deepCopyBoard(board);
     }
 
     public static int[][] getSolutionBoard() {
