@@ -62,7 +62,6 @@ public class StartMenu {
     }
 
     public void startGame() throws Board.BoardNotCreatable {
-
         logger.info(
                 "startGame: {} {} {} {}",
                 Config.getK(),
@@ -455,6 +454,7 @@ public class StartMenu {
         WindowManager windowManager =
                 new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
+
             GameEngine gameEngine =
                     new GameEngine(
                             windowManager, Config.getN(), Config.getK(), Config.getCellSize());
