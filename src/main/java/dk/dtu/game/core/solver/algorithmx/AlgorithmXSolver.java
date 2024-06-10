@@ -39,6 +39,7 @@ public class AlgorithmXSolver {
             arr = convertSolutionToBoard(Solution, placements);
         }
         solvedBoard = arr;
+        board.setSolvedBoard(solvedBoard);
         return arr;
     }
 

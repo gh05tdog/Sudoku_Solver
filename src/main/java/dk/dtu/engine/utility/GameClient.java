@@ -3,6 +3,7 @@ package dk.dtu.engine.utility;
 
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Board;
+import dk.dtu.game.core.Config;
 import dk.dtu.game.core.SudokuGame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class GameClient {
     private void processNetworkMessage(String message, SudokuGame game) {
         String[] parts = message.split(" ", 2);
         String command = parts[0];
-
+        Config.setEnableLives(false);
         switch (command) {
             case "INITIAL_BOARD":
                 int[][] board = stringToBoard(parts[1]);

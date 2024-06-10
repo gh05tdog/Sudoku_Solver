@@ -258,7 +258,7 @@ public class SudokuGame {
                     makeMoveWithoutLives(row, col, number);
                 }
 
-                if (number != 0) {
+                if (number != 0 && gameboard.getInitialNumber(row, col) == 0) {
                     updateNumberCount(number, 1);
                 }
             }
@@ -400,7 +400,6 @@ public class SudokuGame {
 
     // This method is used to initialize the game with a custom imported board
     public void initializeCustom(int[][] customBoard) {
-        Config.setEnableLives(false);
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -410,7 +409,9 @@ public class SudokuGame {
         windowManager.layoutComponents(timer, numbers);
 
         gameboard.setInitialBoard(customBoard);
-        gameboard.setGameBoard(deepCopyBoard(customBoard));
+        gameboard.setGameBoard(
+                deepCopyBoard(customBoard));
+
 
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
@@ -461,6 +462,7 @@ public class SudokuGame {
             }
             fillHintList();
         } else {
+            newGameButton.setEnabled(false);
             gameboard.setGameBoard(
                     deepCopyBoard(gameboard.getInitialBoard())); // Reset to custom board
             gameboard.clearInitialBoard(); // Clear previous initial state
