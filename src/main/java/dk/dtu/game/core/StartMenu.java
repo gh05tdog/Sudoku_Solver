@@ -5,6 +5,7 @@ import dk.dtu.engine.core.GameEngine;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.engine.graphics.GameRulePopup;
+import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.utility.*;
 import dk.dtu.engine.utility.Leaderboard;
 import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
@@ -78,6 +79,7 @@ public class StartMenu {
             GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
             windowManager.display();
             gameEngine.start();
+
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             throw new Board.BoardNotCreatable("This board is not possible to create");
         }

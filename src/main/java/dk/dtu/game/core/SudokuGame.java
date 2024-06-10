@@ -3,6 +3,7 @@ package dk.dtu.game.core;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
+import dk.dtu.engine.graphics.Cage;
 import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
@@ -38,6 +39,8 @@ public class SudokuGame {
     int gridSize;
     int cellSize;
     private int placeableNumber = 0;
+    private int nextCageId = 1;
+
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
 
@@ -139,6 +142,8 @@ public class SudokuGame {
         board.setChosenNumber(gameboard.getNumber(row, column));
 
         makeMove(row, column, placeableNumber);
+
+
 
         if (Config.getEnableEasyMode()) {
             board.highlightPlaceableCells(gameboard.getNumber(row, column));
@@ -279,9 +284,11 @@ public class SudokuGame {
 
             int[][] solutionB = gameboard.getSolvedBoard();
 
-            if (gameboard.getNumber(row, col) != solutionB[row][col]) {
+            if (gameboard.getNumber(row, col) != solutionB[row][col]
+                    || (Config.getEnableKillerSudoku() && cageContains(new Point(col, row), number))) {
                 windowManager.removeHeart();
                 board.setWrongNumber(row, col, number);
+                wrongMoveList.add(move);
             }
         }
     }
@@ -291,6 +298,21 @@ public class SudokuGame {
                 && !noteButton.isSelected()
                 && number != 0
                 && gameboard.validPlace(row, col, number)) {
+
+            if (Config.getEnableKillerSudoku()) {
+                Point cell = new Point(col, row);
+                if (cageContains(cell, number)) {
+                    // If the number is already in the cage, do not make the move
+                    return;
+                } else {
+                    // Get the current cage and add the number to it
+                    Cage cage = board.getCage(row, col);
+                    if (cage != null) {
+                        cage.addCurrentNumber(number);
+                    }
+                }
+            }
+
             board.setHiddenProperty(row, col, true);
             checkCellsForNotes(row, col, number, "hide");
             int previousNumber = gameboard.getNumber(row, col);
@@ -308,6 +330,7 @@ public class SudokuGame {
         }
     }
 
+
     public void makeNote(int row, int col, int number) {
         if (gameIsStarted) {
             if (board.getNotesInCell(row, col).contains(number)) {
@@ -324,7 +347,14 @@ public class SudokuGame {
             int row = cell[0];
             int col = cell[1];
             int number = gameboard.getNumber(row, col);
+
             if (gameboard.getInitialNumber(row, col) == 0) {
+                if (Config.getEnableKillerSudoku()) {
+                    Cage cage = board.getCage(row, col);
+                    if (cage != null) {
+                        cage.removeCurrentNumber(number);
+                    }
+                }
                 updateNumberCount(number, -1);
                 board.setHiddenProperty(row, col, false);
                 board.removeNumber(row, col);
@@ -357,6 +387,12 @@ public class SudokuGame {
             int prevNumber = move.previousNumber();
             int number = move.number();
 
+            if (Config.getEnableKillerSudoku()) {
+                Cage cage = board.getCage(row, col);
+                if (cage != null) {
+                    cage.removeCurrentNumber(number);
+                }
+            }
             updateNumberCount(number, -1);
             updateNumberCount(prevNumber, 1);
             gameboard.setNumber(row, col, prevNumber);
@@ -389,13 +425,112 @@ public class SudokuGame {
         timer.setFocusable(true);
     }
 
+    public void generateRandomCages() {
+        int[][] solvedBoard = gameboard.getSolvedBoard();
+        board.clearCages();
+        Random rand = new Random();
+        boolean[][] used = new boolean[gridSize][gridSize];
+
+        int minCageSize = 2;
+        int maxCageSize = switch (Config.getDifficulty()) {
+            case "medium" -> 6;
+            case "hard" -> 7;
+            case "extreme" -> 7;
+            default -> 4;
+        };
+
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                if (!used[row][col]) {
+                    List<Point> cageCells = new ArrayList<>();
+                    Set<Integer> uniqueNumbers = new HashSet<>();
+                    int cageSize = rand.nextInt(maxCageSize - minCageSize + 1) + minCageSize;
+                    int sum = 0;
+
+                    Queue<Point> queue = new LinkedList<>();
+                    queue.add(new Point(col, row));
+
+                    while (!queue.isEmpty() && cageCells.size() < cageSize) {
+                        Point current = queue.poll();
+                        int r = current.y;
+                        int c = current.x;
+
+                        if (r >= 0 && r < gridSize && c >= 0 && c < gridSize && !used[r][c]) {
+                            int num = solvedBoard[r][c];
+                            Point cell = new Point(c, r);
+                            if (!cageContains(cell, num) && !uniqueNumbers.contains(num)) {
+                                cageCells.add(cell);
+                                sum += num;
+                                uniqueNumbers.add(num);
+                                used[r][c] = true;
+
+                                // Add adjacent cells to the queue
+                                if (r + 1 < gridSize && !used[r + 1][c]) queue.add(new Point(c, r + 1));
+                                if (r - 1 >= 0 && !used[r - 1][c]) queue.add(new Point(c, r - 1));
+                                if (c + 1 < gridSize && !used[r][c + 1]) queue.add(new Point(c + 1, r));
+                                if (c - 1 >= 0 && !used[r][c - 1]) queue.add(new Point(c - 1, r));
+                            }
+                        }
+                    }
+
+                    if (!cageCells.isEmpty()) {
+                        Cage cage = new Cage(cageCells, sum, nextCageId++);
+                        for (Point cell : cageCells) {
+                            int number = solvedBoard[cell.y][cell.x];
+                            cage.addSolutionNumber(number);  // Ensure numbers are added to the cage
+                        }
+                        board.addCage(cage.getId(), cage);
+
+                    }
+                }
+            }
+        }
+
+        adjustInitialNumbersVisibility(solvedBoard);
+    }
+
+
+
+
+    private void adjustInitialNumbersVisibility(int[][] solvedBoard) {
+        Random rand = new Random();
+
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                boolean keepNumber = switch (Config.getDifficulty()) {
+                    case "medium" -> rand.nextDouble() < 0.8;
+                    case "hard" -> rand.nextDouble() < 0.5; // Keep about 30% of the numbers
+                    case "extreme" -> false;
+                    default -> true; // Remove all numbers
+                };
+                if (!keepNumber) {
+                    board.removeNumber(row, col);
+                    gameboard.setNumber(row, col, 0);
+                } else {
+                    board.setCellNumber(row, col, solvedBoard[row][col]);
+                }
+            }
+        }
+    }
+
+
+
     public void initialize(int n, int k, int cellSize) {
         createBoard(n, k, cellSize);
+
         displayButtons();
         windowManager.drawBoard(board);
         windowManager.setupNumberAndTimerPanel(timer, numbers);
         windowManager.layoutComponents(timer, numbers);
         startGame();
+        generateRandomCages();
+        if (Config.getEnableKillerSudoku()) {
+            for (int row = 0; row < gridSize; row++) {
+                for (int col = 0; col < gridSize; col++) {
+                    gameboard.setInitialNumber(row, col, 0);
+                }
+            }
+        }
     }
 
     // This method is used to initialize the game with a custom imported board
@@ -439,9 +574,20 @@ public class SudokuGame {
             windowManager.setHeart();
         }
         isNetworkGame = false;
+
+        // Set initial numbers to zero if Killer Sudoku is enabled
+        if (Config.getEnableKillerSudoku()) {
+            for (int row = 0; row < gridSize; row++) {
+                for (int col = 0; col < gridSize; col++) {
+                    gameboard.setInitialNumber(row, col, 0);
+                }
+            }
+        }
     }
 
+
     public void newGame() {
+
         if (!isCustomBoard) {
             gameboard.clear();
             hintList.clear();
@@ -480,6 +626,14 @@ public class SudokuGame {
         solveButton.setEnabled(true);
         if (Config.getEnableTimer()) {
             timer.start();
+        }
+        if(Config.getEnableKillerSudoku()){
+            generateRandomCages();
+            for(int row = 0; row < gridSize; row++){
+                for(int col = 0; col < gridSize; col++){
+                    gameboard.setInitialNumber(row, col, 0);
+                }
+            }
         }
     }
 
@@ -841,6 +995,23 @@ public class SudokuGame {
         timer.reset();
         gameboard.clearInitialBoard();
     }
+
+
+    public boolean cageContains(Point cell, int num) {
+        List<Cage> cages = board.getCages();
+        for (Cage cage : cages) {
+            if (cage.getCells().contains(cell)) {
+                System.out.println("printing numbers in cage " + cage.getId() + " " + Arrays.toString(cage.getNumbers()));
+                return cage.contains(num);
+            }
+        }
+        return false;
+    }
+
+
+
+
+
 
     public int getLives() {
         return windowManager.getHearts();

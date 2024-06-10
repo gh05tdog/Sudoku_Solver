@@ -1,8 +1,11 @@
 /* (C)2024 */
 package dk.dtu.game.core;
 
+import dk.dtu.engine.graphics.Cage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class Board {
 
@@ -70,6 +73,7 @@ public class Board {
                 && contains(getColumn(y), num)
                 && !squareContains(getSquare(x, y), num);
     }
+
 
     public int[] getRow(int rowIndex) {
         int[] row = new int[size];

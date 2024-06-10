@@ -48,6 +48,7 @@ public class Config {
     private static boolean enableTimer = true;
     private static boolean enableEasyMode = true;
     private static int numberOfLives = 3;
+    private static boolean enableKillerSudoku = true;
 
     // Game rules:
     public static void setEnableLives(boolean enableLives) {
@@ -80,5 +81,12 @@ public class Config {
 
     public static int getNumberOfLives() {
         return numberOfLives;
+    }
+
+    public static boolean getEnableKillerSudoku() {
+        return enableKillerSudoku;
+    }
+    public static void setEnableKillerSudoku(boolean enableKillerSudoku) {
+        Config.enableKillerSudoku = enableKillerSudoku;
     }
 }

@@ -1,11 +1,14 @@
-/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 import javax.swing.*;
+import javax.swing.Timer;
+
+import dk.dtu.game.core.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +21,11 @@ public class SudokuBoardCanvas extends JPanel {
     private static final Logger logger = LoggerFactory.getLogger(SudokuBoardCanvas.class);
 
     int chosenNumber = 0;
+
+    private final Map<Integer, Cage> cages = new HashMap<>();
+    private final Map<Point, Integer> cellToCageMap = new HashMap<>();
+
+
 
     public SudokuBoardCanvas(int n, int k, int cellSize) {
         this.gridSize = n * k;
@@ -45,6 +53,10 @@ public class SudokuBoardCanvas extends JPanel {
             }
         }
         drawSubGrids(g);
+
+        if (Config.getEnableKillerSudoku()) {
+            drawCages(g);
+        }
     }
 
     private void drawSubGrids(Graphics g) {
@@ -59,6 +71,53 @@ public class SudokuBoardCanvas extends JPanel {
             }
         }
     }
+
+    private void drawCages(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        float[] dash = {4f, 4f}; // Increase the dash pattern for better visibility
+        BasicStroke stroke = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0f);
+        g2.setStroke(stroke);
+        g2.setColor(Color.GRAY);
+
+        for (Cage cage : cages.values()) {
+            List<Point> cells = cage.getCells();
+            int sum = cage.getSum();
+
+            if (!cells.isEmpty()) {
+                // Draw the sum in the top-left cell of the cage
+                Point firstCell = cells.getFirst();
+                int x = firstCell.x * cellSize + 5;
+                int y = firstCell.y * cellSize + 15;
+                g.drawString(Integer.toString(sum), x, y);
+
+                // Draw the cage borders
+                for (Point cell : cells) {
+                    int cellX = cell.x * cellSize + 3;
+                    int cellY = cell.y * cellSize + 3;
+                    int size = cellSize - 6;
+
+                    // Draw the cell border and check for adjacent cells
+                    // Top border
+                    if (cell.y == 0 || !cells.contains(new Point(cell.x, cell.y - 1))) {
+                        g2.drawLine(cellX, cellY, cellX + size, cellY);
+                    }
+                    // Bottom border
+                    if (cell.y == gridSize - 1 || !cells.contains(new Point(cell.x, cell.y + 1))) {
+                        g2.drawLine(cellX, cellY + size, cellX + size, cellY + size);
+                    }
+                    // Left border
+                    if (cell.x == 0 || !cells.contains(new Point(cell.x - 1, cell.y))) {
+                        g2.drawLine(cellX, cellY, cellX, cellY + size);
+                    }
+                    // Right border
+                    if (cell.x == gridSize - 1 || !cells.contains(new Point(cell.x + 1, cell.y))) {
+                        g2.drawLine(cellX + size, cellY, cellX + size, cellY + size);
+                    }
+                }
+            }
+        }
+    }
+
 
     public void setCellNumber(int row, int col, int number) {
         if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
@@ -85,9 +144,7 @@ public class SudokuBoardCanvas extends JPanel {
 
             // Highlight the subgrid
             for (int subRow = subGridRowStart; subRow < subGridRowStart + subGridSize; subRow++) {
-                for (int subCol = subGridColStart;
-                        subCol < subGridColStart + subGridSize;
-                        subCol++) {
+                for (int subCol = subGridColStart; subCol < subGridColStart + subGridSize; subCol++) {
                     cells[subRow][subCol].setHighlighted(highlight);
                 }
             }
@@ -99,7 +156,6 @@ public class SudokuBoardCanvas extends JPanel {
     }
 
     public void visualizeCell(int row, int col, Color startColor) {
-
         final int totalSteps = 5; // Total steps to fade color
         final int delay = 100;
         Cell cell = cells[row][col];
@@ -114,9 +170,7 @@ public class SudokuBoardCanvas extends JPanel {
                             // Calculate the step color
                             int r =
                                     startColor.getRed()
-                                            + (Color.WHITE.getRed() - startColor.getRed())
-                                                    * step
-                                                    / totalSteps;
+                                            + (Color.WHITE.getRed() - startColor.getRed()) * step / totalSteps;
                             Color stepColor = getColor(r);
                             cell.setBackgroundColor(stepColor);
                             repaint();
@@ -133,14 +187,10 @@ public class SudokuBoardCanvas extends JPanel {
                     private Color getColor(int r) {
                         int g =
                                 startColor.getGreen()
-                                        + (Color.WHITE.getGreen() - startColor.getGreen())
-                                                * step
-                                                / totalSteps;
+                                        + (Color.WHITE.getGreen() - startColor.getGreen()) * step / totalSteps;
                         int b =
                                 startColor.getBlue()
-                                        + (Color.WHITE.getBlue() - startColor.getBlue())
-                                                * step
-                                                / totalSteps;
+                                        + (Color.WHITE.getBlue() - startColor.getBlue()) * step / totalSteps;
                         return new Color(r, g, b);
                     }
                 };
@@ -205,8 +255,7 @@ public class SudokuBoardCanvas extends JPanel {
                     }
 
                     // Mark entire subgrid as unplaceable
-                    int subgridSize =
-                            (int) Math.sqrt(gridSize); // Assuming a standard square Sudoku board
+                    int subgridSize = (int) Math.sqrt(gridSize); // Assuming a standard square Sudoku board
                     int startRow = (row / subgridSize) * subgridSize;
                     int startCol = (col / subgridSize) * subgridSize;
                     for (int i = startRow; i < startRow + subgridSize; i++) {
@@ -320,11 +369,49 @@ public class SudokuBoardCanvas extends JPanel {
         repaint();
     }
 
-    public void clearWrongNumbers() {
+    public void clearWrongNumbers(){
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 cells[i][j].setWrongNumber(0);
             }
         }
     }
+
+
+    public void addCage(int cageId, Cage cage) {
+        cages.put(cageId, cage);
+        for (Point cell : cage.getCells()) {
+            cellToCageMap.put(cell, cageId);
+        }
+        System.out.println("Added cage with ID " + cageId + " and sum " + cage.getSum() + " with the numbers " + Arrays.toString(cage.getNumbers()));
+        repaint();
+    }
+
+
+
+    public List<Cage> getCages() {
+        return new ArrayList<>(cages.values());
+    }
+
+    public Cage getCage(int row, int col) {
+        Point cell = new Point(col, row);
+        Integer cageId = cellToCageMap.get(cell);
+        if (cageId != null) {
+            return cages.get(cageId);
+        }
+        return null;
+    }
+
+
+
+    public void clearCages() {
+        cages.clear();
+        repaint();
+    }
+
+
+
+
+
 }
+
