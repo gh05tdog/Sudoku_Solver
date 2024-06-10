@@ -65,6 +65,8 @@ public class SudokuGame {
 
     private boolean isNetworkGame = false;
 
+    private final Map<Integer, Integer> numberCountMap = new HashMap<>();
+
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
         this.windowManager = windowManager;
@@ -77,6 +79,11 @@ public class SudokuGame {
         this.kSize = k;
         this.gridSize = n * k;
         this.cellSize = cellSize;
+
+        // Used to keep track of the number of times a number is placed on the board
+        for (int i = 1; i <= n * k; i++) {
+            numberCountMap.put(i, 0);
+        }
 
         new Thread(this::processNetworkMessages).start();
     }
@@ -209,8 +216,16 @@ public class SudokuGame {
         }
     }
 
+    private void updateNumberCount(int number, int increment) {
+        if (number > 0) {
+            numberCountMap.put(number, numberCountMap.getOrDefault(number, 0) + increment);
+            getNumbersBoard().updateNumberDisplay(number, numberCountMap.get(number));
+        }
+    }
+
     public void makeMove(int row, int col, int number) {
         if (row >= 0 && col >= 0) {
+            int previousNumber = gameboard.getNumber(row, col);
             if (noteButton.isSelected()
                     && gameboard.getInitialNumber(row, col) == 0
                     && gameboard.getNumber(row, col) == 0
@@ -222,6 +237,9 @@ public class SudokuGame {
                 } else {
                     makeMoveWithoutLives(row, col, number);
                 }
+
+                updateNumberCount(previousNumber, -1);
+                updateNumberCount(number, 1);
             }
         }
     }
@@ -283,7 +301,9 @@ public class SudokuGame {
             int[] cell = board.getMarkedCell();
             int row = cell[0];
             int col = cell[1];
+            int number = gameboard.getNumber(row, col);
             if (gameboard.getInitialNumber(row, col) == 0) {
+                updateNumberCount(number, -1);
                 board.setHiddenProperty(row, col, false);
                 board.removeNumber(row, col);
                 gameboard.setNumber(row, col, 0);
@@ -308,14 +328,21 @@ public class SudokuGame {
             }
             int row = move.row();
             int col = move.column();
+
             board.setHiddenProperty(row, col, false);
             checkCellsForNotes(row, col, move.number(), "show");
             int prevNumber = move.previousNumber();
+            int number = move.number();
+
+            updateNumberCount(number, -1);
+            updateNumberCount(prevNumber, 1);
             gameboard.setNumber(row, col, prevNumber);
             board.setCellNumber(row, col, prevNumber);
             logger.debug("Undo move: Row: {}, Column: {}, Number: {}", row, col, prevNumber);
         }
     }
+
+
 
     public void createBoard(int n, int k, int cellSize) {
         board = new SudokuBoardCanvas(n, k, cellSize);
@@ -457,7 +484,7 @@ public class SudokuGame {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (gameboard.getInitialNumber(row, col)
-                        == 0) { // Assuming initialBoard is the puzzle with empty spaces
+                        == 0) {
                     assert solutionBoard != null;
                     hintList.add(new Move(row, col, solutionBoard[row][col], 0));
                 }
@@ -542,7 +569,7 @@ public class SudokuGame {
                         // Add the completion details to the leaderboard
                         String difficulty = Config.getDifficulty();
                         int time =
-                                timer.getTimeToInt(); // returns time in seconds or suitable format
+                                timer.getTimeToInt(); // returns time
 
                         UpdateLeaderboard.addScore(
                                 "jdbc:sqlite:sudoku.db", username, difficulty, time);
@@ -560,7 +587,6 @@ public class SudokuGame {
 
                             Would you like to start a new game?""";
 
-                    // Send a completion message to server
                 }
             }
 
@@ -797,6 +823,10 @@ public class SudokuGame {
 
     public void setNumbersBoard(NumberHub numberHub) {
         this.numbers = numberHub;
+    }
+
+    public NumberHub getNumbersBoard() {
+        return numbers;
     }
 
     public boolean isGameStarted() {
