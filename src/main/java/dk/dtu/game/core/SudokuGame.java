@@ -432,11 +432,24 @@ public class SudokuGame {
         boolean[][] used = new boolean[gridSize][gridSize];
 
         int minCageSize = 2;
-        int maxCageSize = switch (Config.getDifficulty()) {
-            case "medium" -> 6;
-            case "hard" -> 7;
-            case "extreme" -> 7;
-            default -> 4;
+        int maxCageSize = 4;
+        double smallCageProbability = switch (Config.getDifficulty()) {
+            case "medium" -> {
+                maxCageSize = 4;
+                yield 0.8; // 90% chance to create smaller cages
+            }
+            case "hard" -> {
+                maxCageSize = 5;
+                yield 0.7; // 80% chance to create smaller cages
+            }
+            case "extreme" -> {
+                maxCageSize = 5;
+                yield 0.5; // 60% chance to create smaller cages
+            }
+            default -> {
+                maxCageSize = 4;
+                yield 1.0; // 100% chance to create smaller cages
+            }
         };
 
         for (int row = 0; row < gridSize; row++) {
@@ -445,6 +458,12 @@ public class SudokuGame {
                     List<Point> cageCells = new ArrayList<>();
                     Set<Integer> uniqueNumbers = new HashSet<>();
                     int cageSize = rand.nextInt(maxCageSize - minCageSize + 1) + minCageSize;
+
+                    // Adjust cage size probability
+                    if (rand.nextDouble() > smallCageProbability) {
+                        cageSize = Math.min(maxCageSize, cageSize + 1);
+                    }
+
                     int sum = 0;
 
                     Queue<Point> queue = new LinkedList<>();
@@ -480,7 +499,6 @@ public class SudokuGame {
                             cage.addSolutionNumber(number);  // Ensure numbers are added to the cage
                         }
                         board.addCage(cage.getId(), cage);
-
                     }
                 }
             }
@@ -488,6 +506,7 @@ public class SudokuGame {
 
         adjustInitialNumbersVisibility(solvedBoard);
     }
+
 
 
 
@@ -523,7 +542,10 @@ public class SudokuGame {
         windowManager.setupNumberAndTimerPanel(timer, numbers);
         windowManager.layoutComponents(timer, numbers);
         startGame();
-        generateRandomCages();
+        if(Config.getEnableKillerSudoku()){
+            generateRandomCages();
+        }
+
         if (Config.getEnableKillerSudoku()) {
             for (int row = 0; row < gridSize; row++) {
                 for (int col = 0; col < gridSize; col++) {
