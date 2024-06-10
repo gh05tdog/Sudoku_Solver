@@ -1,10 +1,9 @@
-/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import java.awt.*;
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.*;
 
 public abstract class NumberHub extends JPanel {
     private static int cellSize;
@@ -27,8 +26,7 @@ public abstract class NumberHub extends JPanel {
         }
 
         NumberHub.setCellSize(Math.max(cellSize, MIN_CELL_SIZE));
-        setPreferredSize(
-                new Dimension(subGrid * NumberHub.cellSize, (subGrid + 2) * NumberHub.cellSize));
+        setPreferredSize(new Dimension(subGrid * NumberHub.cellSize, (subGrid + 2) * NumberHub.cellSize));
         setBackground(Color.WHITE);
         for (int i = 0; i < subGrid; i++) {
             for (int j = 0; j < subGrid; j++) {
@@ -67,9 +65,7 @@ public abstract class NumberHub extends JPanel {
                 Font font = new Font("Arial", Font.BOLD, cellSize / 2);
                 g.setFont(font);
                 g.setColor(Color.BLACK);
-                g.drawString(
-                        num,
-                        x + cellSize / 2 - g.getFontMetrics().stringWidth(num) / 2,
+                g.drawString(num, x + cellSize / 2 - g.getFontMetrics().stringWidth(num) / 2,
                         y + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
             }
         }
@@ -83,9 +79,7 @@ public abstract class NumberHub extends JPanel {
         Font font = new Font("Arial", Font.BOLD, cellSize / 2);
         g.setFont(font);
         g.setColor(Color.BLACK);
-        g.drawString(
-                "Clear",
-                subGrid * cellSize / 2 - g.getFontMetrics().stringWidth("Clear") / 2,
+        g.drawString("Clear", subGrid * cellSize / 2 - g.getFontMetrics().stringWidth("Clear") / 2,
                 clearBoxY + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
     }
 
@@ -100,9 +94,8 @@ public abstract class NumberHub extends JPanel {
         }
     }
 
-    public void updateNumberDisplay(int number, int count) {
-        int maxCount = subGrid * subGrid / subGrid; // number of each digit in a solved grid
-        numberAvailability.put(number, count < maxCount);
+    public void updateNumberDisplay(int number, boolean available) {
+        numberAvailability.put(number, available);
         repaint();
     }
 }
