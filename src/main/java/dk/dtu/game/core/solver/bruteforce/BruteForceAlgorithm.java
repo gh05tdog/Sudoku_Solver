@@ -89,9 +89,7 @@ public class BruteForceAlgorithm {
     private static int getLowestPossibleValue(
             int possibleValues,
             int lowestPossibleValue,
-            ArrayList<int[]> possibleCells,
-            int i,
-            int j) {
+            ArrayList<int[]> possibleCells, int i, int j) {
         if (possibleValues < lowestPossibleValue) {
             lowestPossibleValue = possibleValues;
             possibleCells.clear();

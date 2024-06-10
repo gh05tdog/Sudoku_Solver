@@ -2,7 +2,12 @@
 package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
+import dk.dtu.game.core.Config;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class WindowManager {
@@ -12,6 +17,11 @@ public class WindowManager {
     private final JPanel buttonPanel = new JPanel(); // Panel for buttons
     private final JPanel whitePanel =
             new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
+    JPanel heartsPanel = new JPanel();
+    BufferedImage emptyHeartImage = null;
+    ImageIcon emptyHeartIcon = null;
+    BufferedImage heartImage = null;
+    ImageIcon heartIcon = null;
 
     public WindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
@@ -44,6 +54,114 @@ public class WindowManager {
         mainPanel.add(buttonPanel, buttonConstraints);
 
         this.frame.setContentPane(mainPanel); // Add the main panel to the frame
+        addHeartLabels();
+    }
+
+    private boolean[] heartStates; // true if the heart is full, false if empty
+
+    private void addHeartLabels() {
+        heartStates = new boolean[5]; // Assuming 5 hearts as maximum
+        try {
+            heartsPanel.setBackground(Color.WHITE);
+            heartsPanel.setLayout(
+                    new FlowLayout(FlowLayout.LEFT, 5, 0)); // Horizontal layout with small gaps
+
+            if (Config.getEnableLives()) {
+                for (int i = 0; i < 5; i++) {
+                    JLabel heartLabel = new JLabel();
+                    heartsPanel.add(heartLabel);
+                    heartStates[i] = true; // Mark the heart as full
+                }
+            }
+
+            // Set constraints and add the panel
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.NORTHWEST;
+            gbc.insets = new Insets(10, 10, 10, 10);
+            whitePanel.add(heartsPanel, gbc);
+        } catch (NullPointerException ignored) {
+        }
+    }
+
+    public void removeHeart() {
+        try {
+            if (emptyHeartImage == null) {
+                emptyHeartImage =
+                        ImageIO.read(
+                                Objects.requireNonNull(
+                                        getClass().getResource("/pixil-frame-0.png")));
+                Image scaledEmptyHeartImage =
+                        emptyHeartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+                emptyHeartIcon = new ImageIcon(scaledEmptyHeartImage);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            System.out.println("Image not found, check the path."); // Debug message
+        }
+
+        // Find the last "full" heart label and update its icon directly
+        int lastIndex = -1;
+        for (int i = 0; i < heartStates.length; i++) {
+            if (heartStates[i]) { // Check if the heart is marked as full
+                lastIndex = i;
+            }
+        }
+
+        if (lastIndex != -1) {
+            Component comp = heartsPanel.getComponent(lastIndex);
+            if (comp instanceof JLabel label) {
+                label.setIcon(emptyHeartIcon);
+                heartStates[lastIndex] = false; // Update state to empty
+                System.out.println("Heart emptied at index: " + lastIndex);
+            }
+        } else {
+            System.out.println("No full heart found to replace");
+        }
+
+        heartsPanel.revalidate();
+        heartsPanel.repaint();
+    }
+
+    public void setHeart() {
+        try {
+            if (heartImage == null) {
+                heartImage =
+                        ImageIO.read(
+                                Objects.requireNonNull(getClass().getResource("/redHeart.png")));
+                Image scaledHeartImage = heartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+                heartIcon = new ImageIcon(scaledHeartImage);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            System.out.println("Image not found, check the path."); // Debug message
+        }
+
+        for (int i = 0; i < heartsPanel.getComponentCount(); i++) {
+            Component comp = heartsPanel.getComponent(i);
+            if (comp instanceof JLabel label) {
+                label.setIcon(heartIcon); // Set each heart to full
+                heartStates[i] = true; // Mark the heart as full
+            }
+        }
+        heartsPanel.revalidate();
+        heartsPanel.repaint();
+    }
+
+    public boolean checkGameOver() {
+        if (!Config.getEnableLives()) {
+            return false;
+        }
+        for (boolean heartState : heartStates) {
+            if (heartState) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void addComponentToButtonPanel(Component component) {
@@ -72,7 +190,7 @@ public class WindowManager {
         // This method is used to add the Sudoku board itself, centered in the boardPanel
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; // Align component at the grid's center
-        gbc.gridy = 0; // Align component at the grid's center
+        gbc.gridy = 1; // Align component at the grid's center (below the heart label)
         gbc.weightx = 0.5; // Give column some weight so the component will be centered
         gbc.weighty = 1; // Give row some weight so the component will be centered
         gbc.fill = GridBagConstraints.BOTH; // Let component fill its display area
@@ -102,7 +220,9 @@ public class WindowManager {
         combinedPanel.setOpaque(false);
 
         timer.setAlignmentX(Component.CENTER_ALIGNMENT);
-        combinedPanel.add(timer);
+        if (Config.getEnableTimer()) {
+            combinedPanel.add(timer);
+        }
         combinedPanel.add(
                 Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
 
@@ -122,5 +242,15 @@ public class WindowManager {
 
     public JFrame getFrame() {
         return frame;
+    }
+
+    public int getHearts() {
+        int hearts = 0;
+        for (boolean heartState : heartStates) {
+            if (heartState) {
+                hearts++;
+            }
+        }
+        return hearts;
     }
 }
