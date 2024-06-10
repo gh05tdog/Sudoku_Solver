@@ -161,7 +161,6 @@ public class SudokuGame {
         }
     }
 
-
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
         if (Character.isDigit(keyChar)) {
@@ -342,8 +341,6 @@ public class SudokuGame {
         }
     }
 
-
-
     public void createBoard(int n, int k, int cellSize) {
         board = new SudokuBoardCanvas(n, k, cellSize);
         board.setLocation(50, 50);
@@ -388,8 +385,7 @@ public class SudokuGame {
         windowManager.layoutComponents(timer, numbers);
 
         gameboard.setInitialBoard(customBoard);
-        gameboard.setGameBoard(
-                deepCopyBoard(customBoard));
+        gameboard.setGameBoard(deepCopyBoard(customBoard));
 
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
@@ -412,11 +408,10 @@ public class SudokuGame {
             hintButton.setEnabled(false);
             newGameButton.setEnabled(false);
             restartButton.setEnabled(false);
-        }else{
+        } else {
             windowManager.setHeart();
         }
         isNetworkGame = false;
-
     }
 
     public void newGame() {
@@ -426,8 +421,9 @@ public class SudokuGame {
             moveList.clear();
             wrongMoveList.clear();
             windowManager.setHeart();
-        board.clearUnplacableCells();
-        board.clearWrongNumbers();timer.stop();
+            board.clearUnplacableCells();
+            board.clearWrongNumbers();
+            timer.stop();
             timer.reset();
             board.clearNotes();
             gameboard.clearInitialBoard();
@@ -483,8 +479,7 @@ public class SudokuGame {
         }
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
-                if (gameboard.getInitialNumber(row, col)
-                        == 0) {
+                if (gameboard.getInitialNumber(row, col) == 0) {
                     assert solutionBoard != null;
                     hintList.add(new Move(row, col, solutionBoard[row][col], 0));
                 }
@@ -555,21 +550,20 @@ public class SudokuGame {
                     String storedUsername = pref.get("username", "");
 
                     if (networkOut != null) {
-                    networkOut.println("COMPLETED " + "Player1");
-                }
+                        networkOut.println("COMPLETED " + "Player1");
+                    }
 
-                // Prompt user for their username
-                String username =
-                        JOptionPane.showInputDialog(
-                                null, "Enter your name for the leaderboard:", storedUsername);
-                if (username != null && !username.trim().isEmpty()) {
-                    // Store the username in preferences
-                    pref.put("username", username.trim());
+                    // Prompt user for their username
+                    String username =
+                            JOptionPane.showInputDialog(
+                                    null, "Enter your name for the leaderboard:", storedUsername);
+                    if (username != null && !username.trim().isEmpty()) {
+                        // Store the username in preferences
+                        pref.put("username", username.trim());
 
                         // Add the completion details to the leaderboard
                         String difficulty = Config.getDifficulty();
-                        int time =
-                                timer.getTimeToInt(); // returns time
+                        int time = timer.getTimeToInt(); // returns time
 
                         UpdateLeaderboard.addScore(
                                 "jdbc:sqlite:sudoku.db", username, difficulty, time);
@@ -586,7 +580,6 @@ public class SudokuGame {
                             Game Over! You've run out of hearts.
 
                             Would you like to start a new game?""";
-
                 }
             }
 
