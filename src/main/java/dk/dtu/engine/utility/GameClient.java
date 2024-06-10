@@ -20,6 +20,10 @@ public class GameClient {
     private SudokuGame game;
     private boolean isGameStarted = false;
 
+    private Socket socket;
+
+    private PrintWriter out;
+
     // Implement logger
     private static final Logger logger = LoggerFactory.getLogger(GameClient.class);
 
@@ -32,10 +36,10 @@ public class GameClient {
         if (isGameStarted) return;
         isGameStarted = true;
 
-        Socket socket = createSocket(serverAddress);
+        socket = createSocket(serverAddress);
         System.out.println("Connected to server at " + serverAddress);
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        out = new PrintWriter(socket.getOutputStream(), true);
 
         // Send connect signal
         out.println("CONNECT");
@@ -43,6 +47,7 @@ public class GameClient {
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         game.setNetworkOut(out);
         game.setNetworkGame(true);
+        game.setGameClient(this);
 
         String message;
         while ((message = in.readLine()) != null) {
@@ -50,7 +55,6 @@ public class GameClient {
             processNetworkMessage(message, game);
         }
     }
-
     protected Socket createSocket(String serverAddress) throws IOException {
         return new Socket(serverAddress, 12345);
     }
@@ -72,6 +76,19 @@ public class GameClient {
             case "WINNER":
                 game.processNetworkMessage(message);
                 break;
+        }
+    }
+
+    public void disconnect() {
+        try {
+            if (out != null) {
+                out.println("DISCONNECT");
+            }
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            logger.error("Error disconnecting from server: {}", e.getMessage());
         }
     }
 

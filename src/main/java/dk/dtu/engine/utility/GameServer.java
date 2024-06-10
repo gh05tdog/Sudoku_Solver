@@ -57,12 +57,17 @@ public class GameServer {
     public void stop() {
         running = false;
         try {
+            // Close all client connections
+            for (Socket clientSocket : clientWriters.keySet()) {
+                clientSocket.close();
+            }
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
             }
         } catch (IOException e) {
             logger.error("Error closing server socket: {}", e.getMessage());
         }
+        threadPool.shutdown(); // Ensure the thread pool is also shut down
     }
 
     public void sendInitialBoard() throws Board.BoardNotCreatable {
@@ -123,22 +128,37 @@ public class GameServer {
             String[] parts = message.split(" ");
             String command = parts[0];
 
-            if (command.equals("CONNECT")) {
-                synchronized (lock) {
-                    connectedPlayers++;
-                    int totalPlayers = 2;
-                    if (connectedPlayers == totalPlayers) {
-                        try {
-                            sendInitialBoard();
-                            broadcastMessage("READY"); // Notify all clients that the game is ready to start
-                        } catch (Board.BoardNotCreatable e) {
-                            logger.error("Error creating board: {}", e.getMessage());
+            switch (command) {
+                case "CONNECT" -> {
+                    synchronized (lock) {
+                        connectedPlayers++;
+                        int totalPlayers = 2;
+                        if (connectedPlayers == totalPlayers) {
+                            try {
+                                sendInitialBoard();
+                                broadcastMessage("READY"); // Notify all clients that the game is ready to start
+                            } catch (Board.BoardNotCreatable e) {
+                                logger.error("Error creating board: {}", e.getMessage());
+                            }
                         }
                     }
                 }
-            } else if (command.equals("COMPLETED")) {
-                String playerName = parts[1];
-                announceWinner(playerName);
+                case "DISCONNECT" -> handleClientDisconnection();
+                case "COMPLETED" -> {
+                    String playerName = parts[1];
+                    announceWinner(playerName);
+                }
+            }
+        }
+        private void handleClientDisconnection() {
+            try {
+                clientSocket.close();
+                synchronized (lock) {
+                    clientWriters.remove(clientSocket);
+                    connectedPlayers--;
+                }
+            } catch (IOException e) {
+                logger.error("Error closing client socket: {}", e.getMessage());
             }
         }
 

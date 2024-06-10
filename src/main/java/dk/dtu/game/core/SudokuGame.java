@@ -7,6 +7,7 @@ import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
+import dk.dtu.engine.utility.GameClient;
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
@@ -59,6 +60,8 @@ public class SudokuGame {
     private PrintWriter networkOut;
     private boolean isCustomBoard = false;
     private boolean isNetworkGame = false;
+
+    private GameClient gameClient;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -392,6 +395,7 @@ public class SudokuGame {
         timer.setFocusable(true);
     }
 
+
     public void initialize(int n, int k, int cellSize) {
         createBoard(n, k, cellSize);
         displayButtons();
@@ -484,6 +488,10 @@ public class SudokuGame {
         if (Config.getEnableTimer()) {
             timer.start();
         }
+    }
+
+    public void setGameClient(GameClient gameClient) {
+        this.gameClient = gameClient;
     }
 
     private JButton createButton(String text, int height) {
@@ -724,7 +732,6 @@ public class SudokuGame {
         noteButton.addActionListener(e -> board.requestFocusInWindow());
         goBackButton.addActionListener(
                 e -> {
-
                     // Make a popup to ask if they want to go back
                     int response =
                             JOptionPane.showConfirmDialog(
@@ -733,6 +740,9 @@ public class SudokuGame {
                                     "Go back to main menu",
                                     JOptionPane.YES_NO_OPTION);
                     if (response == JOptionPane.YES_OPTION) {
+                        if (isNetworkGame && gameClient != null) {
+                            gameClient.disconnect(); // Disconnect from the server
+                        }
                         // Get the frame
                         JFrame frame = windowManager.getFrame();
                         StartMenuWindowManager startMenu =
