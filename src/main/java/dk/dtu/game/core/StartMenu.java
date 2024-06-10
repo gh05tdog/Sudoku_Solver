@@ -347,6 +347,9 @@ public class StartMenu {
                             "Enable easy mode",
                             Config.getEnableEasyMode(),
                             Config::setEnableEasyMode);
+                    gameRules.addJSwitchBox("Killer Sudoku Mode",
+                            Config.getEnableKillerSudoku(),
+                            Config::setEnableKillerSudoku);
                 });
     }
 
