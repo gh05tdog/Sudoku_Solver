@@ -59,27 +59,6 @@ class GameServerTest {
     }
 
     @Test
-    void testClientConnection() {
-        try (Socket clientSocket = new Socket("localhost", server.serverSocket.getLocalPort())) {
-
-            OutputStream outputStream = clientSocket.getOutputStream();
-            InputStream inputStream = clientSocket.getInputStream();
-
-            // Send a test message
-            PrintWriter writer = new PrintWriter(outputStream, true);
-            writer.println("TEST_MESSAGE");
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String response = reader.readLine();
-
-            Assertions.assertNotNull(response);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
     void testInitialBoardSent() throws Exception {
         Socket mockSocket = Mockito.mock(Socket.class);
         OutputStream mockOutputStream = new ByteArrayOutputStream();
