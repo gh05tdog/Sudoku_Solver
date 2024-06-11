@@ -546,9 +546,11 @@ public class SudokuGame {
             board.visualizeCell(row, col, Color.blue);
 
             checkCompletionAndOfferNewGame();
+
         } else {
             logger.info("No more hints available.");
         }
+        updateNumberCount();
     }
 
 
