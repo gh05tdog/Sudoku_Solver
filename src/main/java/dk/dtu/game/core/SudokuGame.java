@@ -662,6 +662,7 @@ public class SudokuGame {
                     gameIsStarted = true;
                     board.requestFocusInWindow();
                     solveButton.setEnabled(true);
+                    updateNumberCount();
                 });
         solveButton.addActionListener(
                 e -> {
@@ -674,8 +675,10 @@ public class SudokuGame {
                         gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
                     }
                     usedSolveButton = true;
+                    updateNumberCount();
                     checkCompletionAndOfferNewGame();
                     usedSolveButton = false;
+
                 });
 
         newGameButton.addActionListener(e -> startGame());
@@ -684,12 +687,14 @@ public class SudokuGame {
                 e -> {
                     board.requestFocusInWindow();
                     eraseNumber();
+                    updateNumberCount();
                 });
 
         undoButton.addActionListener(
                 e -> {
                     board.requestFocusInWindow();
                     undoMove();
+                    updateNumberCount();
                 });
 
         hintButton.addActionListener(
