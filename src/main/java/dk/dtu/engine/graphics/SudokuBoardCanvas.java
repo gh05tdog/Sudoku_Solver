@@ -98,7 +98,6 @@ public class SudokuBoardCanvas extends JPanel {
                     sumX -= 1;
                 }
 
-                System.out.println(g2.getFontMetrics().stringWidth(sumStr));
                 g2.drawString(sumStr, sumX, sumY);
 
                 // Draw the cage borders

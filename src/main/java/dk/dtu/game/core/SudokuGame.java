@@ -49,7 +49,6 @@ public class SudokuGame {
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
     Random random = new SecureRandom();
-    private int placeableNumber = 0;
     private SudokuBoardCanvas board;
     private NumberHub numbers;
     private TimerFunction timer;
@@ -490,10 +489,6 @@ public class SudokuGame {
 
                     if (!cageCells.isEmpty()) {
                         Cage cage = new Cage(cageCells, sum, nextCageId++);
-                        for (Point cell : cageCells) {
-                            int number = solvedBoard[cell.y][cell.x];
-                            cage.addSolutionNumber(number); // Ensure numbers are added to the cage
-                        }
                         board.addCage(cage.getId(), cage);
                     }
                 }
@@ -534,11 +529,7 @@ public class SudokuGame {
 
                     Cage cage = board.getCageContainingCell(row, col);
                     if (cage != null) {
-                        System.out.println(
-                                "Adding number " + number + " to cage with ID " + cage.getId());
                         cage.addCurrentNumber(number); // Add the initial number to the cage
-                    } else {
-                        System.out.println("No cage found for cell (" + row + "," + col + ")");
                     }
                 }
             }

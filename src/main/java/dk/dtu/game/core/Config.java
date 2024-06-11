@@ -45,7 +45,7 @@ public class Config {
         Config.difficulty = difficulty;
     }
 
-    public boolean enableKillerSudoku = true;
+    public static boolean enableKillerSudoku = true;
 
     // Game rules:
     public static void setEnableLives(boolean enableLives) {
