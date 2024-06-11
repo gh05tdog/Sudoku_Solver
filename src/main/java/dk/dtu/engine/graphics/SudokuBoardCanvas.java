@@ -80,6 +80,7 @@ public class SudokuBoardCanvas extends JPanel {
         BasicStroke stroke = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0f);
         g2.setStroke(stroke);
         g2.setColor(Color.DARK_GRAY);
+        g2.setFont(new Font("Arial", Font.BOLD, 12));
 
         int margin = 6; // Margin from the edges
         int sumMargin = 3; // Smaller margin for the sum display
@@ -100,8 +101,8 @@ public class SudokuBoardCanvas extends JPanel {
                     sumX -= 1;
                 }
 
-
-                g.drawString(sumStr, sumX, sumY);
+                System.out.println(g2.getFontMetrics().stringWidth(sumStr));
+                g2.drawString(sumStr, sumX, sumY);
 
                 // Draw the cage borders
                 for (Point cell : cells) {
@@ -142,8 +143,6 @@ public class SudokuBoardCanvas extends JPanel {
             }
         }
     }
-
-
 
 
     public void setCellNumber(int row, int col, int number) {
