@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,13 +10,10 @@ import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.engine.utility.CustomComponentGroup;
 import dk.dtu.game.core.*;
+import java.awt.*;
+import javax.swing.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.Random;
 
 public class KillerSudokuTest {
 
@@ -89,6 +87,4 @@ public class KillerSudokuTest {
         }
         return count;
     }
-
-
 }

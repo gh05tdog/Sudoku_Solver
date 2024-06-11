@@ -1,16 +1,14 @@
+/* (C)2024 */
 package dk.dtu.engine.graphics;
 
+import dk.dtu.game.core.Config;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.Timer;
-
-import dk.dtu.game.core.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +24,6 @@ public class SudokuBoardCanvas extends JPanel {
 
     private final Map<Integer, Cage> cages = new HashMap<>();
     private final Map<Point, Integer> cellToCageMap = new HashMap<>();
-
-
 
     public SudokuBoardCanvas(int n, int k, int cellSize) {
         this.gridSize = n * k;
@@ -77,7 +73,8 @@ public class SudokuBoardCanvas extends JPanel {
     public void drawCages(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         float[] dash = {4f, 4f}; //
-        BasicStroke stroke = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0f);
+        BasicStroke stroke =
+                new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0f);
         g2.setStroke(stroke);
         g2.setColor(Color.DARK_GRAY);
         g2.setFont(new Font("Arial", Font.BOLD, 12));
@@ -144,7 +141,6 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
-
     public void setCellNumber(int row, int col, int number) {
         if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
             cells[row][col].setNumber(number);
@@ -170,7 +166,9 @@ public class SudokuBoardCanvas extends JPanel {
 
             // Highlight the subgrid
             for (int subRow = subGridRowStart; subRow < subGridRowStart + subGridSize; subRow++) {
-                for (int subCol = subGridColStart; subCol < subGridColStart + subGridSize; subCol++) {
+                for (int subCol = subGridColStart;
+                        subCol < subGridColStart + subGridSize;
+                        subCol++) {
                     cells[subRow][subCol].setHighlighted(highlight);
                 }
             }
@@ -196,7 +194,9 @@ public class SudokuBoardCanvas extends JPanel {
                             // Calculate the step color
                             int r =
                                     startColor.getRed()
-                                            + (Color.WHITE.getRed() - startColor.getRed()) * step / totalSteps;
+                                            + (Color.WHITE.getRed() - startColor.getRed())
+                                                    * step
+                                                    / totalSteps;
                             Color stepColor = getColor(r);
                             cell.setBackgroundColor(stepColor);
                             repaint();
@@ -213,10 +213,14 @@ public class SudokuBoardCanvas extends JPanel {
                     private Color getColor(int r) {
                         int g =
                                 startColor.getGreen()
-                                        + (Color.WHITE.getGreen() - startColor.getGreen()) * step / totalSteps;
+                                        + (Color.WHITE.getGreen() - startColor.getGreen())
+                                                * step
+                                                / totalSteps;
                         int b =
                                 startColor.getBlue()
-                                        + (Color.WHITE.getBlue() - startColor.getBlue()) * step / totalSteps;
+                                        + (Color.WHITE.getBlue() - startColor.getBlue())
+                                                * step
+                                                / totalSteps;
                         return new Color(r, g, b);
                     }
                 };
@@ -257,16 +261,16 @@ public class SudokuBoardCanvas extends JPanel {
 
     public void highlightPlaceableCells(int number) {
         clearUnplacableCells();
-        boolean[][] unplaceable = new boolean[gridSize][gridSize];
+        boolean[][] unPlaceable = new boolean[gridSize][gridSize];
 
         if (number == 0) {
             return;
         }
 
-        // Mark all cells as unplaceable initially
+        // Mark all cells as unPlaceable initially
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
-                unplaceable[row][col] = false;
+                unPlaceable[row][col] = false;
             }
         }
 
@@ -274,26 +278,27 @@ public class SudokuBoardCanvas extends JPanel {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (cells[row][col].getNumber() == number) {
-                    // Mark entire row and column as unplaceable
+                    // Mark entire row and column as unPlaceable
                     for (int i = 0; i < gridSize; i++) {
-                        unplaceable[row][i] = true;
-                        unplaceable[i][col] = true;
+                        unPlaceable[row][i] = true;
+                        unPlaceable[i][col] = true;
                     }
 
-                    // Mark entire subgrid as unplaceable
-                    int subgridSize = (int) Math.sqrt(gridSize); // Assuming a standard square Sudoku board
+                    // Mark entire subgrid as unPlaceable
+                    int subgridSize =
+                            (int) Math.sqrt(gridSize); // Assuming a standard square Sudoku board
                     int startRow = (row / subgridSize) * subgridSize;
                     int startCol = (col / subgridSize) * subgridSize;
                     for (int i = startRow; i < startRow + subgridSize; i++) {
                         for (int j = startCol; j < startCol + subgridSize; j++) {
-                            unplaceable[i][j] = true;
+                            unPlaceable[i][j] = true;
                         }
                     }
                 }
             }
         }
 
-        if(Config.getEnableKillerSudoku()) {
+        if (Config.getEnableKillerSudoku()) {
             for (Cage cage : cages.values()) {
                 List<Point> cells = cage.getCells();
                 Set<Integer> currentNumbers = cage.getCurrentNumbers();
@@ -305,27 +310,26 @@ public class SudokuBoardCanvas extends JPanel {
 
                     // Check if the number is already present in the cage
                     if (currentNumbers.contains(number)) {
-                        unplaceable[row][col] = true;
+                        unPlaceable[row][col] = true;
                     }
 
                     // Check if placing the number would exceed the cage's sum constraint
                     if (currentSum + number > cage.getSum()) {
-                        unplaceable[row][col] = true;
+                        unPlaceable[row][col] = true;
                     }
                 }
             }
         }
 
-        // Apply highlights only to placeable cells (i.e., not marked as unplaceable)
+        // Apply highlights only to placeable cells (i.e., not marked as unPlaceable)
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
-                if (!unplaceable[row][col] && cells[row][col].getNumber() == 0) {
+                if (!unPlaceable[row][col] && cells[row][col].getNumber() == 0) {
                     cells[row][col].setUnplaceableCell(true);
                 }
             }
         }
     }
-
 
     public void clearUnplacableCells() {
         for (int i = 0; i < gridSize; i++) {
@@ -419,14 +423,13 @@ public class SudokuBoardCanvas extends JPanel {
         repaint();
     }
 
-    public void clearWrongNumbers(){
+    public void clearWrongNumbers() {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 cells[i][j].setWrongNumber(0);
             }
         }
     }
-
 
     public void addCage(int cageId, Cage cage) {
         cages.put(cageId, cage);
@@ -463,10 +466,4 @@ public class SudokuBoardCanvas extends JPanel {
         cages.clear();
         repaint();
     }
-
-
-
-
-
 }
-

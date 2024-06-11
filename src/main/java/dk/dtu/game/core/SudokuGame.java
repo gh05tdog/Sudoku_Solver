@@ -13,7 +13,6 @@ import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
@@ -24,7 +23,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.prefs.Preferences;
 import javax.swing.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +143,6 @@ public class SudokuGame {
 
         makeMove(row, column, placeableNumber);
 
-
         if (Config.getEnableEasyMode()) {
             board.highlightPlaceableCells(gameboard.getNumber(row, column));
         }
@@ -244,7 +241,7 @@ public class SudokuGame {
             if (newCount >= maxCount) {
                 getNumbersBoard().updateNumberDisplay(number, false); // Grey out the number
             } else if (newCount >= 0) {
-                getNumbersBoard().updateNumberDisplay(number, true); // Ungrey the number
+                getNumbersBoard().updateNumberDisplay(number, true); // Un-grey the number
             }
         }
     }
@@ -270,26 +267,23 @@ public class SudokuGame {
         }
     }
 
-
     private void makeMoveWithLives(int row, int col, int number) {
-        if (gameboard.getInitialNumber(row, col) == 0 && !noteButton.isSelected() && number != 0
-                && gameboard.getNumber(row,col) != number) {
-            board.setHiddenProperty(row, col, true);
-            checkCellsForNotes(row, col, number, "hide");
+        if (gameboard.getInitialNumber(row, col) == 0
+                && !noteButton.isSelected()
+                && number != 0
+                && gameboard.getNumber(row, col) != number) {
+
             int previousNumber = gameboard.getNumber(row, col);
-            board.setCellNumber(row, col, number);
-            board.setChosenNumber(number);
-            gameboard.setNumber(row, col, number);
-            Move move = new Move(row, col, number, previousNumber);
-            moveList.push(move); // Log the move for undo functionality
+            applyMove(row, col, number, previousNumber);
 
             int[][] solutionB = gameboard.getSolvedBoard();
 
             if (gameboard.getNumber(row, col) != solutionB[row][col]
-                    || (Config.getEnableKillerSudoku() && cageContains(new Point(col, row), number))) {
+                    || (Config.getEnableKillerSudoku()
+                    && cageContains(new Point(col, row), number))) {
                 windowManager.removeHeart();
                 board.setWrongNumber(row, col, number);
-                wrongMoveList.add(move);
+                wrongMoveList.add(new Move(row, col, number, previousNumber));
             }
         }
     }
@@ -314,21 +308,25 @@ public class SudokuGame {
                 }
             }
 
-            board.setHiddenProperty(row, col, true);
-            checkCellsForNotes(row, col, number, "hide");
             int previousNumber = gameboard.getNumber(row, col);
-            board.setCellNumber(row, col, number);
-            board.setChosenNumber(number);
-            gameboard.setNumber(row, col, number);
-            Move move = new Move(row, col, number, previousNumber);
-            moveList.push(move); // Log the move for undo functionality
+            applyMove(row, col, number, previousNumber);
 
             int[][] solutionB = gameboard.getSolvedBoard();
 
             if (gameboard.getNumber(row, col) != solutionB[row][col]) {
-                wrongMoveList.add(move);
+                wrongMoveList.add(new Move(row, col, number, previousNumber));
             }
         }
+    }
+
+    private void applyMove(int row, int col, int number, int previousNumber) {
+        board.setHiddenProperty(row, col, true);
+        checkCellsForNotes(row, col, number, "hide");
+        board.setCellNumber(row, col, number);
+        board.setChosenNumber(number);
+        gameboard.setNumber(row, col, number);
+        Move move = new Move(row, col, number, previousNumber);
+        moveList.push(move); // Log the move for undo functionality
     }
 
 
@@ -363,7 +361,6 @@ public class SudokuGame {
             }
         }
     }
-
 
     public void displayNumbersVisually() {
         for (int row = 0; row < gameboard.getDimensions(); row++) {
@@ -402,7 +399,6 @@ public class SudokuGame {
         }
     }
 
-
     public void createBoard(int n, int k, int cellSize) {
         board = new SudokuBoardCanvas(n, k, cellSize);
         board.setLocation(50, 50);
@@ -414,8 +410,7 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new NumberHub(n, 40) {
-        };
+        numbers = new NumberHub(n, 40) {};
 
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
@@ -436,23 +431,12 @@ public class SudokuGame {
         int minCageSize = 1;
         int maxCageSize = 4;
         double smallCageProbability = switch (Config.getDifficulty()) {
-            case "medium" -> {
-                maxCageSize = 4;
-                yield 0.9; // 90% chance to create smaller cages
-            }
-            case "hard" -> {
-                maxCageSize = 4;
-                yield 0.5; // 80% chance to create smaller cages
-            }
-            case "extreme" -> {
-                maxCageSize = 4;
-                yield 0.5; // 60% chance to create smaller cages
-            }
-            default -> {
-                maxCageSize = 4;
-                yield 1.0; // 100% chance to create smaller cages
-            }
+            case "medium" -> 0.9; // 90% chance to create smaller cages
+            case "hard" -> 0.7;   // 50% chance to create smaller cages
+            case "extreme" -> 0.5; // 50% chance to create smaller cages
+            default -> 1.0;       // 100% chance to create smaller cages for other difficulties
         };
+
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -486,9 +470,11 @@ public class SudokuGame {
                                 used[r][c] = true;
 
                                 // Add adjacent cells to the queue
-                                if (r + 1 < gridSize && !used[r + 1][c]) queue.add(new Point(c, r + 1));
+                                if (r + 1 < gridSize && !used[r + 1][c])
+                                    queue.add(new Point(c, r + 1));
                                 if (r - 1 >= 0 && !used[r - 1][c]) queue.add(new Point(c, r - 1));
-                                if (c + 1 < gridSize && !used[r][c + 1]) queue.add(new Point(c + 1, r));
+                                if (c + 1 < gridSize && !used[r][c + 1])
+                                    queue.add(new Point(c + 1, r));
                                 if (c - 1 >= 0 && !used[r][c - 1]) queue.add(new Point(c - 1, r));
                             }
                         }
@@ -498,7 +484,7 @@ public class SudokuGame {
                         Cage cage = new Cage(cageCells, sum, nextCageId++);
                         for (Point cell : cageCells) {
                             int number = solvedBoard[cell.y][cell.x];
-                            cage.addSolutionNumber(number);  // Ensure numbers are added to the cage
+                            cage.addSolutionNumber(number); // Ensure numbers are added to the cage
                         }
                         board.addCage(cage.getId(), cage);
                     }
@@ -509,7 +495,6 @@ public class SudokuGame {
         adjustInitialNumbersVisibility();
     }
 
-
     public void adjustInitialNumbersVisibility() {
         Random rand = new Random();
         int[][] solvedBoard = gameboard.getSolvedBoard();
@@ -517,13 +502,14 @@ public class SudokuGame {
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
-                boolean keepNumber = switch (Config.getDifficulty()) {
-                    case "easy" -> rand.nextDouble() < 0.5; // Keep about 50% of the numbers
-                    case "medium" -> rand.nextDouble() < 0.3;
-                    case "hard" -> rand.nextDouble() < 0.1; // Keep about 30% of the numbers
-                    case "extreme" -> false;
-                    default -> true; // Remove all numbers
-                };
+                boolean keepNumber =
+                        switch (Config.getDifficulty()) {
+                            case "easy" -> rand.nextDouble() < 0.5; // Keep about 50% of the numbers
+                            case "medium" -> rand.nextDouble() < 0.3;
+                            case "hard" -> rand.nextDouble() < 0.1; // Keep about 30% of the numbers
+                            case "extreme" -> false;
+                            default -> true; // Remove all numbers
+                        };
                 if (!keepNumber) {
                     board.removeNumber(row, col);
                     gameboard.setNumber(row, col, 0);
@@ -535,11 +521,13 @@ public class SudokuGame {
                     gameboard.setNumber(row, col, number);
 
                     // Debug statements
-                    System.out.println("Setting number " + number + " at (" + row + "," + col + ")");
+                    System.out.println(
+                            "Setting number " + number + " at (" + row + "," + col + ")");
 
                     Cage cage = board.getCageContainingCell(row, col);
                     if (cage != null) {
-                        System.out.println("Adding number " + number + " to cage with ID " + cage.getId());
+                        System.out.println(
+                                "Adding number " + number + " to cage with ID " + cage.getId());
                         cage.addCurrentNumber(number); // Add the initial number to the cage
                     } else {
                         System.out.println("No cage found for cell (" + row + "," + col + ")");
@@ -550,9 +538,6 @@ public class SudokuGame {
         setInitialBoardColor();
         fillHintList();
     }
-
-
-
 
     public void initialize(int n, int k, int cellSize) {
         createBoard(n, k, cellSize);
@@ -608,9 +593,7 @@ public class SudokuGame {
             windowManager.setHeart();
         }
         isNetworkGame = false;
-
     }
-
 
     public void newGame() {
 
@@ -745,7 +728,6 @@ public class SudokuGame {
             logger.info("No more hints available.");
         }
     }
-
 
     public void checkCompletionAndOfferNewGame() {
         boolean completedSuccessfully = isSudokuCompleted() && !testMode();
@@ -1018,18 +1000,20 @@ public class SudokuGame {
         gameboard.clearInitialBoard();
     }
 
-
     public boolean cageContains(Point cell, int num) {
         List<Cage> cages = board.getCages();
         for (Cage cage : cages) {
             if (cage.getCells().contains(cell)) {
-                System.out.println("printing numbers in cage " + cage.getId() + " " + Arrays.toString(cage.getNumbers()));
+                System.out.println(
+                        "printing numbers in cage "
+                                + cage.getId()
+                                + " "
+                                + Arrays.toString(cage.getNumbers()));
                 return cage.contains(num);
             }
         }
         return false;
     }
-
 
     public int getLives() {
         return windowManager.getHearts();

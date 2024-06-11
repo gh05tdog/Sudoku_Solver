@@ -86,6 +86,7 @@ public class Config {
     public static boolean getEnableKillerSudoku() {
         return enableKillerSudoku;
     }
+
     public static void setEnableKillerSudoku(boolean enableKillerSudoku) {
         Config.enableKillerSudoku = enableKillerSudoku;
     }

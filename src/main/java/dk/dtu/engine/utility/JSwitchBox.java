@@ -49,6 +49,6 @@ public class JSwitchBox extends JComponent {
         // Draw slider
         g2.setColor(sliderColor);
         int sliderX = selected ? width - height : 0;
-        g2.fillRoundRect(sliderX, 0, height, height, 20, 20);
+        g2.fillRoundRect(sliderX, 0, width, height, 20, 20);
     }
 }
