@@ -45,9 +45,7 @@ public class Node {
     }
 
     // Getter methods for private fields
-    public Node getLeft() {
-        return left;
-    }
+    public Node getLeft() {return left;}
 
     public void setLeft(Node left) {
         this.left = left;

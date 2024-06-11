@@ -3,6 +3,7 @@ package dk.dtu.core;
 import static org.junit.jupiter.api.Assertions.*;
 
 import dk.dtu.game.core.Board;
+import dk.dtu.game.core.Config;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.algorithmx.ColumnNode;
 import dk.dtu.game.core.solver.algorithmx.DancingLinks;
@@ -17,16 +18,12 @@ public class SolverTest {
     List<int[]> coverList;
 
     public SolverTest() {
-        coverList = new ArrayList<>();
-        int[] coverRow1 = {1, 1, 0, 1};
-        int[] coverRow2 = {0, 0, 1, 1};
-        int[] coverRow3 = {0, 0, 1, 1};
-        int[] coverRow4 = {1, 1, 0, 0};
-
-        coverList.add(coverRow1);
-        coverList.add(coverRow2);
-        coverList.add(coverRow3);
-        coverList.add(coverRow4);
+        int [][] arr = {{3, 1, 2, 4},
+                        {4, 0, 3, 1},
+                        {1, 0, 4, 2},
+                        {2, 4, 1, 3},
+                       };
+        coverList = AlgorithmXSolver.createExactCoverFromBoard(arr, new ArrayList<>());
     }
 
     @Test
@@ -34,19 +31,19 @@ public class SolverTest {
     void TestIsColumnCovered() {
 
         DancingLinks dl = new DancingLinks(coverList);
-        printMatrix(dl);
+    //    printMatrix(dl);
         ColumnNode c = (ColumnNode) dl.getHeader().getRight();
 
         c.cover();
         System.out.println("Covered column: " + c.getName());
         System.out.println("After covering:");
-        printMatrix(dl);
+    //    printMatrix(dl);
         assertTrue(isColumnCovered(c));
 
         c.uncover();
         System.out.println("Uncovered column: " + c.getName());
         System.out.println("After uncovering:");
-        printMatrix(dl);
+    // printMatrix(dl);
         assertFalse(isColumnCovered(c));
     }
 
@@ -56,6 +53,7 @@ public class SolverTest {
         DancingLinks dl = new DancingLinks(coverList);
         ColumnNode c = (ColumnNode) dl.getHeader().getRight();
         c.cover();
+
         assertTrue(isColumnCovered(c));
     }
 
@@ -65,6 +63,7 @@ public class SolverTest {
         DancingLinks dl = new DancingLinks(coverList);
         ColumnNode c = (ColumnNode) dl.getHeader().getRight();
         c.cover();
+
         assertTrue(isColumnCovered(c));
         c.uncover();
         assertTrue(isColumnUncovered(c, coverList));
@@ -80,23 +79,24 @@ public class SolverTest {
         List<int[]> exactCoverBoard = AlgorithmXSolver.createExactCoverFromBoard(board, placements);
 
         assertEquals(729, exactCoverBoard.size());
-        assertEquals(324, exactCoverBoard.getFirst().length);
+        assertEquals(4, exactCoverBoard.getFirst().length);
 
-        for (int i = 0; i < exactCoverBoard.size(); i++) {
-            int numsInRow = 0;
-            for (int j = 0; j < exactCoverBoard.getFirst().length; j++) {
-                if (exactCoverBoard.get(i)[j] == 1) {
-                    numsInRow++;
-                }
+        boolean isRightLength = true;
+        for (int[] ints : exactCoverBoard) {
+            if (ints.length != 4) {
+                isRightLength = false;
+                break;
             }
-            assertEquals(4, numsInRow); // all rows must have exactly 4 numbers, highlighting the 4
-            // constraints
+
         }
+            assertTrue(isRightLength); // all rows must have exactly 4 numbers, highlighting the 4
+            // constraints
+
 
         for (int i = 0; i < exactCoverBoard.getFirst().length; i++) {
             int numsInCol = 0;
             for (int[] nums : exactCoverBoard) {
-                if (nums[i] == 1) {
+                if (nums[0] == i) {
                     numsInCol++;
                 }
             }
@@ -110,7 +110,7 @@ public class SolverTest {
     @Test
     @DisplayName("Test dancing links are created as expected")
     void testDancingLinks() {
-        int[][] board = new int[9][9];
+        int[][] board = new int[4][4];
         int size = board.length;
         int constraint = size * size * 4;
         List<AlgorithmXSolver.Placement> placements = new ArrayList<>();
@@ -120,7 +120,7 @@ public class SolverTest {
         // all columNodes must have size equal to the number of numbers in the board
         for (Node node = header.getRight(); node != header; node = node.getRight()) {
             ColumnNode columnNode = (ColumnNode) node;
-            assertEquals(9, columnNode.getSize());
+            assertEquals(board.length, columnNode.getSize());
         }
         // there must columns equal to the size of the constraint:
         int totalColumns = 0;
@@ -177,6 +177,9 @@ public class SolverTest {
         for (Node node = column.getDown(); node != column; node = node.getDown()) {
             for (Node rightNode = node.getRight(); rightNode != node; rightNode = rightNode.getRight()) {
                 if (rightNode.getColumn() == column) {
+                    System.out.println("Node " + getRowIndex(rightNode) + " still points to column " + column.getName());
+                    System.out.println("Node " + column.getName());
+
                     // If any node still points back to this column, it's not fully covered
                     return false;
                 }
@@ -196,7 +199,8 @@ public class SolverTest {
         // Check if all nodes are restored in the column as per the matrix definition
         int currentRow = 0;
         for (Node node = column.getDown(); node != column; node = node.getDown(), currentRow++) {
-            if (matrix.get(node.getRowIndex())[Integer.parseInt(column.getName())] != 1) {
+            if (matrix.get(node.getRowIndex())[Integer.parseInt(column.getName())] != matrix.get(currentRow)[Integer.parseInt(column.getName())]) {
+                System.out.println("Node " + getRowIndex(node) + " should not exist in column " + column.getName());
                 return false; // The node exists where matrix indicates there should be no node
             }
         }
@@ -211,6 +215,7 @@ public class SolverTest {
     @Test
     @DisplayName("CreateXSudoku correctly builds a playable sudokuBoard")
     void testCreateXSudoku() throws Exception {
+        Config.setDifficulty("easy");
         Board board = new Board(3, 3);
         AlgorithmXSolver.createXSudoku(board);
         assertTrue(BruteForceAlgorithm.isValidSudoku(board.getGameBoard()));

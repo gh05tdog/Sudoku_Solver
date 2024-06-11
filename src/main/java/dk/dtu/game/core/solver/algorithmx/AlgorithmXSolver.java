@@ -1,10 +1,11 @@
-/* (C)2024 */
 package dk.dtu.game.core.solver.algorithmx;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 
+
 import java.util.*;
+import java.util.concurrent.ForkJoinPool;
 
 public class AlgorithmXSolver {
     private static final List<Node> Solution = new ArrayList<>();
@@ -20,7 +21,7 @@ public class AlgorithmXSolver {
         int[][] sudokuBoard = solveExistingBoard(board);
         solvedBoard = deepSetSolutionBoard(sudokuBoard);
         board.setSolvedBoard(solvedBoard);
-        removeXRecursive(sudokuBoard, arraySize * arraySize / 2);
+        removeXNumbers(sudokuBoard);
         board.setInitialBoard(sudokuBoard);
         board.setBoard(sudokuBoard);
     }
@@ -35,17 +36,19 @@ public class AlgorithmXSolver {
 
         Solution.clear(); // Clear the solution list before each run
 
-        if (algorithmXSolver(header)) {
-            arr = convertSolutionToBoard(Solution, placements);
+        try (ForkJoinPool pool = new ForkJoinPool()) {
+            AlgorithmXTask task = new AlgorithmXTask(header, Solution, true);
+            if (Boolean.TRUE.equals(pool.invoke(task))) {
+                arr = convertSolutionToBoard(Solution, placements);
+            }
         }
         solvedBoard = arr;
+        board.setSolvedBoard(solvedBoard);
         return arr;
     }
 
     public static List<int[]> createExactCoverFromBoard(int[][] board, List<Placement> placements) {
-
         List<int[]> coverList = new ArrayList<>();
-        int constraints = board.length * board.length * 4;
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
@@ -59,8 +62,8 @@ public class AlgorithmXSolver {
                     nums = Collections.singletonList(num);
                 }
                 for (int n : nums) {
-                    int[] cover = new int[constraints];
-                    setCoverRow(board, coverList, i, j, n, cover);
+                    int[] cover = new int[4];
+                    setCoverRow(coverList, i, j, n, cover, board.length, (int) Math.sqrt(board.length));
                     placements.add(new Placement(i, j, n));
                 }
             }
@@ -70,39 +73,37 @@ public class AlgorithmXSolver {
     }
 
     private static void setCoverRow(
-            int[][] board, List<int[]> coverList, int i, int j, int n, int[] cover) {
-        cover[i * board.length + j] = 1;
-        cover[board.length * board.length + i * board.length + n - 1] = 1;
-        cover[2 * board.length * board.length + j * board.length + n - 1] = 1;
-        int subSize = (int) Math.sqrt(board.length);
-        int subGridID = (i / subSize) * subSize + (j / subSize);
-        cover[3 * board.length * board.length + subGridID * board.length + n - 1] = 1;
+            List<int[]> coverList, int i, int j, int n, int[] cover, int boardSize, int subGridSize) {
+        cover[0] = i * boardSize + j; // Cell constraint
+        cover[1] = boardSize * boardSize + i * boardSize + n - 1; // Row constraint
+        cover[2] = 2 * boardSize * boardSize + j * boardSize + n - 1; // Column constraint
+        int subGridID = (i / subGridSize) * subGridSize + (j / subGridSize);
+        cover[3] = 3 * boardSize * boardSize + subGridID * boardSize + n - 1; // Sub-grid constraint
         coverList.add(cover);
 
     }
 
-    public static void removeXRecursive(int[][] arr, int maxRemoved) {
+    public static void removeXNumbers(int[][] arr) {
         Solution.clear();
 
         int numRemoved = 0;
+        int maxRemoved = SolverAlgorithm.setNumsRemoved(arr);
+        int size = arr.length;
+        int[] shuffleIndices = fisherYatesShuffle(size * size); // Shuffle all cell indices
 
-        while (numRemoved < maxRemoved) {
-            int randRow = rand.nextInt(arr.length);
-            int randCol = rand.nextInt(arr.length);
+        for (int i = 0; i < size * size && numRemoved < maxRemoved; i++) {
+            int row = shuffleIndices[i] / size;
+            int col = shuffleIndices[i] % size;
 
-            if (arr[randRow][randCol] == 0) {
-                continue; // Skip already removed numbers.
-            }
+            if (arr[row][col] != 0) {
+                int tempNumber = arr[row][col];
+                arr[row][col] = 0;
 
-            int tempNumber = arr[randRow][randCol];
-            arr[randRow][randCol] = 0;
-
-            if (checkUniqueSolution(arr) == 1) {
-                numRemoved++; // Only remove the number permanently if there's exactly one solution.
-            } else {
-                arr[randRow][randCol] =
-                        tempNumber; // Restore the number if removing it doesn't lead to a unique
-                // solution.
+                if (checkUniqueSolution(arr) == 1) {
+                    numRemoved++;
+                } else {
+                    arr[row][col] = tempNumber; // Restore the number if removing it doesn't lead to a unique solution.
+                }
             }
         }
     }
@@ -142,38 +143,6 @@ public class AlgorithmXSolver {
         return count;
     }
 
-    public static boolean algorithmXSolver(ColumnNode header) {
-        if (header.getRight() == header) {
-            return true; // Return true indicating the solution was found
-        }
-
-        ColumnNode c = chooseHeuristicColumn(header);
-
-        c.cover();
-
-        // Optionally, display the state of the linked list or affected columns here
-
-        for (Node r = c.getDown(); r != c; r = r.getDown()) {
-            selectRow(r);
-            for (Node j = r.getRight(); j != r; j = j.getRight()) {
-                j.getColumn().cover();
-            }
-
-            if (algorithmXSolver(header)) {
-                return true; // Return immediately if solution was found
-            }
-
-            for (Node j = r.getLeft(); j != r; j = j.getLeft()) {
-                j.getColumn().uncover();
-            }
-            deselectRow(r);
-        }
-
-        c.uncover();
-
-        return false; // Return false as no solution was found in this path
-    }
-
     public static ColumnNode chooseHeuristicColumn(ColumnNode header) {
         ColumnNode c = (ColumnNode) header.getRight();
         List<ColumnNode> columns = new ArrayList<>();
@@ -192,11 +161,11 @@ public class AlgorithmXSolver {
         return columns.get(rand.nextInt(columns.size()));
     }
 
-    private static void selectRow(Node row) {
+    public static void selectRow(Node row) {
         Solution.add(row);
     }
 
-    private static void deselectRow(Node row) {
+    public static void deselectRow(Node row) {
         Solution.remove(row);
     }
 
@@ -213,6 +182,20 @@ public class AlgorithmXSolver {
 
     public static int[][] deepSetSolutionBoard(int[][] board) {
         return SolverAlgorithm.deepCopyBoard(board);
+    }
+
+    public static int[] fisherYatesShuffle(int n) {
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = i;
+        }
+        for (int i = n - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1);
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+        return arr;
     }
 
     public static int[][] getSolutionBoard() {

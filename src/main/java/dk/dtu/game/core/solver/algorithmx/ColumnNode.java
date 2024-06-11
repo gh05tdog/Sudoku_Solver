@@ -17,7 +17,6 @@ public class ColumnNode extends Node {
         getLeft().setRight(getRight());
         getRight().setLeft(getLeft());
 
-        // If the loop starts now, there should be nodes to cover
         for (Node row = this.getDown(); row != this; row = row.getDown()) {
             for (Node node = row.getRight(); node != row; node = node.getRight()) {
                 node.removeNode();

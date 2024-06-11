@@ -168,18 +168,16 @@ public class StartMenu {
 
     private void connectClient(String serverAddress) {
         new Thread(
-                        () -> {
-                            WindowManager windowManager =
-                                    new WindowManager(
-                                            startMenuWindowManager.getFrame(), 1000, 1000);
-                            GameClient client = new GameClient(serverAddress, windowManager);
-                            try {
-                                client.start();
-                            } catch (IOException | Board.BoardNotCreatable ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        })
-                .start();
+                () -> {
+                    WindowManager windowManager =
+                            new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
+                    GameClient client = new GameClient(serverAddress, windowManager);
+                    try {
+                        client.start();
+                    } catch (IOException | Board.BoardNotCreatable ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }).start();
     }
 
     private void addLeaderboardButton() {
@@ -249,38 +247,39 @@ public class StartMenu {
     private void addChangeListenerToField(JTextField field) {
         // This method adds a document listener to the input fields, so that the board is updated
         // when the user changes the values
-        field.getDocument()
-                .addDocumentListener(
-                        new DocumentListener() {
-                            public void changedUpdate(DocumentEvent e) {
-                                updateBoard();
-                            }
+        field.getDocument().addDocumentListener(
+                new DocumentListener() {
+                    public void changedUpdate(DocumentEvent e) {
+                        updateBoard();
+                    }
 
-                            public void removeUpdate(DocumentEvent e) {
-                                updateBoard();
-                            }
+                    public void removeUpdate(DocumentEvent e) {
+                        updateBoard();
+                    }
 
-                            public void insertUpdate(DocumentEvent e) {
-                                updateBoard();
-                            }
+                    public void insertUpdate(DocumentEvent e) {
+                        updateBoard();
+                    }
 
-                            // Method to parse the n and k values and update the custom board panel
-                            private void updateBoard() {
-                                try {
-                                    int n = Integer.parseInt(inputNField.getText().trim());
-                                    int k = Integer.parseInt(inputKField.getText().trim());
-                                    if (n * k <= n * n) {
-                                        updateCustomBoardPanel(n, k);
-                                        boardConfigs[3] = new int[] {n, k};
-                                    }
-                                } catch (NumberFormatException ex) {
-                                    // Handle the case where one of the fields is empty or does not
-                                    // contain a valid integer
-                                    logger.error("Invalid input: {}", ex.getMessage());
-                                }
+                    // Method to parse the n and k values and update the custom board panel
+                    private void updateBoard() {
+                        try {
+                            int n = Integer.parseInt(inputNField.getText().trim());
+                            int k = Integer.parseInt(inputKField.getText().trim());
+                            if (n * k <= n * n) {
+                                Config.setN(n);
+                                Config.setK(k);
+                                updateCustomBoardPanel(n, k);
+                                boardConfigs[3] = new int[]{n, k};
                             }
-                        });
+                        } catch (NumberFormatException ex) {
+                            // Handle the case where one of the fields is empty or does not contain a valid integer
+                            logger.error("Invalid input: {}", ex.getMessage());
+                        }
+                    }
+                });
     }
+
 
     private void addInputPanelButtons() {
         // This method adds the N and K fields for the custom board
@@ -446,8 +445,8 @@ public class StartMenu {
         WindowManager windowManager =
                 new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
-            GameEngine gameEngine =
-                    new GameEngine(
+
+            GameEngine gameEngine = new GameEngine(
                             windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
             gameEngine.startCustom(board); // Pass the custom board to the game engine
