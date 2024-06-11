@@ -7,7 +7,6 @@ import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
-import dk.dtu.engine.utility.GameClient;
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
@@ -60,8 +59,6 @@ public class SudokuGame {
     private PrintWriter networkOut;
     private boolean isCustomBoard = false;
     private boolean isNetworkGame = false;
-
-    private GameClient gameClient;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -434,6 +431,8 @@ public class SudokuGame {
         solveButton.setEnabled(true);
 
         if (isNetworkGame) {
+            timer.setVisibility(true);
+            timer.start();
             solveButton.setEnabled(false);
             hintButton.setEnabled(false);
             newGameButton.setEnabled(false);
@@ -487,10 +486,6 @@ public class SudokuGame {
         if (!isCustomBoard) {
             newGameButton.setText("New Game");
         }
-    }
-
-    public void setGameClient(GameClient gameClient) {
-        this.gameClient = gameClient;
     }
 
     private JButton createButton(String text, int height) {
