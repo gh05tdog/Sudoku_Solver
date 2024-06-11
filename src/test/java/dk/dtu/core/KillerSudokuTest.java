@@ -67,14 +67,13 @@ public class KillerSudokuTest {
 
     @Test
     void testAdjustInitialNumbersVisibility() {
-        int[][] solvedBoard = game.gameboard.getSolvedBoard();
         Config.setDifficulty("easy");
-        game.adjustInitialNumbersVisibility(solvedBoard);
+        game.adjustInitialNumbersVisibility();
 
         long countVisibleNumbers;
 
         Config.setDifficulty("extreme");
-        game.adjustInitialNumbersVisibility(solvedBoard);
+        game.adjustInitialNumbersVisibility();
         countVisibleNumbers = countVisibleNumbers();
         assertEquals(0, countVisibleNumbers); // Check extreme difficulty, no numbers visible
     }

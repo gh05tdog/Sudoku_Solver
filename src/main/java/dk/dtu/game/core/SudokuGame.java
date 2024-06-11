@@ -433,20 +433,20 @@ public class SudokuGame {
         Random rand = new Random();
         boolean[][] used = new boolean[gridSize][gridSize];
 
-        int minCageSize = 2;
+        int minCageSize = 1;
         int maxCageSize = 4;
         double smallCageProbability = switch (Config.getDifficulty()) {
             case "medium" -> {
                 maxCageSize = 4;
-                yield 1.0; // 90% chance to create smaller cages
+                yield 0.9; // 90% chance to create smaller cages
             }
             case "hard" -> {
                 maxCageSize = 4;
-                yield 0.9; // 80% chance to create smaller cages
+                yield 0.5; // 80% chance to create smaller cages
             }
             case "extreme" -> {
                 maxCageSize = 4;
-                yield 0.75; // 60% chance to create smaller cages
+                yield 0.5; // 60% chance to create smaller cages
             }
             default -> {
                 maxCageSize = 4;
@@ -506,18 +506,20 @@ public class SudokuGame {
             }
         }
 
-        adjustInitialNumbersVisibility(solvedBoard);
+        adjustInitialNumbersVisibility();
     }
 
 
-    public void adjustInitialNumbersVisibility(int[][] solvedBoard) {
+    public void adjustInitialNumbersVisibility() {
         Random rand = new Random();
+        int[][] solvedBoard = gameboard.getSolvedBoard();
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 boolean keepNumber = switch (Config.getDifficulty()) {
-                    case "medium" -> rand.nextDouble() < 0.8;
-                    case "hard" -> rand.nextDouble() < 0.3; // Keep about 30% of the numbers
+                    case "easy" -> rand.nextDouble() < 0.5; // Keep about 50% of the numbers
+                    case "medium" -> rand.nextDouble() < 0.3;
+                    case "hard" -> rand.nextDouble() < 0.1; // Keep about 30% of the numbers
                     case "extreme" -> false;
                     default -> true; // Remove all numbers
                 };
@@ -528,14 +530,25 @@ public class SudokuGame {
                 } else {
                     int number = solvedBoard[row][col];
                     board.setCellNumber(row, col, number);
+                    gameboard.setInitialNumber(row, col, number);
+                    gameboard.setNumber(row, col, number);
+
+                    // Debug statements
+                    System.out.println("Setting number " + number + " at (" + row + "," + col + ")");
+
                     Cage cage = board.getCageContainingCell(row, col);
                     if (cage != null) {
+                        System.out.println("Adding number " + number + " to cage with ID " + cage.getId());
                         cage.addCurrentNumber(number); // Add the initial number to the cage
+                    } else {
+                        System.out.println("No cage found for cell (" + row + "," + col + ")");
                     }
                 }
             }
         }
+        setInitialBoardColor();
     }
+
 
 
 
@@ -631,7 +644,6 @@ public class SudokuGame {
         }
         updateInitialNumberCounts();
         displayNumbersVisually();
-        setInitialBoardColor();
         gameIsStarted = true;
         board.requestFocusInWindow();
         solveButton.setEnabled(true);
@@ -642,6 +654,7 @@ public class SudokuGame {
         if (Config.getEnableKillerSudoku()) {
             generateKillerSudokuCages();
         }
+        setInitialBoardColor();
     }
 
     private JButton createButton(String text, int height) {

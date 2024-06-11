@@ -42,11 +42,12 @@ public class Cage {
     }
 
     public Integer[] getNumbers() {
-        return solutionNumbers.toArray(new Integer[0]);
+        return currentNumbers.toArray(new Integer[0]);
     }
 
     public void addCurrentNumber(int number) {
         currentNumbers.add(number);
+        System.out.println("Added current number " + number + " to cage " + id);
     }
     public void removeCurrentNumber(int number) {
         currentNumbers.remove(number);
