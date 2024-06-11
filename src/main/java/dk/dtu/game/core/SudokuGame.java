@@ -249,7 +249,6 @@ public class SudokuGame {
         }
     }
 
-
     public void makeMove(int row, int col, int number) {
         if (row >= 0 && col >= 0) {
             if (noteButton.isSelected()
