@@ -273,7 +273,8 @@ public class SudokuGame {
 
 
     private void makeMoveWithLives(int row, int col, int number) {
-        if (gameboard.getInitialNumber(row, col) == 0 && !noteButton.isSelected() && number != 0) {
+        if (gameboard.getInitialNumber(row, col) == 0 && !noteButton.isSelected() && number != 0
+                && gameboard.getNumber(row,col) != number) {
             board.setHiddenProperty(row, col, true);
             checkCellsForNotes(row, col, number, "hide");
             int previousNumber = gameboard.getNumber(row, col);
