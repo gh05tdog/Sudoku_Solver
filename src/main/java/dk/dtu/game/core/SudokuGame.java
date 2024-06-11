@@ -513,6 +513,7 @@ public class SudokuGame {
     public void adjustInitialNumbersVisibility() {
         Random rand = new Random();
         int[][] solvedBoard = gameboard.getSolvedBoard();
+        hintList.clear();
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -547,6 +548,7 @@ public class SudokuGame {
             }
         }
         setInitialBoardColor();
+        fillHintList();
     }
 
 

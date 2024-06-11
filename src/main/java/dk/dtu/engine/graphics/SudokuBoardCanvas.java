@@ -146,7 +146,6 @@ public class SudokuBoardCanvas extends JPanel {
 
 
 
-
     public void setCellNumber(int row, int col, int number) {
         if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
             cells[row][col].setNumber(number);
