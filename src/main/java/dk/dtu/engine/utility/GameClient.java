@@ -47,7 +47,6 @@ public class GameClient {
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         game.setNetworkOut(out);
         game.setNetworkGame(true);
-        game.setGameClient(this);
 
         String message;
         while ((message = in.readLine()) != null) {

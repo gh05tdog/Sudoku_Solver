@@ -39,7 +39,6 @@ public class SudokuGame {
     private final int kSize;
     private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
     private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
-    private final Map<Integer, Integer> numberCountMap = new HashMap<>();
     int gridSize;
     int cellSize;
     MouseActionListener mouseActionListener = new MouseActionListener(this);
@@ -60,8 +59,6 @@ public class SudokuGame {
     private PrintWriter networkOut;
     private boolean isCustomBoard = false;
     private boolean isNetworkGame = false;
-
-    private GameClient gameClient;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -462,10 +459,6 @@ public class SudokuGame {
             newGameButton.setText("New Game");
         }
         updateNumberCount();
-    }
-
-    public void setGameClient(GameClient gameClient) {
-        this.gameClient = gameClient;
     }
 
     private JButton createButton(String text, int height) {
