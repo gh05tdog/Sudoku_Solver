@@ -51,6 +51,7 @@ public class Cage {
     public void removeCurrentNumber(int number) {
         currentNumbers.remove(number);
     }
+
     public Set<Integer> getCurrentNumbers() {
         return currentNumbers;
     }

@@ -13,6 +13,7 @@ import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
@@ -23,6 +24,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.prefs.Preferences;
 import javax.swing.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,7 +144,6 @@ public class SudokuGame {
         board.setChosenNumber(gameboard.getNumber(row, column));
 
         makeMove(row, column, placeableNumber);
-
 
 
         if (Config.getEnableEasyMode()) {
@@ -413,7 +414,8 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new NumberHub(n, 40) {};
+        numbers = new NumberHub(n, 40) {
+        };
 
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
@@ -436,15 +438,15 @@ public class SudokuGame {
         double smallCageProbability = switch (Config.getDifficulty()) {
             case "medium" -> {
                 maxCageSize = 4;
-                yield 0.8; // 90% chance to create smaller cages
+                yield 1.0; // 90% chance to create smaller cages
             }
             case "hard" -> {
-                maxCageSize = 5;
-                yield 0.7; // 80% chance to create smaller cages
+                maxCageSize = 4;
+                yield 0.9; // 80% chance to create smaller cages
             }
             case "extreme" -> {
-                maxCageSize = 5;
-                yield 0.5; // 60% chance to create smaller cages
+                maxCageSize = 4;
+                yield 0.75; // 60% chance to create smaller cages
             }
             default -> {
                 maxCageSize = 4;
@@ -508,25 +510,28 @@ public class SudokuGame {
     }
 
 
-
-
-
-    private void adjustInitialNumbersVisibility(int[][] solvedBoard) {
+    public void adjustInitialNumbersVisibility(int[][] solvedBoard) {
         Random rand = new Random();
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 boolean keepNumber = switch (Config.getDifficulty()) {
                     case "medium" -> rand.nextDouble() < 0.8;
-                    case "hard" -> rand.nextDouble() < 0.5; // Keep about 30% of the numbers
+                    case "hard" -> rand.nextDouble() < 0.3; // Keep about 30% of the numbers
                     case "extreme" -> false;
                     default -> true; // Remove all numbers
                 };
                 if (!keepNumber) {
                     board.removeNumber(row, col);
                     gameboard.setNumber(row, col, 0);
+                    gameboard.setInitialNumber(row, col, 0);
                 } else {
-                    board.setCellNumber(row, col, solvedBoard[row][col]);
+                    int number = solvedBoard[row][col];
+                    board.setCellNumber(row, col, number);
+                    Cage cage = board.getCageContainingCell(row, col);
+                    if (cage != null) {
+                        cage.addCurrentNumber(number); // Add the initial number to the cage
+                    }
                 }
             }
         }
@@ -542,16 +547,8 @@ public class SudokuGame {
         windowManager.setupNumberAndTimerPanel(timer, numbers);
         windowManager.layoutComponents(timer, numbers);
         startGame();
-        if(Config.getEnableKillerSudoku()){
+        if (Config.getEnableKillerSudoku()) {
             generateKillerSudokuCages();
-        }
-
-        if (Config.getEnableKillerSudoku() && Objects.equals(Config.getDifficulty(), "extreme")) {
-            for (int row = 0; row < gridSize; row++) {
-                for (int col = 0; col < gridSize; col++) {
-                    gameboard.setInitialNumber(row, col, 0);
-                }
-            }
         }
     }
 
@@ -597,14 +594,6 @@ public class SudokuGame {
         }
         isNetworkGame = false;
 
-        // Set initial numbers to zero if Killer Sudoku is enabled
-        if (Config.getEnableKillerSudoku()) {
-            for (int row = 0; row < gridSize; row++) {
-                for (int col = 0; col < gridSize; col++) {
-                    gameboard.setInitialNumber(row, col, 0);
-                }
-            }
-        }
     }
 
 
@@ -649,13 +638,9 @@ public class SudokuGame {
         if (Config.getEnableTimer()) {
             timer.start();
         }
-        if(Config.getEnableKillerSudoku() && Objects.equals(Config.getDifficulty(), "extreme")){
+
+        if (Config.getEnableKillerSudoku()) {
             generateKillerSudokuCages();
-            for(int row = 0; row < gridSize; row++){
-                for(int col = 0; col < gridSize; col++){
-                    gameboard.setInitialNumber(row, col, 0);
-                }
-            }
         }
     }
 
@@ -789,9 +774,9 @@ public class SudokuGame {
                 } else { // This is the game over scenario
                     message =
                             """
-                            Game Over! You've run out of hearts.
+                                    Game Over! You've run out of hearts.
 
-                            Would you like to start a new game?""";
+                                    Would you like to start a new game?""";
                 }
             }
 
@@ -1029,10 +1014,6 @@ public class SudokuGame {
         }
         return false;
     }
-
-
-
-
 
 
     public int getLives() {

@@ -3,6 +3,8 @@ package dk.dtu.engine.graphics;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -72,7 +74,7 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
-    private void drawCages(Graphics g) {
+    public void drawCages(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         float[] dash = {4f, 4f}; //
         BasicStroke stroke = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0f);
@@ -140,6 +142,9 @@ public class SudokuBoardCanvas extends JPanel {
             }
         }
     }
+
+
+
 
 
     public void setCellNumber(int row, int col, int number) {
@@ -430,11 +435,18 @@ public class SudokuBoardCanvas extends JPanel {
         for (Point cell : cage.getCells()) {
             cellToCageMap.put(cell, cageId);
         }
-        System.out.println("Added cage with ID " + cageId + " and sum " + cage.getSum() + " with the numbers " + Arrays.toString(cage.getNumbers()));
-        repaint();
     }
 
-
+    public Cage getCageContainingCell(int row, int col) {
+        for (Cage cage : cages.values()) {
+            for (Point cell : cage.getCells()) {
+                if (cell.x == col && cell.y == row) {
+                    return cage;
+                }
+            }
+        }
+        return null;
+    }
 
     public List<Cage> getCages() {
         return new ArrayList<>(cages.values());
@@ -448,8 +460,6 @@ public class SudokuBoardCanvas extends JPanel {
         }
         return null;
     }
-
-
 
     public void clearCages() {
         cages.clear();
