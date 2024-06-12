@@ -614,12 +614,6 @@ public class SudokuGame {
                 } catch (Exception e) {
                     logger.error("Error creating new game: {}", e.getMessage());
                 }
-            } else {
-                JFrame frame = windowManager.getFrame();
-                StartMenuWindowManager startMenu =
-                        new StartMenuWindowManager(frame, 1000, 1000);
-                StartMenu startMenu1 = new StartMenu(startMenu);
-                startMenu1.initialize();
             }
         }
     }
