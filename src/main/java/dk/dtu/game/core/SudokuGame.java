@@ -234,11 +234,10 @@ public class SudokuGame {
     }
 
     private void checkSubSquareForNotes(int row, int col, int number, String mode) {
-        int subSize = (int) Math.sqrt(gameboard.getDimensions());
-        int startRow = row - (row % subSize);
-        int startCol = col - (col % subSize);
-        for (int i = startRow; i < startRow + subSize; i++) {
-            for (int j = startCol; j < startCol + subSize; j++) {
+        int startRow = row - (row % nSize);
+        int startCol = col - (col % nSize);
+        for (int i = startRow; i < startRow + nSize; i++) {
+            for (int j = startCol; j < startCol + nSize; j++) {
                 if (board.getNotesInCell(i, j).contains(number)) {
                     updateHideList(i, j, number, mode);
                 }
