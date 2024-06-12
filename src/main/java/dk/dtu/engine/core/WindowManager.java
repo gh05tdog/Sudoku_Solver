@@ -23,10 +23,10 @@ public class WindowManager {
     private final JPanel whitePanel =
             new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
     JPanel heartsPanel = new JPanel();
-    BufferedImage emptyHeartImage = null;
-    ImageIcon emptyHeartIcon = null;
-    BufferedImage heartImage = null;
-    ImageIcon heartIcon = null;
+    BufferedImage emptyHeartImage;
+    ImageIcon emptyHeartIcon;
+    BufferedImage heartImage;
+    ImageIcon heartIcon;
 
     public WindowManager(JFrame frame, int width, int height) {
         this.frame = frame;

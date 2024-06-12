@@ -28,11 +28,13 @@ public class GameRulePopup extends JFrame {
         setLayout(new GridBagLayout());
     }
 
+    // Add a JSwitchBox to the popup
     public void addJSwitchBox(String description, boolean initialState, Consumer<Boolean> toggleAction) {
         if (GraphicsEnvironment.isHeadless()) {
             return;
         }
 
+        // Add GridBag constraints to position the components
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -62,6 +64,8 @@ public class GameRulePopup extends JFrame {
         repaint();
     }
 
+
+    // Create a JTextField for the number of lives
     private JTextField createLivesField() {
         JTextField livesField = new JTextField(1);
         livesField.setText(String.valueOf(Config.getNumberOfLives()));

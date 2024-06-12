@@ -6,6 +6,11 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * The Cell class represents a single cell in the Sudoku board.
+ * It contains information about the cell's number, notes, and visual state.
+ */
+
 class Cell implements Serializable {
 
     boolean isMarked = false;
@@ -31,17 +36,21 @@ class Cell implements Serializable {
         this.textColor = Color.BLACK;
     }
 
+    // This functions makes a little animation when a hint is asked for
     public void startHintVisualization() {
         wasHighlightedBeforeHint = isHighlighted;
         isVisualizingHint = true;
         isHighlighted = false;
     }
 
+    // This function ends the hint visualization
     public void endHintVisualization() {
         isVisualizingHint = false;
         isHighlighted = wasHighlightedBeforeHint;
     }
 
+
+    // This function is used to paint the cell
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
         if (isUnplacable && currentNumber != 0) {
             g.setColor(new Color(250, 200, 200));
@@ -75,6 +84,7 @@ class Cell implements Serializable {
         g.drawRect(x, y, cellSize, cellSize);
     }
 
+    // This function makes the notes visible
     public void paintNotes(Graphics g, int x, int y, int cellSize) {
         if (shouldHideNotes) {
             return;
@@ -82,7 +92,7 @@ class Cell implements Serializable {
         g.setColor(textColor);
         Font font = new Font("Arial", Font.BOLD, cellSize / 5);
         g.setFont(font);
-        int subCellSize = cellSize / 3; // Divide the cellSize by 3 to get the size of each sub-cell
+        int subCellSize = cellSize / 3; // Divide the cellSize by 3 to get the size of each subcell
         int offsetX =
                 (subCellSize / 2) + 2; // Half of the subCellSize to center the number horizontally
         int offsetY = (cellSize / 6 + subCellSize / 2) - 5; // Position for vertical centering
