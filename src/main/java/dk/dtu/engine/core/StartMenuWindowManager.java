@@ -1,6 +1,8 @@
 /* (C)2024 */
 package dk.dtu.engine.core;
 
+import dk.dtu.game.core.Config;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -11,7 +13,7 @@ public class StartMenuWindowManager {
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
     private final JPanel gameRulePanel = new JPanel(null); // Panel for game rules
-    private final Color backgroundColor = new Color(64, 64, 64);
+    private static final Color backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
 
     public StartMenuWindowManager(JFrame frame, int width, int height) {
         this.frame = frame;

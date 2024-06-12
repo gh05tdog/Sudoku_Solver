@@ -13,11 +13,16 @@ import java.util.function.Consumer;
 
 public class GameRulePopup extends JFrame {
 
+    private static final Color darkModebackgroundColor = new Color(64, 64, 64);
+    private static final Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background color
+    private static final Color accentColor = new Color(237, 224, 186);
+
     public GameRulePopup() {
         super("Game Rules");
         if (!GraphicsEnvironment.isHeadless()) {
             initialize();
         }
+
     }
 
     private void initialize() {
@@ -26,6 +31,7 @@ public class GameRulePopup extends JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
+        getContentPane().setBackground(backgroundColor);
     }
 
     public void addJSwitchBox(String description, boolean initialState, Consumer<Boolean> toggleAction) {
@@ -41,6 +47,10 @@ public class GameRulePopup extends JFrame {
 
         // Add label
         JLabel label = new JLabel(description);
+        if(Config.getDarkMode()){
+            label.setForeground(accentColor);
+        }
+
         gbc.gridy = getContentPane().getComponentCount();
         add(label, gbc);
 
@@ -64,8 +74,13 @@ public class GameRulePopup extends JFrame {
 
     private JTextField createLivesField() {
         JTextField livesField = new JTextField(1);
+        livesField.setBackground(backgroundColor);
         livesField.setText(String.valueOf(Config.getNumberOfLives()));
         livesField.setPreferredSize(new Dimension(30, 30)); // Make the box a square
+
+        if(Config.getDarkMode()){
+            livesField.setForeground(accentColor);
+        }
 
         // Apply the NumberDocumentFilter to restrict input to one digit only
         ((AbstractDocument) livesField.getDocument()).setDocumentFilter(new NumberDocumentFilter());

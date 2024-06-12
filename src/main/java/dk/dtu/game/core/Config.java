@@ -9,6 +9,8 @@ public class Config {
     private static int cellSize;
     private static String difficulty;
 
+    private static boolean darkMode = false;
+
     private Config() {
         throw new IllegalStateException("Utility class");
     }
@@ -43,6 +45,13 @@ public class Config {
 
     public static void setDifficulty(String difficulty) {
         Config.difficulty = difficulty;
+    }
+
+    public static void setDarkMode(boolean darkMode) {
+        Config.darkMode = darkMode;
+    }
+    public static boolean getDarkMode() {
+        return darkMode;
     }
 
 

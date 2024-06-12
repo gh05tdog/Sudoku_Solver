@@ -1,15 +1,21 @@
 package dk.dtu.engine.utility;
 
+import dk.dtu.game.core.Config;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class CustomBoardPanel extends JPanel {
     private int n;
     private int k;
-    private Color backgroundColor = Color.WHITE; // Default background color
+    private static final Color darkModebackgroundColor = new Color(64, 64, 64);
+    private Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background color
+    private static final Color accentColor = new Color(237, 224, 186);
+    private Color strokeColor = Config.getDarkMode() ? accentColor : Color.BLACK;
 
     public CustomBoardPanel() {
         this.setPreferredSize(new Dimension(120, 120));
+        setBackground(backgroundColor);
     }
 
     public void updateBoard(int n, int k) {
@@ -56,7 +62,7 @@ public class CustomBoardPanel extends JPanel {
         Stroke defaultStroke = g2d.getStroke();
 
         // Set the color for drawing the grid lines
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(strokeColor);
 
         // Draw the subgrid lines (thicker lines)
         g2d.setStroke(new BasicStroke(2));
