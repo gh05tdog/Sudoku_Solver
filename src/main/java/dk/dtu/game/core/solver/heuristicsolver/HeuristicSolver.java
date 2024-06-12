@@ -25,10 +25,8 @@ public class HeuristicSolver {
             if (i > 0) {
                 totalTime += end - start;
             }
-            System.out.println("Recursion count for run " + (i + 1) + ": " + recursionCount);
         }
         long avgTime = totalTime / (runs - 1);
-        System.out.println("Average time: " + avgTime);
     }
 
     public static void createAndPrintBoard(int n, boolean iterate) throws Board.BoardNotCreatable {
@@ -37,7 +35,6 @@ public class HeuristicSolver {
         recursionCount = 0;
         fillBoard(possiblePlacements, n, n, iterate, new HashSet<>(), new HashMap<>());
         printBoard(possiblePlacements);
-        System.out.println("Total recursion count: " + recursionCount);
     }
 
     public static int[][][] createSetFromBoard(Board board) {
@@ -93,7 +90,6 @@ public class HeuristicSolver {
 
         if (iterate) {
             boolean isChanged = true;
-            long startInitialPlacement = System.currentTimeMillis();
 
             // Initial pass to make obvious placements
             while (isChanged) {
@@ -109,8 +105,6 @@ public class HeuristicSolver {
                     }
                 }
             }
-            long endInitialPlacement = System.currentTimeMillis();
-            System.out.println("Initial placement time: " + (endInitialPlacement - startInitialPlacement) + "ms");
         }
 
         if (isFullyFilled(arr)) {
@@ -121,7 +115,6 @@ public class HeuristicSolver {
         // Find the cell with the minimum remaining values (MRV) and highest degree
         int[] mrvCell = findMRVAndHighestDegreeCell(arr, subgrid, gridSize, conflictMap);
         long endMRVTime = System.currentTimeMillis();
-        System.out.println("MRV time: " + (endMRVTime - startMRVTime) + "ms");
 
         if (mrvCell == null) {
             return false;
@@ -129,25 +122,16 @@ public class HeuristicSolver {
 
         int row = mrvCell[0];
         int col = mrvCell[1];
-        System.out.println("Selected cell: (" + row + ", " + col + ") with MRV");
 
-        long startLCVTime = System.currentTimeMillis();
         List<Integer> possibleValues = getLCV(arr, row, col, subgrid, gridSize);
-        Collections.shuffle(possibleValues, random); // Shuffle possible values to introduce randomness
-        long endLCVTime = System.currentTimeMillis();
-        System.out.println("LCV time: " + (endLCVTime - startLCVTime) + "ms");
+        Collections.shuffle(possibleValues, random);
 
         for (int value : possibleValues) {
-            System.out.println("Trying value: " + value + " for cell: (" + row + ", " + col + ")");
             int[][][] arrCopy = copyBoard(arr); // Make a copy of the board
             arrCopy[row][col][0] = value; // Place the value in the copy
             removePossiblePlacements(arrCopy, row, col, value, subgrid, gridSize);
 
-            // Perform forward checking
-            long startForwardCheckTime = System.currentTimeMillis();
             boolean consistent = isConsistent(arrCopy, subgrid, gridSize);
-            long endForwardCheckTime = System.currentTimeMillis();
-            System.out.println("Forward checking time: " + (endForwardCheckTime - startForwardCheckTime) + "ms");
 
             if (consistent && fillBoard(arrCopy, subgrid, gridSize, iterate, conflictSet, conflictMap)) {
                 // If the recursive call returns true, copy the solution back to the original array
