@@ -6,6 +6,11 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.event.*;
 
+
+/**
+ * The KeyboardListener class is responsible for listening to keyboard events.
+ * It listens for key typed events and calls the typeNumberWithKeyboard method in the Game class.
+ */
 public class KeyboardListener implements KeyListener {
     private static final Logger logger = LoggerFactory.getLogger(KeyboardListener.class);
     private final SudokuGame sudokuGame; // Reference to the Game class
@@ -16,17 +21,17 @@ public class KeyboardListener implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        logger.info("Key Typed: {} ",e.getKeyChar());
+        logger.debug("Key Typed: {} ",e.getKeyChar());
         sudokuGame.typeNumberWithKeyboard(e);
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        logger.info("Key Pressed: {} ",e.getKeyChar());
+        logger.debug("Key Pressed: {} ",e.getKeyChar());
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        logger.info("Key Released: {} ",e.getKeyChar());
+        logger.debug("Key Released: {} ",e.getKeyChar());
     }
 }

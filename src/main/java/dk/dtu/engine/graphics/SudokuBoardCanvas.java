@@ -198,13 +198,13 @@ public class SudokuBoardCanvas extends JPanel {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (cells[row][col].getNumber() == number) {
-                    // Mark entire row and column as unplaceable
+                    // Mark the entire row and column as unplaceable
                     for (int i = 0; i < gridSize; i++) {
                         unplaceable[row][i] = true;
                         unplaceable[i][col] = true;
                     }
 
-                    // Mark entire subgrid as unplaceable
+                    // Mark the entire subgrid as unplaceable
                     int subgridSize =
                             (int) Math.sqrt(gridSize); // Assuming a standard square Sudoku board
                     int startRow = (row / subgridSize) * subgridSize;
