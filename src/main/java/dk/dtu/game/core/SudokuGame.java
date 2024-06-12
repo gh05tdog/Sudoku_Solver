@@ -61,7 +61,8 @@ public class SudokuGame {
     private PrintWriter networkOut;
     private boolean isCustomBoard = false;
     private boolean isNetworkGame = false;
-    private JProgressBar opponentProgressBar;
+    private final JProgressBar opponentProgressBar;
+    private final JProgressBar playerProgressBar;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -83,6 +84,10 @@ public class SudokuGame {
         opponentProgressBar = new JProgressBar(0, 100);
         opponentProgressBar.setStringPainted(true);
         opponentProgressBar.setString("Opponent's Progress");
+
+        playerProgressBar = new JProgressBar(0, 100);
+        playerProgressBar.setStringPainted(true);
+        playerProgressBar.setString("Your Progress");
     }
 
     private void processNetworkMessages() {
@@ -578,7 +583,8 @@ public class SudokuGame {
             hintButton.setEnabled(false);
             newGameButton.setEnabled(false);
             restartButton.setEnabled(false);
-            windowManager.addProgressBar(opponentProgressBar); // Add this line
+            windowManager.addProgressBar(opponentProgressBar,2);
+            windowManager.addProgressBar(playerProgressBar,3);
             calculateProgress();
         } else {
             windowManager.setHeart();
@@ -608,6 +614,7 @@ public class SudokuGame {
         System.out.println("Sending progress");
         if (networkOut != null) {
             int progress = calculateProgress();
+            playerProgressBar.setValue(progress);
             System.out.println("Progress: " + progress);
             networkOut.println("PROGRESS " + progress);
         }
