@@ -146,23 +146,40 @@ public class StartMenu {
     private void onJoinGame(ActionEvent e) {
         joinGameButton.setEnabled(false);
         createGameButton.setEnabled(false);
-        String serverAddress = JOptionPane.showInputDialog("Enter server address:");
-        if (serverAddress != null && !serverAddress.isEmpty()) {
+
+        // Create a GameClient to discover servers
+        GameClient client = new GameClient(null, null);
+        client.discoverServers();
+
+        // Wait for a short time to allow server discovery
+        try {
+            Thread.sleep(3000); // Wait for 3 seconds
+        } catch (InterruptedException interruptedException) {
+            interruptedException.printStackTrace();
+        }
+
+        List<String> discoveredServers = client.getDiscoveredServers();
+        if (!discoveredServers.isEmpty()) {
+            String serverAddress = discoveredServers.get(0); // Get the first discovered server
             // Test the connection
-            GameClient client = new GameClient(serverAddress, null);
+            client = new GameClient(serverAddress, null);
             if (client.testGameConnection()) {
                 connectClient(serverAddress);
             } else {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Failed to connect to the server. Please check the server address and try"
-                                + " again.",
+                        "Failed to connect to the server. Please check the server address and try again.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
                 joinGameButton.setEnabled(true);
                 createGameButton.setEnabled(true);
             }
         } else {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "No servers found. Please try again.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
             joinGameButton.setEnabled(true);
             createGameButton.setEnabled(true);
         }
