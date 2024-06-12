@@ -1,5 +1,6 @@
 package dk.dtu.engine.utility;
 
+import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.SudokuGame;
@@ -15,12 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameClient {
+    private final WindowManager windowManager;
     private SudokuGame game;
     private boolean isGameStarted = false;
     private List<String> discoveredServers = new ArrayList<>();
 
     // Implement logger
     private static final Logger logger = LoggerFactory.getLogger(GameClient.class);
+
+    public GameClient(WindowManager windowManager) {
+        this.windowManager = windowManager;
+    }
 
     public void start(String serverAddress) throws IOException, Board.BoardNotCreatable {
         if (isGameStarted) return;
@@ -34,7 +40,7 @@ public class GameClient {
         // Send connect signal
         out.println("CONNECT");
 
-        game = new SudokuGame(null, 3, 3, 550 / 9);
+        game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         game.setNetworkOut(out);
         game.setNetworkGame(true);
 

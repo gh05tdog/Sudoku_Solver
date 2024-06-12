@@ -8,7 +8,6 @@ import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
-import dk.dtu.engine.utility.ServerBroadCaster;
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
@@ -75,22 +74,8 @@ public class SudokuGame {
         this.kSize = k;
         this.gridSize = n * k;
         this.cellSize = cellSize;
-
-
-        new Thread(this::processNetworkMessages).start();
-        new Thread(new ServerBroadCaster("your.server.ip.address")).start();
     }
 
-    private void processNetworkMessages() {
-        while (true) {
-            try {
-                String message = messageQueue.take();
-                processNetworkMessage(message);
-            } catch (InterruptedException e) {
-                logger.error("Error processing network message: {}", e.getMessage());
-            }
-        }
-    }
 
     public void setNetworkGame(boolean networkGame) {
         isNetworkGame = networkGame;
