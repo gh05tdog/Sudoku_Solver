@@ -1,15 +1,18 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import dk.dtu.game.core.Config;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class CustomBoardPanel extends JPanel {
     private int n;
     private int k;
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
-    private Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background color
+    private Color backgroundColor =
+            Config.getDarkMode()
+                    ? darkModebackgroundColor
+                    : Color.WHITE; // Default background color
     private static final Color accentColor = new Color(237, 224, 186);
     private Color strokeColor = Config.getDarkMode() ? accentColor : Color.BLACK;
 
@@ -30,6 +33,11 @@ public class CustomBoardPanel extends JPanel {
         this.repaint(); // Repaint to show the new background color
     }
 
+    public void updateAccentColor() {
+        strokeColor = Config.getDarkMode() ? accentColor : Color.BLACK;
+        this.repaint();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g); // Clears the panel
@@ -37,12 +45,12 @@ public class CustomBoardPanel extends JPanel {
         int boardSize = n * k; // Total grid size
         int cellSize = 150 / boardSize; // Calculate cell size based on the smaller panel dimension
         int boardPixelSize = cellSize * boardSize; // Size of the full board in pixels
-        int offset = (150 - boardPixelSize)/2;
+        int offset = (150 - boardPixelSize) / 2;
 
-        if(n == 2 && k == 2){
-            cellSize = 145/boardSize;
+        if (n == 2 && k == 2) {
+            cellSize = 145 / boardSize;
             boardPixelSize = cellSize * boardSize;
-            offset = (150 - boardPixelSize)/2;
+            offset = (150 - boardPixelSize) / 2;
         }
 
         // Only fill the area where the board will be drawn
@@ -55,7 +63,7 @@ public class CustomBoardPanel extends JPanel {
     }
 
     private void drawBoard(Graphics g, int xOffset, int yOffset, int cellSize, int boardPixelSize) {
-        int boardSize = n*k;
+        int boardSize = n * k;
 
         // Set up the graphics object for drawing
         Graphics2D g2d = (Graphics2D) g;
@@ -87,12 +95,11 @@ public class CustomBoardPanel extends JPanel {
         g2d.setStroke(defaultStroke);
     }
 
-    public int getN (){
+    public int getN() {
         return n;
     }
-    public int getK (){
+
+    public int getK() {
         return k;
     }
-
-
 }

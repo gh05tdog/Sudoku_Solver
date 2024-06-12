@@ -1,13 +1,12 @@
 /* (C)2024 */
 package dk.dtu.engine.graphics;
 
+import dk.dtu.game.core.Config;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 import javax.swing.*;
-
-import dk.dtu.game.core.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +18,12 @@ public class SudokuBoardCanvas extends JPanel {
 
     private static final Logger logger = LoggerFactory.getLogger(SudokuBoardCanvas.class);
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
-    private static final Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
-    private static Color accentColor = Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
-    private static final Color hintColor = Config.getDarkMode() ? new Color(109, 181, 208) : Color.BLUE;
+    private static final Color backgroundColor =
+            Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
+    private static Color accentColor =
+            Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
+    private static final Color hintColor =
+            Config.getDarkMode() ? new Color(109, 181, 208) : Color.BLUE;
 
     int chosenNumber = 0;
 
@@ -334,7 +336,7 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
-    public void update(){
+    public void update() {
         accentColor = Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
         revalidate();
         repaint();

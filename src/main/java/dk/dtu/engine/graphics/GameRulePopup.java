@@ -3,28 +3,30 @@ package dk.dtu.engine.graphics;
 import dk.dtu.engine.utility.JSwitchBox;
 import dk.dtu.engine.utility.NumberDocumentFilter;
 import dk.dtu.game.core.Config;
+import dk.dtu.game.core.StartMenu;
 
-import javax.swing.*;
-import javax.swing.text.AbstractDocument;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.Objects;
 import java.util.function.Consumer;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
 
 public class GameRulePopup extends JFrame {
 
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
     private static Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background color
     private static final Color accentColor = new Color(237, 224, 186);
+    private final StartMenu startMenu;
 
-    public GameRulePopup() {
+    public GameRulePopup(StartMenu startMenu) {
         super("Game Rules");
+        this.startMenu = startMenu;
         if (!GraphicsEnvironment.isHeadless()) {
             backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE;
             initialize();
         }
-
     }
 
     private void initialize() {
@@ -47,7 +49,7 @@ public class GameRulePopup extends JFrame {
 
         // Add label
         JLabel label = new JLabel(description);
-        if(Config.getDarkMode()){
+        if (Config.getDarkMode()) {
             label.setForeground(accentColor);
         }
 
@@ -57,7 +59,12 @@ public class GameRulePopup extends JFrame {
         add(label, gbc);
 
         // Add switch box
-        JSwitchBox switchBox = new JSwitchBox(initialState, toggleAction);
+        JSwitchBox switchBox = new JSwitchBox(initialState, state -> {
+            toggleAction.accept(state);
+            if (description.equalsIgnoreCase("Dark Mode")) {
+                startMenu.updateColors();
+            }
+        });
         gbc.gridy = getContentPane().getComponentCount();
         gbc.gridx = 1;
         gbc.gridwidth = 1; // Reset gridwidth
@@ -113,7 +120,7 @@ public class GameRulePopup extends JFrame {
         livesField.setText(String.valueOf(Config.getNumberOfLives()));
         livesField.setPreferredSize(new Dimension(30, 30)); // Make the box a square
 
-        if(Config.getDarkMode()){
+        if (Config.getDarkMode()) {
             livesField.setForeground(accentColor);
         }
 

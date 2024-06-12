@@ -23,7 +23,8 @@ public class WindowManager {
     BufferedImage heartImage = null;
     ImageIcon heartIcon = null;
 
-    private static Color backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+    private static Color backgroundColor =
+            Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
 
     public WindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
@@ -254,7 +255,7 @@ public class WindowManager {
         heartsPanel.repaint();
     }
 
-    public JFrame getFrame (){
+    public JFrame getFrame() {
         return frame;
     }
 

@@ -1,7 +1,7 @@
 /* (C)2024 */
 package dk.dtu.engine.utility;
 
-import dk.dtu.engine.core.StartMenuWindowManager;
+import dk.dtu.game.core.StartMenu;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;

@@ -1,11 +1,11 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import dk.dtu.game.core.Config;
-
-import javax.swing.*;
 import java.awt.*;
-import java.util.TimerTask;
 import java.util.Timer;
+import java.util.TimerTask;
+import javax.swing.*;
 
 public class TimerFunction extends JPanel {
     private final JLabel timeLabel;
@@ -14,14 +14,15 @@ public class TimerFunction extends JPanel {
 
     private static final Color darkbackgroundColor = new Color(64, 64, 64);
     private static final Color accentColor = new Color(237, 224, 186);
-    private static final Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
+    private static final Color backgroundColor =
+            Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
 
     public TimerFunction() {
         setLayout(new FlowLayout(FlowLayout.CENTER));
         setPreferredSize(new Dimension(180, 80));
         timeLabel = new JLabel("00:00:00", SwingConstants.CENTER);
         timeLabel.setFont(new Font("SansSerif", Font.BOLD, 42));
-        if(Config.getDarkMode()){
+        if (Config.getDarkMode()) {
             timeLabel.setForeground(accentColor);
         }
         setBackground(backgroundColor);
@@ -31,12 +32,15 @@ public class TimerFunction extends JPanel {
     public void start() {
         startTime = System.currentTimeMillis();
         timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                updateTimer();
-            }
-        }, 0, 1000);
+        timer.scheduleAtFixedRate(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        updateTimer();
+                    }
+                },
+                0,
+                1000);
     }
 
     public void stop() {
@@ -63,7 +67,7 @@ public class TimerFunction extends JPanel {
         return timeLabel.getText();
     }
 
-    //Convert the timestring to seconds
+    // Convert the timestring to seconds
     public int getTimeToInt() {
         String[] time = timeLabel.getText().split(":");
         int hours = Integer.parseInt(time[0]);

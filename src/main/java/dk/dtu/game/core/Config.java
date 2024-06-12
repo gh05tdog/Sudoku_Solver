@@ -51,12 +51,12 @@ public class Config {
         Preferences pref = Preferences.userRoot();
         pref.putBoolean("darkMode", darkMode);
     }
+
     public static boolean getDarkMode() {
         Preferences pref = Preferences.userRoot();
         String darkMode = pref.get("darkMode", String.valueOf(true));
         return Boolean.parseBoolean(darkMode);
     }
-
 
     // Game rules:
     public static void setEnableLives(boolean enableLives) {

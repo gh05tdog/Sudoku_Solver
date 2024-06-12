@@ -3,7 +3,6 @@ package dk.dtu.engine.core;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
-import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
 
 public class GameEngine implements Runnable {
@@ -80,5 +79,4 @@ public class GameEngine implements Runnable {
         Thread gameThread = new Thread(this);
         gameThread.start();
     }
-
 }

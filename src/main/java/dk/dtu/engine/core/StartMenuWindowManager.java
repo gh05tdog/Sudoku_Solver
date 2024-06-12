@@ -1,8 +1,8 @@
 /* (C)2024 */
 package dk.dtu.engine.core;
 
+import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.game.core.Config;
-
 import java.awt.*;
 import javax.swing.*;
 
@@ -13,7 +13,11 @@ public class StartMenuWindowManager {
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
     private final JPanel gameRulePanel = new JPanel(null); // Panel for game rules
+    private final JPanel mainPanel = new JPanel(null);
     private static Color backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+
+    // Add references to custom board panels
+    private CustomBoardPanel[] customBoardPanels;
 
     public StartMenuWindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
@@ -24,8 +28,6 @@ public class StartMenuWindowManager {
 
         buttonPanel.setOpaque(true);
         sizePanel.setOpaque(true);
-        // Use GridBagLayout for more control
-        JPanel mainPanel = new JPanel(null);
         mainPanel.setOpaque(true);
         difficultyPanel.setOpaque(true);
         inputPanel.setOpaque(true);
@@ -38,12 +40,7 @@ public class StartMenuWindowManager {
         difficultyPanel.setBounds(50, (frame.getHeight() / 2) + 50, 650, 50);
         difficultyPanel.setBackground(backgroundColor);
 
-        buttonPanel.setBounds(
-                (frame.getWidth()) - 250,
-                (frame.getHeight() / 2) - 150,
-                200,
-                difficultyPanel.getHeight() + sizePanel.getHeight() + 300);
-
+        buttonPanel.setBounds((frame.getWidth()) - 250, (frame.getHeight() / 2) - 150, 200, difficultyPanel.getHeight() + sizePanel.getHeight() + 300);
         buttonPanel.setBackground(backgroundColor);
 
         inputPanel.setBounds(525, (frame.getHeight() / 2) - 205, 140, 50);
@@ -61,15 +58,22 @@ public class StartMenuWindowManager {
         frame.setContentPane(mainPanel); // Add the main panel to the frame
     }
 
+    public void setCustomBoardPanels(CustomBoardPanel[] panels) {
+        this.customBoardPanels = panels;
+    }
+
     public void addComponent(Component component, JPanel panel) {
         panel.add(component);
         panel.revalidate();
         panel.repaint();
     }
 
-    public void update(){
+    public void update() {
         backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
 
+        mainPanel.setBackground(backgroundColor);
+        mainPanel.revalidate();
+        mainPanel.repaint();
         buttonPanel.setBackground(backgroundColor);
         buttonPanel.revalidate();
         buttonPanel.repaint();
@@ -86,6 +90,13 @@ public class StartMenuWindowManager {
         gameRulePanel.revalidate();
         gameRulePanel.repaint();
 
+        // Update custom board panels
+        if (customBoardPanels != null) {
+            for (CustomBoardPanel panel : customBoardPanels) {
+                panel.updateBackgroundColor(backgroundColor);
+                panel.updateAccentColor();
+            }
+        }
     }
 
     public void display() {

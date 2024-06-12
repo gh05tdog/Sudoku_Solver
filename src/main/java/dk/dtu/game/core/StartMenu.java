@@ -9,7 +9,6 @@ import dk.dtu.engine.utility.*;
 import dk.dtu.engine.utility.Leaderboard;
 import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -27,7 +26,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,19 +53,18 @@ public class StartMenu {
     private final ButtonGroup difficultyGroup = new ButtonGroup();
     private final CustomComponentGroup sizeGroup = new CustomComponentGroup();
     private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
+    CustomBoardPanel[] boardPanels = {twoByTwo, threeByThree, fourByFour, customBoardPanel};
 
     private static final Color darkbackgroundColor = new Color(64, 64, 64);
     private static final Color lightaccentColor = new Color(237, 224, 186);
     private static Color AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
     private static Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
 
-
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
         this.startMenuWindowManager = startMenuWindowManager;
         backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
         AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
         startMenuWindowManager.display();
-
     }
 
     public void startGame() throws Board.BoardNotCreatable {
@@ -134,12 +131,10 @@ public class StartMenu {
         joinGameButton.setFocusPainted(false);
         joinGameButton.addActionListener(this::onJoinGame);
 
-
         createGameButton.setBorder(new LineBorder(AccentColor));
         createGameButton.setForeground(AccentColor);
         joinGameButton.setBorder(new LineBorder(AccentColor));
         joinGameButton.setForeground(AccentColor);
-
 
         startMenuWindowManager.addComponent(
                 createGameButton, startMenuWindowManager.getButtonPanel());
@@ -153,10 +148,10 @@ public class StartMenu {
 
         // Start the server in a separate thread
         new Thread(
-                () -> {
-                    GameServer server = new GameServer();
-                    server.start();
-                })
+                        () -> {
+                            GameServer server = new GameServer();
+                            server.start();
+                        })
                 .start();
 
         // Allow some time for the server to start before connecting the client
@@ -177,7 +172,8 @@ public class StartMenu {
             } else {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Failed to connect to the server. Please check the server address and try again.",
+                        "Failed to connect to the server. Please check the server address and try"
+                                + " again.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
                 joinGameButton.setEnabled(true);
@@ -191,16 +187,18 @@ public class StartMenu {
 
     private void connectClient(String serverAddress) {
         new Thread(
-                () -> {
-                    WindowManager windowManager =
-                            new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
-                    GameClient client = new GameClient(serverAddress, windowManager);
-                    try {
-                        client.start();
-                    } catch (IOException | Board.BoardNotCreatable ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }).start();
+                        () -> {
+                            WindowManager windowManager =
+                                    new WindowManager(
+                                            startMenuWindowManager.getFrame(), 1000, 1000);
+                            GameClient client = new GameClient(serverAddress, windowManager);
+                            try {
+                                client.start();
+                            } catch (IOException | Board.BoardNotCreatable ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        })
+                .start();
     }
 
     private void addLeaderboardButton() {
@@ -210,8 +208,8 @@ public class StartMenu {
         leaderboardButton.setBackground(backgroundColor);
         leaderboardButton.setFocusPainted(false);
 
-            leaderboardButton.setBorder(new LineBorder(AccentColor));
-            leaderboardButton.setForeground(AccentColor);
+        leaderboardButton.setBorder(new LineBorder(AccentColor));
+        leaderboardButton.setForeground(AccentColor);
 
         startMenuWindowManager.addComponent(
                 leaderboardButton, startMenuWindowManager.getButtonPanel());
@@ -226,13 +224,13 @@ public class StartMenu {
         List<String[]> rowData = new ArrayList<>();
         for (LeaderboardEntry entry : leaderboard) {
             rowData.add(
-                    new String[]{
-                            entry.username(),
-                            entry.difficulty(),
-                            String.format(
-                                    "%02d:%02d:%02d",
-                                    entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
-                            entry.timestamp()
+                    new String[] {
+                        entry.username(),
+                        entry.difficulty(),
+                        String.format(
+                                "%02d:%02d:%02d",
+                                entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
+                        entry.timestamp()
                     });
         }
 
@@ -274,39 +272,40 @@ public class StartMenu {
     private void addChangeListenerToField(JTextField field) {
         // This method adds a document listener to the input fields, so that the board is updated
         // when the user changes the values
-        field.getDocument().addDocumentListener(
-                new DocumentListener() {
-                    public void changedUpdate(DocumentEvent e) {
-                        updateBoard();
-                    }
-
-                    public void removeUpdate(DocumentEvent e) {
-                        updateBoard();
-                    }
-
-                    public void insertUpdate(DocumentEvent e) {
-                        updateBoard();
-                    }
-
-                    // Method to parse the n and k values and update the custom board panel
-                    private void updateBoard() {
-                        try {
-                            int n = Integer.parseInt(inputNField.getText().trim());
-                            int k = Integer.parseInt(inputKField.getText().trim());
-                            if (n * k <= n * n) {
-                                Config.setN(n);
-                                Config.setK(k);
-                                updateCustomBoardPanel(n, k);
-                                boardConfigs[3] = new int[]{n, k};
+        field.getDocument()
+                .addDocumentListener(
+                        new DocumentListener() {
+                            public void changedUpdate(DocumentEvent e) {
+                                updateBoard();
                             }
-                        } catch (NumberFormatException ex) {
-                            // Handle the case where one of the fields is empty or does not contain a valid integer
-                            logger.error("Invalid input: {}", ex.getMessage());
-                        }
-                    }
-                });
-    }
 
+                            public void removeUpdate(DocumentEvent e) {
+                                updateBoard();
+                            }
+
+                            public void insertUpdate(DocumentEvent e) {
+                                updateBoard();
+                            }
+
+                            // Method to parse the n and k values and update the custom board panel
+                            private void updateBoard() {
+                                try {
+                                    int n = Integer.parseInt(inputNField.getText().trim());
+                                    int k = Integer.parseInt(inputKField.getText().trim());
+                                    if (n * k <= n * n) {
+                                        Config.setN(n);
+                                        Config.setK(k);
+                                        updateCustomBoardPanel(n, k);
+                                        boardConfigs[3] = new int[] {n, k};
+                                    }
+                                } catch (NumberFormatException ex) {
+                                    // Handle the case where one of the fields is empty or does not
+                                    // contain a valid integer
+                                    logger.error("Invalid input: {}", ex.getMessage());
+                                }
+                            }
+                        });
+    }
 
     private void addInputPanelButtons() {
         // This method adds the N and K fields for the custom board
@@ -334,8 +333,8 @@ public class StartMenu {
 
             field.setBounds(i == 0 ? 5 : 85, 5, 50, 40);
 
-                field.setBorder(new LineBorder(AccentColor));
-                field.setForeground(AccentColor);
+            field.setBorder(new LineBorder(AccentColor));
+            field.setForeground(AccentColor);
 
             startMenuWindowManager.addComponent(field, startMenuWindowManager.getInputPanel());
         }
@@ -346,16 +345,15 @@ public class StartMenu {
         gameRuleButton.setBackground(backgroundColor);
         gameRuleButton.setFocusPainted(false);
 
-
-            gameRuleButton.setBorder(new LineBorder(AccentColor));
-            gameRuleButton.setForeground(AccentColor);
+        gameRuleButton.setBorder(new LineBorder(AccentColor));
+        gameRuleButton.setForeground(AccentColor);
 
         startMenuWindowManager.addComponent(
                 gameRuleButton, startMenuWindowManager.getGameRulePanel());
 
         gameRuleButton.addActionListener(
                 e -> {
-                    GameRulePopup gameRules = new GameRulePopup();
+                    GameRulePopup gameRules = new GameRulePopup(this);
                     gameRules.setVisible(true);
                     gameRules.addJSwitchBox(
                             "Enable lives", Config.getEnableLives(), Config::setEnableLives);
@@ -366,7 +364,6 @@ public class StartMenu {
                             Config.getEnableEasyMode(),
                             Config::setEnableEasyMode);
                     gameRules.addJSwitchBox("Dark Mode", Config.getDarkMode(), Config::setDarkMode);
-
                 });
     }
 
@@ -391,9 +388,8 @@ public class StartMenu {
                     }
                 });
 
-
-            startButton.setBorder(new LineBorder(AccentColor));
-            startButton.setForeground(AccentColor);
+        startButton.setBorder(new LineBorder(AccentColor));
+        startButton.setForeground(AccentColor);
 
         startMenuWindowManager.addComponent(startButton, startMenuWindowManager.getButtonPanel());
     }
@@ -405,8 +401,8 @@ public class StartMenu {
         importButton.setBackground(backgroundColor);
         importButton.setFocusPainted(false);
 
-            importButton.setBorder(new LineBorder(AccentColor));
-            importButton.setForeground(AccentColor);
+        importButton.setBorder(new LineBorder(AccentColor));
+        importButton.setForeground(AccentColor);
 
         startMenuWindowManager.addComponent(importButton, startMenuWindowManager.getButtonPanel());
     }
@@ -486,8 +482,9 @@ public class StartMenu {
                 new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
 
-            GameEngine gameEngine = new GameEngine(
-                    windowManager, Config.getN(), Config.getK(), Config.getCellSize());
+            GameEngine gameEngine =
+                    new GameEngine(
+                            windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
             windowManager.updateBoard();
             gameEngine.startCustom(board); // Pass the custom board to the game engine
@@ -498,7 +495,7 @@ public class StartMenu {
 
     private void addSizePanelButtons() {
         // This function adds the small boards for selecting size in game
-        CustomBoardPanel[] boardPanels = {twoByTwo, threeByThree, fourByFour, customBoardPanel};
+
 
         MouseAdapter mouseAdapter =
                 new MouseAdapter() {
@@ -555,16 +552,14 @@ public class StartMenu {
         hardButton.setFocusPainted(false);
         extremeButton.setFocusPainted(false);
 
-
-            easyButton.setBorder(new LineBorder(AccentColor));
-            easyButton.setForeground(AccentColor);
-            mediumButton.setForeground(AccentColor);
-            mediumButton.setBorder(new LineBorder(AccentColor));
-            hardButton.setBorder(new LineBorder(AccentColor));
-            hardButton.setForeground(AccentColor);
-            extremeButton.setBorder(new LineBorder(AccentColor));
-            extremeButton.setForeground(AccentColor);
-
+        easyButton.setBorder(new LineBorder(AccentColor));
+        easyButton.setForeground(AccentColor);
+        mediumButton.setForeground(AccentColor);
+        mediumButton.setBorder(new LineBorder(AccentColor));
+        hardButton.setBorder(new LineBorder(AccentColor));
+        hardButton.setForeground(AccentColor);
+        extremeButton.setBorder(new LineBorder(AccentColor));
+        extremeButton.setForeground(AccentColor);
 
         easyButton.addItemListener(
                 e -> {
@@ -619,10 +614,46 @@ public class StartMenu {
                 extremeButton, startMenuWindowManager.getDifficultyPanel());
     }
 
-    public void update() {
-        startMenuWindowManager.getFrame().revalidate();
-        startMenuWindowManager.getFrame().repaint();
+    public void updateColors() {
+        backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
+        AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
+        startMenuWindowManager.setCustomBoardPanels(boardPanels);
+
+        // Update all relevant components with the new colors
+        startButton.setBackground(backgroundColor);
+        startButton.setForeground(AccentColor);
+
+        easyButton.setBackground(backgroundColor);
+        easyButton.setForeground(AccentColor);
+
+        mediumButton.setBackground(backgroundColor);
+        mediumButton.setForeground(AccentColor);
+
+        hardButton.setBackground(backgroundColor);
+        hardButton.setForeground(AccentColor);
+
+        extremeButton.setBackground(backgroundColor);
+        extremeButton.setForeground(AccentColor);
+
+        gameRuleButton.setBackground(backgroundColor);
+        gameRuleButton.setForeground(AccentColor);
+
+        createGameButton.setBackground(backgroundColor);
+        createGameButton.setForeground(AccentColor);
+
+        joinGameButton.setBackground(backgroundColor);
+        joinGameButton.setForeground(AccentColor);
+
+        inputNField.setBackground(backgroundColor);
+        inputNField.setForeground(AccentColor);
+        inputKField.setBackground(backgroundColor);
+        inputKField.setForeground(AccentColor);
+
+
+        // Ensure all panels and components are updated
+        startMenuWindowManager.update();
     }
+
 
     // Getters used for testing the startMenu
     public CustomBoardPanel getCustomBoardPanel() {

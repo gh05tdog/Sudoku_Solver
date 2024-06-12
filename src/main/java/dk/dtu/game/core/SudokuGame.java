@@ -12,7 +12,6 @@ import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
@@ -25,7 +24,6 @@ import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +80,6 @@ public class SudokuGame {
         this.gridSize = n * k;
         this.cellSize = cellSize;
 
-
         new Thread(this::processNetworkMessages).start();
     }
 
@@ -138,7 +135,9 @@ public class SudokuGame {
             board.setChosenNumber(gameboard.getNumber(row, column));
 
             // Ensure placeableNumber is set correctly and the cell is empty before making a move
-            if (placeableNumber != 0 && gameboard.getInitialNumber(row, column) == 0 && gameboard.getNumber(row, column) == 0) {
+            if (placeableNumber != 0
+                    && gameboard.getInitialNumber(row, column) == 0
+                    && gameboard.getNumber(row, column) == 0) {
                 makeMove(row, column, placeableNumber);
             }
 
@@ -155,9 +154,6 @@ public class SudokuGame {
             logger.debug("Click outside the Sudoku board or on another component");
         }
     }
-
-
-
 
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
@@ -182,7 +178,6 @@ public class SudokuGame {
         checkRowAndColumnForNotes(row, col, number, mode);
         checkSubSquareForNotes(row, col, number, mode);
     }
-
 
     private void checkRowAndColumnForNotes(int row, int col, int number, String mode) {
         for (int i = 0; i < gridSize; i++) {
@@ -218,7 +213,7 @@ public class SudokuGame {
 
     private void updateNumberCount() {
 
-        //Loop through the board and add all the numbers to a list,
+        // Loop through the board and add all the numbers to a list,
         // then check if each number is equal to the max needed number,
         // if it is, then update the number display
         List<Integer> numbers = new ArrayList<>();
@@ -228,14 +223,11 @@ public class SudokuGame {
             }
         }
 
-
         for (int i = 1; i <= gameboard.getDimensions(); i++) {
             int count = Collections.frequency(numbers, i);
             getNumbersBoard().updateNumberDisplay(i, count != gameboard.getDimensions());
         }
-
     }
-
 
     public void makeMove(int row, int col, int number) {
         if (row >= 0 && col >= 0 && row < gridSize && col < gridSize) {
@@ -255,9 +247,6 @@ public class SudokuGame {
             }
         }
     }
-
-
-
 
     private void makeMoveWithLives(int row, int col, int number) {
         if (gameboard.getInitialNumber(row, col) == 0 && !noteButton.isSelected() && number != 0) {
@@ -324,7 +313,6 @@ public class SudokuGame {
         }
     }
 
-
     public void displayNumbersVisually() {
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
@@ -352,7 +340,6 @@ public class SudokuGame {
         }
     }
 
-
     public void createBoard(int n, int k, int cellSize) {
         board = new SudokuBoardCanvas(n, k, cellSize);
         board.setLocation(50, 50);
@@ -364,8 +351,7 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new NumberHub(n, 40) {
-        };
+        numbers = new NumberHub(n, 40) {};
         getNumbersBoard().update();
         board.update();
 
@@ -378,7 +364,6 @@ public class SudokuGame {
         timer = new TimerFunction();
         timer.setFocusable(true);
     }
-
 
     public void initialize(int n, int k, int cellSize) {
 
@@ -450,7 +435,8 @@ public class SudokuGame {
             }
             fillHintList();
         } else {
-            gameboard.setGameBoard(deepCopyBoard(gameboard.getInitialBoard())); // Reset to custom board
+            gameboard.setGameBoard(
+                    deepCopyBoard(gameboard.getInitialBoard())); // Reset to custom board
             moveList.clear();
             wrongMoveList.clear();
             windowManager.setHeart();
@@ -558,7 +544,6 @@ public class SudokuGame {
         updateNumberCount();
     }
 
-
     public void checkCompletionAndOfferNewGame() {
         boolean completedSuccessfully = isSudokuCompleted() && !testMode();
         boolean isGameOver = isGameOver();
@@ -602,7 +587,7 @@ public class SudokuGame {
                     message =
                             """
                                     Game Over! You've run out of hearts.
-    
+
                                     Would you like to start a new game?""";
                 }
             }
@@ -631,8 +616,7 @@ public class SudokuGame {
                 }
             } else {
                 JFrame frame = windowManager.getFrame();
-                StartMenuWindowManager startMenu =
-                        new StartMenuWindowManager(frame, 1000, 1000);
+                StartMenuWindowManager startMenu = new StartMenuWindowManager(frame, 1000, 1000);
                 StartMenu startMenu1 = new StartMenu(startMenu);
                 startMenu1.initialize();
             }
@@ -670,22 +654,45 @@ public class SudokuGame {
         int padding = 5; // Adjust the padding as desired
 
         restartButton.setForeground(accentColor);
-        restartButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        restartButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(accentColor, 1),
+                        new EmptyBorder(padding, padding, padding, padding)));
         solveButton.setForeground(accentColor);
-        solveButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        solveButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(accentColor, 1),
+                        new EmptyBorder(padding, padding, padding, padding)));
         newGameButton.setForeground(accentColor);
-        newGameButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        newGameButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(accentColor, 1),
+                        new EmptyBorder(padding, padding, padding, padding)));
         eraseButton.setForeground(accentColor);
-        eraseButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        eraseButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(accentColor, 1),
+                        new EmptyBorder(padding, padding, padding, padding)));
         undoButton.setForeground(accentColor);
-        undoButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        undoButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(accentColor, 1),
+                        new EmptyBorder(padding, padding, padding, padding)));
         hintButton.setForeground(accentColor);
-        hintButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        hintButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(accentColor, 1),
+                        new EmptyBorder(padding, padding, padding, padding)));
         goBackButton.setForeground(accentColor);
-        goBackButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        goBackButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(accentColor, 1),
+                        new EmptyBorder(padding, padding, padding, padding)));
         noteButton.setForeground(accentColor);
-        noteButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
-
+        noteButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(accentColor, 1),
+                        new EmptyBorder(padding, padding, padding, padding)));
 
         restartButton.addActionListener(
                 e -> {
@@ -720,7 +727,6 @@ public class SudokuGame {
                     updateNumberCount();
                     checkCompletionAndOfferNewGame();
                     usedSolveButton = false;
-
                 });
 
         newGameButton.addActionListener(e -> startGame());
@@ -791,9 +797,11 @@ public class SudokuGame {
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
                 if (gameboard.getInitialNumber(row, col) != 0) {
-                    board.setCellTextColor(row, col, Config.getDarkMode() ? initialColor : Color.GRAY);
+                    board.setCellTextColor(
+                            row, col, Config.getDarkMode() ? initialColor : Color.GRAY);
                 } else {
-                    board.setCellTextColor(row, col, Config.getDarkMode() ? accentColor : Color.BLACK);
+                    board.setCellTextColor(
+                            row, col, Config.getDarkMode() ? accentColor : Color.BLACK);
                 }
             }
         }
@@ -907,7 +915,5 @@ public class SudokuGame {
         restartButton.setEnabled(true);
         hintButton.setEnabled(true);
         newGameButton.setEnabled(true);
-
     }
-
 }

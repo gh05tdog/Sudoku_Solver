@@ -1,11 +1,11 @@
+/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import dk.dtu.game.core.Config;
-
 import java.awt.*;
-import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.*;
 
 public abstract class NumberHub extends JPanel {
     private static int cellSize;
@@ -18,8 +18,10 @@ public abstract class NumberHub extends JPanel {
     private final Map<Integer, Boolean> numberAvailability;
 
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
-    private static Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
-    private static Color accentColor = Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
+    private static Color backgroundColor =
+            Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
+    private static Color accentColor =
+            Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
 
     private static Color NON_HIGHLIGHT_COLOR = backgroundColor;
 
@@ -33,7 +35,8 @@ public abstract class NumberHub extends JPanel {
         }
 
         NumberHub.setCellSize(Math.max(cellSize, MIN_CELL_SIZE));
-        setPreferredSize(new Dimension(subGrid * NumberHub.cellSize, (subGrid + 2) * NumberHub.cellSize));
+        setPreferredSize(
+                new Dimension(subGrid * NumberHub.cellSize, (subGrid + 2) * NumberHub.cellSize));
         setBackground(backgroundColor);
         for (int i = 0; i < subGrid; i++) {
             for (int j = 0; j < subGrid; j++) {
@@ -72,7 +75,9 @@ public abstract class NumberHub extends JPanel {
                 Font font = new Font("Arial", Font.BOLD, cellSize / 2);
                 g.setFont(font);
                 g.setColor(accentColor);
-                g.drawString(num, x + cellSize / 2 - g.getFontMetrics().stringWidth(num) / 2,
+                g.drawString(
+                        num,
+                        x + cellSize / 2 - g.getFontMetrics().stringWidth(num) / 2,
                         y + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
             }
         }
@@ -86,7 +91,9 @@ public abstract class NumberHub extends JPanel {
         Font font = new Font("Arial", Font.BOLD, cellSize / 2);
         g.setFont(font);
         g.setColor(accentColor);
-        g.drawString("Clear", subGrid * cellSize / 2 - g.getFontMetrics().stringWidth("Clear") / 2,
+        g.drawString(
+                "Clear",
+                subGrid * cellSize / 2 - g.getFontMetrics().stringWidth("Clear") / 2,
                 clearBoxY + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
     }
 
@@ -107,7 +114,8 @@ public abstract class NumberHub extends JPanel {
     }
 
     public void update() {
-        backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
+        backgroundColor =
+                Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
         accentColor = Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
 
         // Ensure NON_HIGHLIGHT_COLOR is updated as well

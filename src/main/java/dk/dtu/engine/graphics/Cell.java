@@ -2,7 +2,6 @@
 package dk.dtu.engine.graphics;
 
 import dk.dtu.game.core.Config;
-
 import java.awt.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -13,12 +12,16 @@ class Cell implements Serializable {
     boolean isMarked = false;
     boolean isHighlighted = false;
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
-    private Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
+    private Color backgroundColor =
+            Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
     private Color accentColor;
 
-    private Color highlightColor = Config.getDarkMode() ? new Color(105, 104, 104): new Color(225, 223, 221);
-    private Color markedColor = Config.getDarkMode() ?  new Color(84, 84, 84)  : new Color(169, 169, 167);
-    private Color placeAbleColor = Config.getDarkMode() ? new Color(119, 111, 73) : new Color(250, 200, 200);
+    private Color highlightColor =
+            Config.getDarkMode() ? new Color(105, 104, 104) : new Color(225, 223, 221);
+    private Color markedColor =
+            Config.getDarkMode() ? new Color(84, 84, 84) : new Color(169, 169, 167);
+    private Color placeAbleColor =
+            Config.getDarkMode() ? new Color(119, 111, 73) : new Color(250, 200, 200);
 
     private Color textColor;
     boolean isUnplacable = false;
