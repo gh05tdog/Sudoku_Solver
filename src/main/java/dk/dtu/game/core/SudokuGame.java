@@ -147,8 +147,6 @@ public class SudokuGame {
     }
 
 
-
-
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
 
@@ -245,8 +243,6 @@ public class SudokuGame {
             }
         }
     }
-
-
 
 
     private void makeMoveWithLives(int row, int col, int number) {
@@ -557,27 +553,29 @@ public class SudokuGame {
 
                 if (completedSuccessfully) {
                     // Preferences object to store and retrieve the username
-                    Preferences pref = Preferences.userNodeForPackage(this.getClass());
-                    String storedUsername = pref.get("username", "");
 
                     if (networkOut != null) {
                         networkOut.println("COMPLETED " + "Player1");
                     }
+                    if (Config.getEnableTimer() || isNetworkGame) {
+                        Preferences pref = Preferences.userNodeForPackage(this.getClass());
+                        String storedUsername = pref.get("username", "");
 
-                    // Prompt user for their username
-                    String username =
-                            JOptionPane.showInputDialog(
-                                    null, "Enter your name for the leaderboard:", storedUsername);
-                    if (username != null && !username.trim().isEmpty()) {
-                        // Store the username in preferences
-                        pref.put("username", username.trim());
 
-                        // Add the completion details to the leaderboard
-                        String difficulty = Config.getDifficulty();
-                        int time = timer.getTimeToInt(); // returns time
+                        // Prompt user for their username
+                        String username = JOptionPane.showInputDialog(null,
+                                "Enter your name for the leaderboard:", storedUsername);
+                        if (username != null && !username.trim().isEmpty()) {
+                            // Store the username in preferences
+                            pref.put("username", username.trim());
 
-                        UpdateLeaderboard.addScore(
-                                "jdbc:sqlite:sudoku.db", username, difficulty, time);
+                            // Add the completion details to the leaderboard
+                            String difficulty = Config.getDifficulty();
+                            int time = timer.getTimeToInt(); // returns time
+
+                            UpdateLeaderboard.addScore(
+                                    "jdbc:sqlite:sudoku.db", username, difficulty, time);
+                        }
                     }
 
                     message =
@@ -589,7 +587,7 @@ public class SudokuGame {
                     message =
                             """
                                     Game Over! You've run out of hearts.
-    
+                                       \s
                                     Would you like to start a new game?""";
                 }
             }
