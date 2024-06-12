@@ -494,9 +494,6 @@ public class SudokuGame {
                     gameboard.setInitialNumber(row, col, number);
                     gameboard.setNumber(row, col, number);
 
-                    // Debug statements
-                    System.out.println(
-                            "Setting number " + number + " at (" + row + "," + col + ")");
 
                     Cage cage = board.getCageContainingCell(row, col);
                     if (cage != null) {
