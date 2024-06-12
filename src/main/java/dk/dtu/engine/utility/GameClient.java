@@ -61,14 +61,14 @@ public class GameClient {
     private void processNetworkMessage(String message, SudokuGame game) {
         String[] parts = message.split(" ", 2);
         String command = parts[0];
-        Config.setEnableLives(false);
+        System.out.println("Command: " + command);
         switch (command) {
             case "INITIAL_BOARD":
                 System.out.println("Received initial board: " + parts[1]);
                 int[][] board = stringToBoard(parts[1]);
                 game.initializeCustom(board);
                 break;
-            case "WINNER":
+            case "PROGRESS", "WINNER":
                 game.processNetworkMessage(message);
                 break;
         }

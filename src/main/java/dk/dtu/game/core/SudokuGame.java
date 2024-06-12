@@ -61,6 +61,7 @@ public class SudokuGame {
     private PrintWriter networkOut;
     private boolean isCustomBoard = false;
     private boolean isNetworkGame = false;
+    private JProgressBar opponentProgressBar;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -77,6 +78,11 @@ public class SudokuGame {
 
 
         new Thread(this::processNetworkMessages).start();
+
+        // Initialize the opponent progress bar
+        opponentProgressBar = new JProgressBar(0, 100);
+        opponentProgressBar.setStringPainted(true);
+        opponentProgressBar.setString("Opponent's Progress");
     }
 
     private void processNetworkMessages() {
@@ -101,6 +107,7 @@ public class SudokuGame {
     public void processNetworkMessage(String message) {
         String[] parts = message.split(" ");
         String command = parts[0];
+        System.out.println("Received message: " + message);
 
         switch (command) {
             case "WINNER":
@@ -116,6 +123,17 @@ public class SudokuGame {
                                 JOptionPane.showMessageDialog(
                                         null, playerName + " has completed the Sudoku!"));
                 break;
+            case "PROGRESS":
+                int progress = Integer.parseInt(parts[1]);
+                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress));
+                break;
+        }
+    }
+
+    private void updateOpponentProgress(int progress) {
+        //Check if my progress is higher than the opponent's progress
+        if (progress != calculateProgress()) {
+            opponentProgressBar.setValue(progress);
         }
     }
 
@@ -243,6 +261,10 @@ public class SudokuGame {
                     }
                 }
             }
+        }
+        if(isNetworkGame)
+        {
+            sendProgress();
         }
     }
 
@@ -373,6 +395,9 @@ public class SudokuGame {
             gameboard.setNumber(row, col, prevNumber);
             board.setCellNumber(row, col, prevNumber);
             logger.debug("Undo move: Row: {}, Column: {}, Number: {}", row, col, prevNumber);
+        }
+        if(isNetworkGame){
+            sendProgress();
         }
     }
 
@@ -553,15 +578,42 @@ public class SudokuGame {
             hintButton.setEnabled(false);
             newGameButton.setEnabled(false);
             restartButton.setEnabled(false);
+            windowManager.addProgressBar(opponentProgressBar); // Add this line
+            calculateProgress();
         } else {
             windowManager.setHeart();
         }
-        isNetworkGame = false;
+
 
         newGameButton.setText("Replay");
     }
 
-    public void newGame() {
+    public int calculateProgress() {
+        int filledCells = 0;
+        int totalCells = gridSize * gridSize;
+
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                if (gameboard.getNumber(row, col) != 0) {
+                    filledCells++;
+                }
+            }
+        }
+
+        return (int) ((filledCells / (double) totalCells) * 100);
+    }
+
+    public void sendProgress() {
+        System.out.println("Sending progress");
+        if (networkOut != null) {
+            int progress = calculateProgress();
+            System.out.println("Progress: " + progress);
+            networkOut.println("PROGRESS " + progress);
+        }
+    }
+
+
+        public void newGame() {
 
         if (!isCustomBoard) {
             gameboard.clear();
@@ -849,6 +901,8 @@ public class SudokuGame {
         noteButton.addActionListener(e -> board.requestFocusInWindow());
         goBackButton.addActionListener(
                 e -> {
+                    //Ensure that the game is not a network game
+                    isNetworkGame = false;
                     // Make a popup to ask if they want to go back
                     int response =
                             JOptionPane.showConfirmDialog(
