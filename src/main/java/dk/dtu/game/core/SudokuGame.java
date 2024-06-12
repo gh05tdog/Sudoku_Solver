@@ -8,6 +8,7 @@ import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
+import dk.dtu.engine.utility.ServerBroadCaster;
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
@@ -77,6 +78,7 @@ public class SudokuGame {
 
 
         new Thread(this::processNetworkMessages).start();
+        new Thread(new ServerBroadCaster("your.server.ip.address")).start();
     }
 
     private void processNetworkMessages() {

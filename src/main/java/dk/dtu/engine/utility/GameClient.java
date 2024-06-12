@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
 
 public class GameClient {
     private final String serverAddress;
@@ -31,6 +32,8 @@ public class GameClient {
     public void start() throws IOException, Board.BoardNotCreatable {
         if (isGameStarted) return;
         isGameStarted = true;
+
+        discoverServers();
 
         Socket socket = createSocket(serverAddress);
         System.out.println("Connected to server at " + serverAddress);
@@ -98,5 +101,22 @@ public class GameClient {
             return false;
         }
     }
-}
+
+    public void discoverServers() {
+        ServerDiscoveryClient discoveryClient = new ServerDiscoveryClient();
+        new Thread(discoveryClient).start();
+
+        // Wait some time to discover servers
+        try {
+            Thread.sleep(10000); // 10 seconds
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        List<String> servers = discoveryClient.getDiscoveredServers();
+        for (String server : servers) {
+            System.out.println("Found server: " + server);
+        }
+    }
+  }
 
