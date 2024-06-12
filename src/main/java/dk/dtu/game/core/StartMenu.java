@@ -25,6 +25,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.text.AbstractDocument;
 
 import org.slf4j.Logger;
@@ -62,11 +63,12 @@ public class StartMenu {
 
     public void startGame() throws Board.BoardNotCreatable {
         logger.info(
-                "startGame: {} {} {} {}",
+                "Starting the game with: {} {} {} {}",
                 Config.getK(),
                 Config.getN(),
                 Config.getDifficulty(),
                 Config.getCellSize());
+
         int n = Config.getN();
         int k = Config.getK();
         int cellSize = Config.getCellSize();
@@ -222,6 +224,7 @@ public class StartMenu {
                     }
                 };
 
+        // Create a JTable with the leaderboard data
         JTable leaderboardTable = new JTable(model);
         leaderboardTable.setFillsViewportHeight(true);
         leaderboardTable.setRowHeight(30);
@@ -236,17 +239,22 @@ public class StartMenu {
             leaderboardTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
+        // Enable sorting
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+        leaderboardTable.setRowSorter(sorter);
+
         // Create a JScrollPane containing the JTable
         JScrollPane leaderboardScrollPane = new JScrollPane(leaderboardTable);
 
         // Create a JDialog to display the leaderboard
         JDialog leaderboardDialog = new JDialog();
         leaderboardDialog.setTitle("Leaderboard");
-        leaderboardDialog.setSize(600, 400); // Adjust the size as needed
+        leaderboardDialog.setSize(600, 400);
         leaderboardDialog.setLocationRelativeTo(null);
         leaderboardDialog.add(leaderboardScrollPane);
         leaderboardDialog.setVisible(true);
     }
+
 
     private void addChangeListenerToField(JTextField field) {
         // This method adds a document listener to the input fields, so that the board is updated
@@ -358,7 +366,7 @@ public class StartMenu {
                         try {
                             startGame();
                         } catch (Board.BoardNotCreatable ex) {
-                            logger.error("Board not creatable: {}", ex.getMessage());
+                            logger.error("This board-type is not creatable: {}", ex.getMessage());
                         }
 
                     } else {
@@ -430,7 +438,7 @@ public class StartMenu {
             }
         }
 
-        // Check if board is valid
+        // Check if the board is valid
         if (BruteForceAlgorithm.isValidSudoku(board)) {
             return board;
         } else {

@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SudokuGame {
-    private static final Logger logger = LoggerFactory.getLogger(SudokuGame.class);
+    private final Logger logger = LoggerFactory.getLogger(SudokuGame.class);
     public final Board gameboard;
     public final Deque<Move> moveList = new ArrayDeque<>();
     public final List<Move> wrongMoveList = new ArrayList<>();
@@ -147,8 +147,6 @@ public class SudokuGame {
     }
 
 
-
-
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
 
@@ -245,8 +243,6 @@ public class SudokuGame {
             }
         }
     }
-
-
 
 
     private void makeMoveWithLives(int row, int col, int number) {
@@ -559,27 +555,29 @@ public class SudokuGame {
 
                 if (completedSuccessfully) {
                     // Preferences object to store and retrieve the username
-                    Preferences pref = Preferences.userNodeForPackage(this.getClass());
-                    String storedUsername = pref.get("username", "");
 
                     if (networkOut != null) {
                         networkOut.println("COMPLETED " + "Player1");
                     }
+                    if (Config.getEnableTimer() || isNetworkGame) {
+                        Preferences pref = Preferences.userNodeForPackage(this.getClass());
+                        String storedUsername = pref.get("username", "");
 
-                    // Prompt user for their username
-                    String username =
-                            JOptionPane.showInputDialog(
-                                    null, "Enter your name for the leaderboard:", storedUsername);
-                    if (username != null && !username.trim().isEmpty()) {
-                        // Store the username in preferences
-                        pref.put("username", username.trim());
 
-                        // Add the completion details to the leaderboard
-                        String difficulty = Config.getDifficulty();
-                        int time = timer.getTimeToInt(); // returns time
+                        // Prompt user for their username
+                        String username = JOptionPane.showInputDialog(null,
+                                "Enter your name for the leaderboard:", storedUsername);
+                        if (username != null && !username.trim().isEmpty()) {
+                            // Store the username in preferences
+                            pref.put("username", username.trim());
 
-                        UpdateLeaderboard.addScore(
-                                "jdbc:sqlite:sudoku.db", username, difficulty, time);
+                            // Add the completion details to the leaderboard
+                            String difficulty = Config.getDifficulty();
+                            int time = timer.getTimeToInt(); // returns time
+
+                            UpdateLeaderboard.addScore(
+                                    "jdbc:sqlite:sudoku.db", username, difficulty, time);
+                        }
                     }
 
                     message =
@@ -591,7 +589,7 @@ public class SudokuGame {
                     message =
                             """
                                     Game Over! You've run out of hearts.
-    
+                                       \s
                                     Would you like to start a new game?""";
                 }
             }
@@ -618,12 +616,6 @@ public class SudokuGame {
                 } catch (Exception e) {
                     logger.error("Error creating new game: {}", e.getMessage());
                 }
-            } else {
-                JFrame frame = windowManager.getFrame();
-                StartMenuWindowManager startMenu =
-                        new StartMenuWindowManager(frame, 1000, 1000);
-                StartMenu startMenu1 = new StartMenu(startMenu);
-                startMenu1.initialize();
             }
         }
     }
