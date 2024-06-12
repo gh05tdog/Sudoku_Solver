@@ -10,34 +10,29 @@ public class HeuristicSolver {
     static Random random = new Random();
 
     public static void main(String[] args) throws Board.BoardNotCreatable {
-        Long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10; i++) {
-            Long start = System.currentTimeMillis();
-            Board board = new Board(3, 3);
-            int[][][] possiblePlacements = createSetFromBoard(board);
-            fillBoard(possiblePlacements, 3, 3, true);
-            Long end = System.currentTimeMillis();
-            System.out.println("Time taken: " + (end - start) + "ms");
-        }
-        Long endTime = System.currentTimeMillis();
-        Long averageTime = (endTime - startTime) / 10;
-        System.out.println("Average time: " + averageTime + "ms");
-
-
-        Long startTime1 = System.currentTimeMillis();
-        for (int i = 0; i < 10; i++) {
-            Long start = System.currentTimeMillis();
-            Board board = new Board(3, 3);
-            int[][][] possiblePlacements = createSetFromBoard(board);
-            fillBoard(possiblePlacements, 3, 3, false);
-            Long end = System.currentTimeMillis();
-            System.out.println("Time taken: " + (end - start) + "ms");
-        }
-        Long endTime1 = System.currentTimeMillis();
-        Long averageTime1 = (endTime1 - startTime1) / 10;
-        System.out.println("Average time: " + averageTime1 + "ms");
+        testRuntime(true);
+        testRuntime(false);
 
     }
+
+    public static void testRuntime (boolean iterate) throws Board.BoardNotCreatable {
+        long totalTime = 0L;
+        int runs = 100;
+        for (int i = 0; i < runs; i++) {
+            Long start = System.currentTimeMillis();
+            Board board = new Board(4, 4);
+            int[][][] possiblePlacements = createSetFromBoard(board);
+            fillBoard(possiblePlacements, 4, 4, iterate);
+            Long end = System.currentTimeMillis();
+            if (i > 0) {
+                totalTime += end-start;
+            }
+        }
+        long avgTime = totalTime/(runs-1);
+        System.out.println("Average time: " + avgTime);
+    }
+
+    public void createAndPrintBoard
 
     public static int[][][] createSetFromBoard(Board board) {
         int subGrid = board.getN();
@@ -88,9 +83,6 @@ public class HeuristicSolver {
 
     public static boolean fillBoard(int[][][] arr, int subgrid, int gridSize, boolean iterate) {
         int boardLength = subgrid * gridSize;
-        int totalCells = boardLength * boardLength;
-
-        int[] shuffleIndices = fisherYatesShuffle(totalCells);
 
         if(iterate) {
             boolean isChanged = true;
@@ -98,15 +90,14 @@ public class HeuristicSolver {
             // Initial pass to make obvious placements
             while (isChanged) {
                 isChanged = false;
-                for (int i = 0; i < totalCells; i++) {
-                    int row = shuffleIndices[i] / boardLength;
-                    int col = shuffleIndices[i] % boardLength;
-
-                    if (placementCount(arr[row][col]) == 1 && arr[row][col][0] == 0) {
-                        int value = placeableValue(arr[row][col]);
-                        arr[row][col][0] = value;
-                        removePossiblePlacements(arr, row, col, value, subgrid, gridSize);
-                        isChanged = true;
+                for (int i = 0; i < boardLength; i++) {
+                    for (int j = 0; j < boardLength; j++) {
+                        if (placementCount(arr[i][j]) == 1 && arr[i][j][0] == 0) {
+                            int value = placeableValue(arr[i][j]);
+                            arr[i][j][0] = value;
+                            removePossiblePlacements(arr, i, j, value, subgrid, gridSize);
+                            isChanged = true;
+                        }
                     }
                 }
             }
@@ -115,33 +106,31 @@ public class HeuristicSolver {
             return true;
         }
 
-        // Recursive backtracking
-        for (int i = 0; i < totalCells; i++) {
-            int row = shuffleIndices[i] / boardLength;
-            int col = shuffleIndices[i] % boardLength;
-
-            if (arr[row][col][0] == 0 && placementCount(arr[row][col]) > 1) {
-                List<Integer> possibleValues = getPossibleValues(arr[row][col]);
-                for (int value : possibleValues) {
-                    int[][][] arrCopy = copyBoard(arr); // Make a copy of the board
-                    arrCopy[row][col][0] = value; // Place the value in the copy
-                    removePossiblePlacements(arrCopy, row, col, value, subgrid, gridSize);
-
-                    if (fillBoard(arrCopy, subgrid, gridSize, iterate)) {
-                        // If the recursive call returns true, copy the solution back to the original array
-                        for (int r = 0; r < arr.length; r++) {
-                            for (int c = 0; c < arr[r].length; c++) {
-                                arr[r][c] = arrCopy[r][c].clone();
-                            }
-                        }
-                        return true;
-                    }
-                }
-                return false; // If no placement leads to a solution, return false for backtracking
-            }
+        // Find the cell with the minimum remaining values (MRV) and highest degree
+        int[] mrvCell = findMRVAndHighestDegreeCell(arr, subgrid, gridSize);
+        if (mrvCell == null) {
+            return false;
         }
 
-        return false; // Return false if the board cannot be filled
+        int row = mrvCell[0];
+        int col = mrvCell[1];
+        List<Integer> possibleValues = getPossibleValues(arr[row][col]);
+        for (int value : possibleValues) {
+            int[][][] arrCopy = copyBoard(arr); // Make a copy of the board
+            arrCopy[row][col][0] = value; // Place the value in the copy
+            removePossiblePlacements(arrCopy, row, col, value, subgrid, gridSize);
+
+            if (fillBoard(arrCopy, subgrid, gridSize, iterate)) {
+                // If the recursive call returns true, copy the solution back to the original array
+                for (int r = 0; r < arr.length; r++) {
+                    for (int c = 0; c < arr[r].length; c++) {
+                        arr[r][c] = arrCopy[r][c].clone();
+                    }
+                }
+                return true;
+            }
+        }
+        return false; // If no placement leads to a solution, return false for backtracking
     }
 
     private static int[][][] copyBoard(int[][][] arr) {
@@ -221,5 +210,55 @@ public class HeuristicSolver {
             }
             System.out.println();
         }
+    }
+
+    private static int[] findMRVAndHighestDegreeCell(int[][][] arr, int subgrid, int gridSize) {
+        int boardLength = subgrid * gridSize;
+        int minCount = Integer.MAX_VALUE;
+        int maxDegree = -1;
+        int[] cell = null;
+
+        for (int i = 0; i < boardLength; i++) {
+            for (int j = 0; j < boardLength; j++) {
+                if (arr[i][j][0] == 0) {
+                    int count = placementCount(arr[i][j]);
+                    int degree = calculateDegree(arr, i, j, subgrid, gridSize);
+                    if (count < minCount || (count == minCount && degree > maxDegree)) {
+                        minCount = count;
+                        maxDegree = degree;
+                        cell = new int[]{i, j};
+                    }
+                }
+            }
+        }
+        return cell;
+    }
+
+    private static int calculateDegree(int[][][] arr, int row, int col, int subgrid, int gridSize) {
+        int boardLength = subgrid * gridSize;
+        int degree = 0;
+
+        // Count the number of unassigned neighbors in the row and column
+        for (int i = 0; i < boardLength; i++) {
+            if (arr[row][i][0] == 0 && i != col) {
+                degree++;
+            }
+            if (arr[i][col][0] == 0 && i != row) {
+                degree++;
+            }
+        }
+
+        // Count the number of unassigned neighbors in the subgrid
+        int startRow = (row / subgrid) * subgrid;
+        int startCol = (col / subgrid) * subgrid;
+        for (int i = startRow; i < startRow + subgrid; i++) {
+            for (int j = startCol; j < startCol + subgrid; j++) {
+                if (arr[i][j][0] == 0 && (i != row || j != col)) {
+                    degree++;
+                }
+            }
+        }
+
+        return degree;
     }
 }
