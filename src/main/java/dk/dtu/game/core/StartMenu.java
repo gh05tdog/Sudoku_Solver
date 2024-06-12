@@ -9,7 +9,6 @@ import dk.dtu.engine.utility.*;
 import dk.dtu.engine.utility.Leaderboard;
 import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -27,7 +26,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.AbstractDocument;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,12 +60,7 @@ public class StartMenu {
     }
 
     public void startGame() throws Board.BoardNotCreatable {
-        logger.info(
-                "Starting the game with: {} {} {} {}",
-                Config.getK(),
-                Config.getN(),
-                Config.getDifficulty(),
-                Config.getCellSize());
+        logConfigInfo();
 
         int n = Config.getN();
         int k = Config.getK();
@@ -78,6 +71,7 @@ public class StartMenu {
             GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
             windowManager.display();
             gameEngine.start();
+
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             throw new Board.BoardNotCreatable("This board is not possible to create");
         }
@@ -136,10 +130,10 @@ public class StartMenu {
 
         // Start the server in a separate thread
         new Thread(
-                () -> {
-                    GameServer server = new GameServer();
-                    server.start();
-                })
+                        () -> {
+                            GameServer server = new GameServer();
+                            server.start();
+                        })
                 .start();
 
         // Allow some time for the server to start before connecting the client
@@ -160,7 +154,8 @@ public class StartMenu {
             } else {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Failed to connect to the server. Please check the server address and try again.",
+                        "Failed to connect to the server. Please check the server address and try"
+                                + " again.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
                 joinGameButton.setEnabled(true);
@@ -205,13 +200,13 @@ public class StartMenu {
         List<String[]> rowData = new ArrayList<>();
         for (LeaderboardEntry entry : leaderboard) {
             rowData.add(
-                    new String[]{
-                            entry.username(),
-                            entry.difficulty(),
-                            String.format(
-                                    "%02d:%02d:%02d",
-                                    entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
-                            entry.timestamp()
+                    new String[] {
+                        entry.username(),
+                        entry.difficulty(),
+                        String.format(
+                                "%02d:%02d:%02d",
+                                entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
+                        entry.timestamp()
                     });
         }
 
@@ -350,6 +345,10 @@ public class StartMenu {
                             "Enable easy mode",
                             Config.getEnableEasyMode(),
                             Config::setEnableEasyMode);
+                    gameRules.addJSwitchBox(
+                            "Killer Sudoku Mode",
+                            Config.getEnableKillerSudoku(),
+                            Config::setEnableKillerSudoku);
                 });
     }
 
@@ -447,14 +446,8 @@ public class StartMenu {
     }
 
     private void startGameWithBoard(int[][] board) {
-
         Config.setCellSize(550 / (Config.getK() * Config.getN()));
-        logger.info(
-                "startGame: {} {} {} {}",
-                Config.getK(),
-                Config.getN(),
-                Config.getDifficulty(),
-                Config.getCellSize());
+        logConfigInfo();
 
         WindowManager windowManager =
                 new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
@@ -583,6 +576,15 @@ public class StartMenu {
                 hardButton, startMenuWindowManager.getDifficultyPanel());
         startMenuWindowManager.addComponent(
                 extremeButton, startMenuWindowManager.getDifficultyPanel());
+    }
+
+    private void logConfigInfo(){
+        logger.info(
+                "startGame: {} {} {} {}",
+                Config.getK(),
+                Config.getN(),
+                Config.getDifficulty(),
+                Config.getCellSize());
     }
 
     // Getters used for testing the startMenu

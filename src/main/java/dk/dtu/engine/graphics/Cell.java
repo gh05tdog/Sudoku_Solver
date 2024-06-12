@@ -80,12 +80,13 @@ class Cell implements Serializable {
             return;
         }
         g.setColor(textColor);
-        Font font = new Font("Arial", Font.BOLD, cellSize / 5);
+        Font font = new Font("Arial", Font.BOLD, cellSize / 6); // Smaller font size
         g.setFont(font);
-        int subCellSize = cellSize / 3; // Divide the cellSize by 3 to get the size of each sub-cell
-        int offsetX =
-                (subCellSize / 2) + 2; // Half of the subCellSize to center the number horizontally
-        int offsetY = (cellSize / 6 + subCellSize / 2) - 5; // Position for vertical centering
+        int subCellSize = cellSize / 3 - 6; // Further reduce the sub-cell size to bring notes closer
+        int gridOffsetX = ((cellSize - (subCellSize * 3)) / 2); // Center the 3x3 grid horizontally
+        int gridOffsetY = ((cellSize - (subCellSize * 3)) / 2) + 2; // Center the 3x3 grid vertically
+        int offsetX = subCellSize / 2; // Center the number horizontally within sub-cell
+        int offsetY = subCellSize / 2 + g.getFontMetrics().getAscent() / 3; // Center the number vertically within sub-cell
 
         for (int note : notes) {
             String noteStr = Integer.toString(note);
@@ -96,12 +97,18 @@ class Cell implements Serializable {
             int col = (note - 1) % 3;
             g.drawString(
                     noteStr,
-                    x + col * subCellSize + offsetX - g.getFontMetrics().stringWidth(noteStr) / 2,
-                    y + row * subCellSize + offsetY);
+                    x + col * subCellSize + gridOffsetX + offsetX - g.getFontMetrics().stringWidth(noteStr) / 2,
+                    y + row * subCellSize + gridOffsetY + offsetY - g.getFontMetrics().getDescent() / 2
+            );
         }
         g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
     }
+
+
+
+
+
 
     public void addNote(int note) {
         notes.add(note);

@@ -1,4 +1,3 @@
-/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import java.awt.*;
@@ -49,6 +48,6 @@ public class JSwitchBox extends JComponent {
         // Draw slider
         g2.setColor(sliderColor);
         int sliderX = selected ? width - height : 0;
-        g2.fillRoundRect(sliderX, 0, height, height, 20, 20);
+        g2.fillRoundRect(sliderX, 0, height, height, 20, 20); // Adjusted width of the slider rectangle
     }
 }

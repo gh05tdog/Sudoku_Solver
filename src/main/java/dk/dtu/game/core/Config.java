@@ -45,7 +45,6 @@ public class Config {
         Config.difficulty = difficulty;
     }
 
-
     // Game rules:
     public static void setEnableLives(boolean enableLives) {
         // Store the value in the system preferences
@@ -93,5 +92,16 @@ public class Config {
         Preferences pref = Preferences.userRoot();
         String numberOfLives = pref.get("numberOfLives", String.valueOf(3));
         return Integer.parseInt(numberOfLives);
+    }
+
+    public static void setEnableKillerSudoku(boolean enableKillerSudoku) {
+        Preferences pref = Preferences.userRoot();
+        pref.put("enableKillerSudoku", String.valueOf(enableKillerSudoku));
+    }
+
+    public static boolean getEnableKillerSudoku(){
+        Preferences pref = Preferences.userRoot();
+        String enableKillerSudoku = pref.get("enableKillerSudoku", String.valueOf(true));
+        return Boolean.parseBoolean(enableKillerSudoku);
     }
 }
