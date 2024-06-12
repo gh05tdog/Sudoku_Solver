@@ -66,6 +66,10 @@ public class GameClient {
             case "INITIAL_BOARD":
                 System.out.println("Received initial board: " + parts[1]);
                 int[][] board = stringToBoard(parts[1]);
+                Config.setK(3);
+                Config.setN(3);
+                Config.setEnableEasyMode(false);
+                Config.setEnableLives(false);
                 game.initializeCustom(board);
                 break;
             case "PROGRESS", "WINNER":

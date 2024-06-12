@@ -586,6 +586,7 @@ public class SudokuGame {
 
 
         newGameButton.setText("Replay");
+        board.requestFocusInWindow();
     }
 
     public int calculateProgress() {
@@ -1065,6 +1066,7 @@ public class SudokuGame {
         newGame();
         displayNumbersVisually();
         setInitialBoardColor();
+        board.requestFocusInWindow();
         gameIsStarted = true;
         board.requestFocusInWindow();
         solveButton.setEnabled(true);
