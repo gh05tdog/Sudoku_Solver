@@ -13,8 +13,9 @@ public class TimerFunction extends JPanel {
     private transient Timer timer;
 
     private static final Color darkbackgroundColor = new Color(64, 64, 64);
-    private static final Color accentColor = new Color(237, 224, 186);
-    private static final Color backgroundColor =
+    private static final Color lightaccentColor = new Color(237, 224, 186);
+    private static Color accentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
+    private static Color backgroundColor =
             Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
 
     public TimerFunction() {
@@ -22,11 +23,12 @@ public class TimerFunction extends JPanel {
         setPreferredSize(new Dimension(180, 80));
         timeLabel = new JLabel("00:00:00", SwingConstants.CENTER);
         timeLabel.setFont(new Font("SansSerif", Font.BOLD, 42));
-        if (Config.getDarkMode()) {
-            timeLabel.setForeground(accentColor);
-        }
+        accentColor = Config.getDarkMode() ? accentColor : Color.BLACK;
+        backgroundColor = Config.getDarkMode() ? backgroundColor : Color.WHITE;
+        timeLabel.setForeground(accentColor);
         setBackground(backgroundColor);
         add(timeLabel);
+        repaint();
     }
 
     public void start() {
@@ -74,5 +76,13 @@ public class TimerFunction extends JPanel {
         int minutes = Integer.parseInt(time[1]);
         int seconds = Integer.parseInt(time[2]);
         return hours * 3600 + minutes * 60 + seconds;
+    }
+
+    public void update(){
+        accentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
+        backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
+        timeLabel.setForeground(accentColor);
+        setBackground(backgroundColor);
+        repaint();
     }
 }

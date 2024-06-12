@@ -363,6 +363,7 @@ public class SudokuGame {
 
         timer = new TimerFunction();
         timer.setFocusable(true);
+        timer.update();
     }
 
     public void initialize(int n, int k, int cellSize) {
@@ -757,7 +758,7 @@ public class SudokuGame {
         UIManager.put("Button.foreground", accentColor);
         UIManager.put("OptionPane.messageForeground", accentColor);
         UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.BOLD, 12));
-        UIManager.put("Button.border", BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        UIManager.put("Button.border",new LineBorder(accentColor));
         goBackButton.addActionListener(
                 e -> {
                     // Make a popup to ask if they want to go back

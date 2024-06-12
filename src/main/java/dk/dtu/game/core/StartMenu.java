@@ -48,6 +48,8 @@ public class StartMenu {
     private final CustomBoardPanel customBoardPanel = new CustomBoardPanel();
     private final JButton createGameButton = new JButton("Create Game");
     private final JButton joinGameButton = new JButton("Join Game");
+    private final JButton importButton = new JButton("Import Sudoku");
+    private final JButton leaderboardButton = new JButton("Show Leaderboard");
     private final JTextField inputNField = new JTextField("N", 1);
     private final JTextField inputKField = new JTextField("K", 1);
     private final ButtonGroup difficultyGroup = new ButtonGroup();
@@ -202,7 +204,7 @@ public class StartMenu {
     }
 
     private void addLeaderboardButton() {
-        JButton leaderboardButton = new JButton("Show Leaderboard");
+
         leaderboardButton.addActionListener(this::onShowLeaderboard);
         leaderboardButton.setBounds(5, 180, 190, 40); // Adjust the size and position as needed
         leaderboardButton.setBackground(backgroundColor);
@@ -395,7 +397,6 @@ public class StartMenu {
     }
 
     private void addImportButton() {
-        JButton importButton = new JButton("Import Sudoku");
         importButton.addActionListener(this::onImportSudoku);
         importButton.setBounds(5, 90, 190, 40); // Set bounds appropriately if needed
         importButton.setBackground(backgroundColor);
@@ -622,33 +623,50 @@ public class StartMenu {
         // Update all relevant components with the new colors
         startButton.setBackground(backgroundColor);
         startButton.setForeground(AccentColor);
+        startButton.setBorder(new LineBorder(AccentColor));
 
         easyButton.setBackground(backgroundColor);
         easyButton.setForeground(AccentColor);
+        easyButton.setBorder(new LineBorder(AccentColor));
 
         mediumButton.setBackground(backgroundColor);
         mediumButton.setForeground(AccentColor);
+        mediumButton.setBorder(new LineBorder(AccentColor));
 
         hardButton.setBackground(backgroundColor);
         hardButton.setForeground(AccentColor);
+        hardButton.setBorder(new LineBorder(AccentColor));
 
         extremeButton.setBackground(backgroundColor);
         extremeButton.setForeground(AccentColor);
+        extremeButton.setBorder(new LineBorder(AccentColor));
 
         gameRuleButton.setBackground(backgroundColor);
         gameRuleButton.setForeground(AccentColor);
+        gameRuleButton.setBorder(new LineBorder(AccentColor));
 
         createGameButton.setBackground(backgroundColor);
         createGameButton.setForeground(AccentColor);
+        createGameButton.setBorder(new LineBorder(AccentColor));
 
         joinGameButton.setBackground(backgroundColor);
         joinGameButton.setForeground(AccentColor);
+        joinGameButton.setBorder(new LineBorder(AccentColor));
+
+        importButton.setBackground(backgroundColor);
+        importButton.setForeground(AccentColor);
+        importButton.setBorder(new LineBorder(AccentColor));
+
+        leaderboardButton.setBackground(backgroundColor);
+        leaderboardButton.setForeground(AccentColor);
+        leaderboardButton.setBorder(new LineBorder(AccentColor));
 
         inputNField.setBackground(backgroundColor);
         inputNField.setForeground(AccentColor);
+        inputNField.setBorder(new LineBorder(AccentColor));
         inputKField.setBackground(backgroundColor);
         inputKField.setForeground(AccentColor);
-
+        inputKField.setBorder(new LineBorder(AccentColor));
 
         // Ensure all panels and components are updated
         startMenuWindowManager.update();

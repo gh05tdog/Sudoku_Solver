@@ -8,11 +8,8 @@ import javax.swing.*;
 public class CustomBoardPanel extends JPanel {
     private int n;
     private int k;
-    private static final Color darkModebackgroundColor = new Color(64, 64, 64);
-    private Color backgroundColor =
-            Config.getDarkMode()
-                    ? darkModebackgroundColor
-                    : Color.WHITE; // Default background color
+    private static final Color darkModeBackgroundColor = new Color(64, 64, 64);
+    private Color backgroundColor = Config.getDarkMode() ? darkModeBackgroundColor : Color.WHITE;
     private static final Color accentColor = new Color(237, 224, 186);
     private Color strokeColor = Config.getDarkMode() ? accentColor : Color.BLACK;
 
@@ -30,6 +27,7 @@ public class CustomBoardPanel extends JPanel {
     // Method to update the background color
     public void updateBackgroundColor(Color newColor) {
         backgroundColor = newColor;
+        setBackground(newColor);
         this.repaint(); // Repaint to show the new background color
     }
 
@@ -55,7 +53,7 @@ public class CustomBoardPanel extends JPanel {
 
         // Only fill the area where the board will be drawn
         g.setColor(backgroundColor);
-        g.fillRect(offset, offset, boardPixelSize, boardPixelSize); // Fill just the board area
+        g.fillRect(0, 0, getWidth(), getHeight()); // Fill the entire panel
 
         if (n > 0 && k > 0) { // Ensure n and k are initialized
             drawBoard(g, offset, offset, cellSize, boardPixelSize); // Pass in the new parameters
