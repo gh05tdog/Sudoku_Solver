@@ -585,7 +585,9 @@ public class SudokuGame {
             restartButton.setEnabled(false);
             windowManager.addProgressBar(opponentProgressBar,2);
             windowManager.addProgressBar(playerProgressBar,3);
-            calculateProgress();
+            playerProgressBar.setValue(calculateProgress());
+            opponentProgressBar.setValue(calculateProgress());
+            sendProgress();
         } else {
             windowManager.setHeart();
         }
