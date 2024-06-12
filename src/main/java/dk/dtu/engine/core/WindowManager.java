@@ -247,4 +247,18 @@ public class WindowManager {
         }
         return hearts;
     }
+
+    public void addProgressBar(JProgressBar progressBar, int yPos) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = yPos; // Position set based on yPos
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 0, 10, 0); // Add some space around the progress bar
+
+        whitePanel.add(progressBar, gbc); // Add to whitePanel to ensure proper layout
+        whitePanel.revalidate();
+        whitePanel.repaint();
+    }
+
 }
