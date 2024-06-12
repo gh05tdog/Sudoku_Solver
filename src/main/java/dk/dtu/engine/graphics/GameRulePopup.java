@@ -6,6 +6,8 @@ import dk.dtu.game.core.Config;
 import dk.dtu.game.core.StartMenu;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import javax.swing.*;
@@ -17,8 +19,11 @@ public class GameRulePopup extends JFrame {
 
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
     private static Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background color
-    private static final Color accentColor = new Color(237, 224, 186);
+    private static final Color lightAccentColor = new Color(237, 224, 186);
+    private static Color accentColor = Config.getDarkMode() ? lightAccentColor : Color.BLACK;
     private final StartMenu startMenu;
+    private final List<JLabel> labels = new ArrayList<>();
+    JTextField livesField = new JTextField(1);
 
     public GameRulePopup(StartMenu startMenu) {
         super("Game Rules");
@@ -49,9 +54,8 @@ public class GameRulePopup extends JFrame {
 
         // Add label
         JLabel label = new JLabel(description);
-        if (Config.getDarkMode()) {
-            label.setForeground(accentColor);
-        }
+        labels.add(label); // Store the label reference
+        label.setForeground(accentColor);
 
         gbc.gridy = getContentPane().getComponentCount();
         gbc.gridx = 0;
@@ -63,6 +67,7 @@ public class GameRulePopup extends JFrame {
             toggleAction.accept(state);
             if (description.equalsIgnoreCase("Dark Mode")) {
                 startMenu.updateColors();
+                update();
             }
         });
         gbc.gridy = getContentPane().getComponentCount();
@@ -115,14 +120,11 @@ public class GameRulePopup extends JFrame {
     }
 
     private JTextField createLivesField() {
-        JTextField livesField = new JTextField(1);
         livesField.setBackground(backgroundColor);
         livesField.setText(String.valueOf(Config.getNumberOfLives()));
         livesField.setPreferredSize(new Dimension(30, 30)); // Make the box a square
 
-        if (Config.getDarkMode()) {
-            livesField.setForeground(accentColor);
-        }
+        livesField.setForeground(accentColor);
 
         // Apply the NumberDocumentFilter to restrict input to one digit only
         ((AbstractDocument) livesField.getDocument()).setDocumentFilter(new NumberDocumentFilter());
@@ -150,5 +152,21 @@ public class GameRulePopup extends JFrame {
         });
 
         return livesField;
+    }
+
+    public void update() {
+        backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE;
+        accentColor = Config.getDarkMode() ? lightAccentColor : Color.BLACK;
+        getContentPane().setBackground(backgroundColor);
+        livesField.setBackground(backgroundColor);
+        livesField.setForeground(accentColor);
+
+        for (JLabel label : labels) {
+            label.setForeground(accentColor);
+            label.setBackground(backgroundColor);
+        }
+
+        revalidate();
+        repaint();
     }
 }
