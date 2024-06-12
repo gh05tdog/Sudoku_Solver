@@ -2,42 +2,48 @@ package dk.dtu.game.core.solver.heuristicsolver;
 
 import dk.dtu.game.core.Board;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class HeuristicSolver {
     static Random random = new Random();
+    static int recursionCount;
 
     public static void main(String[] args) throws Board.BoardNotCreatable {
-        testRuntime(true);
-        testRuntime(false);
-
+        createAndPrintBoard(5, true);
     }
 
-    public static void testRuntime (boolean iterate) throws Board.BoardNotCreatable {
+    public static void testRuntime(int n, boolean iterate) throws Board.BoardNotCreatable {
         long totalTime = 0L;
-        int runs = 100;
+        int runs = 5;
         for (int i = 0; i < runs; i++) {
             Long start = System.currentTimeMillis();
-            Board board = new Board(4, 4);
+            Board board = new Board(n, n);
             int[][][] possiblePlacements = createSetFromBoard(board);
-            fillBoard(possiblePlacements, 4, 4, iterate);
+            recursionCount = 0;
+            fillBoard(possiblePlacements, n, n, iterate, new HashSet<>(), new HashMap<>());
             Long end = System.currentTimeMillis();
             if (i > 0) {
-                totalTime += end-start;
+                totalTime += end - start;
             }
+            System.out.println("Recursion count for run " + (i + 1) + ": " + recursionCount);
         }
-        long avgTime = totalTime/(runs-1);
+        long avgTime = totalTime / (runs - 1);
         System.out.println("Average time: " + avgTime);
     }
 
-    public void createAndPrintBoard
+    public static void createAndPrintBoard(int n, boolean iterate) throws Board.BoardNotCreatable {
+        Board board = new Board(n, n);
+        int[][][] possiblePlacements = createSetFromBoard(board);
+        recursionCount = 0;
+        fillBoard(possiblePlacements, n, n, iterate, new HashSet<>(), new HashMap<>());
+        printBoard(possiblePlacements);
+        System.out.println("Total recursion count: " + recursionCount);
+    }
 
     public static int[][][] createSetFromBoard(Board board) {
         int subGrid = board.getN();
         int gridSize = board.getGameBoard().length / subGrid;
-        int[][] smallBoard = new int[subGrid*gridSize][subGrid*gridSize];
+        int[][] smallBoard = new int[subGrid * gridSize][subGrid * gridSize];
         board.setInitialBoard(smallBoard);
         int boardLength = subGrid * gridSize;
         int numCount = subGrid * subGrid;
@@ -81,11 +87,13 @@ public class HeuristicSolver {
         }
     }
 
-    public static boolean fillBoard(int[][][] arr, int subgrid, int gridSize, boolean iterate) {
+    private static boolean fillBoard(int[][][] arr, int subgrid, int gridSize, boolean iterate, Set<int[]> conflictSet, Map<String, Integer> conflictMap) {
+        recursionCount++;
         int boardLength = subgrid * gridSize;
 
-        if(iterate) {
+        if (iterate) {
             boolean isChanged = true;
+            long startInitialPlacement = System.currentTimeMillis();
 
             // Initial pass to make obvious placements
             while (isChanged) {
@@ -101,26 +109,47 @@ public class HeuristicSolver {
                     }
                 }
             }
+            long endInitialPlacement = System.currentTimeMillis();
+            System.out.println("Initial placement time: " + (endInitialPlacement - startInitialPlacement) + "ms");
         }
+
         if (isFullyFilled(arr)) {
             return true;
         }
 
+        long startMRVTime = System.currentTimeMillis();
         // Find the cell with the minimum remaining values (MRV) and highest degree
-        int[] mrvCell = findMRVAndHighestDegreeCell(arr, subgrid, gridSize);
+        int[] mrvCell = findMRVAndHighestDegreeCell(arr, subgrid, gridSize, conflictMap);
+        long endMRVTime = System.currentTimeMillis();
+        System.out.println("MRV time: " + (endMRVTime - startMRVTime) + "ms");
+
         if (mrvCell == null) {
             return false;
         }
 
         int row = mrvCell[0];
         int col = mrvCell[1];
-        List<Integer> possibleValues = getPossibleValues(arr[row][col]);
+        System.out.println("Selected cell: (" + row + ", " + col + ") with MRV");
+
+        long startLCVTime = System.currentTimeMillis();
+        List<Integer> possibleValues = getLCV(arr, row, col, subgrid, gridSize);
+        Collections.shuffle(possibleValues, random); // Shuffle possible values to introduce randomness
+        long endLCVTime = System.currentTimeMillis();
+        System.out.println("LCV time: " + (endLCVTime - startLCVTime) + "ms");
+
         for (int value : possibleValues) {
+            System.out.println("Trying value: " + value + " for cell: (" + row + ", " + col + ")");
             int[][][] arrCopy = copyBoard(arr); // Make a copy of the board
             arrCopy[row][col][0] = value; // Place the value in the copy
             removePossiblePlacements(arrCopy, row, col, value, subgrid, gridSize);
 
-            if (fillBoard(arrCopy, subgrid, gridSize, iterate)) {
+            // Perform forward checking
+            long startForwardCheckTime = System.currentTimeMillis();
+            boolean consistent = isConsistent(arrCopy, subgrid, gridSize);
+            long endForwardCheckTime = System.currentTimeMillis();
+            System.out.println("Forward checking time: " + (endForwardCheckTime - startForwardCheckTime) + "ms");
+
+            if (consistent && fillBoard(arrCopy, subgrid, gridSize, iterate, conflictSet, conflictMap)) {
                 // If the recursive call returns true, copy the solution back to the original array
                 for (int r = 0; r < arr.length; r++) {
                     for (int c = 0; c < arr[r].length; c++) {
@@ -129,8 +158,24 @@ public class HeuristicSolver {
                 }
                 return true;
             }
+            conflictSet.add(new int[]{row, col});
+            String conflictKey = row + "-" + col + "-" + value;
+            conflictMap.put(conflictKey, conflictMap.getOrDefault(conflictKey, 0) + 1);
         }
         return false; // If no placement leads to a solution, return false for backtracking
+    }
+
+    private static boolean isConsistent(int[][][] arr, int subgrid, int gridSize) {
+        int boardLength = subgrid * gridSize;
+
+        for (int i = 0; i < boardLength; i++) {
+            for (int j = 0; j < boardLength; j++) {
+                if (arr[i][j][0] == 0 && placementCount(arr[i][j]) == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private static int[][][] copyBoard(int[][][] arr) {
@@ -212,7 +257,7 @@ public class HeuristicSolver {
         }
     }
 
-    private static int[] findMRVAndHighestDegreeCell(int[][][] arr, int subgrid, int gridSize) {
+    private static int[] findMRVAndHighestDegreeCell(int[][][] arr, int subgrid, int gridSize, Map<String, Integer> conflictMap) {
         int boardLength = subgrid * gridSize;
         int minCount = Integer.MAX_VALUE;
         int maxDegree = -1;
@@ -229,6 +274,14 @@ public class HeuristicSolver {
                         cell = new int[]{i, j};
                     }
                 }
+            }
+        }
+        if (cell != null) {
+            String conflictKey = cell[0] + "-" + cell[1];
+            if (conflictMap.containsKey(conflictKey)) {
+                conflictMap.put(conflictKey, conflictMap.get(conflictKey) + 1);
+            } else {
+                conflictMap.put(conflictKey, 1);
             }
         }
         return cell;
@@ -260,5 +313,46 @@ public class HeuristicSolver {
         }
 
         return degree;
+    }
+
+    private static List<Integer> getLCV(int[][][] arr, int row, int col, int subgrid, int gridSize) {
+        List<Integer> possibleValues = getPossibleValues(arr[row][col]);
+        Collections.shuffle(possibleValues, random); // Shuffle to introduce randomness
+        possibleValues.sort((a, b) -> {
+            return countConstraints(arr, row, col, a, subgrid, gridSize) - countConstraints(arr, row, col, b, subgrid, gridSize);
+        });
+        return possibleValues;
+    }
+
+    private static int countConstraints(int[][][] arr, int row, int col, int value, int subgrid, int gridSize) {
+        int boardLength = subgrid * gridSize;
+        int constraints = 0;
+
+        // Count constraints in the row
+        for (int j = 0; j < boardLength; j++) {
+            if (arr[row][j][0] == 0 && arr[row][j][value] == 1) {
+                constraints++;
+            }
+        }
+
+        // Count constraints in the column
+        for (int i = 0; i < boardLength; i++) {
+            if (arr[i][col][0] == 0 && arr[i][col][value] == 1) {
+                constraints++;
+            }
+        }
+
+        // Count constraints in the subgrid
+        int startRow = (row / subgrid) * subgrid;
+        int startCol = (col / subgrid) * subgrid;
+        for (int i = startRow; i < startRow + subgrid; i++) {
+            for (int j = startCol; j < startCol + subgrid; j++) {
+                if (arr[i][j][0] == 0 && arr[i][j][value] == 1) {
+                    constraints++;
+                }
+            }
+        }
+
+        return constraints;
     }
 }
