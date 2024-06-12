@@ -46,7 +46,7 @@ public class WindowManager {
         buttonPanel.setBackground(backgroundColor);
 
         GridBagConstraints buttonConstraints = new GridBagConstraints();
-        buttonConstraints.insets = new Insets(10, 0, 10, 0); // Add padding
+        buttonConstraints.insets = new Insets(10, 70, 10, 0); // Add padding
 
         whitePanel.setBackground(backgroundColor);
         whitePanel.setLayout(new GridBagLayout()); // GridBagLayout to center the board
@@ -83,7 +83,7 @@ public class WindowManager {
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.NORTHWEST;
-            gbc.insets = new Insets(10, 10, 10, 10);
+            gbc.insets = new Insets(10, 70, 10, 10);
             whitePanel.add(heartsPanel, gbc);
         } catch (NullPointerException ignored) {
         }
@@ -175,21 +175,6 @@ public class WindowManager {
         buttonPanel.repaint();
     }
 
-    public void addGoBackButton(JButton goBackButton) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx =
-                1; // You might need to adjust this depending on how many columns your layout has
-        gbc.gridy = 0; // Top row
-        gbc.weightx = 1.0; // Take up space horizontally
-        gbc.weighty = 0; // No vertical expansion
-        gbc.anchor = GridBagConstraints.NORTHEAST; // Anchor the button to the northeast corner
-        gbc.insets = new Insets(10, 10, 10, 10); // Add some padding
-
-        mainPanel.add(goBackButton, gbc);
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
-
     public void drawBoard(Component board) {
         // This method is used to add the Sudoku board itself, centered in the boardPanel
         GridBagConstraints gbc = new GridBagConstraints();
@@ -198,41 +183,69 @@ public class WindowManager {
         gbc.weightx = 0.5; // Give column some weight so the component will be centered
         gbc.weighty = 1; // Give row some weight so the component will be centered
         gbc.fill = GridBagConstraints.BOTH; // Let component fill its display area
+        gbc.insets = new Insets(0, 70, 0, 30); // Add padding from the left (100 pixels)
 
         whitePanel.add(board, gbc);
         whitePanel.revalidate();
         whitePanel.repaint();
     }
 
-    public void layoutComponents(TimerFunction timer, Component numberHub) {
-        JPanel combinedPanel = setupNumberAndTimerPanel(timer, numberHub);
+    public void layoutComponents(TimerFunction timer, Component numberHub, JButton goBackButton) {
+        JPanel combinedPanel = setupNumberAndTimerPanel(timer, numberHub, goBackButton);
 
-        // Layout the combined panel with the number hub and timer
+        // Layout the combined panel with the number hub, timer, and go back button
         GridBagConstraints gbcPanel = new GridBagConstraints();
         gbcPanel.gridx = 1;
         gbcPanel.gridy = 0;
         gbcPanel.fill = GridBagConstraints.NORTH; // Align to the top of the space
         gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
+
+
         mainPanel.add(combinedPanel, gbcPanel);
+
+
 
         frame.setVisible(true);
     }
 
-    public JPanel setupNumberAndTimerPanel(TimerFunction timer, Component numberHub) {
-
+    public JPanel setupNumberAndTimerPanel(TimerFunction timer, Component numberHub, JButton goBackButton) {
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
         combinedPanel.setBackground(backgroundColor);
         combinedPanel.setOpaque(false);
+
+        // Add vertical glue to push the components towards the center vertically
+        combinedPanel.add(Box.createVerticalGlue());
+
+        // Create a wrapper panel to center the numberHub with padding
+        JPanel numberHubWrapper = new JPanel();
+        numberHubWrapper.setLayout(new BoxLayout(numberHubWrapper, BoxLayout.X_AXIS));
+        numberHubWrapper.setBackground(backgroundColor);
+        numberHubWrapper.setOpaque(false);
+        numberHubWrapper.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0)); // Add 10 pixels padding to the left
+        numberHubWrapper.add(Box.createHorizontalGlue());
+        numberHubWrapper.add(numberHub);
+        numberHubWrapper.add(Box.createHorizontalGlue());
 
         timer.setAlignmentX(Component.CENTER_ALIGNMENT);
         timer.setVisibility(Config.getEnableTimer());
         combinedPanel.add(timer);
         combinedPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
 
-        combinedPanel.add(numberHub);
+        combinedPanel.add(numberHubWrapper);
+
+        combinedPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Space between number hub and go back button
+
+        goBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        combinedPanel.add(goBackButton);
+
+        // Add vertical glue to push the components towards the center vertically
+        combinedPanel.add(Box.createVerticalGlue());
 
         return combinedPanel;
     }
+
+
+
 
     public void updateBoard() {
         System.out.println(Config.getDarkMode());
@@ -253,6 +266,7 @@ public class WindowManager {
         heartsPanel.revalidate();
         heartsPanel.repaint();
     }
+
     public void display() {
         frame.setVisible(true);
     }
@@ -283,5 +297,4 @@ public class WindowManager {
         whitePanel.revalidate();
         whitePanel.repaint();
     }
-
 }

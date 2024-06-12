@@ -58,6 +58,7 @@ public class SudokuGame {
     private JButton newGameButton;
     private JButton eraseButton;
     private JButton solveButton;
+    JButton goBackButton = createButton("Go Back", 30);
     private boolean usedSolveButton = false;
     private PrintWriter networkOut;
     private boolean isCustomBoard = false;
@@ -563,8 +564,8 @@ public class SudokuGame {
 
         displayButtons();
         windowManager.drawBoard(board);
-        windowManager.setupNumberAndTimerPanel(timer, numbers);
-        windowManager.layoutComponents(timer, numbers);
+        windowManager.setupNumberAndTimerPanel(timer, numbers, goBackButton);
+        windowManager.layoutComponents(timer, numbers, goBackButton);
         startGame();
         if (Config.getEnableKillerSudoku()) {
             generateKillerSudokuCages();
@@ -577,8 +578,8 @@ public class SudokuGame {
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
         windowManager.drawBoard(board);
-        windowManager.setupNumberAndTimerPanel(timer, numbers);
-        windowManager.layoutComponents(timer, numbers);
+        windowManager.setupNumberAndTimerPanel(timer, numbers, goBackButton);
+        windowManager.layoutComponents(timer, numbers, goBackButton);
         gameboard.setInitialBoard(customBoard);
         gameboard.setGameBoard(deepCopyBoard(customBoard));
 
@@ -875,7 +876,7 @@ public class SudokuGame {
         eraseButton = createButton("Erase", 30);
         undoButton = createButton("Undo", 300);
         hintButton = createButton("Hint", 30);
-        JButton goBackButton = createButton("Go Back", 30);
+
 
         solveButton.setEnabled(false);
 
@@ -1029,7 +1030,7 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(noteButton);
 
-        windowManager.addGoBackButton(goBackButton);
+        //windowManager.addGoBackButton(goBackButton);
     }
 
     private void setInitialBoardColor() {
