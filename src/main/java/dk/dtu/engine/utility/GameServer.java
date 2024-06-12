@@ -1,4 +1,3 @@
-/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import dk.dtu.game.core.Board;
@@ -7,8 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,16 +16,18 @@ import org.slf4j.LoggerFactory;
 
 public class GameServer {
     private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
-    private static final int PORT = 12345;
+    private static final int PORT = 12345; // Changed port number
     private final ExecutorService threadPool = Executors.newFixedThreadPool(4);
     public final ConcurrentHashMap<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>();
     private final Object lock = new Object();
     private int connectedPlayers = 0;
     public ServerSocket serverSocket;
     private boolean running = true;
+    private SSDPServer ssdpServer;
 
     public void start() {
         startServerSocket();
+        startSSDPServer();
         acceptClients();
     }
 
@@ -36,6 +37,16 @@ public class GameServer {
             System.out.println("Server started on port " + serverSocket.getLocalPort());
         } catch (IOException e) {
             System.out.println("Error starting server: " + e.getMessage());
+        }
+    }
+
+    private void startSSDPServer() {
+        try {
+            String localIp = getLocalIpAddress();
+            ssdpServer = new SSDPServer(localIp, PORT);
+            ssdpServer.start();
+        } catch (IOException e) {
+            logger.error("Error starting SSDP server: {}", e.getMessage());
         }
     }
 
@@ -166,5 +177,20 @@ public class GameServer {
             broadcastMessage("WINNER " + winner);
             broadcastMessage("COMPLETED " + winner);
         }
+    }
+
+    private String getLocalIpAddress() throws SocketException {
+        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+        while (interfaces.hasMoreElements()) {
+            NetworkInterface networkInterface = interfaces.nextElement();
+            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress address = addresses.nextElement();
+                if (!address.isLoopbackAddress() && address instanceof Inet4Address) {
+                    return address.getHostAddress();
+                }
+            }
+        }
+        throw new SocketException("No non-loopback IPv4 address found.");
     }
 }
