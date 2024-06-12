@@ -6,6 +6,7 @@ import dk.dtu.engine.utility.DatabaseSetup;
 import dk.dtu.game.core.StartMenu;
 
 import javax.swing.*;
+import java.util.Objects;
 
 class SudokuSolverApp {
 
@@ -13,8 +14,10 @@ class SudokuSolverApp {
 
         // Generate the database
         DatabaseSetup.setup("jdbc:sqlite:sudoku.db");
-
-        StartMenuWindowManager startMenu = new StartMenuWindowManager(new JFrame(), 1000, 1000);
+        JFrame frame = new JFrame();
+        ImageIcon img = new ImageIcon(Objects.requireNonNull(SudokuSolverApp.class.getResource("/logo.png")));
+        frame.setIconImage(img.getImage());
+        StartMenuWindowManager startMenu = new StartMenuWindowManager(frame, 1000, 1000);
         StartMenu startMenu1 = new StartMenu(startMenu);
         startMenu1.initialize();
     }
