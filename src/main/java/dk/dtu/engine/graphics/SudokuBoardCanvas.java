@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class SudokuBoardCanvas extends JPanel {
     private final int gridSize;
+    private final int subgridSize;
     private final int cellSize;
     private final int nSize;
     private final Cell[][] cells;
@@ -27,6 +28,7 @@ public class SudokuBoardCanvas extends JPanel {
 
     public SudokuBoardCanvas(int n, int k, int cellSize) {
         this.gridSize = n * k;
+        this.subgridSize = n;
         this.cellSize = cellSize;
         this.nSize = n;
         cells = new Cell[gridSize][gridSize];
@@ -284,8 +286,7 @@ public class SudokuBoardCanvas extends JPanel {
                     }
 
                     // Mark entire subgrid as unPlaceable
-                    int subgridSize =
-                            (int) Math.sqrt(gridSize); // Assuming a standard square Sudoku board
+
                     int startRow = (row / subgridSize) * subgridSize;
                     int startCol = (col / subgridSize) * subgridSize;
                     for (int i = startRow; i < startRow + subgridSize; i++) {
