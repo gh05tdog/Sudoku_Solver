@@ -13,7 +13,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,21 +128,33 @@ public class StartMenu {
     }
 
     private void onCreateGame(ActionEvent e) {
-        createGameButton.setEnabled(false);
         joinGameButton.setEnabled(false);
+        createGameButton.setEnabled(false);
 
-        // Start the server in a separate thread
-        new Thread(
-                        () -> {
-                            GameServer server = new GameServer();
-                            server.start();
-                        })
-                .start();
+        // Start the server in a new thread
+        new Thread(() -> {
+            GameServer server = new GameServer();
+            server.start();
+        }).start();
 
-        // Allow some time for the server to start before connecting the client
-        Timer time = new Timer(1000, event -> connectClient("localhost"));
-        time.setRepeats(false);
-        time.start();
+        try {
+            // Get the local IP address of the server
+            String localIpAddress = InetAddress.getLocalHost().getHostAddress();
+            System.out.println("Server started on IP: " + localIpAddress);
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Server started on IP: " + localIpAddress + ". Waiting for clients to join.",
+                    "Server Started",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (UnknownHostException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Failed to determine the server's IP address.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void onJoinGame(ActionEvent e) {
@@ -148,7 +162,7 @@ public class StartMenu {
         createGameButton.setEnabled(false);
 
         // Create a GameClient to discover servers
-        GameClient client = new GameClient(null, null);
+        GameClient client = new GameClient();
         client.discoverServers();
 
         // Wait for a short time to allow server discovery
@@ -162,8 +176,8 @@ public class StartMenu {
         if (!discoveredServers.isEmpty()) {
             String serverAddress = discoveredServers.get(0); // Get the first discovered server
             // Test the connection
-            client = new GameClient(serverAddress, null);
-            if (client.testGameConnection()) {
+            client = new GameClient();
+            if (client.testGameConnection(serverAddress)) {
                 connectClient(serverAddress);
             } else {
                 JOptionPane.showMessageDialog(
@@ -190,9 +204,9 @@ public class StartMenu {
                 () -> {
                     WindowManager windowManager =
                             new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
-                    GameClient client = new GameClient(serverAddress, windowManager);
+                    GameClient client = new GameClient();
                     try {
-                        client.start();
+                        client.start(serverAddress);
                     } catch (IOException | Board.BoardNotCreatable ex) {
                         throw new RuntimeException(ex);
                     }
