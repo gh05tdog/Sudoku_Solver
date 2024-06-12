@@ -559,6 +559,7 @@ public class SudokuGame {
         isNetworkGame = false;
 
         newGameButton.setText("Replay");
+        board.requestFocusInWindow();
     }
 
     public void newGame() {
@@ -1011,6 +1012,7 @@ public class SudokuGame {
         newGame();
         displayNumbersVisually();
         setInitialBoardColor();
+        board.requestFocusInWindow();
         gameIsStarted = true;
         board.requestFocusInWindow();
         solveButton.setEnabled(true);
