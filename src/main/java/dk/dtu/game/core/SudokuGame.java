@@ -62,7 +62,8 @@ public class SudokuGame {
     private boolean isNetworkGame = false;
 
     private static final Color darkbackgroundColor = new Color(64, 64, 64);
-    private static final Color accentColor = new Color(237, 224, 186);
+    private static Color accentColor = new Color(237, 224, 186);
+    private static final Color lightaccentColor = new Color(237, 224, 186);
     private static final Color initialColor = new Color(159, 148, 102);
     private static Color backgroundColor;
 
@@ -70,6 +71,7 @@ public class SudokuGame {
             throws Board.BoardNotCreatable {
         this.windowManager = windowManager;
         backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
+        accentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
         try {
             gameboard = new Board(n, k);
         } catch (Board.BoardNotCreatable e) {
@@ -665,26 +667,25 @@ public class SudokuGame {
         goBackButton.setBackground(backgroundColor);
         noteButton.setBackground(backgroundColor);
 
-        if (Config.getDarkMode()) {
-            int padding = 5; // Adjust the padding as desired
+        int padding = 5; // Adjust the padding as desired
 
-            restartButton.setForeground(accentColor);
-            restartButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
-            solveButton.setForeground(accentColor);
-            solveButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
-            newGameButton.setForeground(accentColor);
-            newGameButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
-            eraseButton.setForeground(accentColor);
-            eraseButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
-            undoButton.setForeground(accentColor);
-            undoButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
-            hintButton.setForeground(accentColor);
-            hintButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
-            goBackButton.setForeground(accentColor);
-            goBackButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
-            noteButton.setForeground(accentColor);
-            noteButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
-        }
+        restartButton.setForeground(accentColor);
+        restartButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        solveButton.setForeground(accentColor);
+        solveButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        newGameButton.setForeground(accentColor);
+        newGameButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        eraseButton.setForeground(accentColor);
+        eraseButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        undoButton.setForeground(accentColor);
+        undoButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        hintButton.setForeground(accentColor);
+        hintButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        goBackButton.setForeground(accentColor);
+        goBackButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        noteButton.setForeground(accentColor);
+        noteButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+
 
         restartButton.addActionListener(
                 e -> {
@@ -744,6 +745,13 @@ public class SudokuGame {
                     provideHint();
                 });
         noteButton.addActionListener(e -> board.requestFocusInWindow());
+        UIManager.put("OptionPane.background", backgroundColor);
+        UIManager.put("Panel.background", backgroundColor);
+        UIManager.put("Button.background", backgroundColor);
+        UIManager.put("Button.foreground", accentColor);
+        UIManager.put("OptionPane.messageForeground", accentColor);
+        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.BOLD, 12));
+        UIManager.put("Button.border", BorderFactory.createEmptyBorder(5, 15, 5, 15));
         goBackButton.addActionListener(
                 e -> {
                     // Make a popup to ask if they want to go back

@@ -57,13 +57,15 @@ public class StartMenu {
     private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
 
     private static final Color darkbackgroundColor = new Color(64, 64, 64);
-    private static Color accentColor = new Color(237, 224, 186);
+    private static final Color lightaccentColor = new Color(237, 224, 186);
+    private static Color AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
     private static Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
 
 
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
         this.startMenuWindowManager = startMenuWindowManager;
         backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
+        AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
         startMenuWindowManager.display();
 
     }
@@ -132,12 +134,12 @@ public class StartMenu {
         joinGameButton.setFocusPainted(false);
         joinGameButton.addActionListener(this::onJoinGame);
 
-        if(Config.getDarkMode()){
-            createGameButton.setBorder(new LineBorder(accentColor));
-            createGameButton.setForeground(accentColor);
-            joinGameButton.setBorder(new LineBorder(accentColor));
-            joinGameButton.setForeground(accentColor);
-        }
+
+        createGameButton.setBorder(new LineBorder(AccentColor));
+        createGameButton.setForeground(AccentColor);
+        joinGameButton.setBorder(new LineBorder(AccentColor));
+        joinGameButton.setForeground(AccentColor);
+
 
         startMenuWindowManager.addComponent(
                 createGameButton, startMenuWindowManager.getButtonPanel());
@@ -207,10 +209,10 @@ public class StartMenu {
         leaderboardButton.setBounds(5, 180, 190, 40); // Adjust the size and position as needed
         leaderboardButton.setBackground(backgroundColor);
         leaderboardButton.setFocusPainted(false);
-        if(Config.getDarkMode()){
-            leaderboardButton.setBorder(new LineBorder(accentColor));
-            leaderboardButton.setForeground(accentColor);
-        }
+
+            leaderboardButton.setBorder(new LineBorder(AccentColor));
+            leaderboardButton.setForeground(AccentColor);
+
         startMenuWindowManager.addComponent(
                 leaderboardButton, startMenuWindowManager.getButtonPanel());
     }
@@ -331,10 +333,10 @@ public class StartMenu {
                     });
 
             field.setBounds(i == 0 ? 5 : 85, 5, 50, 40);
-            if(Config.getDarkMode()){
-                field.setBorder(new LineBorder(accentColor));
-                field.setForeground(accentColor);
-            }
+
+                field.setBorder(new LineBorder(AccentColor));
+                field.setForeground(AccentColor);
+
             startMenuWindowManager.addComponent(field, startMenuWindowManager.getInputPanel());
         }
     }
@@ -344,10 +346,10 @@ public class StartMenu {
         gameRuleButton.setBackground(backgroundColor);
         gameRuleButton.setFocusPainted(false);
 
-        if(Config.getDarkMode()){
-            gameRuleButton.setBorder(new LineBorder(accentColor));
-            gameRuleButton.setForeground(accentColor);
-        }
+
+            gameRuleButton.setBorder(new LineBorder(AccentColor));
+            gameRuleButton.setForeground(AccentColor);
+
         startMenuWindowManager.addComponent(
                 gameRuleButton, startMenuWindowManager.getGameRulePanel());
 
@@ -363,7 +365,7 @@ public class StartMenu {
                             "Enable easy mode",
                             Config.getEnableEasyMode(),
                             Config::setEnableEasyMode);
-                    gameRules.addJSwitchBox("Dark Mode",Config.getDarkMode(), Config::setDarkMode);
+                    gameRules.addJSwitchBox("Dark Mode", Config.getDarkMode(), Config::setDarkMode);
 
                 });
     }
@@ -389,10 +391,10 @@ public class StartMenu {
                     }
                 });
 
-        if(Config.getDarkMode()) {
-            startButton.setBorder(new LineBorder(accentColor));
-            startButton.setForeground(accentColor);
-        }
+
+            startButton.setBorder(new LineBorder(AccentColor));
+            startButton.setForeground(AccentColor);
+
         startMenuWindowManager.addComponent(startButton, startMenuWindowManager.getButtonPanel());
     }
 
@@ -402,10 +404,10 @@ public class StartMenu {
         importButton.setBounds(5, 90, 190, 40); // Set bounds appropriately if needed
         importButton.setBackground(backgroundColor);
         importButton.setFocusPainted(false);
-        if(Config.getDarkMode()){
-            importButton.setBorder(new LineBorder(accentColor));
-            importButton.setForeground(accentColor);
-        }
+
+            importButton.setBorder(new LineBorder(AccentColor));
+            importButton.setForeground(AccentColor);
+
         startMenuWindowManager.addComponent(importButton, startMenuWindowManager.getButtonPanel());
     }
 
@@ -485,7 +487,7 @@ public class StartMenu {
         try {
 
             GameEngine gameEngine = new GameEngine(
-                            windowManager, Config.getN(), Config.getK(), Config.getCellSize());
+                    windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
             windowManager.updateBoard();
             gameEngine.startCustom(board); // Pass the custom board to the game engine
@@ -553,16 +555,16 @@ public class StartMenu {
         hardButton.setFocusPainted(false);
         extremeButton.setFocusPainted(false);
 
-        if(Config.getDarkMode()){
-            easyButton.setBorder(new LineBorder(accentColor));
-            easyButton.setForeground(accentColor);
-            mediumButton.setForeground(accentColor);
-            mediumButton.setBorder(new LineBorder(accentColor));
-            hardButton.setBorder(new LineBorder(accentColor));
-            hardButton.setForeground(accentColor);
-            extremeButton.setBorder(new LineBorder(accentColor));
-            extremeButton.setForeground(accentColor);
-        }
+
+            easyButton.setBorder(new LineBorder(AccentColor));
+            easyButton.setForeground(AccentColor);
+            mediumButton.setForeground(AccentColor);
+            mediumButton.setBorder(new LineBorder(AccentColor));
+            hardButton.setBorder(new LineBorder(AccentColor));
+            hardButton.setForeground(AccentColor);
+            extremeButton.setBorder(new LineBorder(AccentColor));
+            extremeButton.setForeground(AccentColor);
+
 
         easyButton.addItemListener(
                 e -> {
@@ -617,7 +619,7 @@ public class StartMenu {
                 extremeButton, startMenuWindowManager.getDifficultyPanel());
     }
 
-    public void update(){
+    public void update() {
         startMenuWindowManager.getFrame().revalidate();
         startMenuWindowManager.getFrame().repaint();
     }
