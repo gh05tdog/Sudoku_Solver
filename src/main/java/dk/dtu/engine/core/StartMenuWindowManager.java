@@ -4,6 +4,11 @@ package dk.dtu.engine.core;
 import java.awt.*;
 import javax.swing.*;
 
+/**
+ * The StartMenuWindowManager class is responsible for managing the start menu window.
+ * It sets up the window and adds components to it.
+ */
+
 public class StartMenuWindowManager {
     private final JFrame frame;
     private final JPanel buttonPanel = new JPanel(null); // Panel for buttons
@@ -48,6 +53,8 @@ public class StartMenuWindowManager {
         gameRulePanel.setBounds(50, 50, 200, 50);
         gameRulePanel.setBackground(Color.WHITE);
 
+
+        // Add the panels to the main panel
         mainPanel.add(buttonPanel);
         mainPanel.add(sizePanel);
         mainPanel.add(difficultyPanel);

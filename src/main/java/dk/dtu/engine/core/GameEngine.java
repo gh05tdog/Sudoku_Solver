@@ -5,6 +5,12 @@ import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.SudokuGame;
 
+
+/**
+ * The GameEngine class is responsible for running the game loop. It updates the game logic and
+ * renders the game at a fixed rate. The game loop is run in a separate thread to avoid blocking the
+ * main thread.
+ */
 public class GameEngine implements Runnable {
     private final WindowManager windowManager;
     private SudokuGame sudokuGame;
@@ -61,6 +67,8 @@ public class GameEngine implements Runnable {
         sudokuGame.initialize(this.n, this.k, this.cellSize); // Initialize game-specific components
     }
 
+
+    // Start the game loop
     public void start() {
         if (running) return;
         running = true;
@@ -69,6 +77,7 @@ public class GameEngine implements Runnable {
         gameThread.start();
     }
 
+    // Stop the game loop for the custom board
     public void startCustom(int[][] customBoard) throws Board.BoardNotCreatable {
         if (running) return;
         running = true;

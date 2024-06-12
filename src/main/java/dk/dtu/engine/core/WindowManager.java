@@ -10,6 +10,11 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+
+/**
+ * The WindowManager class is responsible for managing the game window.
+ * It sets up the window and adds components to it.
+ */
 public class WindowManager {
     private final JFrame frame;
     private final JPanel mainPanel =
@@ -91,15 +96,13 @@ public class WindowManager {
                 emptyHeartImage =
                         ImageIO.read(
                                 Objects.requireNonNull(
-                                        getClass().getResource("/pixil-frame-0.png")));
+                                        getClass().getResource("/pixel-frame-0.png")));
                 Image scaledEmptyHeartImage =
                         emptyHeartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                 emptyHeartIcon = new ImageIcon(scaledEmptyHeartImage);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            System.out.println("Image not found, check the path."); // Debug message
+        } catch (IOException | NullPointerException e) {
+            System.out.println("Image not found, check the path.");
         }
 
         // Find the last "full" heart label and update its icon directly
@@ -135,10 +138,8 @@ public class WindowManager {
                 heartIcon = new ImageIcon(scaledHeartImage);
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            System.out.println("Image not found, check the path."); // Debug message
+        } catch (IOException | NullPointerException e) {
+            System.out.println("Image not found, check the path.");
         }
 
         for (int i = 0; i < heartsPanel.getComponentCount(); i++) {
@@ -165,7 +166,6 @@ public class WindowManager {
     }
 
     public void addComponentToButtonPanel(Component component) {
-        // Adds a component (like a button) to the button panel
         buttonPanel.add(component);
         buttonPanel.revalidate();
         buttonPanel.repaint();
@@ -214,6 +214,8 @@ public class WindowManager {
         frame.setVisible(true);
     }
 
+
+    // This method is used to set up the panel that contains the number hub and timer
     public JPanel setupNumberAndTimerPanel(TimerFunction timer, Component numberHub) {
         JPanel combinedPanel = new JPanel();
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
@@ -229,11 +231,6 @@ public class WindowManager {
         combinedPanel.add(numberHub);
 
         return combinedPanel;
-    }
-
-    public void updateBoard() {
-        whitePanel.revalidate();
-        whitePanel.repaint();
     }
 
     public void display() {
