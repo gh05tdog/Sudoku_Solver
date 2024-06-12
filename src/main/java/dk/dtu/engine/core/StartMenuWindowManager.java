@@ -27,13 +27,13 @@ public class StartMenuWindowManager {
         difficultyPanel.setOpaque(true);
         inputPanel.setOpaque(true);
 
-        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setBackground(backgroundColor);
 
         sizePanel.setBounds(50, (frame.getHeight() / 2) - 150, 650, 160);
-        sizePanel.setBackground(Color.WHITE);
+        sizePanel.setBackground(backgroundColor);
 
         difficultyPanel.setBounds(50, (frame.getHeight() / 2) + 50, 650, 50);
-        difficultyPanel.setBackground(Color.WHITE);
+        difficultyPanel.setBackground(backgroundColor);
 
         buttonPanel.setBounds(
                 (frame.getWidth()) - 250,
@@ -41,13 +41,13 @@ public class StartMenuWindowManager {
                 200,
                 difficultyPanel.getHeight() + sizePanel.getHeight() + 300);
 
-        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBackground(backgroundColor);
 
         inputPanel.setBounds(525, (frame.getHeight() / 2) - 205, 140, 50);
-        inputPanel.setBackground(Color.WHITE);
+        inputPanel.setBackground(backgroundColor);
 
         gameRulePanel.setBounds(50, 50, 200, 50);
-        gameRulePanel.setBackground(Color.WHITE);
+        gameRulePanel.setBackground(backgroundColor);
 
         mainPanel.add(buttonPanel);
         mainPanel.add(sizePanel);
