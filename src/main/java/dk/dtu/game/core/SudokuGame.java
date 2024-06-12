@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SudokuGame {
-    private static final Logger logger = LoggerFactory.getLogger(SudokuGame.class);
+    private final Logger logger = LoggerFactory.getLogger(SudokuGame.class);
     public final Board gameboard;
     public final Deque<Move> moveList = new ArrayDeque<>();
     public final List<Move> wrongMoveList = new ArrayList<>();
