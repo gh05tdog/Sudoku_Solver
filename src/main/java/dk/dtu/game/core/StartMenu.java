@@ -77,7 +77,7 @@ public class StartMenu {
         int k = Config.getK();
         int cellSize = Config.getCellSize();
         WindowManager windowManager =
-                new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
+                new WindowManager(startMenuWindowManager.getFrame(), 1000, 850);
         try {
             GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
             windowManager.updateBoard();
