@@ -55,6 +55,8 @@ public class StartMenu {
     private final ButtonGroup difficultyGroup = new ButtonGroup();
     private final CustomComponentGroup sizeGroup = new CustomComponentGroup();
     private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
+    private JProgressBar progressBar;
+    private JDialog progressDialog;
 
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
         this.startMenuWindowManager = startMenuWindowManager;
@@ -111,6 +113,17 @@ public class StartMenu {
 
         addChangeListenerToField(inputNField);
         addChangeListenerToField(inputKField);
+        setupProgressDialog();
+    }
+
+    private void setupProgressDialog() {
+        progressDialog = new JDialog((Frame) null, "Loading", true);
+        progressDialog.setSize(300, 75);
+        progressDialog.setLocationRelativeTo(null);
+
+        progressBar = new JProgressBar(0, 100);
+        progressBar.setIndeterminate(true);
+        progressDialog.add(progressBar, BorderLayout.CENTER);
     }
 
     private void addNetworkGameButtons() {
@@ -363,11 +376,25 @@ public class StartMenu {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
                         startButton.setBackground(Color.GRAY);
 
-                        try {
-                            startGame();
-                        } catch (Board.BoardNotCreatable ex) {
-                            logger.error("This board-type is not creatable: {}", ex.getMessage());
-                        }
+                        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+                            @Override
+                            protected Void doInBackground() {
+                                try {
+                                    startGame();
+                                } catch (Board.BoardNotCreatable ex) {
+                                    logger.error("This board-type is not creatable: {}", ex.getMessage());
+                                }
+                                return null;
+                            }
+
+                            @Override
+                            protected void done() {
+                                progressDialog.dispose();
+                            }
+                        };
+
+                        SwingUtilities.invokeLater(() -> progressDialog.setVisible(true)); // Show the loading bar in a non-blocking way
+                        worker.execute();
 
                     } else {
                         startButton.setBackground(Color.WHITE);
@@ -375,6 +402,7 @@ public class StartMenu {
                 });
         startMenuWindowManager.addComponent(startButton, startMenuWindowManager.getButtonPanel());
     }
+
 
     private void addImportButton() {
         JButton importButton = new JButton("Import Sudoku");
