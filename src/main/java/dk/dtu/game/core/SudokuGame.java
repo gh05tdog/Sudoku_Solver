@@ -405,6 +405,8 @@ public class SudokuGame {
         solveButton.setEnabled(true);
 
         if (isNetworkGame) {
+            timer.setVisibility(true);
+            timer.start();
             solveButton.setEnabled(false);
             hintButton.setEnabled(false);
             newGameButton.setEnabled(false);

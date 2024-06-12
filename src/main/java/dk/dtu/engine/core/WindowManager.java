@@ -3,6 +3,7 @@ package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.Config;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -22,6 +23,8 @@ public class WindowManager {
     ImageIcon emptyHeartIcon = null;
     BufferedImage heartImage = null;
     ImageIcon heartIcon = null;
+    JPanel combinedPanel = new JPanel();
+    private boolean[] heartStates; // true if the heart is full, false if empty
 
     public WindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
@@ -56,8 +59,6 @@ public class WindowManager {
         this.frame.setContentPane(mainPanel); // Add the main panel to the frame
         addHeartLabels();
     }
-
-    private boolean[] heartStates; // true if the heart is full, false if empty
 
     private void addHeartLabels() {
         heartStates = new boolean[Config.getNumberOfLives()]; // Assuming 5 hearts as maximum
@@ -97,7 +98,7 @@ public class WindowManager {
                 emptyHeartIcon = new ImageIcon(scaledEmptyHeartImage);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } catch (NullPointerException e) {
             System.out.println("Image not found, check the path."); // Debug message
         }
@@ -136,7 +137,7 @@ public class WindowManager {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } catch (NullPointerException e) {
             System.out.println("Image not found, check the path."); // Debug message
         }
@@ -215,25 +216,18 @@ public class WindowManager {
     }
 
     public JPanel setupNumberAndTimerPanel(TimerFunction timer, Component numberHub) {
-        JPanel combinedPanel = new JPanel();
+
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
         combinedPanel.setOpaque(false);
 
         timer.setAlignmentX(Component.CENTER_ALIGNMENT);
-        if (Config.getEnableTimer()) {
-            combinedPanel.add(timer);
-        }
-        combinedPanel.add(
-                Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
+        timer.setVisibility(Config.getEnableTimer());
+        combinedPanel.add(timer);
+        combinedPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
 
         combinedPanel.add(numberHub);
 
         return combinedPanel;
-    }
-
-    public void updateBoard() {
-        whitePanel.revalidate();
-        whitePanel.repaint();
     }
 
     public void display() {
