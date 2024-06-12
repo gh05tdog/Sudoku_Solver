@@ -23,6 +23,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.prefs.Preferences;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +61,15 @@ public class SudokuGame {
     private boolean isCustomBoard = false;
     private boolean isNetworkGame = false;
 
+    private static final Color darkbackgroundColor = new Color(64, 64, 64);
+    private static final Color accentColor = new Color(237, 224, 186);
+    private static final Color initialColor = new Color(159, 148, 102);
+    private static Color backgroundColor;
+
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
         this.windowManager = windowManager;
+        backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
         try {
             gameboard = new Board(n, k);
         } catch (Board.BoardNotCreatable e) {
@@ -356,6 +364,8 @@ public class SudokuGame {
 
         numbers = new NumberHub(n, 40) {
         };
+        getNumbersBoard().update();
+        board.update();
 
         numbers.setLocation(50, 50);
         numbers.setFocusable(true);
@@ -369,6 +379,7 @@ public class SudokuGame {
 
 
     public void initialize(int n, int k, int cellSize) {
+
         createBoard(n, k, cellSize);
         displayButtons();
         windowManager.drawBoard(board);
@@ -645,6 +656,36 @@ public class SudokuGame {
 
         solveButton.setEnabled(false);
 
+        restartButton.setBackground(backgroundColor);
+        solveButton.setBackground(backgroundColor);
+        newGameButton.setBackground(backgroundColor);
+        eraseButton.setBackground(backgroundColor);
+        undoButton.setBackground(backgroundColor);
+        hintButton.setBackground(backgroundColor);
+        goBackButton.setBackground(backgroundColor);
+        noteButton.setBackground(backgroundColor);
+
+        if (Config.getDarkMode()) {
+            int padding = 5; // Adjust the padding as desired
+
+            restartButton.setForeground(accentColor);
+            restartButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+            solveButton.setForeground(accentColor);
+            solveButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+            newGameButton.setForeground(accentColor);
+            newGameButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+            eraseButton.setForeground(accentColor);
+            eraseButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+            undoButton.setForeground(accentColor);
+            undoButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+            hintButton.setForeground(accentColor);
+            hintButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+            goBackButton.setForeground(accentColor);
+            goBackButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+            noteButton.setForeground(accentColor);
+            noteButton.setBorder(BorderFactory.createCompoundBorder(new LineBorder(accentColor, 1), new EmptyBorder(padding, padding, padding, padding)));
+        }
+
         restartButton.addActionListener(
                 e -> {
                     moveList.clear();
@@ -742,9 +783,9 @@ public class SudokuGame {
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
                 if (gameboard.getInitialNumber(row, col) != 0) {
-                    board.setCellTextColor(row, col, Color.GRAY);
+                    board.setCellTextColor(row, col, Config.getDarkMode() ? initialColor : Color.GRAY);
                 } else {
-                    board.setCellTextColor(row, col, Color.BLACK);
+                    board.setCellTextColor(row, col, Config.getDarkMode() ? accentColor : Color.BLACK);
                 }
             }
         }
@@ -858,5 +899,7 @@ public class SudokuGame {
         restartButton.setEnabled(true);
         hintButton.setEnabled(true);
         newGameButton.setEnabled(true);
+
     }
+
 }

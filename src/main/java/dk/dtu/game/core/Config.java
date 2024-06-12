@@ -9,7 +9,7 @@ public class Config {
     private static int cellSize;
     private static String difficulty;
 
-    private static boolean darkMode = false;
+    private static boolean darkMode = true;
 
     private Config() {
         throw new IllegalStateException("Utility class");
@@ -48,10 +48,13 @@ public class Config {
     }
 
     public static void setDarkMode(boolean darkMode) {
-        Config.darkMode = darkMode;
+        Preferences pref = Preferences.userRoot();
+        pref.putBoolean("darkMode", darkMode);
     }
     public static boolean getDarkMode() {
-        return darkMode;
+        Preferences pref = Preferences.userRoot();
+        String darkMode = pref.get("darkMode", String.valueOf(true));
+        return Boolean.parseBoolean(darkMode);
     }
 
 

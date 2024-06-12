@@ -57,13 +57,15 @@ public class StartMenu {
     private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
 
     private static final Color darkbackgroundColor = new Color(64, 64, 64);
-    private static final Color accentColor = new Color(237, 224, 186);
-    private static final Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
+    private static Color accentColor = new Color(237, 224, 186);
+    private static Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
 
 
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
         this.startMenuWindowManager = startMenuWindowManager;
+        backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
         startMenuWindowManager.display();
+
     }
 
     public void startGame() throws Board.BoardNotCreatable {
@@ -80,6 +82,7 @@ public class StartMenu {
                 new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
             GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
+            windowManager.updateBoard();
             windowManager.display();
             gameEngine.start();
         } catch (Board.BoardNotCreatable boardNotCreatable) {
@@ -360,6 +363,8 @@ public class StartMenu {
                             "Enable easy mode",
                             Config.getEnableEasyMode(),
                             Config::setEnableEasyMode);
+                    gameRules.addJSwitchBox("Dark Mode",Config.getDarkMode(), Config::setDarkMode);
+
                 });
     }
 
@@ -482,6 +487,7 @@ public class StartMenu {
             GameEngine gameEngine = new GameEngine(
                             windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
+            windowManager.updateBoard();
             gameEngine.startCustom(board); // Pass the custom board to the game engine
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             logger.error("Board not creatable: {}", boardNotCreatable.getMessage());
@@ -609,6 +615,11 @@ public class StartMenu {
                 hardButton, startMenuWindowManager.getDifficultyPanel());
         startMenuWindowManager.addComponent(
                 extremeButton, startMenuWindowManager.getDifficultyPanel());
+    }
+
+    public void update(){
+        startMenuWindowManager.getFrame().revalidate();
+        startMenuWindowManager.getFrame().repaint();
     }
 
     // Getters used for testing the startMenu

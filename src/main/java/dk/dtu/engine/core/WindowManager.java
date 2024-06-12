@@ -23,6 +23,8 @@ public class WindowManager {
     BufferedImage heartImage = null;
     ImageIcon heartIcon = null;
 
+    private static Color backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+
     public WindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
         this.frame.setSize(width, height);
@@ -31,18 +33,18 @@ public class WindowManager {
         whitePanel.setOpaque(true);
         buttonPanel.setOpaque(true);
         mainPanel.setOpaque(true);
-        whitePanel.setBackground(Color.WHITE);
-        buttonPanel.setBackground(Color.WHITE);
-        mainPanel.setBackground(Color.WHITE);
+        whitePanel.setBackground(backgroundColor);
+        buttonPanel.setBackground(backgroundColor);
+        mainPanel.setBackground(backgroundColor);
 
         // Configure the button panel
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Center buttons horizontally
-        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBackground(backgroundColor);
 
         GridBagConstraints buttonConstraints = new GridBagConstraints();
         buttonConstraints.insets = new Insets(10, 0, 10, 0); // Add padding
 
-        whitePanel.setBackground(Color.WHITE);
+        whitePanel.setBackground(backgroundColor);
         whitePanel.setLayout(new GridBagLayout()); // GridBagLayout to center the board
 
         // Add the white panel to the main panel
@@ -62,7 +64,7 @@ public class WindowManager {
     private void addHeartLabels() {
         heartStates = new boolean[Config.getNumberOfLives()]; // Assuming 5 hearts as maximum
         try {
-            heartsPanel.setBackground(Color.WHITE);
+            heartsPanel.setBackground(backgroundColor);
             heartsPanel.setLayout(
                     new FlowLayout(FlowLayout.LEFT, 5, 0)); // Horizontal layout with small gaps
 
@@ -217,6 +219,7 @@ public class WindowManager {
     public JPanel setupNumberAndTimerPanel(TimerFunction timer, Component numberHub) {
         JPanel combinedPanel = new JPanel();
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
+        combinedPanel.setBackground(backgroundColor);
         combinedPanel.setOpaque(false);
 
         timer.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -232,15 +235,26 @@ public class WindowManager {
     }
 
     public void updateBoard() {
+        System.out.println(Config.getDarkMode());
+        backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+        frame.setBackground(backgroundColor);
+        frame.revalidate();
+        frame.repaint();
+        mainPanel.setBackground(backgroundColor);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+        whitePanel.setBackground(backgroundColor);
         whitePanel.revalidate();
         whitePanel.repaint();
+        buttonPanel.setBackground(backgroundColor);
+        buttonPanel.revalidate();
+        buttonPanel.repaint();
+        heartsPanel.setBackground(backgroundColor);
+        heartsPanel.revalidate();
+        heartsPanel.repaint();
     }
 
-    public void display() {
-        frame.setVisible(true);
-    }
-
-    public JFrame getFrame() {
+    public JFrame getFrame (){
         return frame;
     }
 
@@ -252,5 +266,9 @@ public class WindowManager {
             }
         }
         return hearts;
+    }
+
+    public void display() {
+        frame.setVisible(true);
     }
 }

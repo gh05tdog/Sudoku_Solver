@@ -9,24 +9,26 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class GameRulePopup extends JFrame {
 
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
-    private static final Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background color
+    private static Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background color
     private static final Color accentColor = new Color(237, 224, 186);
 
     public GameRulePopup() {
         super("Game Rules");
         if (!GraphicsEnvironment.isHeadless()) {
+            backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE;
             initialize();
         }
 
     }
 
     private void initialize() {
-        setSize(400, 400);
+        setSize(500, 500); // Increased window size
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -40,8 +42,6 @@ public class GameRulePopup extends JFrame {
         }
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
@@ -52,17 +52,52 @@ public class GameRulePopup extends JFrame {
         }
 
         gbc.gridy = getContentPane().getComponentCount();
+        gbc.gridx = 0;
+        gbc.gridwidth = 3; // Span across multiple columns
         add(label, gbc);
 
         // Add switch box
         JSwitchBox switchBox = new JSwitchBox(initialState, toggleAction);
         gbc.gridy = getContentPane().getComponentCount();
-        gbc.insets = new Insets(0, 5, 10, 5); // Adjust spacing for better visual separation
-        add(switchBox, gbc);
+        gbc.gridx = 1;
+        gbc.gridwidth = 1; // Reset gridwidth
+
+        // Check if the description is "Dark Mode"
+        if (description.equalsIgnoreCase("Dark Mode")) {
+            // Load sun and moon images
+            ImageIcon sunIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/sun_symbol.png")));
+            ImageIcon moonIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/moon_symbol.png")));
+
+            // Scale the images
+            Image sunImage = sunIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            Image moonImage = moonIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+
+            // Create new ImageIcon objects
+            sunIcon = new ImageIcon(sunImage);
+            moonIcon = new ImageIcon(moonImage);
+
+            // Add sun icon to the left
+            JLabel sunLabel = new JLabel(sunIcon);
+            gbc.gridx = 0;
+            add(sunLabel, gbc);
+
+            // Add switch box in the middle
+            gbc.gridx = 1;
+            add(switchBox, gbc);
+
+            // Add moon icon to the right
+            JLabel moonLabel = new JLabel(moonIcon);
+            gbc.gridx = 2;
+            add(moonLabel, gbc);
+        } else {
+            // Add switch box normally if not "Dark Mode"
+            gbc.gridx = 1;
+            add(switchBox, gbc);
+        }
 
         // If the description is "Enable lives", add a JTextField next to the switch box
         if (description.equalsIgnoreCase("Enable lives")) {
-            gbc.gridx = 1;
+            gbc.gridx = 2; // Align JTextField properly
             gbc.insets = new Insets(0, 5, 10, 5); // Adjust spacing for better visual separation
             JTextField livesField = createLivesField();
             add(livesField, gbc);

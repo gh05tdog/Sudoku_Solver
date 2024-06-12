@@ -1,5 +1,7 @@
 package dk.dtu.engine.utility;
 
+import dk.dtu.game.core.Config;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.TimerTask;
@@ -10,12 +12,19 @@ public class TimerFunction extends JPanel {
     private long startTime;
     private transient Timer timer;
 
+    private static final Color darkbackgroundColor = new Color(64, 64, 64);
+    private static final Color accentColor = new Color(237, 224, 186);
+    private static final Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
+
     public TimerFunction() {
         setLayout(new FlowLayout(FlowLayout.CENTER));
         setPreferredSize(new Dimension(180, 80));
         timeLabel = new JLabel("00:00:00", SwingConstants.CENTER);
         timeLabel.setFont(new Font("SansSerif", Font.BOLD, 42));
-        setBackground(Color.WHITE);
+        if(Config.getDarkMode()){
+            timeLabel.setForeground(accentColor);
+        }
+        setBackground(backgroundColor);
         add(timeLabel);
     }
 

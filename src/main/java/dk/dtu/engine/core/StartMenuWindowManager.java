@@ -13,13 +13,14 @@ public class StartMenuWindowManager {
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
     private final JPanel gameRulePanel = new JPanel(null); // Panel for game rules
-    private static final Color backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+    private static Color backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
 
     public StartMenuWindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
         this.frame.setSize(width, height);
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.frame.setResizable(false);
+        backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
 
         buttonPanel.setOpaque(true);
         sizePanel.setOpaque(true);
@@ -64,6 +65,27 @@ public class StartMenuWindowManager {
         panel.add(component);
         panel.revalidate();
         panel.repaint();
+    }
+
+    public void update(){
+        backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+
+        buttonPanel.setBackground(backgroundColor);
+        buttonPanel.revalidate();
+        buttonPanel.repaint();
+        difficultyPanel.setBackground(backgroundColor);
+        difficultyPanel.revalidate();
+        difficultyPanel.repaint();
+        sizePanel.setBackground(backgroundColor);
+        sizePanel.revalidate();
+        sizePanel.repaint();
+        inputPanel.setBackground(backgroundColor);
+        inputPanel.revalidate();
+        inputPanel.repaint();
+        gameRulePanel.setBackground(backgroundColor);
+        gameRulePanel.revalidate();
+        gameRulePanel.repaint();
+
     }
 
     public void display() {

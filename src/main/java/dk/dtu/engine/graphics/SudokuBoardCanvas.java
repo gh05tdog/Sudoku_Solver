@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 import javax.swing.*;
+
+import dk.dtu.game.core.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +18,10 @@ public class SudokuBoardCanvas extends JPanel {
     private final Cell[][] cells;
 
     private static final Logger logger = LoggerFactory.getLogger(SudokuBoardCanvas.class);
+    private static final Color darkModebackgroundColor = new Color(64, 64, 64);
+    private static final Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
+    private static Color accentColor = Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
+    private static final Color hintColor = Config.getDarkMode() ? new Color(109, 181, 208) : Color.BLUE;
 
     int chosenNumber = 0;
 
@@ -49,7 +55,7 @@ public class SudokuBoardCanvas extends JPanel {
 
     private void drawSubGrids(Graphics g) {
         int subGridSize = nSize;
-        g.setColor(Color.BLACK);
+        g.setColor(accentColor);
 
         for (int i = 0; i <= gridSize; i += subGridSize) {
             int pos = i * cellSize;
@@ -114,7 +120,7 @@ public class SudokuBoardCanvas extends JPanel {
                             // Calculate the step color
                             int r =
                                     startColor.getRed()
-                                            + (Color.WHITE.getRed() - startColor.getRed())
+                                            + (backgroundColor.getRed() - startColor.getRed())
                                                     * step
                                                     / totalSteps;
                             Color stepColor = getColor(r);
@@ -124,7 +130,7 @@ public class SudokuBoardCanvas extends JPanel {
                         } else {
                             // Stop the timer and reset the background color to white at the end
                             ((Timer) e.getSource()).stop();
-                            cell.setBackgroundColor(Color.WHITE);
+                            cell.setBackgroundColor(backgroundColor);
                             cell.endHintVisualization();
                             repaint();
                         }
@@ -133,12 +139,12 @@ public class SudokuBoardCanvas extends JPanel {
                     private Color getColor(int r) {
                         int g =
                                 startColor.getGreen()
-                                        + (Color.WHITE.getGreen() - startColor.getGreen())
+                                        + (backgroundColor.getGreen() - startColor.getGreen())
                                                 * step
                                                 / totalSteps;
                         int b =
                                 startColor.getBlue()
-                                        + (Color.WHITE.getBlue() - startColor.getBlue())
+                                        + (backgroundColor.getBlue() - startColor.getBlue())
                                                 * step
                                                 / totalSteps;
                         return new Color(r, g, b);
@@ -147,7 +153,7 @@ public class SudokuBoardCanvas extends JPanel {
 
         new Timer(delay, fadeAction).start();
         // Set the cell color to the start color
-        cell.setTextColor(Color.BLUE);
+        cell.setTextColor(hintColor);
     }
 
     private void clearHighlights() {
@@ -326,5 +332,11 @@ public class SudokuBoardCanvas extends JPanel {
                 cells[i][j].setWrongNumber(0);
             }
         }
+    }
+
+    public void update(){
+        accentColor = Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
+        revalidate();
+        repaint();
     }
 }

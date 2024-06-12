@@ -1,6 +1,8 @@
 /* (C)2024 */
 package dk.dtu.engine.utility;
 
+import dk.dtu.engine.core.StartMenuWindowManager;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -34,6 +36,7 @@ public class JSwitchBox extends JComponent {
     private void toggle() {
         selected = !selected;
         toggleAction.accept(selected);
+        revalidate();
         repaint();
     }
 
