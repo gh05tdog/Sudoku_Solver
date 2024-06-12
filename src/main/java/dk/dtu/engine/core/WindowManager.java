@@ -3,6 +3,7 @@ package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.Config;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -22,6 +23,8 @@ public class WindowManager {
     ImageIcon emptyHeartIcon = null;
     BufferedImage heartImage = null;
     ImageIcon heartIcon = null;
+    JPanel combinedPanel = new JPanel();
+    private boolean[] heartStates; // true if the heart is full, false if empty
 
     private static Color backgroundColor =
             Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
@@ -59,8 +62,6 @@ public class WindowManager {
         this.frame.setContentPane(mainPanel); // Add the main panel to the frame
         addHeartLabels();
     }
-
-    private boolean[] heartStates; // true if the heart is full, false if empty
 
     private void addHeartLabels() {
         heartStates = new boolean[Config.getNumberOfLives()]; // Assuming 5 hearts as maximum
@@ -100,7 +101,7 @@ public class WindowManager {
                 emptyHeartIcon = new ImageIcon(scaledEmptyHeartImage);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } catch (NullPointerException e) {
             System.out.println("Image not found, check the path."); // Debug message
         }
@@ -139,7 +140,7 @@ public class WindowManager {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } catch (NullPointerException e) {
             System.out.println("Image not found, check the path."); // Debug message
         }
@@ -218,17 +219,15 @@ public class WindowManager {
     }
 
     public JPanel setupNumberAndTimerPanel(TimerFunction timer, Component numberHub) {
-        JPanel combinedPanel = new JPanel();
+
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
         combinedPanel.setBackground(backgroundColor);
         combinedPanel.setOpaque(false);
 
         timer.setAlignmentX(Component.CENTER_ALIGNMENT);
-        if (Config.getEnableTimer()) {
-            combinedPanel.add(timer);
-        }
-        combinedPanel.add(
-                Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
+        timer.setVisibility(Config.getEnableTimer());
+        combinedPanel.add(timer);
+        combinedPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
 
         combinedPanel.add(numberHub);
 
@@ -254,6 +253,9 @@ public class WindowManager {
         heartsPanel.revalidate();
         heartsPanel.repaint();
     }
+    public void display() {
+        frame.setVisible(true);
+    }
 
     public JFrame getFrame() {
         return frame;
@@ -269,7 +271,17 @@ public class WindowManager {
         return hearts;
     }
 
-    public void display() {
-        frame.setVisible(true);
+    public void addProgressBar(JProgressBar progressBar, int yPos) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = yPos; // Position set based on yPos
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 0, 10, 0); // Add some space around the progress bar
+
+        whitePanel.add(progressBar, gbc); // Add to whitePanel to ensure proper layout
+        whitePanel.revalidate();
+        whitePanel.repaint();
     }
+
 }

@@ -51,6 +51,10 @@ public class TimerFunction extends JPanel {
         }
     }
 
+    public void setVisibility(boolean visible) {
+        setVisible(visible);
+    }
+
     public void reset() {
         startTime = System.currentTimeMillis();
     }

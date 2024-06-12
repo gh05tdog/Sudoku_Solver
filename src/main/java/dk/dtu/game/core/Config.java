@@ -106,4 +106,15 @@ public class Config {
         String numberOfLives = pref.get("numberOfLives", String.valueOf(3));
         return Integer.parseInt(numberOfLives);
     }
+
+    public static void setEnableKillerSudoku(boolean enableKillerSudoku) {
+        Preferences pref = Preferences.userRoot();
+        pref.put("enableKillerSudoku", String.valueOf(enableKillerSudoku));
+    }
+
+    public static boolean getEnableKillerSudoku(){
+        Preferences pref = Preferences.userRoot();
+        String enableKillerSudoku = pref.get("enableKillerSudoku", String.valueOf(true));
+        return Boolean.parseBoolean(enableKillerSudoku);
+    }
 }
