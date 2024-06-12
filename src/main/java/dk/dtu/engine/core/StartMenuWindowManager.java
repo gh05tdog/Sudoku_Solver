@@ -11,6 +11,7 @@ public class StartMenuWindowManager {
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
     private final JPanel gameRulePanel = new JPanel(null); // Panel for game rules
+    private final Color backgroundColor = new Color(64, 64, 64);
 
     public StartMenuWindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
