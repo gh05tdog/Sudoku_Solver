@@ -8,6 +8,7 @@ import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
+import dk.dtu.engine.utility.CustomProgressBar;
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
@@ -61,12 +62,12 @@ public class SudokuGame {
     private PrintWriter networkOut;
     private boolean isCustomBoard = false;
     private boolean isNetworkGame = false;
-    private final JProgressBar opponentProgressBar;
-    private final JProgressBar playerProgressBar;
+    private final CustomProgressBar opponentProgressBar;
+    private final CustomProgressBar playerProgressBar;
 
     private static final Color darkbackgroundColor = new Color(64, 64, 64);
     private static Color accentColor = new Color(237, 224, 186);
-    private static final Color lightaccentColor = new Color(237, 224, 186);
+    private static final Color lightaccentcolor = new Color(237, 224, 186);
     private static final Color initialColor = new Color(159, 148, 102);
     private static Color backgroundColor;
 
@@ -74,12 +75,14 @@ public class SudokuGame {
             throws Board.BoardNotCreatable {
         this.windowManager = windowManager;
         backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
-        accentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
+        accentColor = Config.getDarkMode() ? lightaccentcolor : Color.BLACK;
+
         try {
             gameboard = new Board(n, k);
         } catch (Board.BoardNotCreatable e) {
             throw new Board.BoardNotCreatable("This board is not possible to create");
         }
+
         this.nSize = n;
         this.kSize = k;
         this.gridSize = n * k;
@@ -87,15 +90,27 @@ public class SudokuGame {
 
         new Thread(this::processNetworkMessages).start();
 
+        Color textColor = Config.getDarkMode() ? Color.BLACK : Color.BLUE;
+
         // Initialize the opponent progress bar
-        opponentProgressBar = new JProgressBar(0, 100);
+        opponentProgressBar = new CustomProgressBar(0, 100);
         opponentProgressBar.setStringPainted(true);
         opponentProgressBar.setString("Opponent's Progress");
+        opponentProgressBar.setForeground(accentColor);
+        opponentProgressBar.setBackground(backgroundColor);
+        opponentProgressBar.setBorder(new LineBorder(accentColor, 2));
+        opponentProgressBar.setTextColor(textColor);
 
-        playerProgressBar = new JProgressBar(0, 100);
+        // Initialize the player progress bar
+        playerProgressBar = new CustomProgressBar(0, 100);
         playerProgressBar.setStringPainted(true);
         playerProgressBar.setString("Your Progress");
+        playerProgressBar.setForeground(accentColor);
+        playerProgressBar.setBackground(backgroundColor);
+        playerProgressBar.setBorder(new LineBorder(accentColor, 2));
+        playerProgressBar.setTextColor(textColor);
     }
+
 
     private void processNetworkMessages() {
         while (true) {

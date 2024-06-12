@@ -83,7 +83,7 @@ public class SudokuBoardCanvas extends JPanel {
         BasicStroke stroke =
                 new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0f);
         g2.setStroke(stroke);
-        g2.setColor(Color.DARK_GRAY);
+        g2.setColor(accentColor);
         g2.setFont(new Font("Arial", Font.BOLD, 12));
 
         int margin = 6; // Margin from the edges
