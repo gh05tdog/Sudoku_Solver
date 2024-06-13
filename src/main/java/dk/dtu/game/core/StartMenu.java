@@ -14,7 +14,6 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -34,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public class StartMenu {
 
+    private static final String ERROR = "Error";
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
     private static final String FONT = "SansSerif";
     private final StartMenuWindowManager startMenuWindowManager;
@@ -140,7 +140,7 @@ public class StartMenu {
         try {
             // Get the local IP address of the server
             String localIpAddress = InetAddress.getLocalHost().getHostAddress();
-            System.out.println("Server started on IP: " + localIpAddress);
+            logger.info("Server started on IP: {}", localIpAddress);
 
             // Connect the client to the newly started server
             connectClient(localIpAddress);
@@ -155,7 +155,7 @@ public class StartMenu {
             JOptionPane.showMessageDialog(
                     null,
                     "Failed to determine the server's IP address.",
-                    "Error",
+                    ERROR,
                     JOptionPane.ERROR_MESSAGE);
             joinGameButton.setEnabled(true);
             createGameButton.setEnabled(true);
@@ -170,19 +170,14 @@ public class StartMenu {
         GameClient client = new GameClient(new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000));
         client.discoverServers();
 
-        // Wait for a short time to allow server discovery
-        try {
-            Thread.sleep(1000); // Wait for 1 second
-        } catch (InterruptedException interruptedException) {
-            interruptedException.printStackTrace();
-        }
+
 
         List<String> discoveredServers = client.getDiscoveredServers();
         boolean connected = false;
         for (String serverAddress : discoveredServers) {
-            System.out.println("Attempting to connect to server at IP: " + serverAddress);
+            logger.info("Attempting to connect to server at IP: {}", serverAddress);
             if (client.testGameConnection(serverAddress)) {
-                System.out.println("Connected to server at IP: " + serverAddress);
+                logger.info("Connected to server at IP: {}", serverAddress);
                 connectClient(serverAddress);
                 connected = true;
                 break;
@@ -192,7 +187,7 @@ public class StartMenu {
             JOptionPane.showMessageDialog(
                     null,
                     "Failed to connect to any server. Please check the server addresses and try again.",
-                    "Error",
+                    ERROR,
                     JOptionPane.ERROR_MESSAGE);
 
             joinGameButton.setEnabled(true);
@@ -207,20 +202,18 @@ public class StartMenu {
             GameClient client = new GameClient(windowManager);
             try {
                 client.start(serverAddress);
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Connected to server at " + serverAddress,
-                            "Connected",
-                            JOptionPane.INFORMATION_MESSAGE);
-                });
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
+                        null,
+                        "Connected to server at " + serverAddress,
+                        "Connected",
+                        JOptionPane.INFORMATION_MESSAGE));
             } catch (IOException | Board.BoardNotCreatable ex) {
                 ex.printStackTrace();
                 SwingUtilities.invokeLater(() -> {
                     JOptionPane.showMessageDialog(
                             null,
                             "Failed to start the game with the server.",
-                            "Error",
+                            ERROR,
                             JOptionPane.ERROR_MESSAGE);
                     joinGameButton.setEnabled(true);
                     createGameButton.setEnabled(true);
@@ -370,10 +363,12 @@ public class StartMenu {
         gameRuleButton.setFocusPainted(false);
         gameRuleButton.addMouseListener(
                 new java.awt.event.MouseAdapter() {
+                    @Override
                     public void mouseEntered(java.awt.event.MouseEvent evt) {
                         gameRuleButton.setBackground(Color.LIGHT_GRAY);
                     }
 
+                    @Override
                     public void mouseExited(java.awt.event.MouseEvent evt) {
                         gameRuleButton.setBackground(Color.WHITE);
                     }
@@ -446,7 +441,7 @@ public class StartMenu {
                 JOptionPane.showMessageDialog(
                         null,
                         "Failed to load the Sudoku file: " + ex.getMessage(),
-                        "Error",
+                        ERROR,
                         JOptionPane.ERROR_MESSAGE);
             }
         }

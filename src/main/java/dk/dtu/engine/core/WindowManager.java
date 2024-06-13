@@ -3,6 +3,8 @@ package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -12,6 +14,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class WindowManager {
+    private static final Logger logger = LoggerFactory.getLogger(WindowManager.class);
     private final JFrame frame;
     private final JPanel mainPanel =
             new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
@@ -25,6 +28,9 @@ public class WindowManager {
     ImageIcon heartIcon = null;
     JPanel combinedPanel = new JPanel();
     private boolean[] heartStates; // true if the heart is full, false if empty
+
+    private static final String STR_NOT_FOUND_MSG = "Image not found, check path";
+
 
     public WindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
@@ -83,6 +89,7 @@ public class WindowManager {
             gbc.insets = new Insets(10, 10, 10, 10);
             whitePanel.add(heartsPanel, gbc);
         } catch (NullPointerException ignored) {
+            logMessageNotFound(); // Debug message
         }
     }
 
@@ -92,15 +99,15 @@ public class WindowManager {
                 emptyHeartImage =
                         ImageIO.read(
                                 Objects.requireNonNull(
-                                        getClass().getResource("/pixil-frame-0.png")));
+                                        getClass().getResource("/pixel-frame-0.png")));
                 Image scaledEmptyHeartImage =
                         emptyHeartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                 emptyHeartIcon = new ImageIcon(scaledEmptyHeartImage);
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         } catch (NullPointerException e) {
-            System.out.println("Image not found, check the path."); // Debug message
+            logMessageNotFound(); // Debug message
         }
 
         // Find the last "full" heart label and update its icon directly
@@ -116,10 +123,10 @@ public class WindowManager {
             if (comp instanceof JLabel label) {
                 label.setIcon(emptyHeartIcon);
                 heartStates[lastIndex] = false; // Update state to empty
-                System.out.println("Heart emptied at index: " + lastIndex);
+                logger.info("Heart emptied at index: {}", lastIndex);
             }
         } else {
-            System.out.println("No full heart found to replace");
+            logger.info("No full heart found to replace");
         }
 
         heartsPanel.revalidate();
@@ -137,9 +144,9 @@ public class WindowManager {
             }
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         } catch (NullPointerException e) {
-            System.out.println("Image not found, check the path."); // Debug message
+            logMessageNotFound(); // Debug message
         }
 
         for (int i = 0; i < heartsPanel.getComponentCount(); i++) {
@@ -202,7 +209,7 @@ public class WindowManager {
     }
 
     public void layoutComponents(TimerFunction timer, Component numberHub) {
-        JPanel combinedPanel = setupNumberAndTimerPanel(timer, numberHub);
+        JPanel combinationPanel = setupNumberAndTimerPanel(timer, numberHub);
 
         // Layout the combined panel with the number hub and timer
         GridBagConstraints gbcPanel = new GridBagConstraints();
@@ -210,7 +217,7 @@ public class WindowManager {
         gbcPanel.gridy = 0;
         gbcPanel.fill = GridBagConstraints.NORTH; // Align to the top of the space
         gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
-        mainPanel.add(combinedPanel, gbcPanel);
+        mainPanel.add(combinationPanel, gbcPanel);
 
         frame.setVisible(true);
     }
@@ -260,5 +267,10 @@ public class WindowManager {
         whitePanel.revalidate();
         whitePanel.repaint();
     }
+
+    public static void logMessageNotFound () {
+        logger.info(STR_NOT_FOUND_MSG);
+    }
+
 
 }

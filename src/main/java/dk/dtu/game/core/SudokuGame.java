@@ -43,6 +43,7 @@ public class SudokuGame {
     int cellSize;
     private int placeableNumber = 0;
     private int nextCageId = 1;
+    private static final Random rand = new Random();
 
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
@@ -63,6 +64,8 @@ public class SudokuGame {
     private boolean isNetworkGame = false;
     private final JProgressBar opponentProgressBar;
     private final JProgressBar playerProgressBar;
+
+    private static final String NEW_GAME = "New game";
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -112,14 +115,20 @@ public class SudokuGame {
     public void processNetworkMessage(String message) {
         String[] parts = message.split(" ");
         String command = parts[0];
-        System.out.println("Received message: " + message);
+        logger.info("Received message: {}", message);
 
         switch (command) {
+            default :
+                int progress = Integer.parseInt(parts[1]);
+                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress));
+                break;
+
             case "WINNER":
                 timer.stop();
                 String winner = parts[1];
                 SwingUtilities.invokeLater(() -> announceWinner(winner));
                 break;
+
             case "COMPLETED":
                 timer.stop();
                 String playerName = parts[1];
@@ -127,10 +136,6 @@ public class SudokuGame {
                         () ->
                                 JOptionPane.showMessageDialog(
                                         null, playerName + " has completed the Sudoku!"));
-                break;
-            case "PROGRESS":
-                int progress = Integer.parseInt(parts[1]);
-                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress));
                 break;
         }
     }
@@ -234,16 +239,16 @@ public class SudokuGame {
         //Loop through the board and add all the numbers to a list,
         // then check if each number is equal to the max needed number,
         // if it is, then update the number display
-        List<Integer> numbers = new ArrayList<>();
+        List<Integer> numberList = new ArrayList<>();
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
-                numbers.add(gameboard.getNumber(row, col));
+                numberList.add(gameboard.getNumber(row, col));
             }
         }
 
 
         for (int i = 1; i <= gameboard.getDimensions(); i++) {
-            int count = Collections.frequency(numbers, i);
+            int count = Collections.frequency(numberList, i);
             getNumbersBoard().updateNumberDisplay(i, count != gameboard.getDimensions());
         }
 
@@ -499,7 +504,6 @@ public class SudokuGame {
     }
 
     public void adjustInitialNumbersVisibility() {
-        Random rand = new Random();
         int[][] solvedBoard = gameboard.getSolvedBoard();
         hintList.clear();
 
@@ -612,11 +616,11 @@ public class SudokuGame {
     }
 
     public void sendProgress() {
-        System.out.println("Sending progress");
+        logger.info("Sending progress");
         if (networkOut != null) {
             int progress = calculateProgress();
             playerProgressBar.setValue(progress);
-            System.out.println("Progress: " + progress);
+            logger.info("Progress: {}", progress);
             networkOut.println("PROGRESS " + progress);
         }
     }
@@ -665,7 +669,7 @@ public class SudokuGame {
         setInitialBoardColor();
 
         if (!isCustomBoard) {
-            newGameButton.setText("New Game");
+            newGameButton.setText(NEW_GAME);
         }
         updateNumberCount();
     }
@@ -805,7 +809,7 @@ public class SudokuGame {
                 }
             }
 
-            Object[] options = {"New Game", "Close"};
+            Object[] options = {NEW_GAME, "Close"};
             if (isCustomBoard) {
                 options[0] = "Replay";
             }
@@ -842,7 +846,7 @@ public class SudokuGame {
     private void displayButtons() {
         restartButton = createButton("Restart", 30);
         solveButton = createButton("Solve", 30);
-        newGameButton = createButton("New Game", 30);
+        newGameButton = createButton(NEW_GAME, 30);
         eraseButton = createButton("Erase", 30);
         undoButton = createButton("Undo", 300);
         hintButton = createButton("Hint", 30);
@@ -1035,11 +1039,10 @@ public class SudokuGame {
         List<Cage> cages = board.getCages();
         for (Cage cage : cages) {
             if (cage.getCells().contains(cell)) {
-                System.out.println(
-                        "printing numbers in cage "
-                                + cage.getId()
-                                + " "
-                                + Arrays.toString(cage.getNumbers()));
+                logger.info(
+                        "printing numbers in cage {} {} "
+                                ,cage.getId()
+                                ,Arrays.toString(cage.getNumbers()));
                 return cage.contains(num);
             }
         }
