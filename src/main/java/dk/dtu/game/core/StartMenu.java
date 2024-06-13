@@ -166,32 +166,49 @@ public class StartMenu {
         joinGameButton.setEnabled(false);
         createGameButton.setEnabled(false);
 
+        // Prompt user for an IP address
+        String serverAddress = JOptionPane.showInputDialog(
+                null,
+                "Enter server IP address (leave empty to search):",
+                "Join Game",
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+
         // Create a GameClient to discover servers
         GameClient client = new GameClient(new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000));
         client.discoverServers();
 
 
+        if (serverAddress == null) {
+            List<String> discoveredServers = client.getDiscoveredServers();
+            boolean connected = false;
+            for (String address : discoveredServers) {
+                logger.info("Attempting to connect to server at IP: {}", address);
+                if (client.testGameConnection(address)) {
+                    logger.info("Connected to server at IP: {}", address);
+                    connectClient(address);
+                    connected = true;
+                    break;
+                }
+            }
+            if (!connected) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Failed to connect to any server. Please check the server addresses and try again.",
+                        ERROR,
+                        JOptionPane.ERROR_MESSAGE);
 
-        List<String> discoveredServers = client.getDiscoveredServers();
-        boolean connected = false;
-        for (String serverAddress : discoveredServers) {
+                joinGameButton.setEnabled(true);
+                createGameButton.setEnabled(true);
+            }
+        }
+        else {
             logger.info("Attempting to connect to server at IP: {}", serverAddress);
             if (client.testGameConnection(serverAddress)) {
                 logger.info("Connected to server at IP: {}", serverAddress);
                 connectClient(serverAddress);
-                connected = true;
-                break;
             }
-        }
-        if (!connected) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Failed to connect to any server. Please check the server addresses and try again.",
-                    ERROR,
-                    JOptionPane.ERROR_MESSAGE);
-
-            joinGameButton.setEnabled(true);
-            createGameButton.setEnabled(true);
         }
 
     }
