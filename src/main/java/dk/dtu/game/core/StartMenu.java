@@ -173,7 +173,9 @@ public class StartMenu {
 
 
         List<String> discoveredServers = client.getDiscoveredServers();
+        discoveredServers.add("10.209.220.33");
         boolean connected = false;
+        logger.info("Discovered servers: {}", discoveredServers);
         for (String serverAddress : discoveredServers) {
             logger.info("Attempting to connect to server at IP: {}", serverAddress);
             if (client.testGameConnection(serverAddress)) {
