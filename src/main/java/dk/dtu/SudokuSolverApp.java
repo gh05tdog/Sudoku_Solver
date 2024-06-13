@@ -37,9 +37,5 @@ public class SudokuSolverApp {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error starting application", e);
         }
-
-        // Keep the application running
-        System.out.println("Press Enter to exit...");
-        new java.util.Scanner(System.in).nextLine();
     }
 }
