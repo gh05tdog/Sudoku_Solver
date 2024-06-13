@@ -36,6 +36,8 @@ public class DatabaseSetup {
                 "lifeEnabled BOOLEAN NOT NULL," +
                 "kSize INTEGER NOT NULL," +
                 "nSize INTEGER NOT NULL," +
+                "cages TEXT NOT NULL," +
+                "isKillerSudoku BOOLEAN NOT NULL," +
                 "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
                 ");";
 

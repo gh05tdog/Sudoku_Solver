@@ -7,11 +7,11 @@ import dk.dtu.game.core.SudokuGame;
 
 public class GameEngine {
     private final WindowManager windowManager;
+    private SudokuGame sudokuGame;
+    private boolean running = false;
     private final int n;
     private final int k;
     private final int cellSize;
-    private SudokuGame sudokuGame;
-    private boolean running = false;
 
     public GameEngine(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -26,6 +26,7 @@ public class GameEngine {
         }
     }
 
+
     private void initialize() {
         windowManager.display(); // Show the game window
         sudokuGame.initialize(this.n, this.k, this.cellSize); // Initialize game-specific components
@@ -34,6 +35,7 @@ public class GameEngine {
     public void start() {
         if (running) return;
         running = true;
+
         initialize();
     }
 
@@ -44,13 +46,16 @@ public class GameEngine {
                 new SudokuGame(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
         sudokuGame.initializeCustom(customBoard);
         windowManager.display();
+
     }
 
-    public void startCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, int k, int n) throws Board.BoardNotCreatable {
+    public void startCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, int n, int k, int[][] cages, boolean isKillerSudoku) throws Board.BoardNotCreatable {
         if (running) return;
         running = true;
         sudokuGame =
-                new SudokuGame(windowManager, n, k, Config.getCellSize());
-        sudokuGame.initializeCustomSaved(initialBoard, currentBoard, time, usedLifeLines);
+                new SudokuGame(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
+        sudokuGame.initializeCustomSaved(initialBoard, currentBoard, time, usedLifeLines, n, k, cages, isKillerSudoku);
+        windowManager.display();
+
     }
 }

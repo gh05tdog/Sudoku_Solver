@@ -1,6 +1,7 @@
 /* (C)2024 */
 package dk.dtu.engine.graphics;
 
+import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -168,8 +169,8 @@ public class SudokuBoardCanvas extends JPanel {
             // Highlight the subgrid
             for (int subRow = subGridRowStart; subRow < subGridRowStart + subGridSize; subRow++) {
                 for (int subCol = subGridColStart;
-                        subCol < subGridColStart + subGridSize;
-                        subCol++) {
+                     subCol < subGridColStart + subGridSize;
+                     subCol++) {
                     cells[subRow][subCol].setHighlighted(highlight);
                 }
             }
@@ -196,8 +197,8 @@ public class SudokuBoardCanvas extends JPanel {
                             int r =
                                     startColor.getRed()
                                             + (Color.WHITE.getRed() - startColor.getRed())
-                                                    * step
-                                                    / totalSteps;
+                                            * step
+                                            / totalSteps;
                             Color stepColor = getColor(r);
                             cell.setBackgroundColor(stepColor);
                             repaint();
@@ -215,13 +216,13 @@ public class SudokuBoardCanvas extends JPanel {
                         int g =
                                 startColor.getGreen()
                                         + (Color.WHITE.getGreen() - startColor.getGreen())
-                                                * step
-                                                / totalSteps;
+                                        * step
+                                        / totalSteps;
                         int b =
                                 startColor.getBlue()
                                         + (Color.WHITE.getBlue() - startColor.getBlue())
-                                                * step
-                                                / totalSteps;
+                                        * step
+                                        / totalSteps;
                         return new Color(r, g, b);
                     }
                 };
@@ -243,7 +244,7 @@ public class SudokuBoardCanvas extends JPanel {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 if (cells[i][j].isMarked) {
-                    return new int[] {i, j};
+                    return new int[]{i, j};
                 }
             }
         }
@@ -465,5 +466,77 @@ public class SudokuBoardCanvas extends JPanel {
     public void clearCages() {
         cages.clear();
         repaint();
+    }
+
+    public int[][] getCagesIntArray() {
+        int[][] cagesArray = new int[gridSize][gridSize];
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                Cage cage = getCage(i, j);
+                if (cage != null) {
+                    cagesArray[i][j] = cage.getId();
+                } else {
+                    cagesArray[i][j] = 0;
+                }
+            }
+        }
+        return cagesArray;
+    }
+
+    // Ensure sums are included in saved data
+    public String serializeCages() {
+        StringBuilder builder = new StringBuilder();
+        for (Cage cage : cages.values()) {
+            builder.append(cage.getId()).append(":").append(cage.getSum()).append(",");
+            for (Point cell : cage.getCells()) {
+                builder.append(cell.y).append(",").append(cell.x).append(";");
+            }
+            builder.setLength(builder.length() - 1);  // Remove last semicolon
+            builder.append("|");
+        }
+        builder.setLength(builder.length() - 1);  // Remove last pipe
+        return builder.toString();
+    }
+
+    public void addCages(int[][] cages, Board board) {
+        clearCages();
+        Map<Integer, List<Point>> cageMap = new HashMap<>();
+        int cageId;
+
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                cageId = cages[row][col];
+                if (cageId != 0) {
+                    cageMap.computeIfAbsent(cageId, k -> new ArrayList<>()).add(new Point(col, row));
+                }
+            }
+        }
+
+        for (Map.Entry<Integer, List<Point>> entry : cageMap.entrySet()) {
+            int sum = 0;
+            for (Point cell : entry.getValue()) {
+                sum += board.getNumber(cell.x, cell.y); // Use gameboard to get the number
+            }
+            addCage(entry.getKey(), new Cage(entry.getValue(), sum, entry.getKey()));
+        }
+    }
+
+    public void deserializeAndAddCages(String serializedCages) {
+        String[] cageDataArray = serializedCages.split("\\|");
+        for (String cageData : cageDataArray) {
+            String[] parts = cageData.split(":");
+            int cageId = Integer.parseInt(parts[0]);
+            int sum = Integer.parseInt(parts[1]);
+            String[] cellsData = parts[2].split(";");
+
+            List<Point> cells = new ArrayList<>();
+            for (String cellData : cellsData) {
+                String[] coordinates = cellData.split(",");
+                int row = Integer.parseInt(coordinates[0]);
+                int col = Integer.parseInt(coordinates[1]);
+                cells.add(new Point(col, row));
+            }
+            addCage(cageId, new Cage(cells, sum, cageId));
+        }
     }
 }

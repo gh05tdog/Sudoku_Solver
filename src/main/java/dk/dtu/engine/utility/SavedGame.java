@@ -11,10 +11,10 @@ public class SavedGame {
 
     private static final Logger logger = LoggerFactory.getLogger(SavedGame.class);
 
-    public static void saveGame(String dbUrl, int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int kSize, int nSize) {
+    public static void saveGame(String dbUrl, int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int kSize, int nSize, int[][] cages, boolean isKillerSudoku) {
         String initialBoardString = serializeBoard(initialBoard);
         String currentBoardString = serializeBoard(currentBoard);
-        String insertGame = "INSERT INTO saved_games (initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insertGame = "INSERT INTO saved_games (initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize, cages, isKillerSudoku) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
              PreparedStatement stmt = conn.prepareStatement(insertGame)) {
@@ -25,6 +25,8 @@ public class SavedGame {
             stmt.setBoolean(5, lifeEnabled);
             stmt.setInt(6, kSize);
             stmt.setInt(7, nSize);
+            stmt.setString(8, serializeBoard(cages));
+            stmt.setBoolean(9, isKillerSudoku);
             stmt.executeUpdate();
             logger.info("Game saved successfully");
         } catch (SQLException e) {
@@ -34,7 +36,7 @@ public class SavedGame {
     }
 
     public static List<SavedGameData> loadSavedGames(String dbUrl) {
-        String selectGames = "SELECT initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize FROM saved_games";
+        String selectGames = "SELECT initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize, cages, isKillerSudoku FROM saved_games";
         List<SavedGameData> savedGames = new ArrayList<>();
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
@@ -49,7 +51,9 @@ public class SavedGame {
                 boolean lifeEnabled = rs.getBoolean("lifeEnabled");
                 int kSize = rs.getInt("kSize");
                 int nSize = rs.getInt("nSize");
-                savedGames.add(new SavedGameData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize));
+                String cages = rs.getString("cages");
+                boolean isKillerSudoku = rs.getBoolean("isKillerSudoku");
+                savedGames.add(new SavedGameData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize, cages, isKillerSudoku));
             }
         } catch (SQLException e) {
             logger.error("Failed to load saved games");
@@ -68,8 +72,10 @@ public class SavedGame {
         private final boolean lifeEnabled;
         private final int kSize;
         private final int nSize;
+        private final String cages;
+        private final boolean isKillerSudoku;
 
-        public SavedGameData(String initialBoard, String currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int kSize, int nSize) {
+        public SavedGameData(String initialBoard, String currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int kSize, int nSize, String cages, boolean isKillerSudoku) {
             this.initialBoard = initialBoard;
             this.currentBoard = currentBoard;
             this.time = time;
@@ -77,6 +83,8 @@ public class SavedGame {
             this.lifeEnabled = lifeEnabled;
             this.kSize = kSize;
             this.nSize = nSize;
+            this.cages = cages;
+            this.isKillerSudoku = isKillerSudoku;
         }
 
         public String getInitialBoard() {
@@ -107,9 +115,17 @@ public class SavedGame {
             return nSize;
         }
 
+        public String getCages() {
+            return cages;
+        }
+
+        public boolean isKillerSudoku() {
+            return isKillerSudoku;
+        }
+
         @Override
         public String toString() {
-            return "Time: " + time + ", Used Life Lines: " + usedLifeLines + ", Life Enabled: " + lifeEnabled + ", KSize: " + kSize + ", NSize: " + nSize;
+            return "Time: " + time + ", Used Life Lines: " + usedLifeLines + ", Life Enabled: " + lifeEnabled + ", KSize: " + kSize + ", NSize: " + nSize + "\n" + "isKillerSudoku:" + isKillerSudoku;
         }
     }
 
