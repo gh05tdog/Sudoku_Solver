@@ -41,8 +41,6 @@ public class SudokuGame {
     private final int kSize;
     private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
     private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
-    private final JProgressBar opponentProgressBar;
-    private final JProgressBar playerProgressBar;
     private final JButton saveGameButton;
     int gridSize;
     int cellSize;
@@ -612,8 +610,8 @@ public class SudokuGame {
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
         windowManager.drawBoard(board);
-        windowManager.setupNumberAndTimerPanel(timer, numbers);
-        windowManager.layoutComponents(timer, numbers);
+        windowManager.setupNumberAndTimerPanel(timer, numbers,goBackButton);
+        windowManager.layoutComponents(timer, numbers,goBackButton);
 
         gameboard.setInitialBoard(initialBoard);
         gameboard.setGameBoard(deepCopyBoard(currentBoard));
@@ -634,7 +632,7 @@ public class SudokuGame {
 
         gameboard.setGameBoard(deepCopyBoard(currentBoard));
 
-        if (notes != null) {
+        if (!Objects.equals(notes, "")) {
             board.setNotes(notes);
             applyNotesToCells();
         }
