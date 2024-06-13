@@ -81,6 +81,25 @@ public class TimerFunction extends JPanel {
         return hours * 3600 + minutes * 60 + seconds;
     }
 
+    public void setTime(int time) {
+        int hours = time / 3600;
+        int minutes = (time % 3600) / 60;
+        int seconds = time % 60;
+        String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        timeLabel.setText(timeString);
+    }
+
+    public void startWithTime(int time) {
+        startTime = System.currentTimeMillis() - time * 1000L;
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                updateTimer();
+            }
+        }, 0, 1000);
+    }
+
     public void update() {
         accentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
         backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;

@@ -295,4 +295,10 @@ public class WindowManager {
         whitePanel.revalidate();
         whitePanel.repaint();
     }
+
+    public void setHearts(int usedLifeLines) {
+        for (int i = 1; i < usedLifeLines; i++) {
+            removeHeart();
+        }
+    }
 }

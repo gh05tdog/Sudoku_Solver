@@ -67,6 +67,8 @@ public class StartMenu {
     GameRulePopup gameRules = new GameRulePopup(this);
 
 
+    private final JButton loadGameButton = new JButton("Load Game");
+
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
         this.startMenuWindowManager = startMenuWindowManager;
         backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
@@ -87,6 +89,7 @@ public class StartMenu {
             windowManager.updateBoard();
             windowManager.display();
             gameEngine.start();
+            windowManager.display();
 
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             throw new Board.BoardNotCreatable("This board is not possible to create");
@@ -102,6 +105,7 @@ public class StartMenu {
     }
 
     public void initialize() {
+        // Initialize the start menu with all the buttons
         addSizePanelButtons();
         addButtonPanelButtons();  // Updated method call to include both start button and dropdown
         addInputPanelButtons();
@@ -118,7 +122,19 @@ public class StartMenu {
 
         addChangeListenerToField(inputNField);
         addChangeListenerToField(inputKField);
+
+        addLoadGameButton();
     }
+
+
+    private void addLoadGameButton() {
+        loadGameButton.setBounds(5, 135, 190, 40); // Adjust the size and position as needed
+        loadGameButton.setBackground(Color.WHITE);
+        loadGameButton.setFocusPainted(false);
+        loadGameButton.addActionListener(this::onLoadGame);
+        startMenuWindowManager.addComponent(loadGameButton, startMenuWindowManager.getButtonPanel());
+    }
+
 
 
 
@@ -190,6 +206,68 @@ public class StartMenu {
                 Config.getEnableKillerSudoku(),
                 Config::setEnableKillerSudoku);
     }
+
+    private void onLoadGame(ActionEvent e) {
+        List<SavedGame.SavedGameData> savedGames = SavedGame.loadSavedGames("jdbc:sqlite:sudoku.db");
+        if (savedGames.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No saved games available.", "Error", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        SavedGame.SavedGameData selectedGame = (SavedGame.SavedGameData) JOptionPane.showInputDialog(null, "Select a saved game:", "Load Game", JOptionPane.PLAIN_MESSAGE, null, savedGames.toArray(), savedGames.getFirst());
+
+        if (selectedGame != null) {
+            int[][] initialBoard = deserializeBoard(selectedGame.getInitialBoard());
+            int[][] currentBoard = deserializeBoard(selectedGame.getCurrentBoard());
+            int time = selectedGame.getTime();
+            int usedLifeLines = selectedGame.getUsedLifeLines();
+            boolean lifeEnabled = selectedGame.isLifeEnabled();
+            int n = selectedGame.getNSize();
+            int k = selectedGame.getKSize();
+            int[][] serializedCages = deserializeBoard(selectedGame.getCages());
+            boolean isKillerSudoku = selectedGame.isKillerSudoku();
+            String notes = selectedGame.getNotes();
+
+            startGameWithSavedData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, n, k, serializedCages, isKillerSudoku, notes);
+        }
+    }
+
+
+    private int[][] deserializeBoard(String boardString) {
+        String[] rows = boardString.split(";");
+        int size = rows.length;
+        int[][] board = new int[size][size];
+
+        for (int i = 0; i < size; i++) {
+            String[] cells = rows[i].split(",");
+            for (int j = 0; j < cells.length; j++) {
+                board[i][j] = Integer.parseInt(cells[j]);
+            }
+        }
+
+        return board;
+    }
+
+    private void startGameWithSavedData(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int n, int k, int[][] cages, boolean isKillerSudoku, String notes) {
+        Config.setCellSize(550 / (k * n));
+        Config.setK(k);
+        Config.setN(n);
+        logConfigInfo();
+
+        WindowManager windowManager =
+                new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
+        try {
+            if (lifeEnabled) {
+                Config.setEnableLives(true);
+            }
+            GameEngine gameEngine = new GameEngine(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
+            windowManager.display();
+            gameEngine.startCustomSaved(initialBoard, currentBoard, time, usedLifeLines, n, k, cages, isKillerSudoku, notes);
+        } catch (Board.BoardNotCreatable boardNotCreatable) {
+            logBoardNotCreatable();
+        }
+    }
+
 
     private void onCreateGame(ActionEvent e) {
         createGameButton.setEnabled(false);
@@ -705,6 +783,10 @@ public class StartMenu {
                 Config.getN(),
                 Config.getDifficulty(),
                 Config.getCellSize());
+    }
+
+    private void logBoardNotCreatable(){
+        logger.error("This board-type is not creatable");
     }
 
     // Getters used for testing the startMenu
