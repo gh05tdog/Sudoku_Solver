@@ -173,7 +173,7 @@ public class StartMenu {
 
 
         List<String> discoveredServers = client.getDiscoveredServers();
-        discoveredServers.add("10.209.220.33");
+        discoveredServers.add("10.209.237.174");
         boolean connected = false;
         logger.info("Discovered servers: {}", discoveredServers);
         for (String serverAddress : discoveredServers) {

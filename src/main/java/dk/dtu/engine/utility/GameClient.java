@@ -110,7 +110,15 @@ public class GameClient {
         discoveredServers = ssdpClient.discover();
 
         for (String server : discoveredServers) {
-            logger.info("Found server: {}", server);
+            if (server != null) {
+                logger.info("Found server: {}", server);
+            } else {
+                logger.warn("Received a null server address in SSDP response");
+            }
+        }
+
+        if (discoveredServers.isEmpty()) {
+            logger.warn("No servers discovered.");
         }
     }
 }
