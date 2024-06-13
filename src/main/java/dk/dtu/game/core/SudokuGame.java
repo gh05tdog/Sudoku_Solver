@@ -517,7 +517,7 @@ public class SudokuGame {
             }
         }
 
-        adjustInitialNumbersVisibility();
+        //adjustInitialNumbersVisibility();
     }
 
     public void adjustInitialNumbersVisibility() {
