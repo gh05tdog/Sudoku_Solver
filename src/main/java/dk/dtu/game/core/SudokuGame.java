@@ -8,6 +8,7 @@ import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
+import dk.dtu.engine.utility.SavedGame;
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
@@ -64,6 +65,8 @@ public class SudokuGame {
     private final JProgressBar opponentProgressBar;
     private final JProgressBar playerProgressBar;
 
+    private final JButton saveGameButton;
+
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
         this.windowManager = windowManager;
@@ -80,6 +83,9 @@ public class SudokuGame {
 
         new Thread(this::processNetworkMessages).start();
 
+        saveGameButton = createButton("Save Game", 30);
+        saveGameButton.addActionListener(e -> onSaveGame());
+
         // Initialize the opponent progress bar
         opponentProgressBar = new JProgressBar(0, 100);
         opponentProgressBar.setStringPainted(true);
@@ -88,6 +94,11 @@ public class SudokuGame {
         playerProgressBar = new JProgressBar(0, 100);
         playerProgressBar.setStringPainted(true);
         playerProgressBar.setString("Your Progress");
+    }
+
+    private void onSaveGame() {
+        SavedGame.saveGame("jdbc:sqlite:sudoku.db", gameboard.getInitialBoard(), gameboard.getGameBoard(), timer.getTimeToInt(), getLives(), Config.getEnableLives(), Config.getK(), Config.getN());
+        JOptionPane.showMessageDialog(null, "Game saved successfully.", "Save Game", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void processNetworkMessages() {
@@ -596,6 +607,44 @@ public class SudokuGame {
         board.requestFocusInWindow();
     }
 
+    public void initializeCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines) {
+        isCustomBoard = true;
+        createBoard(Config.getN(), Config.getK(), Config.getCellSize());
+        displayButtons();
+        windowManager.drawBoard(board);
+        windowManager.setupNumberAndTimerPanel(timer, numbers);
+        windowManager.layoutComponents(timer, numbers);
+
+        gameboard.setInitialBoard(initialBoard);
+
+        if (nSize == kSize) {
+            AlgorithmXSolver.solveExistingBoard(gameboard);
+        } else {
+            BruteForceAlgorithm.createSudoku(gameboard);
+        }
+
+        gameboard.setGameBoard(deepCopyBoard(currentBoard));
+
+        fillHintList();
+        if (time > 0) {
+            timer.startWithTime(time);
+        }
+
+
+
+        if (usedLifeLines > 0) {
+            windowManager.setHeart();
+            windowManager.setHearts(usedLifeLines);
+        }
+        displayNumbersVisually();
+        setInitialBoardColor();
+        gameIsStarted = true;
+
+        solveButton.setEnabled(true);
+
+        board.requestFocusInWindow();
+    }
+
     public int calculateProgress() {
         int filledCells = 0;
         int totalCells = gridSize * gridSize;
@@ -941,6 +990,8 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(hintButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(noteButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
+        windowManager.addComponentToButtonPanel(saveGameButton);
 
         windowManager.addGoBackButton(goBackButton);
     }
@@ -959,16 +1010,6 @@ public class SudokuGame {
 
     public int[][] deepCopyBoard(int[][] original) {
         return SolverAlgorithm.deepCopyBoard(original);
-    }
-
-    public void render() {
-        if (gameIsStarted) {
-            displayNumbersVisually();
-        }
-    }
-
-    public void update() {
-        render();
     }
 
     public List<Move> getHintList() {
@@ -1082,4 +1123,6 @@ public class SudokuGame {
         hintButton.setEnabled(true);
         newGameButton.setEnabled(true);
     }
+
+
 }

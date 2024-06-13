@@ -27,9 +27,22 @@ public class DatabaseSetup {
                 "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
                 ");";
 
+        String createSavedGamesTable = "CREATE TABLE IF NOT EXISTS saved_games (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "initialBoard TEXT NOT NULL," +
+                "currentBoard TEXT NOT NULL," +
+                "time INTEGER NOT NULL," +
+                "usedLifeLines INTEGER NOT NULL," +
+                "lifeEnabled BOOLEAN NOT NULL," +
+                "kSize INTEGER NOT NULL," +
+                "nSize INTEGER NOT NULL," +
+                "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
+                ");";
+
         try (Connection conn = DriverManager.getConnection(dbUrl);
              Statement stmt = conn.createStatement()) {
             stmt.execute(createLeaderboardTable);
+            stmt.execute(createSavedGamesTable);
             logger.info("Database setup complete");
         } catch (SQLException e) {
             logger.error("Database setup failed");
