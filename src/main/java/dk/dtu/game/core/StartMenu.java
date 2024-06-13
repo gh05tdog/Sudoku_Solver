@@ -30,6 +30,11 @@ import javax.swing.text.AbstractDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This is the start menu of the game. This is where you can choose difficulty, size, loadgame, show leader board etc.
+ * It is also where you can chose the game rules.
+ */
+
 public class StartMenu {
 
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
@@ -96,6 +101,7 @@ public class StartMenu {
         }
     }
 
+    //The custom board panel is the panel that shows the size, with the dynamically drawn board
     public void updateCustomBoardPanel(int n, int k) {
         if ((k * n) <= (n * n)) {
             customBoardPanel.updateBoard(n, k); // Update the board based on n and k
@@ -590,6 +596,7 @@ public class StartMenu {
         }
     }
 
+    //Add the custom board panels with different prefixed sizes and the one you can set yourself with N and K values
     private void addSizePanelButtons() {
         // This function adds the small boards for selecting size in game
 

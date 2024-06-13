@@ -7,6 +7,9 @@ import java.awt.event.MouseEvent;
 import java.util.function.Consumer;
 import javax.swing.*;
 
+/**
+ * This class makes a custom Component that acts like a slider for the gamerules, it has an on/off state and is toggleable.
+ */
 public class JSwitchBox extends JComponent {
     private boolean selected;
     private final int width = 100;

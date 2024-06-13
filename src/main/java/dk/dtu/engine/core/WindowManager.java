@@ -10,6 +10,12 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+
+/**
+ * The WindowManager class is responsible for managing the game window.
+ * It sets up the window and adds components to it.
+ * It keeps track visually of the hearts when lives are enabled and makes sure one can add components to panels from the sudoku game.
+ */
 public class WindowManager {
     private final JFrame frame;
     private final JPanel mainPanel =
@@ -18,10 +24,10 @@ public class WindowManager {
     private final JPanel whitePanel =
             new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
     JPanel heartsPanel = new JPanel();
-    BufferedImage emptyHeartImage = null;
-    ImageIcon emptyHeartIcon = null;
-    BufferedImage heartImage = null;
-    ImageIcon heartIcon = null;
+    BufferedImage emptyHeartImage;
+    ImageIcon emptyHeartIcon;
+    BufferedImage heartImage;
+    ImageIcon heartIcon;
     JPanel combinedPanel = new JPanel();
     private boolean[] heartStates; // true if the heart is full, false if empty
 
@@ -94,15 +100,13 @@ public class WindowManager {
                 emptyHeartImage =
                         ImageIO.read(
                                 Objects.requireNonNull(
-                                        getClass().getResource("/pixil-frame-0.png")));
+                                        getClass().getResource("/pixel-frame-0.png")));
                 Image scaledEmptyHeartImage =
                         emptyHeartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                 emptyHeartIcon = new ImageIcon(scaledEmptyHeartImage);
             }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        } catch (NullPointerException e) {
-            System.out.println("Image not found, check the path."); // Debug message
+        } catch (IOException | NullPointerException e) {
+            System.out.println("Image not found, check the path.");
         }
 
         // Find the last "full" heart label and update its icon directly
@@ -138,10 +142,8 @@ public class WindowManager {
                 heartIcon = new ImageIcon(scaledHeartImage);
             }
 
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        } catch (NullPointerException e) {
-            System.out.println("Image not found, check the path."); // Debug message
+        } catch (IOException | NullPointerException e) {
+            System.out.println("Image not found, check the path.");
         }
 
         for (int i = 0; i < heartsPanel.getComponentCount(); i++) {
@@ -168,10 +170,25 @@ public class WindowManager {
     }
 
     public void addComponentToButtonPanel(Component component) {
-        // Adds a component (like a button) to the button panel
         buttonPanel.add(component);
         buttonPanel.revalidate();
         buttonPanel.repaint();
+    }
+
+    //add a button to go back to the start menu
+    public void addGoBackButton(JButton goBackButton) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx =
+                1; // You might need to adjust this depending on how many columns your layout has
+        gbc.gridy = 0; // Top row
+        gbc.weightx = 1.0; // Take up space horizontally
+        gbc.weighty = 0; // No vertical expansion
+        gbc.anchor = GridBagConstraints.NORTHEAST; // Anchor the button to the northeast corner
+        gbc.insets = new Insets(10, 10, 10, 10); // Add some padding
+
+        mainPanel.add(goBackButton, gbc);
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     public void drawBoard(Component board) {
@@ -204,6 +221,8 @@ public class WindowManager {
         frame.setVisible(true);
     }
 
+
+    // This method is used to set up the panel that contains the number hub and timer
     public JPanel setupNumberAndTimerPanel(
             TimerFunction timer, Component numberHub, JButton goBackButton) {
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));

@@ -5,6 +5,10 @@ import dk.dtu.game.core.Config;
 import java.awt.*;
 import javax.swing.*;
 
+/**
+ * The CustomBoardPanel class is a custom JPanel that draws a board with n x k cells.
+ * It is used to display the board in the start window.
+ */
 public class CustomBoardPanel extends JPanel {
     private int n;
     private int k;

@@ -32,17 +32,13 @@
                 <!--suppress UnresolvedMavenProperty -->
                 <version>2.43.0</version>
                 <configuration>
-                    <!-- optional: limit format enforcement to just the files changed by this feature branch -->
                     <ratchetFrom>origin/main</ratchetFrom>
                     <formats>
-                        <!-- you can define as many formats as you want, each is independent -->
                         <format>
-                            <!-- define the files to apply to -->
                             <includes>
                                 <include>.gitattributes</include>
                                 <include>.gitignore</include>
                             </includes>
-                            <!-- define the steps to apply to those files -->
                             <trimTrailingWhitespace/>
                             <endWithNewline/>
                             <indent>
@@ -59,7 +55,7 @@
                             <formatJavadoc>false</formatJavadoc>
                         </googleJavaFormat>
                         <licenseHeader>
-                            <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
+                            <content>/* (C)$YEAR */</content>
                         </licenseHeader>
                     </java>
                 </configuration>
@@ -112,7 +108,7 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>4.2.0</version> <!-- Use the latest version available -->
+            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -131,7 +127,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.5.6</version> <!-- This should match the version of logback-classic -->
+            <version>1.5.6</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>

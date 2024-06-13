@@ -15,6 +15,12 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 
+/**
+ * The GameRulePopup class is responsible for displaying the game rules as a popup.
+ * It allows the user to toggle game rules on and off, such as dark mode, timer, lives and easy-mode.
+ * It works by adding the JSwitchBoxes and makes the toggle action for those set values in the Config class.
+ */
+
 public class GameRulePopup extends JFrame {
 
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
@@ -46,12 +52,14 @@ public class GameRulePopup extends JFrame {
         getContentPane().setBackground(backgroundColor);
     }
 
+    // Add a JSwitchBox to the popup
     public void addJSwitchBox(
             String description, boolean initialState, Consumer<Boolean> toggleAction) {
         if (GraphicsEnvironment.isHeadless()) {
             return;
         }
 
+        // Add GridBag constraints to position the components
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -130,6 +138,8 @@ public class GameRulePopup extends JFrame {
         repaint();
     }
 
+
+    // Create a JTextField for the number of lives
     private JTextField createLivesField() {
         livesField.setBackground(backgroundColor);
         livesField.setText(String.valueOf(Config.getNumberOfLives()));

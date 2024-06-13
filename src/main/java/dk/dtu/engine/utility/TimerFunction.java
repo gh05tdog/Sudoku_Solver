@@ -7,6 +7,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
 
+/**
+ * This class is responsible for managing the timer function in the game.
+ * It sets up the timer and updates the time every second.
+ */
 public class TimerFunction extends JPanel {
     private final JLabel timeLabel;
     private long startTime;

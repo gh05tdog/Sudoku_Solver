@@ -8,6 +8,12 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.event.*;
 
+
+/**
+ * The MouseActionListener class is responsible for listening to mouse events.
+ * It listens for mouse clicked events,
+ * and calls the onSudokuBoardClicked and onNumbersBoardClicked methods in the Game class.
+ */
 public class MouseActionListener implements MouseListener {
     private static final Logger logger = LoggerFactory.getLogger(MouseActionListener.class);
     private boolean isInsideSudokuBoard = false;

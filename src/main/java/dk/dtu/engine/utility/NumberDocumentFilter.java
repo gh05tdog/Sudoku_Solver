@@ -2,6 +2,10 @@ package dk.dtu.engine.utility;
 
 import javax.swing.text.*;
 
+/**
+ * A custom filter for only typing 1 digits numbers from 1-9
+ */
+
 public class NumberDocumentFilter extends DocumentFilter {
     @Override
     public void insertString(DocumentFilter.FilterBypass fb, int offset, String string,

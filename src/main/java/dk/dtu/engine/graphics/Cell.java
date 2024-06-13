@@ -7,6 +7,11 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * The Cell class represents a single cell in the Sudoku board.
+ * It contains information about the cell's number, notes, and visual state.
+ */
+
 class Cell implements Serializable {
 
     boolean isMarked = false;
@@ -43,17 +48,21 @@ class Cell implements Serializable {
         this.accentColor = Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
     }
 
+    // This functions makes a little animation when a hint is asked for
     public void startHintVisualization() {
         wasHighlightedBeforeHint = isHighlighted;
         isVisualizingHint = true;
         isHighlighted = false;
     }
 
+    // This function ends the hint visualization
     public void endHintVisualization() {
         isVisualizingHint = false;
         isHighlighted = wasHighlightedBeforeHint;
     }
 
+
+    // This function is used to paint the cell
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
         if (isUnplacable && currentNumber != 0) {
             g.setColor(placeAbleColor);
@@ -87,6 +96,7 @@ class Cell implements Serializable {
         g.drawRect(x, y, cellSize, cellSize);
     }
 
+    // This function makes the notes visible
     public void paintNotes(Graphics g2, int x, int y, int cellSize) {
         if (shouldHideNotes) {
             return;
