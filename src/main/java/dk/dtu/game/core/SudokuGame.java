@@ -8,6 +8,7 @@ import dk.dtu.engine.graphics.NumberHub;
 import dk.dtu.engine.graphics.SudokuBoardCanvas;
 import dk.dtu.engine.input.KeyboardListener;
 import dk.dtu.engine.input.MouseActionListener;
+import dk.dtu.engine.utility.SavedGame;
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
@@ -29,24 +30,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SudokuGame {
-    private final Logger logger = LoggerFactory.getLogger(SudokuGame.class);
     public final Board gameboard;
     public final Deque<Move> moveList = new ArrayDeque<>();
     public final List<Move> wrongMoveList = new ArrayList<>();
+    private final Logger logger = LoggerFactory.getLogger(SudokuGame.class);
     private final WindowManager windowManager;
     private final ArrayList<Move> hintList = new ArrayList<>();
     private final int nSize;
     private final int kSize;
     private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
     private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
+    private final JProgressBar opponentProgressBar;
+    private final JProgressBar playerProgressBar;
+    private final JButton saveGameButton;
     int gridSize;
     int cellSize;
-    private int placeableNumber = 0;
-    private int nextCageId = 1;
-
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
     Random random = new SecureRandom();
+    private int placeableNumber = 0;
+    private int nextCageId = 1;
     private SudokuBoardCanvas board;
     private NumberHub numbers;
     private TimerFunction timer;
@@ -61,8 +64,6 @@ public class SudokuGame {
     private PrintWriter networkOut;
     private boolean isCustomBoard = false;
     private boolean isNetworkGame = false;
-    private final JProgressBar opponentProgressBar;
-    private final JProgressBar playerProgressBar;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -80,6 +81,9 @@ public class SudokuGame {
 
         new Thread(this::processNetworkMessages).start();
 
+        saveGameButton = createButton("Save Game", 30);
+        saveGameButton.addActionListener(e -> onSaveGame());
+
         // Initialize the opponent progress bar
         opponentProgressBar = new JProgressBar(0, 100);
         opponentProgressBar.setStringPainted(true);
@@ -89,6 +93,22 @@ public class SudokuGame {
         playerProgressBar.setStringPainted(true);
         playerProgressBar.setString("Your Progress");
     }
+
+    private void onSaveGame() {
+        String name = JOptionPane.showInputDialog(null, "Enter a name for your saved game:", "Save Game", JOptionPane.PLAIN_MESSAGE);
+        if (name != null && !name.trim().isEmpty()) {
+            SavedGame.saveGame("jdbc:sqlite:sudoku.db", name, gameboard.getInitialBoard(), gameboard.getGameBoard(), timer.getTimeToInt(), getLives(), Config.getEnableLives(), Config.getK(), Config.getN(), board.getCagesIntArray(), Config.getEnableKillerSudoku(), getNotesToString());
+            JOptionPane.showMessageDialog(null, "Game saved successfully.", "Save Game", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Game save canceled. Name cannot be empty.", "Save Game", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private String getNotesToString() {
+        //Return notes to a string
+        return board.getNotes();
+    }
+
 
     private void processNetworkMessages() {
         while (true) {
@@ -266,8 +286,7 @@ public class SudokuGame {
                 }
             }
         }
-        if(isNetworkGame)
-        {
+        if (isNetworkGame) {
             sendProgress();
         }
     }
@@ -338,6 +357,10 @@ public class SudokuGame {
 
     public void makeNote(int row, int col, int number) {
         if (gameIsStarted) {
+            if (isNumberInRow(row, number) || isNumberInColumn(col, number) || isNumberInSubGrid(row, col, number)) {
+                // Do not place the note if the number is already present in the subgrid, row, or column
+                return;
+            }
             if (board.getNotesInCell(row, col).contains(number)) {
                 board.removeNoteFromCell(row, col, number);
             } else {
@@ -352,6 +375,7 @@ public class SudokuGame {
             int row = cell[0];
             int col = cell[1];
             int number = gameboard.getNumber(row, col);
+            checkCellsForNotes(row, col, number, "show");
 
             if (gameboard.getInitialNumber(row, col) == 0) {
                 if (Config.getEnableKillerSudoku()) {
@@ -363,6 +387,7 @@ public class SudokuGame {
                 board.setHiddenProperty(row, col, false);
                 board.removeNumber(row, col);
                 gameboard.setNumber(row, col, 0);
+
             }
         }
     }
@@ -400,7 +425,7 @@ public class SudokuGame {
             board.setCellNumber(row, col, prevNumber);
             logger.debug("Undo move: Row: {}, Column: {}, Number: {}", row, col, prevNumber);
         }
-        if(isNetworkGame){
+        if (isNetworkGame) {
             sendProgress();
         }
     }
@@ -495,45 +520,8 @@ public class SudokuGame {
             }
         }
 
-        adjustInitialNumbersVisibility();
     }
 
-    public void adjustInitialNumbersVisibility() {
-        Random rand = new Random();
-        int[][] solvedBoard = gameboard.getSolvedBoard();
-        hintList.clear();
-
-        for (int row = 0; row < gridSize; row++) {
-            for (int col = 0; col < gridSize; col++) {
-                boolean keepNumber =
-                        switch (Config.getDifficulty()) {
-                            case "easy" -> rand.nextDouble() < 0.5; // Keep about 50% of the numbers
-                            case "medium" -> rand.nextDouble() < 0.3;
-                            case "hard" -> rand.nextDouble() < 0.1; // Keep about 30% of the numbers
-                            case "extreme" -> false;
-                            default -> true; // Remove all numbers
-                        };
-                if (!keepNumber) {
-                    board.removeNumber(row, col);
-                    gameboard.setNumber(row, col, 0);
-                    gameboard.setInitialNumber(row, col, 0);
-                } else {
-                    int number = solvedBoard[row][col];
-                    board.setCellNumber(row, col, number);
-                    gameboard.setInitialNumber(row, col, number);
-                    gameboard.setNumber(row, col, number);
-
-
-                    Cage cage = board.getCageContainingCell(row, col);
-                    if (cage != null) {
-                        cage.addCurrentNumber(number); // Add the initial number to the cage
-                    }
-                }
-            }
-        }
-        setInitialBoardColor();
-        fillHintList();
-    }
 
     public void initialize(int n, int k, int cellSize) {
         createBoard(n, k, cellSize);
@@ -582,8 +570,8 @@ public class SudokuGame {
             hintButton.setEnabled(false);
             newGameButton.setEnabled(false);
             restartButton.setEnabled(false);
-            windowManager.addProgressBar(opponentProgressBar,2);
-            windowManager.addProgressBar(playerProgressBar,3);
+            windowManager.addProgressBar(opponentProgressBar, 2);
+            windowManager.addProgressBar(playerProgressBar, 3);
             playerProgressBar.setValue(calculateProgress());
             opponentProgressBar.setValue(calculateProgress());
             sendProgress();
@@ -593,6 +581,56 @@ public class SudokuGame {
 
 
         newGameButton.setText("Replay");
+        board.requestFocusInWindow();
+    }
+
+    public void initializeCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, int[][] cages, boolean isKillerSudoku, String notes) {
+        isCustomBoard = true;
+        createBoard(Config.getN(), Config.getK(), Config.getCellSize());
+        displayButtons();
+        windowManager.drawBoard(board);
+        windowManager.setupNumberAndTimerPanel(timer, numbers);
+        windowManager.layoutComponents(timer, numbers);
+
+        gameboard.setInitialBoard(initialBoard);
+        gameboard.setGameBoard(deepCopyBoard(currentBoard));
+
+        if (nSize == kSize) {
+            AlgorithmXSolver.solveExistingBoard(gameboard);
+        } else {
+            BruteForceAlgorithm.createSudoku(gameboard);
+        }
+
+        if (isKillerSudoku) {
+            board.addCages(cages, gameboard);
+            // Calculate the sum of the cages
+            for (Cage cage : board.getCages()) {
+                cage.calculateSumFromSolution(gameboard.getSolvedBoard());
+            }
+        }
+
+        gameboard.setGameBoard(deepCopyBoard(currentBoard));
+
+        if (notes != null) {
+            board.setNotes(notes);
+            applyNotesToCells();
+        }
+
+        fillHintList();
+        if (time > 0) {
+            timer.startWithTime(time);
+        }
+
+        if (usedLifeLines > 0) {
+            windowManager.setHeart();
+            windowManager.setHearts(usedLifeLines);
+        }
+        displayNumbersVisually();
+        setInitialBoardColor();
+        gameIsStarted = true;
+
+        solveButton.setEnabled(true);
+
         board.requestFocusInWindow();
     }
 
@@ -611,6 +649,57 @@ public class SudokuGame {
         return (int) ((filledCells / (double) totalCells) * 100);
     }
 
+    public void applyNotesToCells() {
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                Set<Integer> notes = board.getNotesInCell(row, col);
+                int cellNumber = gameboard.getNumber(row, col);
+                if (cellNumber != 0) {
+                    checkCellsForNotes(row, col, cellNumber, "hide");
+                    board.setHiddenProperty(row, col, true);
+                }
+                for (int note : notes) {
+                    if (isNumberInRow(row, note) || isNumberInColumn(col, note) || isNumberInSubGrid(row, col, note)) {
+                        updateHideList(row, col, note, "hide");
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isNumberInRow(int row, int number) {
+        for (int col = 0; col < gridSize; col++) {
+            if (gameboard.getNumber(row, col) == number) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isNumberInColumn(int col, int number) {
+        for (int row = 0; row < gridSize; row++) {
+            if (gameboard.getNumber(row, col) == number) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isNumberInSubGrid(int row, int col, int number) {
+        int startRow = row - (row % nSize);
+        int startCol = col - (col % nSize);
+        for (int i = startRow; i < startRow + nSize; i++) {
+            for (int j = startCol; j < startCol + nSize; j++) {
+                if (gameboard.getNumber(i, j) == number) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
     public void sendProgress() {
         System.out.println("Sending progress");
         if (networkOut != null) {
@@ -622,7 +711,7 @@ public class SudokuGame {
     }
 
 
-        public void newGame() {
+    public void newGame() {
 
         if (!isCustomBoard) {
             gameboard.clear();
@@ -799,9 +888,9 @@ public class SudokuGame {
                 } else { // This is the game over scenario
                     message =
                             """
-                                    Game Over! You've run out of hearts.
-\s
-                                    Would you like to start a new game?""";
+                                                                        Game Over! You've run out of hearts.
+                                    \s
+                                                                        Would you like to start a new game?""";
                 }
             }
 
@@ -881,6 +970,9 @@ public class SudokuGame {
                     }
                     usedSolveButton = true;
                     updateNumberCount();
+                    displayNumbersVisually();
+                    board.revalidate();
+                    board.repaint();
                     checkCompletionAndOfferNewGame();
                     usedSolveButton = false;
 
@@ -941,6 +1033,8 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(hintButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(noteButton);
+        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
+        windowManager.addComponentToButtonPanel(saveGameButton);
 
         windowManager.addGoBackButton(goBackButton);
     }
@@ -959,16 +1053,6 @@ public class SudokuGame {
 
     public int[][] deepCopyBoard(int[][] original) {
         return SolverAlgorithm.deepCopyBoard(original);
-    }
-
-    public void render() {
-        if (gameIsStarted) {
-            displayNumbersVisually();
-        }
-    }
-
-    public void update() {
-        render();
     }
 
     public List<Move> getHintList() {
@@ -1082,4 +1166,6 @@ public class SudokuGame {
         hintButton.setEnabled(true);
         newGameButton.setEnabled(true);
     }
+
+
 }
