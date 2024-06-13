@@ -1,54 +1,61 @@
 package dk.dtu.engine.utility;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
-    private static final int BROADCAST_PORT = 8888;
-    private static final int TIMEOUT = 2000; // 2 seconds
+    private static final String CENTRAL_SERVER_URL = "http://localhost:8080/discover";
 
     public static void main(String[] args) {
-        List<String> servers = discoverServers();
-        for (String server : servers) {
-            System.out.println("Found server: " + server);
-        }
-    }
-
-    public static List<String> discoverServers() {
-        List<String> servers = new ArrayList<>();
-        try (DatagramSocket socket = new DatagramSocket()) {
-            socket.setBroadcast(true);
-            socket.setSoTimeout(TIMEOUT);
-
-            String message = "DISCOVER_SERVER_REQUEST";
-            byte[] buffer = message.getBytes();
-            DatagramPacket packet = new DatagramPacket(
-                    buffer, buffer.length, InetAddress.getByName("255.255.255.255"), BROADCAST_PORT
-            );
-            socket.send(packet);
-
-            byte[] recvBuf = new byte[256];
-            while (true) {
-                DatagramPacket recvPacket = new DatagramPacket(recvBuf, recvBuf.length);
-                try {
-                    socket.receive(recvPacket);
-                    String received = new String(recvPacket.getData(), 0, recvPacket.getLength());
-                    if ("DISCOVER_SERVER_RESPONSE".equals(received)) {
-                        String serverAddress = recvPacket.getAddress().getHostAddress();
-                        if (!servers.contains(serverAddress)) {
-                            servers.add(serverAddress);
-                        }
-                    }
-                } catch (Exception e) {
-                    break; // Timeout reached, stop listening
-                }
+        try {
+            List<String> servers = discoverServers();
+            for (String server : servers) {
+                System.out.println("Found server: " + server);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static List<String> discoverServers() throws Exception {
+        List<String> servers = new ArrayList<>();
+
+        URL url = new URL(CENTRAL_SERVER_URL);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Content-Type", "application/json");
+
+        int responseCode = connection.getResponseCode();
+        System.out.println("GET Response Code :: " + responseCode);
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            JSONArray jsonArray = new JSONArray(response.toString());
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject server = jsonArray.getJSONObject(i);
+                String serverName = server.getString("name");
+                String serverAddress = server.getString("address");
+                servers.add(serverName + " - " + serverAddress);
+            }
+        } else {
+            System.out.println("Failed to discover servers.");
+        }
+
         return servers;
     }
 }

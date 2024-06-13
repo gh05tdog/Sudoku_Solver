@@ -1,33 +1,48 @@
 package dk.dtu.engine.utility;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import org.json.JSONObject;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class Server {
-    private static final int PORT = 8888;
+    private static final String CENTRAL_SERVER_URL = "http://localhost:8080/register";
+    private static final String SERVER_NAME = "MyGameServer";
+    private static final String SERVER_ADDRESS = NetworkUtils.getLocalIpAddress(); // Change to your server's address
 
     public static void main(String[] args) {
-        try (DatagramSocket socket = new DatagramSocket(PORT)) {
-            byte[] buffer = new byte[256];
-            System.out.println("Server listening on port " + PORT);
-
-            while (true) {
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
-
-                String received = new String(packet.getData(), 0, packet.getLength());
-                if ("DISCOVER_SERVER_REQUEST".equals(received)) {
-                    String response = "DISCOVER_SERVER_RESPONSE";
-                    byte[] responseData = response.getBytes();
-
-                    DatagramPacket responsePacket = new DatagramPacket(
-                            responseData, responseData.length, packet.getAddress(), packet.getPort()
-                    );
-                    socket.send(responsePacket);
-                }
-            }
+        try {
+            registerServer(SERVER_NAME, SERVER_ADDRESS);
+            System.out.println("Game server registered successfully.");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void registerServer(String name, String address) throws Exception {
+        URL url = new URL(CENTRAL_SERVER_URL);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setDoOutput(true);
+
+        JSONObject request = new JSONObject();
+        request.put("name", name);
+        request.put("address", address);
+
+        try (OutputStream os = connection.getOutputStream()) {
+            os.write(request.toString().getBytes());
+            os.flush();
+        }
+
+        int responseCode = connection.getResponseCode();
+        System.out.println("POST Response Code :: " + responseCode);
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            System.out.println("Server registered successfully.");
+        } else {
+            System.out.println("Failed to register server.");
         }
     }
 }
