@@ -34,21 +34,21 @@ public class StartMenuWindowManager {
 
         mainPanel.setBackground(backgroundColor);
 
-        welcomePanel.setBounds(60, 123, 610, 250);
+        welcomePanel.setBounds(60, 50, 610, 50 + sizePanel.getHeight() + 430);
         welcomePanel.setBackground(Color.RED);
 
-        sizePanel.setBounds(50, (frame.getHeight() / 2) + 200, 650, 160);
+        sizePanel.setBounds((frame.getWidth()/2)-325, (frame.getHeight() / 2) + 200, 650, 160);
         sizePanel.setBackground(backgroundColor);
 
 
         buttonPanel.setBounds(
                 (frame.getWidth()) - 250,
-                223,
+                50,
                 200,
                 50 + sizePanel.getHeight() + 300);
         buttonPanel.setBackground(backgroundColor);
 
-        inputPanel.setBounds(525, (frame.getHeight() / 2) + 50, 140, 50);
+        inputPanel.setBounds(650, (frame.getHeight() / 2) + 150, 140, 50);
         inputPanel.setBackground(backgroundColor);
 
 
