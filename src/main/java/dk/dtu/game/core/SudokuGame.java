@@ -126,6 +126,7 @@ public class SudokuGame {
         JOptionPane.showMessageDialog(null, "The winner is: " + winner);
     }
 
+    //This functions determines what happens when you click on a tile on the sudoku board
     public void onSudokuBoardClicked(int x, int y) {
         int row = y / (board.getHeight() / gridSize);
         int column = x / (board.getWidth() / gridSize);
@@ -152,9 +153,7 @@ public class SudokuGame {
         }
     }
 
-
-
-
+    //This lets the player set a number with the keyboard
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
 
@@ -213,7 +212,6 @@ public class SudokuGame {
     }
 
     private void updateNumberCount() {
-
         //Loop through the board and add all the numbers to a list,
         // then check if each number is equal to the max needed number,
         // if it is, then update the number display
@@ -232,7 +230,7 @@ public class SudokuGame {
 
     }
 
-
+    //This either makes a note or a move, depending of the selection of the noteButton
     public void makeMove(int row, int col, int number) {
         if (row >= 0 && col >= 0 && row < gridSize && col < gridSize) {
             if (noteButton.isSelected()
@@ -252,9 +250,7 @@ public class SudokuGame {
         }
     }
 
-
-
-
+    //Makes a move with lives enabled, meaning you can place everywhere, but will lose lives.
     private void makeMoveWithLives(int row, int col, int number) {
         if (gameboard.getInitialNumber(row, col) == 0 && !noteButton.isSelected() && number != 0) {
             board.setHiddenProperty(row, col, true);
@@ -275,6 +271,8 @@ public class SudokuGame {
         }
     }
 
+    //This only lets you place a number in a valid place, meaning you cannot place 2 numbers in the same row, col and subgrid.
+    //This doesnt mean that you can only place in correct places, so you can still make mistakes.
     private void makeMoveWithoutLives(int row, int col, int number) {
         if (gameboard.getInitialNumber(row, col) == 0
                 && !noteButton.isSelected()
@@ -320,7 +318,7 @@ public class SudokuGame {
         }
     }
 
-
+    //This sets the nubmers on the visual board.
     public void displayNumbersVisually() {
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
@@ -551,7 +549,7 @@ public class SudokuGame {
         updateNumberCount();
     }
 
-
+    //This funciton is run after every move, making sure to check when the game is over, either by losing all lives or completing the sudoku.
     public void checkCompletionAndOfferNewGame() {
         boolean completedSuccessfully = isSudokuCompleted() && !testMode();
         boolean isGameOver = isGameOver();
@@ -640,6 +638,8 @@ public class SudokuGame {
         return System.getProperty("testMode") != null;
     }
 
+
+    //Visually displays the buttons on the screen.
     private void displayButtons() {
         restartButton = createButton("Restart", 30);
         solveButton = createButton("Solve", 30);

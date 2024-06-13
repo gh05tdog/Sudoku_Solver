@@ -164,6 +164,7 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
+    //The marked cell is the cell clicked on, it is used to highlight the marked cell in a darker color
     public int[] getMarkedCell() {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
@@ -175,6 +176,7 @@ public class SudokuBoardCanvas extends JPanel {
         return new int[0];
     }
 
+    //The marked cell is the cell clicked on, it is used to highlight the marked cell in a darker color
     public void setMarkedCell(int row, int col) {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
@@ -185,6 +187,7 @@ public class SudokuBoardCanvas extends JPanel {
         logger.debug("Setting the marked cell {} {}", row, col);
     }
 
+    //When easymode is enabled, this will highlight all the places where you can place the current number you have clicked on.
     public void highlightPlaceableCells(int number) {
         clearUnplacableCells();
         boolean[][] unplaceable = new boolean[gridSize][gridSize];
@@ -204,15 +207,13 @@ public class SudokuBoardCanvas extends JPanel {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (cells[row][col].getNumber() == number) {
-                    // Mark the entire row and column as unplaceable
                     for (int i = 0; i < gridSize; i++) {
                         unplaceable[row][i] = true;
                         unplaceable[i][col] = true;
                     }
 
-                    // Mark the entire subgrid as unplaceable
                     int subgridSize =
-                            (int) Math.sqrt(gridSize); // Assuming a standard square Sudoku board
+                            (int) Math.sqrt(gridSize);
                     int startRow = (row / subgridSize) * subgridSize;
                     int startCol = (col / subgridSize) * subgridSize;
                     for (int i = startRow; i < startRow + subgridSize; i++) {
@@ -224,7 +225,7 @@ public class SudokuBoardCanvas extends JPanel {
             }
         }
 
-        // Apply highlights only to placeable cells (i.e., not marked as unplaceable)
+        // Apply highlights only to placeable cells
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (!unplaceable[row][col] && cells[row][col].getNumber() == 0) {
