@@ -357,6 +357,10 @@ public class SudokuGame {
 
     public void makeNote(int row, int col, int number) {
         if (gameIsStarted) {
+            if (isNumberInRow(row, number) || isNumberInColumn(col, number) || isNumberInSubGrid(row, col, number)) {
+                // Do not place the note if the number is already present in the subgrid, row, or column
+                return;
+            }
             if (board.getNotesInCell(row, col).contains(number)) {
                 board.removeNoteFromCell(row, col, number);
             } else {
@@ -609,6 +613,7 @@ public class SudokuGame {
 
         if (notes != null) {
             board.setNotes(notes);
+            applyNotesToCells();
         }
 
         fillHintList();
@@ -643,6 +648,57 @@ public class SudokuGame {
 
         return (int) ((filledCells / (double) totalCells) * 100);
     }
+
+    public void applyNotesToCells() {
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                Set<Integer> notes = board.getNotesInCell(row, col);
+                int cellNumber = gameboard.getNumber(row, col);
+                if (cellNumber != 0) {
+                    checkCellsForNotes(row, col, cellNumber, "hide");
+                    board.setHiddenProperty(row, col, true);
+                }
+                for (int note : notes) {
+                    if (isNumberInRow(row, note) || isNumberInColumn(col, note) || isNumberInSubGrid(row, col, note)) {
+                        updateHideList(row, col, note, "hide");
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isNumberInRow(int row, int number) {
+        for (int col = 0; col < gridSize; col++) {
+            if (gameboard.getNumber(row, col) == number) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isNumberInColumn(int col, int number) {
+        for (int row = 0; row < gridSize; row++) {
+            if (gameboard.getNumber(row, col) == number) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isNumberInSubGrid(int row, int col, int number) {
+        int startRow = row - (row % nSize);
+        int startCol = col - (col % nSize);
+        for (int i = startRow; i < startRow + nSize; i++) {
+            for (int j = startCol; j < startCol + nSize; j++) {
+                if (gameboard.getNumber(i, j) == number) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 
     public void sendProgress() {
         System.out.println("Sending progress");
