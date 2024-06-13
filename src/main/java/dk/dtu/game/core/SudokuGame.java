@@ -97,11 +97,16 @@ public class SudokuGame {
     private void onSaveGame() {
         String name = JOptionPane.showInputDialog(null, "Enter a name for your saved game:", "Save Game", JOptionPane.PLAIN_MESSAGE);
         if (name != null && !name.trim().isEmpty()) {
-            SavedGame.saveGame("jdbc:sqlite:sudoku.db", name, gameboard.getInitialBoard(), gameboard.getGameBoard(), timer.getTimeToInt(), getLives(), Config.getEnableLives(), Config.getK(), Config.getN(), board.getCagesIntArray(), Config.getEnableKillerSudoku());
+            SavedGame.saveGame("jdbc:sqlite:sudoku.db", name, gameboard.getInitialBoard(), gameboard.getGameBoard(), timer.getTimeToInt(), getLives(), Config.getEnableLives(), Config.getK(), Config.getN(), board.getCagesIntArray(), Config.getEnableKillerSudoku(), getNotesToString());
             JOptionPane.showMessageDialog(null, "Game saved successfully.", "Save Game", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null, "Game save canceled. Name cannot be empty.", "Save Game", JOptionPane.WARNING_MESSAGE);
         }
+    }
+
+    private String getNotesToString() {
+        //Return notes to a string
+        return board.getNotes();
     }
 
 
@@ -366,6 +371,7 @@ public class SudokuGame {
             int row = cell[0];
             int col = cell[1];
             int number = gameboard.getNumber(row, col);
+            checkCellsForNotes(row, col, number, "show");
 
             if (gameboard.getInitialNumber(row, col) == 0) {
                 if (Config.getEnableKillerSudoku()) {
@@ -377,6 +383,7 @@ public class SudokuGame {
                 board.setHiddenProperty(row, col, false);
                 board.removeNumber(row, col);
                 gameboard.setNumber(row, col, 0);
+
             }
         }
     }
@@ -573,7 +580,7 @@ public class SudokuGame {
         board.requestFocusInWindow();
     }
 
-    public void initializeCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, int[][] cages, boolean isKillerSudoku) {
+    public void initializeCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, int[][] cages, boolean isKillerSudoku, String notes) {
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -599,6 +606,10 @@ public class SudokuGame {
         }
 
         gameboard.setGameBoard(deepCopyBoard(currentBoard));
+
+        if (notes != null) {
+            board.setNotes(notes);
+        }
 
         fillHintList();
         if (time > 0) {

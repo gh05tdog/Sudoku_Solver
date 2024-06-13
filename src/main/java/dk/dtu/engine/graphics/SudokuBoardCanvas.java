@@ -58,6 +58,7 @@ public class SudokuBoardCanvas extends JPanel {
         if (Config.getEnableKillerSudoku()) {
             drawCages(g);
         }
+        repaint();
     }
 
     private void drawSubGrids(Graphics g) {
@@ -439,17 +440,6 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
-    public Cage getCageContainingCell(int row, int col) {
-        for (Cage cage : cages.values()) {
-            for (Point cell : cage.getCells()) {
-                if (cell.x == col && cell.y == row) {
-                    return cage;
-                }
-            }
-        }
-        return null;
-    }
-
     public List<Cage> getCages() {
         return new ArrayList<>(cages.values());
     }
@@ -483,21 +473,6 @@ public class SudokuBoardCanvas extends JPanel {
         return cagesArray;
     }
 
-    // Ensure sums are included in saved data
-    public String serializeCages() {
-        StringBuilder builder = new StringBuilder();
-        for (Cage cage : cages.values()) {
-            builder.append(cage.getId()).append(":").append(cage.getSum()).append(",");
-            for (Point cell : cage.getCells()) {
-                builder.append(cell.y).append(",").append(cell.x).append(";");
-            }
-            builder.setLength(builder.length() - 1);  // Remove last semicolon
-            builder.append("|");
-        }
-        builder.setLength(builder.length() - 1);  // Remove last pipe
-        return builder.toString();
-    }
-
     public void addCages(int[][] cages, Board board) {
         clearCages();
         Map<Integer, List<Point>> cageMap = new HashMap<>();
@@ -521,22 +496,33 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
-    public void deserializeAndAddCages(String serializedCages) {
-        String[] cageDataArray = serializedCages.split("\\|");
-        for (String cageData : cageDataArray) {
-            String[] parts = cageData.split(":");
-            int cageId = Integer.parseInt(parts[0]);
-            int sum = Integer.parseInt(parts[1]);
-            String[] cellsData = parts[2].split(";");
-
-            List<Point> cells = new ArrayList<>();
-            for (String cellData : cellsData) {
-                String[] coordinates = cellData.split(",");
-                int row = Integer.parseInt(coordinates[0]);
-                int col = Integer.parseInt(coordinates[1]);
-                cells.add(new Point(col, row));
+    public void setNotes(String notes) {
+        String[] noteData = notes.split(";");
+        for (String note : noteData) {
+            String[] parts = note.split(":");
+            int row = Integer.parseInt(parts[0]);
+            int col = Integer.parseInt(parts[1]);
+            String[] notesData = parts[2].split(",");
+            for (String noteData1 : notesData) {
+                cells[row][col].addNote(Integer.parseInt(noteData1));
             }
-            addCage(cageId, new Cage(cells, sum, cageId));
         }
+    }
+
+    public String getNotes() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                if (!cells[i][j].getNotes().isEmpty()) {
+                    builder.append(i).append(":").append(j).append(":");
+                    for (Integer note : cells[i][j].getNotes()) {
+                        builder.append(note).append(",");
+                    }
+                    builder.setLength(builder.length() - 1);  // Remove last comma
+                    builder.append(";");
+                }
+            }
+        }
+        return builder.toString();
     }
 }

@@ -39,6 +39,7 @@ public class DatabaseSetup {
                 "cages TEXT NOT NULL," +
                 "isKillerSudoku BOOLEAN NOT NULL," +
                 "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                "notes TEXT," +
                 "name TEXT NOT NULL" +
                 ");";
 

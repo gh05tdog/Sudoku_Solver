@@ -49,12 +49,12 @@ public class GameEngine {
 
     }
 
-    public void startCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, int n, int k, int[][] cages, boolean isKillerSudoku) throws Board.BoardNotCreatable {
+    public void startCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, int n, int k, int[][] cages, boolean isKillerSudoku, String notes) throws Board.BoardNotCreatable {
         if (running) return;
         running = true;
         sudokuGame =
                 new SudokuGame(windowManager, n, k, Config.getCellSize());
-        sudokuGame.initializeCustomSaved(initialBoard, currentBoard, time, usedLifeLines, cages, isKillerSudoku);
+        sudokuGame.initializeCustomSaved(initialBoard, currentBoard, time, usedLifeLines, cages, isKillerSudoku, notes);
         windowManager.display();
 
     }

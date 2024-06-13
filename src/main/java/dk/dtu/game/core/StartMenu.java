@@ -157,8 +157,9 @@ public class StartMenu {
             int k = selectedGame.getKSize();
             int[][] serializedCages = deserializeBoard(selectedGame.getCages());
             boolean isKillerSudoku = selectedGame.isKillerSudoku();
+            String notes = selectedGame.getNotes();
 
-            startGameWithSavedData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, n, k, serializedCages, isKillerSudoku);
+            startGameWithSavedData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, n, k, serializedCages, isKillerSudoku, notes);
         }
     }
 
@@ -178,7 +179,7 @@ public class StartMenu {
         return board;
     }
 
-    private void startGameWithSavedData(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int n, int k, int[][] cages, boolean isKillerSudoku) {
+    private void startGameWithSavedData(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int n, int k, int[][] cages, boolean isKillerSudoku, String notes) {
         Config.setCellSize(550 / (k * n));
         Config.setK(k);
         Config.setN(n);
@@ -192,7 +193,7 @@ public class StartMenu {
             }
             GameEngine gameEngine = new GameEngine(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
-            gameEngine.startCustomSaved(initialBoard, currentBoard, time, usedLifeLines, n, k, cages, isKillerSudoku);
+            gameEngine.startCustomSaved(initialBoard, currentBoard, time, usedLifeLines, n, k, cages, isKillerSudoku, notes);
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             logBoardNotCreatable();
         }
