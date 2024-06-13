@@ -114,6 +114,7 @@ public class StartMenu {
         updateCustomBoardPanel(2, 2);
         addNetworkGameButtons();
         initializeGamerulePopup();
+        addLoadGameButton();
 
         threeByThree.updateBackgroundColor(Color.GRAY);
         Config.setK(3);
@@ -123,13 +124,15 @@ public class StartMenu {
         addChangeListenerToField(inputNField);
         addChangeListenerToField(inputKField);
 
-        addLoadGameButton();
+
     }
 
 
     private void addLoadGameButton() {
-        loadGameButton.setBounds(5, 135, 190, 40); // Adjust the size and position as needed
-        loadGameButton.setBackground(Color.WHITE);
+        loadGameButton.setBounds(5, 165, 190, 40); // Adjust the size and position as needed
+        loadGameButton.setBackground(backgroundColor);
+        loadGameButton.setForeground(AccentColor);
+        loadGameButton.setBorder(new LineBorder(AccentColor));
         loadGameButton.setFocusPainted(false);
         loadGameButton.addActionListener(this::onLoadGame);
         startMenuWindowManager.addComponent(loadGameButton, startMenuWindowManager.getButtonPanel());
@@ -137,34 +140,14 @@ public class StartMenu {
 
 
 
-
-    private void addDifficultyDropdown() {
-        difficultyDropdown.setBounds(5, 5, 190, 40); // Set appropriate bounds
-        difficultyDropdown.setBackground(backgroundColor);
-        difficultyDropdown.setForeground(AccentColor);
-        difficultyDropdown.setBorder(new LineBorder(AccentColor));
-        difficultyDropdown.setSelectedItem("Medium"); // Set default selection
-
-        difficultyDropdown.addActionListener(e -> {
-            String selectedDifficulty = (String) difficultyDropdown.getSelectedItem();
-            if (selectedDifficulty != null) {
-                Config.setDifficulty(selectedDifficulty.toLowerCase());
-            }
-        });
-
-        startMenuWindowManager.addComponent(difficultyDropdown, startMenuWindowManager.getDifficultyPanel());
-    }
-
-
-
     private void addNetworkGameButtons() {
-        createGameButton.setBounds(5, 400 - 90, 190, 40); // Adjust the size and position as needed
+        createGameButton.setBounds(5, 280, 190, 40); // Adjust the size and position as needed
         createGameButton.setBackground(Config.getDarkMode() ? backgroundColor : Color.WHITE);
 
         createGameButton.setFocusPainted(false);
         createGameButton.addActionListener(this::onCreateGame);
 
-        joinGameButton.setBounds(5, 400 - 45, 190, 40); // Adjust the size and position as needed
+        joinGameButton.setBounds(5, 325, 190, 40); // Adjust the size and position as needed
         joinGameButton.setBackground(Config.getDarkMode() ? backgroundColor : Color.WHITE);
         joinGameButton.setFocusPainted(false);
         joinGameButton.addActionListener(this::onJoinGame);
@@ -179,7 +162,7 @@ public class StartMenu {
         startMenuWindowManager.addComponent(
                 joinGameButton, startMenuWindowManager.getButtonPanel());
 
-        gameRuleButton.setBounds(5, 400, 190, 40); // Set bounds below join game button
+        gameRuleButton.setBounds(5, 440, 190, 40); // Set bounds below join game button
         gameRuleButton.setBackground(backgroundColor);
         gameRuleButton.setFocusPainted(false);
         gameRuleButton.setBorder(new LineBorder(AccentColor));
@@ -331,7 +314,7 @@ public class StartMenu {
     private void addLeaderboardButton() {
 
         leaderboardButton.addActionListener(this::onShowLeaderboard);
-        leaderboardButton.setBounds(5, 180, 190, 40); // Adjust the size and position as needed
+        leaderboardButton.setBounds(5, 95, 190, 40); // Adjust the size and position as needed
         leaderboardButton.setBackground(backgroundColor);
         leaderboardButton.setFocusPainted(false);
 
@@ -498,7 +481,7 @@ public class StartMenu {
         startMenuWindowManager.addComponent(startButton, startMenuWindowManager.getButtonPanel());
 
         int padding = 10;
-        difficultyDropdown.setBounds(5, 55, 190, 40); // Adjust bounds to add padding
+        difficultyDropdown.setBounds(5, 50, 190, 40); // Adjust bounds to add padding
         difficultyDropdown.setBackground(backgroundColor);
         difficultyDropdown.setForeground(AccentColor);
         difficultyDropdown.setBorder(new LineBorder(AccentColor));
@@ -515,13 +498,9 @@ public class StartMenu {
         startMenuWindowManager.addComponent(difficultyDropdown, startMenuWindowManager.getButtonPanel());
     }
 
-
-
-
-
     private void addImportButton() {
         importButton.addActionListener(this::onImportSudoku);
-        importButton.setBounds(5, 140, 190, 40); // Set bounds appropriately if needed
+        importButton.setBounds(5, 210, 190, 40); // Set bounds appropriately if needed
         importButton.setBackground(backgroundColor);
         importButton.setFocusPainted(false);
 
@@ -652,85 +631,6 @@ public class StartMenu {
         }
     }
 
-    private void addDifficultyPanelButtons() {
-        // This method adds the difficulty buttons to the start menu
-        Config.setDifficulty("medium");
-        difficultyGroup.add(easyButton);
-        difficultyGroup.add(mediumButton);
-        difficultyGroup.add(hardButton);
-        difficultyGroup.add(extremeButton);
-
-        easyButton.setBackground(backgroundColor);
-        mediumButton.setBackground(backgroundColor);
-        hardButton.setBackground(backgroundColor);
-        extremeButton.setBackground(backgroundColor);
-        easyButton.setFocusPainted(false);
-        mediumButton.setFocusPainted(false);
-        hardButton.setFocusPainted(false);
-        extremeButton.setFocusPainted(false);
-
-        easyButton.setBorder(new LineBorder(AccentColor));
-        easyButton.setForeground(AccentColor);
-        mediumButton.setForeground(AccentColor);
-        mediumButton.setBorder(new LineBorder(AccentColor));
-        hardButton.setBorder(new LineBorder(AccentColor));
-        hardButton.setForeground(AccentColor);
-        extremeButton.setBorder(new LineBorder(AccentColor));
-        extremeButton.setForeground(AccentColor);
-
-        easyButton.addItemListener(
-                e -> {
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        Config.setDifficulty("easy");
-                    } else {
-                        easyButton.setBackground(backgroundColor);
-                    }
-                });
-        mediumButton.addItemListener(
-                e -> {
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        Config.setDifficulty("medium");
-                    } else {
-                        mediumButton.setBackground(backgroundColor);
-                    }
-                });
-        hardButton.addItemListener(
-                e -> {
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        Config.setDifficulty("hard");
-                    } else {
-                        hardButton.setBackground(backgroundColor);
-                    }
-                });
-        extremeButton.addItemListener(
-                e -> {
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        Config.setDifficulty("extreme");
-                    } else {
-                        extremeButton.setBackground(backgroundColor);
-                    }
-                });
-
-        easyButton.setBounds(5, 5, twoByTwo.getWidth(), 40);
-        mediumButton.setBounds(10 + easyButton.getWidth(), 5, twoByTwo.getWidth(), 40);
-        hardButton.setBounds(
-                15 + easyButton.getWidth() + mediumButton.getWidth(), 5, twoByTwo.getWidth(), 40);
-        extremeButton.setBounds(
-                20 + easyButton.getWidth() + mediumButton.getWidth() + hardButton.getWidth(),
-                5,
-                twoByTwo.getWidth(),
-                40);
-
-        startMenuWindowManager.addComponent(
-                easyButton, startMenuWindowManager.getDifficultyPanel());
-        startMenuWindowManager.addComponent(
-                mediumButton, startMenuWindowManager.getDifficultyPanel());
-        startMenuWindowManager.addComponent(
-                hardButton, startMenuWindowManager.getDifficultyPanel());
-        startMenuWindowManager.addComponent(
-                extremeButton, startMenuWindowManager.getDifficultyPanel());
-    }
-
     public void updateColors() {
         backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
         AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
@@ -764,6 +664,10 @@ public class StartMenu {
         leaderboardButton.setBackground(backgroundColor);
         leaderboardButton.setForeground(AccentColor);
         leaderboardButton.setBorder(new LineBorder(AccentColor));
+
+        loadGameButton.setBackground(backgroundColor);
+        loadGameButton.setForeground(AccentColor);
+        loadGameButton.setBorder(new LineBorder(AccentColor));
 
         inputNField.setBackground(backgroundColor);
         inputNField.setForeground(AccentColor);

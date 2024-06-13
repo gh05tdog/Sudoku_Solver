@@ -9,10 +9,9 @@ import javax.swing.*;
 public class StartMenuWindowManager {
     private final JFrame frame;
     private final JPanel buttonPanel = new JPanel(null); // Panel for buttons
-    private final JPanel difficultyPanel = new JPanel(null); // Panel for difficulty buttons
     private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
-    private final JPanel gameRulePanel = new JPanel(null); // Panel for game rules
+    private final JPanel welcomePanel = new JPanel(null); // Panel for welcome message
     private final JPanel mainPanel = new JPanel(null);
     private static Color backgroundColor =
             Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
@@ -30,35 +29,33 @@ public class StartMenuWindowManager {
         buttonPanel.setOpaque(true);
         sizePanel.setOpaque(true);
         mainPanel.setOpaque(true);
-        difficultyPanel.setOpaque(true);
         inputPanel.setOpaque(true);
+        welcomePanel.setOpaque(true);
 
         mainPanel.setBackground(backgroundColor);
 
-        sizePanel.setBounds(50, (frame.getHeight() / 2) - 150, 650, 160);
+        welcomePanel.setBounds(60, 123, 610, 250);
+        welcomePanel.setBackground(Color.RED);
+
+        sizePanel.setBounds(50, (frame.getHeight() / 2) + 200, 650, 160);
         sizePanel.setBackground(backgroundColor);
 
-        difficultyPanel.setBounds(50, (frame.getHeight() / 2) + 50, 650, 50);
-        difficultyPanel.setBackground(backgroundColor);
 
         buttonPanel.setBounds(
                 (frame.getWidth()) - 250,
-                (frame.getHeight() / 2) - 150,
+                223,
                 200,
-                difficultyPanel.getHeight() + sizePanel.getHeight() + 300);
+                50 + sizePanel.getHeight() + 300);
         buttonPanel.setBackground(backgroundColor);
 
-        inputPanel.setBounds(525, (frame.getHeight() / 2) - 205, 140, 50);
+        inputPanel.setBounds(525, (frame.getHeight() / 2) + 50, 140, 50);
         inputPanel.setBackground(backgroundColor);
 
-        gameRulePanel.setBounds(50, 50, 200, 50);
-        gameRulePanel.setBackground(backgroundColor);
 
         mainPanel.add(buttonPanel);
         mainPanel.add(sizePanel);
-        mainPanel.add(difficultyPanel);
         mainPanel.add(inputPanel);
-        mainPanel.add(gameRulePanel);
+        mainPanel.add(welcomePanel);
 
         frame.setContentPane(mainPanel); // Add the main panel to the frame
     }
@@ -82,18 +79,12 @@ public class StartMenuWindowManager {
         buttonPanel.setBackground(backgroundColor);
         buttonPanel.revalidate();
         buttonPanel.repaint();
-        difficultyPanel.setBackground(backgroundColor);
-        difficultyPanel.revalidate();
-        difficultyPanel.repaint();
         sizePanel.setBackground(backgroundColor);
         sizePanel.revalidate();
         sizePanel.repaint();
         inputPanel.setBackground(backgroundColor);
         inputPanel.revalidate();
         inputPanel.repaint();
-        gameRulePanel.setBackground(backgroundColor);
-        gameRulePanel.revalidate();
-        gameRulePanel.repaint();
 
         // Update custom board panels
         if (customBoardPanels != null) {
@@ -116,13 +107,6 @@ public class StartMenuWindowManager {
         return buttonPanel;
     }
 
-    public JPanel getDifficultyPanel() {
-        return difficultyPanel;
-    }
-
-    public JPanel getGameRulePanel() {
-        return gameRulePanel;
-    }
 
     public JPanel getSizePanel() {
         return sizePanel;

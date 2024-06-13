@@ -13,7 +13,7 @@ class SudokuSolverApp {
         // Generate the database
         DatabaseSetup.setup("jdbc:sqlite:sudoku.db");
 
-        StartMenuWindowManager startMenu = new StartMenuWindowManager(new JFrame(), 1000, 850);
+        StartMenuWindowManager startMenu = new StartMenuWindowManager(new JFrame(), 1000, 900);
         StartMenu startMenu1 = new StartMenu(startMenu);
         startMenu1.initialize();
     }
