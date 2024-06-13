@@ -145,11 +145,6 @@ public class StartMenu {
             // Connect the client to the newly started server
             connectClient(localIpAddress);
 
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Server started on IP: " + localIpAddress + ". Waiting for clients to join.",
-                    "Server Started",
-                    JOptionPane.INFORMATION_MESSAGE);
         } catch (UnknownHostException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(
