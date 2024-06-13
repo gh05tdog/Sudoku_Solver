@@ -1118,8 +1118,8 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(hintButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(noteButton);
-        windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
-        windowManager.addComponentToButtonPanel(saveGameButton);
+        //windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
+        //windowManager.addComponentToButtonPanel(saveGameButton);
 
         // windowManager.addGoBackButton(goBackButton);
     }
