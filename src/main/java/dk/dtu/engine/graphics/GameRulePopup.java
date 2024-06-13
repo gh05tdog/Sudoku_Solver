@@ -11,6 +11,11 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.function.Consumer;
 
+/**
+ * The GameRulePopup class is responsible for displaying the game rules as a popup.
+ * It allows the user to toggle game rules on and off, such as dark mode, timer, lives and easy-mode.
+ */
+
 public class GameRulePopup extends JFrame {
 
     public GameRulePopup() {

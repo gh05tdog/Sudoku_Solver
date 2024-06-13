@@ -27,6 +27,12 @@ import javax.swing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+ * The SudokuGame class is responsible for managing all the actions taken on the main game window. It handles making moves, undoing moves,
+ * providing hints etc. It also manages the game board and the number hub. It serves as a connection between the board and the sudokuboard canvas,
+ * whilst also adding buttons and panels etc to the windowmanager. It is the core logic of
+ */
 public class SudokuGame {
     private static final Logger logger = LoggerFactory.getLogger(SudokuGame.class);
     public final Board gameboard;

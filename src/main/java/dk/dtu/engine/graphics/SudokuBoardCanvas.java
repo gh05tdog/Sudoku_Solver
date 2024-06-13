@@ -9,6 +9,12 @@ import javax.swing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The SudokuBoardCanvas class is the visual representation of the game. It features many functions to paint the grid and the subgrids,
+ * it also makes a 2D array of cells, which is an object that stores the numbers on the board and the notes. This class also paints the
+ * killer sudoku, the hightlighting of cells and the hint visualization
+ */
+
 public class SudokuBoardCanvas extends JPanel {
     private final int gridSize;
     private final int cellSize;
