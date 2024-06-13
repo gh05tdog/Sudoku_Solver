@@ -14,6 +14,7 @@ import javax.swing.*;
 /**
  * The WindowManager class is responsible for managing the game window.
  * It sets up the window and adds components to it.
+ * It keeps track visually of the hearts when lives are enabled and makes sure one can add components to panels from the sudoku game.
  */
 public class WindowManager {
     private final JFrame frame;
@@ -171,6 +172,7 @@ public class WindowManager {
         buttonPanel.repaint();
     }
 
+    //add a button to go back to the start menu
     public void addGoBackButton(JButton goBackButton) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx =

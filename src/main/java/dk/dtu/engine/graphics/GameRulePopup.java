@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 /**
  * The GameRulePopup class is responsible for displaying the game rules as a popup.
  * It allows the user to toggle game rules on and off, such as dark mode, timer, lives and easy-mode.
+ * It works by adding the JSwitchBoxes and makes the toggle action for those set values in the Config class.
  */
 
 public class GameRulePopup extends JFrame {

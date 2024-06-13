@@ -8,6 +8,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+/**
+ * This class is responsible for updating the leaderboard with new scores, whenever a game is finished.
+
+ */
 public class UpdateLeaderboard {
 
     private UpdateLeaderboard() {

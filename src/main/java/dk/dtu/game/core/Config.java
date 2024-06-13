@@ -3,6 +3,12 @@ package dk.dtu.game.core;
 
 import java.util.prefs.Preferences;
 
+/**
+ * The Config class is a utility class that stores the configuration of the game.
+ * It contains information about the board size, cell size, and difficulty. Along with the gamerules.
+ * It uses preferences to store values even when closing the game
+ */
+
 public class Config {
     private static int k;
     private static int n;

@@ -11,6 +11,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is responsible for loading the leaderboard from the database.
+ * It gets the strings from the database and creates a list of LeaderboardEntry objects.
+ */
+
 public class Leaderboard {
 
     private static final Logger logger = LoggerFactory.getLogger(Leaderboard.class);
