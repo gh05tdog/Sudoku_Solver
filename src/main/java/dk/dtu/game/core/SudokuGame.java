@@ -144,10 +144,8 @@ public class SudokuGame {
         //Check if my progress is higher than the opponent's progress
         if (progress != calculateProgress()) {
             opponentProgressBar.setValue(progress);
-        } else {
-            opponentProgressBar.setValue(progress);
-            playerProgressBar.setValue(progress);
         }
+
     }
 
     private void announceWinner(String winner) {
