@@ -1,7 +1,8 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class CustomProgressBar extends JProgressBar {
     private CustomProgressBarUI customUI;

@@ -112,7 +112,6 @@ public class SudokuGame {
         playerProgressBar.setTextColor(textColor);
     }
 
-
     private void processNetworkMessages() {
         while (true) {
             try {
@@ -159,7 +158,7 @@ public class SudokuGame {
     }
 
     private void updateOpponentProgress(int progress) {
-        //Check if my progress is higher than the opponent's progress
+        // Check if my progress is higher than the opponent's progress
         if (progress != calculateProgress()) {
             opponentProgressBar.setValue(progress);
         }
@@ -196,7 +195,6 @@ public class SudokuGame {
             logger.debug("Click outside the Sudoku board or on another component");
         }
     }
-
 
     public void typeNumberWithKeyboard(KeyEvent e) {
         char keyChar = e.getKeyChar();
@@ -288,11 +286,11 @@ public class SudokuGame {
                 }
             }
         }
-        if(isNetworkGame)
-        {
+        if (isNetworkGame) {
             sendProgress();
         }
     }
+
     private void makeMoveWithLives(int row, int col, int number) {
         if (gameboard.getInitialNumber(row, col) == 0
                 && !noteButton.isSelected()
@@ -306,7 +304,7 @@ public class SudokuGame {
 
             if (gameboard.getNumber(row, col) != solutionB[row][col]
                     || (Config.getEnableKillerSudoku()
-                    && cageContains(new Point(col, row), number))) {
+                            && cageContains(new Point(col, row), number))) {
                 windowManager.removeHeart();
                 board.setWrongNumber(row, col, number);
                 wrongMoveList.add(new Move(row, col, number, previousNumber));
@@ -354,7 +352,6 @@ public class SudokuGame {
         Move move = new Move(row, col, number, previousNumber);
         moveList.push(move); // Log the move for undo functionality
     }
-
 
     public void makeNote(int row, int col, int number) {
         if (gameIsStarted) {
@@ -420,7 +417,7 @@ public class SudokuGame {
             board.setCellNumber(row, col, prevNumber);
             logger.debug("Undo move: Row: {}, Column: {}, Number: {}", row, col, prevNumber);
         }
-        if(isNetworkGame){
+        if (isNetworkGame) {
             sendProgress();
         }
     }
@@ -459,13 +456,13 @@ public class SudokuGame {
 
         int minCageSize = 1;
         int maxCageSize = 4;
-        double smallCageProbability = switch (Config.getDifficulty()) {
-            case "medium" -> 0.9; // 90% chance to create smaller cages
-            case "hard" -> 0.7;   // 50% chance to create smaller cages
-            case "extreme" -> 0.5; // 50% chance to create smaller cages
-            default -> 1.0;       // 100% chance to create smaller cages for other difficulties
-        };
-
+        double smallCageProbability =
+                switch (Config.getDifficulty()) {
+                    case "medium" -> 0.9; // 90% chance to create smaller cages
+                    case "hard" -> 0.7; // 50% chance to create smaller cages
+                    case "extreme" -> 0.5; // 50% chance to create smaller cages
+                    default -> 1.0; // 100% chance to create smaller cages for other difficulties
+                };
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -517,7 +514,7 @@ public class SudokuGame {
             }
         }
 
-        //adjustInitialNumbersVisibility();
+        // adjustInitialNumbersVisibility();
     }
 
     public void adjustInitialNumbersVisibility() {
@@ -544,7 +541,6 @@ public class SudokuGame {
                     board.setCellNumber(row, col, number);
                     gameboard.setInitialNumber(row, col, number);
                     gameboard.setNumber(row, col, number);
-
 
                     Cage cage = board.getCageContainingCell(row, col);
                     if (cage != null) {
@@ -605,15 +601,14 @@ public class SudokuGame {
             hintButton.setEnabled(false);
             newGameButton.setEnabled(false);
             restartButton.setEnabled(false);
-            windowManager.addProgressBar(opponentProgressBar,2);
-            windowManager.addProgressBar(playerProgressBar,3);
+            windowManager.addProgressBar(opponentProgressBar, 2);
+            windowManager.addProgressBar(playerProgressBar, 3);
             playerProgressBar.setValue(calculateProgress());
             opponentProgressBar.setValue(calculateProgress());
             sendProgress();
         } else {
             windowManager.setHeart();
         }
-
 
         newGameButton.setText("Replay");
         board.requestFocusInWindow();
@@ -644,8 +639,7 @@ public class SudokuGame {
         }
     }
 
-
-        public void newGame() {
+    public void newGame() {
 
         if (!isCustomBoard) {
             gameboard.clear();
@@ -798,10 +792,12 @@ public class SudokuGame {
                         Preferences pref = Preferences.userNodeForPackage(this.getClass());
                         String storedUsername = pref.get("username", "");
 
-
                         // Prompt user for their username
-                        String username = JOptionPane.showInputDialog(null,
-                                "Enter your name for the leaderboard:", storedUsername);
+                        String username =
+                                JOptionPane.showInputDialog(
+                                        null,
+                                        "Enter your name for the leaderboard:",
+                                        storedUsername);
                         if (username != null && !username.trim().isEmpty()) {
                             // Store the username in preferences
                             pref.put("username", username.trim());
@@ -875,7 +871,6 @@ public class SudokuGame {
         eraseButton = createButton("Erase", 30);
         undoButton = createButton("Undo", 300);
         hintButton = createButton("Hint", 30);
-
 
         solveButton.setEnabled(false);
 
@@ -994,10 +989,10 @@ public class SudokuGame {
         UIManager.put("Button.foreground", accentColor);
         UIManager.put("OptionPane.messageForeground", accentColor);
         UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.BOLD, 12));
-        UIManager.put("Button.border",new LineBorder(accentColor));
+        UIManager.put("Button.border", new LineBorder(accentColor));
         goBackButton.addActionListener(
                 e -> {
-                    //Ensure that the game is not a network game
+                    // Ensure that the game is not a network game
                     isNetworkGame = false;
                     // Make a popup to ask if they want to go back
                     int response =
@@ -1029,7 +1024,7 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(noteButton);
 
-        //windowManager.addGoBackButton(goBackButton);
+        // windowManager.addGoBackButton(goBackButton);
     }
 
     private void setInitialBoardColor() {

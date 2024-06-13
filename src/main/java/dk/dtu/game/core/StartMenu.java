@@ -274,7 +274,6 @@ public class StartMenu {
         leaderboardDialog.setVisible(true);
     }
 
-
     private void addChangeListenerToField(JTextField field) {
         // This method adds a document listener to the input fields, so that the board is updated
         // when the user changes the values
@@ -499,7 +498,6 @@ public class StartMenu {
     private void addSizePanelButtons() {
         // This function adds the small boards for selecting size in game
 
-
         MouseAdapter mouseAdapter =
                 new MouseAdapter() {
                     @Override
@@ -674,8 +672,7 @@ public class StartMenu {
         startMenuWindowManager.update();
     }
 
-
-    private void logConfigInfo(){
+    private void logConfigInfo() {
         logger.info(
                 "startGame: {} {} {} {}",
                 Config.getK(),

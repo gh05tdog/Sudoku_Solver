@@ -3,7 +3,6 @@ package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.Config;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -200,15 +199,13 @@ public class WindowManager {
         gbcPanel.fill = GridBagConstraints.NORTH; // Align to the top of the space
         gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
 
-
         mainPanel.add(combinedPanel, gbcPanel);
-
-
 
         frame.setVisible(true);
     }
 
-    public JPanel setupNumberAndTimerPanel(TimerFunction timer, Component numberHub, JButton goBackButton) {
+    public JPanel setupNumberAndTimerPanel(
+            TimerFunction timer, Component numberHub, JButton goBackButton) {
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
         combinedPanel.setBackground(backgroundColor);
         combinedPanel.setOpaque(false);
@@ -221,7 +218,8 @@ public class WindowManager {
         numberHubWrapper.setLayout(new BoxLayout(numberHubWrapper, BoxLayout.X_AXIS));
         numberHubWrapper.setBackground(backgroundColor);
         numberHubWrapper.setOpaque(false);
-        numberHubWrapper.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0)); // Add 10 pixels padding to the left
+        numberHubWrapper.setBorder(
+                BorderFactory.createEmptyBorder(0, 7, 0, 0)); // Add 10 pixels padding to the left
         numberHubWrapper.add(Box.createHorizontalGlue());
         numberHubWrapper.add(numberHub);
         numberHubWrapper.add(Box.createHorizontalGlue());
@@ -229,11 +227,14 @@ public class WindowManager {
         timer.setAlignmentX(Component.CENTER_ALIGNMENT);
         timer.setVisibility(Config.getEnableTimer());
         combinedPanel.add(timer);
-        combinedPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
+        combinedPanel.add(
+                Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
 
         combinedPanel.add(numberHubWrapper);
 
-        combinedPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Space between number hub and go back button
+        combinedPanel.add(
+                Box.createRigidArea(
+                        new Dimension(0, 10))); // Space between number hub and go back button
 
         goBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         combinedPanel.add(goBackButton);
@@ -243,9 +244,6 @@ public class WindowManager {
 
         return combinedPanel;
     }
-
-
-
 
     public void updateBoard() {
         System.out.println(Config.getDarkMode());

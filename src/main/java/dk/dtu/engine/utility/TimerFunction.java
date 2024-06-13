@@ -15,8 +15,7 @@ public class TimerFunction extends JPanel {
     private static final Color darkbackgroundColor = new Color(64, 64, 64);
     private static final Color lightaccentColor = new Color(237, 224, 186);
     private static Color accentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
-    private static Color backgroundColor =
-            Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
+    private static Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
 
     public TimerFunction() {
         setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -82,7 +81,7 @@ public class TimerFunction extends JPanel {
         return hours * 3600 + minutes * 60 + seconds;
     }
 
-    public void update(){
+    public void update() {
         accentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
         backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
         timeLabel.setForeground(accentColor);

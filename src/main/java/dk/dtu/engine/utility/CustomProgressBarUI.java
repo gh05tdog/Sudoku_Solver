@@ -1,8 +1,9 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicProgressBarUI;
-import java.awt.*;
 
 public class CustomProgressBarUI extends BasicProgressBarUI {
     private Color textColor = Color.BLACK;
@@ -12,7 +13,8 @@ public class CustomProgressBarUI extends BasicProgressBarUI {
     }
 
     @Override
-    protected void paintString(Graphics g, int x, int y, int width, int height, int amountFull, Insets b) {
+    protected void paintString(
+            Graphics g, int x, int y, int width, int height, int amountFull, Insets b) {
         if (progressBar.isStringPainted()) {
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setColor(textColor);
@@ -27,4 +29,3 @@ public class CustomProgressBarUI extends BasicProgressBarUI {
         }
     }
 }
-

@@ -4,7 +4,6 @@ package dk.dtu;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.utility.DatabaseSetup;
 import dk.dtu.game.core.StartMenu;
-
 import javax.swing.*;
 
 class SudokuSolverApp {

@@ -1,10 +1,10 @@
+/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import dk.dtu.engine.utility.JSwitchBox;
 import dk.dtu.engine.utility.NumberDocumentFilter;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.StartMenu;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,10 @@ import javax.swing.text.AbstractDocument;
 public class GameRulePopup extends JFrame {
 
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
-    private static Color backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background color
+    private static Color backgroundColor =
+            Config.getDarkMode()
+                    ? darkModebackgroundColor
+                    : Color.WHITE; // Default background color
     private static final Color lightAccentColor = new Color(237, 224, 186);
     private static Color accentColor = Config.getDarkMode() ? lightAccentColor : Color.BLACK;
     private final StartMenu startMenu;
@@ -43,7 +46,8 @@ public class GameRulePopup extends JFrame {
         getContentPane().setBackground(backgroundColor);
     }
 
-    public void addJSwitchBox(String description, boolean initialState, Consumer<Boolean> toggleAction) {
+    public void addJSwitchBox(
+            String description, boolean initialState, Consumer<Boolean> toggleAction) {
         if (GraphicsEnvironment.isHeadless()) {
             return;
         }
@@ -63,13 +67,16 @@ public class GameRulePopup extends JFrame {
         add(label, gbc);
 
         // Add switch box
-        JSwitchBox switchBox = new JSwitchBox(initialState, state -> {
-            toggleAction.accept(state);
-            if (description.equalsIgnoreCase("Dark Mode")) {
-                startMenu.updateColors();
-                update();
-            }
-        });
+        JSwitchBox switchBox =
+                new JSwitchBox(
+                        initialState,
+                        state -> {
+                            toggleAction.accept(state);
+                            if (description.equalsIgnoreCase("Dark Mode")) {
+                                startMenu.updateColors();
+                                update();
+                            }
+                        });
         gbc.gridy = getContentPane().getComponentCount();
         gbc.gridx = 1;
         gbc.gridwidth = 1; // Reset gridwidth
@@ -77,8 +84,12 @@ public class GameRulePopup extends JFrame {
         // Check if the description is "Dark Mode"
         if (description.equalsIgnoreCase("Dark Mode")) {
             // Load sun and moon images
-            ImageIcon sunIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/sun_symbol.png")));
-            ImageIcon moonIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/moon_symbol.png")));
+            ImageIcon sunIcon =
+                    new ImageIcon(
+                            Objects.requireNonNull(getClass().getResource("/sun_symbol.png")));
+            ImageIcon moonIcon =
+                    new ImageIcon(
+                            Objects.requireNonNull(getClass().getResource("/moon_symbol.png")));
 
             // Scale the images
             Image sunImage = sunIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
@@ -130,26 +141,29 @@ public class GameRulePopup extends JFrame {
         ((AbstractDocument) livesField.getDocument()).setDocumentFilter(new NumberDocumentFilter());
 
         // Add a DocumentListener to update the number of lives in the Config
-        livesField.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) {
-                updateNumberOfLives();
-            }
+        livesField
+                .getDocument()
+                .addDocumentListener(
+                        new DocumentListener() {
+                            public void insertUpdate(DocumentEvent e) {
+                                updateNumberOfLives();
+                            }
 
-            public void removeUpdate(DocumentEvent e) {
-                updateNumberOfLives();
-            }
+                            public void removeUpdate(DocumentEvent e) {
+                                updateNumberOfLives();
+                            }
 
-            public void changedUpdate(DocumentEvent e) {
-                updateNumberOfLives();
-            }
+                            public void changedUpdate(DocumentEvent e) {
+                                updateNumberOfLives();
+                            }
 
-            private void updateNumberOfLives() {
-                String text = livesField.getText();
-                if (!text.isEmpty() && text.matches("[1-9]")) {
-                    Config.setNumberOfLives(Integer.parseInt(text));
-                }
-            }
-        });
+                            private void updateNumberOfLives() {
+                                String text = livesField.getText();
+                                if (!text.isEmpty() && text.matches("[1-9]")) {
+                                    Config.setNumberOfLives(Integer.parseInt(text));
+                                }
+                            }
+                        });
 
         return livesField;
     }

@@ -112,7 +112,7 @@ public class Config {
         pref.put("enableKillerSudoku", String.valueOf(enableKillerSudoku));
     }
 
-    public static boolean getEnableKillerSudoku(){
+    public static boolean getEnableKillerSudoku() {
         Preferences pref = Preferences.userRoot();
         String enableKillerSudoku = pref.get("enableKillerSudoku", String.valueOf(true));
         return Boolean.parseBoolean(enableKillerSudoku);

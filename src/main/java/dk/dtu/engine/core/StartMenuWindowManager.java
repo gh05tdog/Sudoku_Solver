@@ -14,7 +14,8 @@ public class StartMenuWindowManager {
     private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
     private final JPanel gameRulePanel = new JPanel(null); // Panel for game rules
     private final JPanel mainPanel = new JPanel(null);
-    private static Color backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+    private static Color backgroundColor =
+            Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
 
     // Add references to custom board panels
     private CustomBoardPanel[] customBoardPanels;
@@ -40,7 +41,11 @@ public class StartMenuWindowManager {
         difficultyPanel.setBounds(50, (frame.getHeight() / 2) + 50, 650, 50);
         difficultyPanel.setBackground(backgroundColor);
 
-        buttonPanel.setBounds((frame.getWidth()) - 250, (frame.getHeight() / 2) - 150, 200, difficultyPanel.getHeight() + sizePanel.getHeight() + 300);
+        buttonPanel.setBounds(
+                (frame.getWidth()) - 250,
+                (frame.getHeight() / 2) - 150,
+                200,
+                difficultyPanel.getHeight() + sizePanel.getHeight() + 300);
         buttonPanel.setBackground(backgroundColor);
 
         inputPanel.setBounds(525, (frame.getHeight() / 2) - 205, 140, 50);

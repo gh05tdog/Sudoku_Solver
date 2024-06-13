@@ -94,11 +94,16 @@ class Cell implements Serializable {
         g2.setColor(accentColor);
         Font font = new Font("Arial", Font.BOLD, cellSize / 6); // Smaller font size
         g2.setFont(font);
-        int subCellSize = cellSize / 3 - 6; // Further reduce the sub-cell size to bring notes closer
+        int subCellSize =
+                cellSize / 3 - 6; // Further reduce the sub-cell size to bring notes closer
         int gridOffsetX = ((cellSize - (subCellSize * 3)) / 2); // Center the 3x3 grid horizontally
-        int gridOffsetY = ((cellSize - (subCellSize * 3)) / 2) + 2; // Center the 3x3 grid vertically
+        int gridOffsetY =
+                ((cellSize - (subCellSize * 3)) / 2) + 2; // Center the 3x3 grid vertically
         int offsetX = subCellSize / 2; // Center the number horizontally within sub-cell
-        int offsetY = subCellSize / 2 + g2.getFontMetrics().getAscent() / 3; // Center the number vertically within sub-cell
+        int offsetY =
+                subCellSize / 2
+                        + g2.getFontMetrics().getAscent()
+                                / 3; // Center the number vertically within sub-cell
 
         for (int note : notes) {
             String noteStr = Integer.toString(note);
@@ -109,18 +114,20 @@ class Cell implements Serializable {
             int col = (note - 1) % 3;
             g2.drawString(
                     noteStr,
-                    x + col * subCellSize + gridOffsetX + offsetX - g2.getFontMetrics().stringWidth(noteStr) / 2,
-                    y + row * subCellSize + gridOffsetY + offsetY - g2.getFontMetrics().getDescent() / 2
-            );
+                    x
+                            + col * subCellSize
+                            + gridOffsetX
+                            + offsetX
+                            - g2.getFontMetrics().stringWidth(noteStr) / 2,
+                    y
+                            + row * subCellSize
+                            + gridOffsetY
+                            + offsetY
+                            - g2.getFontMetrics().getDescent() / 2);
         }
         g2.setColor(accentColor);
         g2.drawRect(x, y, cellSize, cellSize);
     }
-
-
-
-
-
 
     public void addNote(int note) {
         notes.add(note);
