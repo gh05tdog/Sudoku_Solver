@@ -64,6 +64,7 @@ public class StartMenu {
     private static Color AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
     private static Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
     private final JComboBox<String> difficultyDropdown = new JComboBox<>(new String[] {"Easy", "Medium", "Hard", "Extreme"});
+    GameRulePopup gameRules = new GameRulePopup(this);
 
 
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
@@ -108,6 +109,7 @@ public class StartMenu {
         addLeaderboardButton();
         updateCustomBoardPanel(2, 2);
         addNetworkGameButtons();
+        initializeGamerulePopup();
 
         threeByThree.updateBackgroundColor(Color.GRAY);
         Config.setK(3);
@@ -168,25 +170,26 @@ public class StartMenu {
         gameRuleButton.setForeground(AccentColor);
         gameRuleButton.addActionListener(
                 e -> {
-                    GameRulePopup gameRules = new GameRulePopup(this);
                     gameRules.setVisible(true);
-                    gameRules.addJSwitchBox(
-                            "Enable lives", Config.getEnableLives(), Config::setEnableLives);
-                    gameRules.addJSwitchBox(
-                            "Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
-                    gameRules.addJSwitchBox(
-                            "Enable easy mode",
-                            Config.getEnableEasyMode(),
-                            Config::setEnableEasyMode);
-                    gameRules.addJSwitchBox("Dark Mode", Config.getDarkMode(), Config::setDarkMode);
-                    gameRules.addJSwitchBox(
-                            "Killer Sudoku Mode",
-                            Config.getEnableKillerSudoku(),
-                            Config::setEnableKillerSudoku);
-                });
+                    });
         startMenuWindowManager.addComponent(gameRuleButton, startMenuWindowManager.getButtonPanel());
     }
 
+    private void initializeGamerulePopup(){
+        gameRules.addJSwitchBox(
+                "Enable lives", Config.getEnableLives(), Config::setEnableLives);
+        gameRules.addJSwitchBox(
+                "Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
+        gameRules.addJSwitchBox(
+                "Enable easy mode",
+                Config.getEnableEasyMode(),
+                Config::setEnableEasyMode);
+        gameRules.addJSwitchBox("Dark Mode", Config.getDarkMode(), Config::setDarkMode);
+        gameRules.addJSwitchBox(
+                "Killer Sudoku Mode",
+                Config.getEnableKillerSudoku(),
+                Config::setEnableKillerSudoku);
+    }
 
     private void onCreateGame(ActionEvent e) {
         createGameButton.setEnabled(false);
@@ -401,8 +404,9 @@ public class StartMenu {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
                         startButton.setBackground(Color.GRAY);
                         try {
+                            gameRules.setVisible(false);
                             startGame();
-                        } catch (Board.BoardNotCreatable ex) {git
+                        } catch (Board.BoardNotCreatable ex) {
                             logger.error("This board-type is not creatable: {}", ex.getMessage());
                         }
                     } else {
@@ -421,6 +425,7 @@ public class StartMenu {
         difficultyDropdown.setForeground(AccentColor);
         difficultyDropdown.setBorder(new LineBorder(AccentColor));
         difficultyDropdown.setSelectedItem("Medium"); // Set default selection
+        Config.setDifficulty("medium");
 
         difficultyDropdown.addActionListener(e -> {
             String selectedDifficulty = (String) difficultyDropdown.getSelectedItem();
