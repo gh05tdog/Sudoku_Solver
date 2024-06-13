@@ -5,7 +5,7 @@ import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.SudokuGame;
 
-public class GameEngine implements Runnable {
+public class GameEngine {
     private final WindowManager windowManager;
     private SudokuGame sudokuGame;
     private boolean running = false;
@@ -26,35 +26,6 @@ public class GameEngine implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        long lastTime = System.nanoTime();
-        final double nsPerTick = 1000000000D / 60D; // 60 ticks per second
-
-        long lastTimer = System.currentTimeMillis();
-        double delta = 0;
-        while (running) {
-            long now = System.nanoTime();
-            delta += (now - lastTime) / nsPerTick;
-            lastTime = now;
-
-            boolean shouldRender = false;
-            while (delta >= 1) {
-                sudokuGame.update(); // Update game logic
-                delta -= 1;
-                shouldRender = true;
-            }
-
-            if (shouldRender) {
-                sudokuGame.render(); // Render the game
-            }
-
-            if (System.currentTimeMillis() - lastTimer >= 1000) {
-                lastTimer += 1000;
-                // One second has passed - could be used to update an FPS counter, etc.
-            }
-        }
-    }
 
     private void initialize() {
         windowManager.display(); // Show the game window
@@ -64,9 +35,8 @@ public class GameEngine implements Runnable {
     public void start() {
         if (running) return;
         running = true;
-        Thread gameThread = new Thread(this);
+
         initialize();
-        gameThread.start();
     }
 
     public void startCustom(int[][] customBoard) throws Board.BoardNotCreatable {
@@ -76,7 +46,16 @@ public class GameEngine implements Runnable {
                 new SudokuGame(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
         sudokuGame.initializeCustom(customBoard);
         windowManager.display();
-        Thread gameThread = new Thread(this);
-        gameThread.start();
+
+    }
+
+    public void startCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, int n, int k, int[][] cages, boolean isKillerSudoku, String notes) throws Board.BoardNotCreatable {
+        if (running) return;
+        running = true;
+        sudokuGame =
+                new SudokuGame(windowManager, n, k, Config.getCellSize());
+        sudokuGame.initializeCustomSaved(initialBoard, currentBoard, time, usedLifeLines, cages, isKillerSudoku, notes);
+        windowManager.display();
+
     }
 }

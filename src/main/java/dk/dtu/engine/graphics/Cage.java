@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class Cage {
     private final List<Point> cells;
-    private final int sum;
+    private int sum;
     private final Set<Integer> currentNumbers; // Track numbers in the cage
     private final int id; // Unique ID for the cage
 
@@ -50,4 +50,13 @@ public class Cage {
     public Set<Integer> getCurrentNumbers() {
         return currentNumbers;
     }
+
+    public void calculateSumFromSolution(int[][] solutionBoard) {
+        int sum = 0;
+        for (Point cell : cells) {
+            sum += solutionBoard[cell.y][cell.x];
+        }
+        this.sum = sum;
+    }
+
 }
