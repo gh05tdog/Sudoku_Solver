@@ -141,22 +141,11 @@ public class StartMenu {
     private void onLoadGame(ActionEvent e) {
         List<SavedGame.SavedGameData> savedGames = SavedGame.loadSavedGames("jdbc:sqlite:sudoku.db");
         if (savedGames.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "No saved games available.",
-                    "Error",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No saved games available.", "Error", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        SavedGame.SavedGameData selectedGame = (SavedGame.SavedGameData) JOptionPane.showInputDialog(
-                null,
-                "Select a saved game:",
-                "Load Game",
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                savedGames.toArray(),
-                savedGames.get(0));
+        SavedGame.SavedGameData selectedGame = (SavedGame.SavedGameData) JOptionPane.showInputDialog(null, "Select a saved game:", "Load Game", JOptionPane.PLAIN_MESSAGE, null, savedGames.toArray(), savedGames.getFirst());
 
         if (selectedGame != null) {
             int[][] initialBoard = deserializeBoard(selectedGame.getInitialBoard());
@@ -172,6 +161,7 @@ public class StartMenu {
             startGameWithSavedData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, n, k, serializedCages, isKillerSudoku);
         }
     }
+
 
     private int[][] deserializeBoard(String boardString) {
         String[] rows = boardString.split(";");

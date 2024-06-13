@@ -95,9 +95,15 @@ public class SudokuGame {
     }
 
     private void onSaveGame() {
-        SavedGame.saveGame("jdbc:sqlite:sudoku.db", gameboard.getInitialBoard(), gameboard.getGameBoard(), timer.getTimeToInt(), getLives(), Config.getEnableLives(), Config.getK(), Config.getN(), board.getCagesIntArray(), Config.getEnableKillerSudoku());
-        JOptionPane.showMessageDialog(null, "Game saved successfully.", "Save Game", JOptionPane.INFORMATION_MESSAGE);
+        String name = JOptionPane.showInputDialog(null, "Enter a name for your saved game:", "Save Game", JOptionPane.PLAIN_MESSAGE);
+        if (name != null && !name.trim().isEmpty()) {
+            SavedGame.saveGame("jdbc:sqlite:sudoku.db", name, gameboard.getInitialBoard(), gameboard.getGameBoard(), timer.getTimeToInt(), getLives(), Config.getEnableLives(), Config.getK(), Config.getN(), board.getCagesIntArray(), Config.getEnableKillerSudoku());
+            JOptionPane.showMessageDialog(null, "Game saved successfully.", "Save Game", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Game save canceled. Name cannot be empty.", "Save Game", JOptionPane.WARNING_MESSAGE);
+        }
     }
+
 
     private void processNetworkMessages() {
         while (true) {
@@ -567,7 +573,7 @@ public class SudokuGame {
         board.requestFocusInWindow();
     }
 
-    public void initializeCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines,int k, int n, int[][] cages, boolean isKillerSudoku) {
+    public void initializeCustomSaved(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, int[][] cages, boolean isKillerSudoku) {
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();

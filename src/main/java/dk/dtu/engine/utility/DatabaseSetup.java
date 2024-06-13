@@ -38,7 +38,8 @@ public class DatabaseSetup {
                 "nSize INTEGER NOT NULL," +
                 "cages TEXT NOT NULL," +
                 "isKillerSudoku BOOLEAN NOT NULL," +
-                "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
+                "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                "name TEXT NOT NULL" +
                 ");";
 
         try (Connection conn = DriverManager.getConnection(dbUrl);

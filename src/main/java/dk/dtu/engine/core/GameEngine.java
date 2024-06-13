@@ -53,8 +53,8 @@ public class GameEngine {
         if (running) return;
         running = true;
         sudokuGame =
-                new SudokuGame(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
-        sudokuGame.initializeCustomSaved(initialBoard, currentBoard, time, usedLifeLines, n, k, cages, isKillerSudoku);
+                new SudokuGame(windowManager, n, k, Config.getCellSize());
+        sudokuGame.initializeCustomSaved(initialBoard, currentBoard, time, usedLifeLines, cages, isKillerSudoku);
         windowManager.display();
 
     }

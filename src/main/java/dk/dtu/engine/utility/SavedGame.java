@@ -11,22 +11,23 @@ public class SavedGame {
 
     private static final Logger logger = LoggerFactory.getLogger(SavedGame.class);
 
-    public static void saveGame(String dbUrl, int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int kSize, int nSize, int[][] cages, boolean isKillerSudoku) {
+    public static void saveGame(String dbUrl, String name, int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int kSize, int nSize, int[][] cages, boolean isKillerSudoku) {
         String initialBoardString = serializeBoard(initialBoard);
         String currentBoardString = serializeBoard(currentBoard);
-        String insertGame = "INSERT INTO saved_games (initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize, cages, isKillerSudoku) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertGame = "INSERT INTO saved_games (name, initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize, cages, isKillerSudoku) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
              PreparedStatement stmt = conn.prepareStatement(insertGame)) {
-            stmt.setString(1, initialBoardString);
-            stmt.setString(2, currentBoardString);
-            stmt.setInt(3, time);
-            stmt.setInt(4, usedLifeLines);
-            stmt.setBoolean(5, lifeEnabled);
-            stmt.setInt(6, kSize);
-            stmt.setInt(7, nSize);
-            stmt.setString(8, serializeBoard(cages));
-            stmt.setBoolean(9, isKillerSudoku);
+            stmt.setString(1, name);
+            stmt.setString(2, initialBoardString);
+            stmt.setString(3, currentBoardString);
+            stmt.setInt(4, time);
+            stmt.setInt(5, usedLifeLines);
+            stmt.setBoolean(6, lifeEnabled);
+            stmt.setInt(7, kSize);
+            stmt.setInt(8, nSize);
+            stmt.setString(9, serializeBoard(cages));
+            stmt.setBoolean(10, isKillerSudoku);
             stmt.executeUpdate();
             logger.info("Game saved successfully");
         } catch (SQLException e) {
@@ -35,8 +36,10 @@ public class SavedGame {
         }
     }
 
+
+
     public static List<SavedGameData> loadSavedGames(String dbUrl) {
-        String selectGames = "SELECT initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize, cages, isKillerSudoku FROM saved_games";
+        String selectGames = "SELECT name, initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize, cages, isKillerSudoku FROM saved_games";
         List<SavedGameData> savedGames = new ArrayList<>();
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
@@ -44,6 +47,7 @@ public class SavedGame {
              ResultSet rs = stmt.executeQuery(selectGames)) {
 
             while (rs.next()) {
+                String name = rs.getString("name");
                 String initialBoard = rs.getString("initialBoard");
                 String currentBoard = rs.getString("currentBoard");
                 int time = rs.getInt("time");
@@ -53,7 +57,7 @@ public class SavedGame {
                 int nSize = rs.getInt("nSize");
                 String cages = rs.getString("cages");
                 boolean isKillerSudoku = rs.getBoolean("isKillerSudoku");
-                savedGames.add(new SavedGameData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize, cages, isKillerSudoku));
+                savedGames.add(new SavedGameData(name, initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize, nSize, cages, isKillerSudoku));
             }
         } catch (SQLException e) {
             logger.error("Failed to load saved games");
@@ -65,6 +69,7 @@ public class SavedGame {
 
     // Data class to hold the saved game data
     public static class SavedGameData {
+        private final String name;
         private final String initialBoard;
         private final String currentBoard;
         private final int time;
@@ -75,7 +80,8 @@ public class SavedGame {
         private final String cages;
         private final boolean isKillerSudoku;
 
-        public SavedGameData(String initialBoard, String currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int kSize, int nSize, String cages, boolean isKillerSudoku) {
+        public SavedGameData(String name, String initialBoard, String currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int kSize, int nSize, String cages, boolean isKillerSudoku) {
+            this.name = name;
             this.initialBoard = initialBoard;
             this.currentBoard = currentBoard;
             this.time = time;
@@ -85,6 +91,10 @@ public class SavedGame {
             this.nSize = nSize;
             this.cages = cages;
             this.isKillerSudoku = isKillerSudoku;
+        }
+
+        public String getName() {
+            return name;
         }
 
         public String getInitialBoard() {
@@ -125,7 +135,7 @@ public class SavedGame {
 
         @Override
         public String toString() {
-            return "Time: " + time + ", Used Life Lines: " + usedLifeLines + ", Life Enabled: " + lifeEnabled + ", KSize: " + kSize + ", NSize: " + nSize + "\n" + "isKillerSudoku:" + isKillerSudoku;
+            return "Name: " + name + ", Time: " + time + ", Used Life Lines: " + usedLifeLines + ", Life Enabled: " + lifeEnabled + ", KSize: " + kSize + ", NSize: " + nSize + "\n" + "isKillerSudoku:" + isKillerSudoku;
         }
     }
 
