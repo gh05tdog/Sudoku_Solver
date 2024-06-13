@@ -22,7 +22,7 @@ public class GameRulePopup extends JFrame {
 
     private void initialize() {
         setSize(400, 400);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());

@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.slf4j.Logger;
@@ -18,14 +19,13 @@ import org.slf4j.LoggerFactory;
         private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
         private static final int PORT = 12345;
         private final ExecutorService threadPool = Executors.newFixedThreadPool(4);
-        public final ConcurrentHashMap<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>();
+        public final ConcurrentMap<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>();
         private final Object lock = new Object();
         private int connectedPlayers = 0;
         public ServerSocket serverSocket;
         private boolean running = true;
-        private SSDPServer ssdpServer;
 
-    public void start() {
+        public void start() {
         startServerSocket();
         startSSDPServer();
         acceptClients();
@@ -34,16 +34,16 @@ import org.slf4j.LoggerFactory;
         protected void startServerSocket() {
             try {
                 serverSocket = new ServerSocket(PORT);
-                System.out.println("Server started on port " + serverSocket.getLocalPort());
+                logger.info("Server started on port {}", serverSocket.getLocalPort());
             } catch (IOException e) {
-                System.out.println("Error starting server: " + e.getMessage());
+                logger.error("Error starting server: {}", e.getMessage());
             }
         }
 
     private void startSSDPServer() {
         try {
             String localIp = getLocalIpAddress();
-            ssdpServer = new SSDPServer(localIp, PORT);
+            SSDPServer ssdpServer = new SSDPServer(localIp, PORT);
             ssdpServer.start();
         } catch (IOException e) {
             logger.error("Error starting SSDP server: {}", e.getMessage());
@@ -58,9 +58,7 @@ import org.slf4j.LoggerFactory;
                 clientWriters.put(clientSocket, writer);
                 threadPool.execute(new ClientHandler(clientSocket));
             } catch (IOException e) {
-                if (running) {
                     logger.error("Error accepting client: {}", e.getMessage());
-                }
             }
         }
     }
@@ -115,8 +113,7 @@ import org.slf4j.LoggerFactory;
 
             @Override
             public void run() {
-                try {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
                     String message;
                     while ((message = in.readLine()) != null) {
                         processMessage(message);
@@ -130,7 +127,7 @@ import org.slf4j.LoggerFactory;
                             clientWriters.remove(clientSocket);
                         }
                     } catch (IOException e) {
-                        logger.error("Error closing client socket: {}", e.getMessage());
+                        closingSocketErr(e);
                     }
                 }
             }
@@ -171,7 +168,7 @@ import org.slf4j.LoggerFactory;
                         connectedPlayers--;
                     }
                 } catch (IOException e) {
-                    logger.error("Error closing client socket: {}", e.getMessage());
+                    closingSocketErr(e);
                 }
             }
 
@@ -194,5 +191,10 @@ import org.slf4j.LoggerFactory;
             }
         }
         throw new SocketException("No non-loopback IPv4 address found.");
+    }
+
+
+    public static void closingSocketErr(IOException e) {
+        logger.error("Error closing client socket: {}", e.getMessage());
     }
 }

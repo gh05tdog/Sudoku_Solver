@@ -33,7 +33,7 @@ public class GameClient {
         isGameStarted = true;
 
         Socket socket = createSocket(serverAddress);
-        System.out.println("Connected to server at " + serverAddress);
+        logger.info("Connected to server at {}", serverAddress);
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -46,7 +46,7 @@ public class GameClient {
 
         String message;
         while ((message = in.readLine()) != null) {
-            System.out.println("Received message: " + message); // Display the message in the console
+            logger.info("Received message: {}", message); // Display the message in the console
             processNetworkMessage(message, game);
         }
     }
@@ -62,10 +62,11 @@ public class GameClient {
     private void processNetworkMessage(String message, SudokuGame game) {
         String[] parts = message.split(" ", 2);
         String command = parts[0];
-        System.out.println("Command: " + command);
+        logger.info("Command: {}", command);
         switch (command) {
+
             case "INITIAL_BOARD":
-                System.out.println("Received initial board: " + parts[1]);
+                logger.info("Received initial board: {}", parts[1]);
                 int[][] board = stringToBoard(parts[1]);
                 Config.setK(3);
                 Config.setN(3);
@@ -109,7 +110,7 @@ public class GameClient {
         discoveredServers = ssdpClient.discover();
 
         for (String server : discoveredServers) {
-            System.out.println("Found server: " + server);
+            logger.info("Found server: {}", server);
         }
     }
 }
