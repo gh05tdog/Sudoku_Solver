@@ -33,6 +33,17 @@ public class Board {
         this.initialBoard = new int[size][size];
     }
 
+    public boolean equalsSolvedBoard() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (gameBoard[i][j] != solvedBoard[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public static class BoardNotCreatable extends Exception {
         public BoardNotCreatable(String errorMessage) {
             super(errorMessage);

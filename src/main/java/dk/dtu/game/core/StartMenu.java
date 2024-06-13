@@ -204,6 +204,7 @@ public class StartMenu {
 
 
     private void onCreateGame(ActionEvent e) {
+        Config.setDifficulty("Easy");
         joinGameButton.setEnabled(false);
         createGameButton.setEnabled(false);
 

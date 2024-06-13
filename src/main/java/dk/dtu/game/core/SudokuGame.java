@@ -52,8 +52,6 @@ public class SudokuGame {
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
     Random random = new SecureRandom();
-    private int placeableNumber = 0;
-    private int nextCageId = 1;
     private SudokuBoardCanvas board;
     private NumberHub numbers;
     private TimerFunction timer;
@@ -161,8 +159,8 @@ public class SudokuGame {
                                         null, playerName + " has completed the Sudoku!"));
                 break;
             case "PROGRESS":
-                int progress = Integer.parseInt(parts[1]);
-                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress));
+                int progress1 = Integer.parseInt(parts[1]);
+                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress1));
                 break;
         }
     }
@@ -870,9 +868,13 @@ public class SudokuGame {
                     // Preferences object to store and retrieve the username
 
                     if (networkOut != null) {
-                        networkOut.println("COMPLETED " + "Player1");
+                        if (gameboard.equalsSolvedBoard()) {
+                            networkOut.println("Congratulations! You won!");
+                        } else {
+                            networkOut.println("Womp Womp... You lost!");
+                        }
                     }
-                    if (Config.getEnableTimer() || isNetworkGame) {
+                    if (Config.getEnableTimer() || (isNetworkGame && gameboard.equalsSolvedBoard())) {
                         Preferences pref = Preferences.userNodeForPackage(this.getClass());
                         String storedUsername = pref.get("username", "");
 
