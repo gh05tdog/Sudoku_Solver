@@ -559,8 +559,8 @@ public class SudokuGame {
 
         displayButtons();
         windowManager.drawBoard(board);
-        windowManager.setupNumberAndTimerPanel(timer, numbers, goBackButton);
-        windowManager.layoutComponents(timer, numbers, goBackButton);
+        windowManager.setupNumberAndTimerPanel(timer, numbers, goBackButton, saveGameButton);
+        windowManager.layoutComponents(timer, numbers, goBackButton,saveGameButton);
         startGame();
         if (Config.getEnableKillerSudoku()) {
             generateKillerSudokuCages();
@@ -573,8 +573,8 @@ public class SudokuGame {
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
         windowManager.drawBoard(board);
-        windowManager.setupNumberAndTimerPanel(timer, numbers, goBackButton);
-        windowManager.layoutComponents(timer, numbers, goBackButton);
+        windowManager.setupNumberAndTimerPanel(timer, numbers, goBackButton,saveGameButton);
+        windowManager.layoutComponents(timer, numbers, goBackButton,saveGameButton);
         gameboard.setInitialBoard(customBoard);
         gameboard.setGameBoard(deepCopyBoard(customBoard));
 
@@ -619,8 +619,8 @@ public class SudokuGame {
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
         windowManager.drawBoard(board);
-        windowManager.setupNumberAndTimerPanel(timer, numbers,goBackButton);
-        windowManager.layoutComponents(timer, numbers,goBackButton);
+        windowManager.setupNumberAndTimerPanel(timer, numbers,goBackButton,saveGameButton);
+        windowManager.layoutComponents(timer, numbers,goBackButton,saveGameButton);
 
         gameboard.setInitialBoard(initialBoard);
         gameboard.setGameBoard(deepCopyBoard(currentBoard));
@@ -1030,6 +1030,14 @@ public class SudokuGame {
                         new LineBorder(accentColor, 1),
                         new EmptyBorder(padding, padding, padding, padding)));
 
+        saveGameButton.setBackground(backgroundColor);
+        saveGameButton.setForeground(accentColor);
+        saveGameButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(accentColor, 1),
+                        new EmptyBorder(padding, padding, padding, padding)));
+
+
         restartButton.addActionListener(
                 e -> {
                     moveList.clear();
@@ -1130,8 +1138,6 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(hintButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(noteButton);
-        //windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
-        //windowManager.addComponentToButtonPanel(saveGameButton);
 
         // windowManager.addGoBackButton(goBackButton);
     }

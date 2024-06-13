@@ -206,8 +206,8 @@ public class WindowManager {
         whitePanel.repaint();
     }
 
-    public void layoutComponents(TimerFunction timer, Component numberHub, JButton goBackButton) {
-        JPanel combinedPanel = setupNumberAndTimerPanel(timer, numberHub, goBackButton);
+    public void layoutComponents(TimerFunction timer, Component numberHub, JButton goBackButton, JButton saveGameButton) {
+        JPanel combinedPanel = setupNumberAndTimerPanel(timer, numberHub, goBackButton, saveGameButton);
 
         // Layout the combined panel with the number hub, timer, and go back button
         GridBagConstraints gbcPanel = new GridBagConstraints();
@@ -224,7 +224,7 @@ public class WindowManager {
 
     // This method is used to set up the panel that contains the number hub and timer
     public JPanel setupNumberAndTimerPanel(
-            TimerFunction timer, Component numberHub, JButton goBackButton) {
+            TimerFunction timer, Component numberHub, JButton goBackButton, JButton saveGameButton) {
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
         combinedPanel.setBackground(backgroundColor);
         combinedPanel.setOpaque(false);
@@ -257,6 +257,12 @@ public class WindowManager {
 
         goBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         combinedPanel.add(goBackButton);
+
+        combinedPanel.add(
+                Box.createRigidArea(
+                        new Dimension(0, 10))); // Space between go back button and save game button
+        saveGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        combinedPanel.add(saveGameButton);
 
         // Add vertical glue to push the components towards the center vertically
         combinedPanel.add(Box.createVerticalGlue());

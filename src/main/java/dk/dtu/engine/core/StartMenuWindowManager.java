@@ -4,6 +4,10 @@ package dk.dtu.engine.core;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.game.core.Config;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
@@ -20,6 +24,7 @@ public class StartMenuWindowManager {
     private final JPanel mainPanel = new JPanel(null);
     private static Color backgroundColor =
             Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+    ImageIcon icon;
 
     // Add references to custom board panels
     private CustomBoardPanel[] customBoardPanels;
@@ -40,15 +45,17 @@ public class StartMenuWindowManager {
         mainPanel.setBackground(backgroundColor);
 
         welcomePanel.setBounds(60, 50, 610, 50 + sizePanel.getHeight() + 430);
-        welcomePanel.setBackground(Color.RED);
+        welcomePanel.setBackground(backgroundColor);
+        setStartMenuLogo();
+
 
         sizePanel.setBounds((frame.getWidth()/2)-325, (frame.getHeight() / 2) + 200, 650, 160);
         sizePanel.setBackground(backgroundColor);
 
 
         buttonPanel.setBounds(
-                (frame.getWidth()) - 250,
-                50,
+                (frame.getWidth()) - 400,
+                80,
                 200,
                 50 + sizePanel.getHeight() + 300);
         buttonPanel.setBackground(backgroundColor);
@@ -75,6 +82,26 @@ public class StartMenuWindowManager {
         panel.add(component);
         panel.revalidate();
         panel.repaint();
+    }
+
+    public void setStartMenuLogo() {
+        try {
+            BufferedImage originalImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/logo.png")));
+            int newWidth = 700;  // Change this to desired width
+            int newHeight = 700;  // Change this to desired height
+
+            Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+            JLabel logo = new JLabel(scaledIcon);
+
+            logo.setBounds(-30, -100, newWidth, newHeight );
+            welcomePanel.add(logo);
+            welcomePanel.revalidate();
+            welcomePanel.repaint();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void update() {
