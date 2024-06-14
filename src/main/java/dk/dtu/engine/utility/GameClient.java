@@ -51,7 +51,7 @@ public class GameClient {
     }
 
     protected Socket createSocket(String serverAddress) throws IOException {
-        logger.info("Attempting to connect to server at {}:12345", serverAddress);
+        logger.info("Attempting to connect to server at {}", serverAddress);
         return new Socket(serverAddress, 12346);
     }
 

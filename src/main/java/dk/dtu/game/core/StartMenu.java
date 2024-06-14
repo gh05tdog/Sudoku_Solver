@@ -249,11 +249,12 @@ public class StartMenu {
 
         // Create a GameClient to discover servers
         GameClient client = new GameClient(new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000));
-        client.discoverServers();
 
+        if (serverAddress.isEmpty()) {
+            client.discoverServers();
 
-        if (serverAddress == null) {
             List<String> discoveredServers = client.getDiscoveredServers();
+
             boolean connected = false;
             for (String address : discoveredServers) {
                 logger.info("Attempting to connect to server at IP: {}", address);
@@ -276,7 +277,7 @@ public class StartMenu {
             }
         }
         else {
-            logger.info("Attempting to connect to server at IP: {}", serverAddress);
+            logger.info("Attempting to directly to IP: {}", serverAddress);
             if (client.testGameConnection(serverAddress)) {
                 logger.info("Connected to server at IP: {}", serverAddress);
                 connectClient(serverAddress);
