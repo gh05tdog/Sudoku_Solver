@@ -125,10 +125,7 @@ public class SudokuGame {
     private void onSaveGame() {
         String name = JOptionPane.showInputDialog(null, "Enter a name for your saved game:", "Save Game", JOptionPane.PLAIN_MESSAGE);
         if (name != null && !name.trim().isEmpty()) {
-            int[] hearts = windowManager.getUsedLives();
-            int usedLives = hearts[0];
-            int totalLives = hearts[1];
-            int livesToSave = usedLives == 0 ? getLives() : usedLives;
+            int[] hearts = getUsedLives();
 
             SavedGame.saveGame("jdbc:sqlite:sudoku.db", name, gameboard.getInitialBoard(), gameboard.getGameBoard(), timer.getTimeToInt(), hearts, Config.getEnableLives(), Config.getK(), Config.getN(), board.getCagesIntArray(), Config.getEnableKillerSudoku(), getNotesToString());
             JOptionPane.showMessageDialog(null, "Game saved successfully.", "Save Game", JOptionPane.INFORMATION_MESSAGE);
@@ -1144,8 +1141,6 @@ public class SudokuGame {
         windowManager.addComponentToButtonPanel(hintButton);
         windowManager.addComponentToButtonPanel(Box.createRigidArea((new Dimension(10, 10))));
         windowManager.addComponentToButtonPanel(noteButton);
-
-        // windowManager.addGoBackButton(goBackButton);
     }
 
     private void setInitialBoardColor() {
