@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
@@ -249,7 +250,7 @@ public class StartMenu {
                 int[][] initialBoard = deserializeBoard(selectedGame.getInitialBoard());
                 int[][] currentBoard = deserializeBoard(selectedGame.getCurrentBoard());
                 int time = selectedGame.getTime();
-                int usedLifeLines = selectedGame.getUsedLifeLines();
+                int[] usedLifeLines = selectedGame.getUsedLifeLines();
                 boolean lifeEnabled = selectedGame.isLifeEnabled();
                 int n = selectedGame.getNSize();
                 int k = selectedGame.getKSize();
@@ -295,10 +296,13 @@ public class StartMenu {
         return board;
     }
 
-    private void startGameWithSavedData(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int n, int k, int[][] cages, boolean isKillerSudoku, String notes) {
+    private void startGameWithSavedData(int[][] initialBoard, int[][] currentBoard, int time, int[] usedLifeLines, boolean lifeEnabled, int n, int k, int[][] cages, boolean isKillerSudoku, String notes) {
         Config.setCellSize(550 / (k * n));
         Config.setK(k);
         Config.setN(n);
+        System.out.println("Used life lines: " + Arrays.toString(usedLifeLines));
+        int usedLives = usedLifeLines[0];
+        Config.setNumberOfLives(usedLifeLines[1]);
         logConfigInfo();
 
         WindowManager windowManager =
@@ -310,7 +314,7 @@ public class StartMenu {
             GameEngine gameEngine = new GameEngine(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
             windowManager.updateBoard();
-            gameEngine.startCustomSaved(initialBoard, currentBoard, time, usedLifeLines, n, k, cages, isKillerSudoku, notes);
+            gameEngine.startCustomSaved(initialBoard, currentBoard, time, usedLives, n, k, cages, isKillerSudoku, notes);
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             logBoardNotCreatable();
         }

@@ -125,12 +125,18 @@ public class SudokuGame {
     private void onSaveGame() {
         String name = JOptionPane.showInputDialog(null, "Enter a name for your saved game:", "Save Game", JOptionPane.PLAIN_MESSAGE);
         if (name != null && !name.trim().isEmpty()) {
-            SavedGame.saveGame("jdbc:sqlite:sudoku.db", name, gameboard.getInitialBoard(), gameboard.getGameBoard(), timer.getTimeToInt(), getLives(), Config.getEnableLives(), Config.getK(), Config.getN(), board.getCagesIntArray(), Config.getEnableKillerSudoku(), getNotesToString());
+            int[] hearts = windowManager.getUsedLives();
+            int usedLives = hearts[0];
+            int totalLives = hearts[1];
+            int livesToSave = usedLives == 0 ? getLives() : usedLives;
+
+            SavedGame.saveGame("jdbc:sqlite:sudoku.db", name, gameboard.getInitialBoard(), gameboard.getGameBoard(), timer.getTimeToInt(), hearts, Config.getEnableLives(), Config.getK(), Config.getN(), board.getCagesIntArray(), Config.getEnableKillerSudoku(), getNotesToString());
             JOptionPane.showMessageDialog(null, "Game saved successfully.", "Save Game", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null, "Game save canceled. Name cannot be empty.", "Save Game", JOptionPane.WARNING_MESSAGE);
         }
     }
+
 
     private String getNotesToString() {
         //Return notes to a string
@@ -651,7 +657,7 @@ public class SudokuGame {
             timer.startWithTime(time);
         }
 
-        if (usedLifeLines > 0) {
+        if (usedLifeLines >= 0) {
             windowManager.setHeart();
             windowManager.setHearts(usedLifeLines);
         }
@@ -1237,6 +1243,10 @@ public class SudokuGame {
 
     public int getLives() {
         return windowManager.getHearts();
+    }
+
+    public int[] getUsedLives(){
+        return windowManager.getUsedLives();
     }
 
     public SudokuBoardCanvas getBoard() {

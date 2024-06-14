@@ -308,6 +308,16 @@ public class WindowManager {
         return hearts;
     }
 
+    public int[] getUsedLives() {
+        int usedLives = 0;
+        for (boolean heartState : heartStates) {
+            if (!heartState) {
+                usedLives++;
+            }
+        }
+        return new int[] {usedLives,Config.getNumberOfLives()};
+    }
+
     public void addProgressBar(JProgressBar progressBar, int yPos) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -322,7 +332,7 @@ public class WindowManager {
     }
 
     public void setHearts(int usedLifeLines) {
-        for (int i = 1; i < usedLifeLines; i++) {
+        for (int i = 1; i <= usedLifeLines; i++) {
             removeHeart();
         }
     }
