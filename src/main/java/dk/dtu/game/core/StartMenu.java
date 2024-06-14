@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import javax.swing.*;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
@@ -47,7 +48,7 @@ public class StartMenu {
     private final JToggleButton extremeButton = new JToggleButton("Extreme");
     private final ButtonGroup difficultyGroup = new ButtonGroup();
 
-
+    private boolean isLoadGameDialogOpen = false;
     private final JButton gameRuleButton = new JButton("Game Rules");
 
     private final CustomBoardPanel twoByTwo = new CustomBoardPanel();
@@ -196,30 +197,87 @@ public class StartMenu {
                 Config::setEnableKillerSudoku);
     }
 
+
+
     private void onLoadGame(ActionEvent e) {
+        if (isLoadGameDialogOpen) {
+            return;
+        }
+
         List<SavedGame.SavedGameData> savedGames = SavedGame.loadSavedGames("jdbc:sqlite:sudoku.db");
         if (savedGames.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No saved games available.", "Error", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        SavedGame.SavedGameData selectedGame = (SavedGame.SavedGameData) JOptionPane.showInputDialog(null, "Select a saved game:", "Load Game", JOptionPane.PLAIN_MESSAGE, null, savedGames.toArray(), savedGames.getFirst());
+        isLoadGameDialogOpen = true;
 
-        if (selectedGame != null) {
-            int[][] initialBoard = deserializeBoard(selectedGame.getInitialBoard());
-            int[][] currentBoard = deserializeBoard(selectedGame.getCurrentBoard());
-            int time = selectedGame.getTime();
-            int usedLifeLines = selectedGame.getUsedLifeLines();
-            boolean lifeEnabled = selectedGame.isLifeEnabled();
-            int n = selectedGame.getNSize();
-            int k = selectedGame.getKSize();
-            int[][] serializedCages = deserializeBoard(selectedGame.getCages());
-            boolean isKillerSudoku = selectedGame.isKillerSudoku();
-            String notes = selectedGame.getNotes();
+        // Apply the current theme settings to the dialog
+        JDialog loadGameDialog = new JDialog();
+        loadGameDialog.setTitle("Load Game");
+        loadGameDialog.setSize(400, 300);
+        loadGameDialog.setLayout(new BorderLayout());
+        loadGameDialog.setBackground(backgroundColor);
+        loadGameDialog.getContentPane().setBackground(backgroundColor);
 
-            startGameWithSavedData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, n, k, serializedCages, isKillerSudoku, notes);
-        }
+        // Create the list of saved games
+        JList<SavedGame.SavedGameData> gameList = new JList<>(new Vector<>(savedGames));
+        gameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        gameList.setBackground(backgroundColor);
+        gameList.setForeground(AccentColor);
+        gameList.setSelectionBackground(AccentColor.darker());
+        gameList.setSelectionForeground(backgroundColor);
+
+        // Add a scroll pane to the list
+        JScrollPane scrollPane = new JScrollPane(gameList);
+        scrollPane.setBackground(backgroundColor);
+        scrollPane.setForeground(AccentColor);
+        scrollPane.setBorder(new LineBorder(AccentColor));
+
+        // Create a button panel with a load button
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(backgroundColor);
+
+        JButton loadButton = new JButton("Load");
+        loadButton.setBackground(backgroundColor);
+        loadButton.setForeground(AccentColor);
+        loadButton.setBorder(new LineBorder(AccentColor));
+        loadButton.addActionListener(event -> {
+            SavedGame.SavedGameData selectedGame = gameList.getSelectedValue();
+            if (selectedGame != null) {
+                int[][] initialBoard = deserializeBoard(selectedGame.getInitialBoard());
+                int[][] currentBoard = deserializeBoard(selectedGame.getCurrentBoard());
+                int time = selectedGame.getTime();
+                int usedLifeLines = selectedGame.getUsedLifeLines();
+                boolean lifeEnabled = selectedGame.isLifeEnabled();
+                int n = selectedGame.getNSize();
+                int k = selectedGame.getKSize();
+                int[][] serializedCages = deserializeBoard(selectedGame.getCages());
+                boolean isKillerSudoku = selectedGame.isKillerSudoku();
+                String notes = selectedGame.getNotes();
+
+                startGameWithSavedData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, n, k, serializedCages, isKillerSudoku, notes);
+                loadGameDialog.dispose();
+                isLoadGameDialogOpen = false;
+            }
+        });
+
+        // Add a listener to handle window closing
+        loadGameDialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+                isLoadGameDialogOpen = false;
+            }
+        });
+
+        buttonPanel.add(loadButton);
+        loadGameDialog.add(scrollPane, BorderLayout.CENTER);
+        loadGameDialog.add(buttonPanel, BorderLayout.SOUTH);
+        loadGameDialog.setLocationRelativeTo(null);
+        loadGameDialog.setVisible(true);
     }
+
 
 
     private int[][] deserializeBoard(String boardString) {
@@ -251,6 +309,7 @@ public class StartMenu {
             }
             GameEngine gameEngine = new GameEngine(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
+            windowManager.updateBoard();
             gameEngine.startCustomSaved(initialBoard, currentBoard, time, usedLifeLines, n, k, cages, isKillerSudoku, notes);
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             logBoardNotCreatable();
@@ -736,4 +795,9 @@ public class StartMenu {
     public CustomBoardPanel getFourByFour() {
         return fourByFour;
     }
+
+    public JComboBox<String> getDifficultyDropdown() {
+        return difficultyDropdown;
+    }
+
 }

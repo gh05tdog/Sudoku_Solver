@@ -119,6 +119,9 @@ public class StartMenuWindowManager {
         inputPanel.setBackground(backgroundColor);
         inputPanel.revalidate();
         inputPanel.repaint();
+        welcomePanel.setBackground(backgroundColor);
+        welcomePanel.revalidate();
+        welcomePanel.repaint();
 
         // Update custom board panels
         if (customBoardPanels != null) {
