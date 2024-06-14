@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+
 public class GameServer {
     private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
     private static final int PORT = 12345;
@@ -24,10 +26,21 @@ public class GameServer {
     private int connectedPlayers = 0;
     public ServerSocket serverSocket;
     private boolean running = true;
+    public static String LOCAL_IP_ADDRESS;
+    JDialog serverDialog;
+
+    static {
+        try {
+            LOCAL_IP_ADDRESS = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void start() {
         startServerSocket();
         startSSDPServer();
+        SwingUtilities.invokeLater(this::showServerDialog); // Ensure dialog is created on EDT
         acceptClients();
     }
 
@@ -57,6 +70,7 @@ public class GameServer {
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
                 clientWriters.put(clientSocket, writer);
                 threadPool.execute(new ClientHandler(clientSocket));
+
             } catch (IOException e) {
                 logger.error("Error accepting client: {}", e.getMessage());
             }
@@ -80,6 +94,12 @@ public class GameServer {
     }
 
     public void sendInitialBoard() throws Board.BoardNotCreatable {
+
+        if (serverDialog != null) {  // Close the dialog when a client connects
+            serverDialog.dispose();
+            serverDialog = null;
+        }
+        
         StringBuilder boardString = new StringBuilder("INITIAL_BOARD ");
 
         Board board = new Board(3, 3);
@@ -196,5 +216,18 @@ public class GameServer {
 
     public static void closingSocketErr(IOException e) {
         logger.error("Error closing client socket: {}", e.getMessage());
+    }
+
+    private void showServerDialog() {
+        serverDialog = new JDialog();
+        serverDialog.setTitle("Server Started");
+        serverDialog.setModal(true);
+        serverDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        JLabel messageLabel = new JLabel("Server started on IP: " + LOCAL_IP_ADDRESS + ". Waiting for clients to join.");
+        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        serverDialog.add(messageLabel);
+        serverDialog.setSize(500, 150);
+        serverDialog.setLocationRelativeTo(null);
+        serverDialog.setVisible(true);
     }
 }
