@@ -868,11 +868,7 @@ public class SudokuGame {
                     // Preferences object to store and retrieve the username
 
                     if (networkOut != null) {
-                        if (gameboard.equalsSolvedBoard()) {
                             networkOut.println("Congratulations! You won!");
-                        } else {
-                            networkOut.println("Womp Womp... You lost!");
-                        }
                     }
                     if (Config.getEnableTimer() || (isNetworkGame && gameboard.equalsSolvedBoard())) {
                         Preferences pref = Preferences.userNodeForPackage(this.getClass());
