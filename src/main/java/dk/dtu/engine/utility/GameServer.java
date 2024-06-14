@@ -2,19 +2,18 @@ package dk.dtu.engine.utility;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.*;
+import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GameServer {
     private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
@@ -25,21 +24,10 @@ public class GameServer {
     private int connectedPlayers = 0;
     public ServerSocket serverSocket;
     private boolean running = true;
-    private JDialog serverDialog;
-    private static final String LOCAL_IP_ADDRESS;
-
-    static {
-        try {
-            LOCAL_IP_ADDRESS = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public void start() {
         startServerSocket();
         startSSDPServer();
-        SwingUtilities.invokeLater(this::showServerDialog); // Ensure dialog is created on EDT
         acceptClients();
     }
 
@@ -53,8 +41,13 @@ public class GameServer {
     }
 
     private void startSSDPServer() {
-        SSDPServer ssdpServer = new SSDPServer(LOCAL_IP_ADDRESS, PORT);
-        ssdpServer.start();
+        try {
+            String localIp = getLocalIpAddress();
+            SSDPServer ssdpServer = new SSDPServer(localIp, PORT);
+            ssdpServer.start();
+        } catch (IOException e) {
+            logger.error("Error starting SSDP server: {}", e.getMessage());
+        }
     }
 
     private void acceptClients() {
@@ -64,11 +57,6 @@ public class GameServer {
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
                 clientWriters.put(clientSocket, writer);
                 threadPool.execute(new ClientHandler(clientSocket));
-
-                // Close the server dialog when the first client connects
-                if (clientWriters.size() > 1) {
-                    SwingUtilities.invokeLater(this::closeServerDialog); // Ensure dialog is closed on EDT
-                }
             } catch (IOException e) {
                 logger.error("Error accepting client: {}", e.getMessage());
             }
@@ -76,7 +64,6 @@ public class GameServer {
     }
 
     public void stop() {
-        closeServerDialog();
         running = false;
         try {
             // Close all client connections
@@ -114,14 +101,6 @@ public class GameServer {
     private void broadcastMessage(String message) {
         for (PrintWriter writer : clientWriters.values()) {
             writer.println(message);
-        }
-    }
-
-    private void closeServerDialog() {
-        if (serverDialog != null) {
-            serverDialog.setVisible(false);
-            serverDialog.dispose();
-            serverDialog = null;
         }
     }
 
@@ -199,18 +178,21 @@ public class GameServer {
         }
     }
 
-    private void showServerDialog() {
-        serverDialog = new JDialog();
-        serverDialog.setTitle("Server Started");
-        serverDialog.setModal(true);
-        serverDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        JLabel messageLabel = new JLabel("Server started on IP: " + LOCAL_IP_ADDRESS + ". Waiting for clients to join.");
-        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        serverDialog.add(messageLabel);
-        serverDialog.setSize(500, 150);
-        serverDialog.setLocationRelativeTo(null);
-        serverDialog.setVisible(true);
+    private String getLocalIpAddress() throws SocketException {
+        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+        while (interfaces.hasMoreElements()) {
+            NetworkInterface networkInterface = interfaces.nextElement();
+            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress address = addresses.nextElement();
+                if (!address.isLoopbackAddress() && address instanceof Inet4Address) {
+                    return address.getHostAddress();
+                }
+            }
+        }
+        throw new SocketException("No non-loopback IPv4 address found.");
     }
+
 
     public static void closingSocketErr(IOException e) {
         logger.error("Error closing client socket: {}", e.getMessage());
