@@ -21,6 +21,7 @@ public class GameClient {
     private boolean isGameStarted = false;
     private List<String> discoveredServers = new ArrayList<>();
 
+    // Implement logger
     private static final Logger logger = LoggerFactory.getLogger(GameClient.class);
 
     public GameClient(WindowManager windowManager) {
@@ -51,8 +52,7 @@ public class GameClient {
     }
 
     protected Socket createSocket(String serverAddress) throws IOException {
-        logger.info("Attempting to connect to server at {}", serverAddress);
-        return new Socket(serverAddress, 12346);
+        return new Socket(serverAddress, 12345);
     }
 
     public SudokuGame getGame() {
@@ -64,6 +64,7 @@ public class GameClient {
         String command = parts[0];
         logger.info("Command: {}", command);
         switch (command) {
+
             case "INITIAL_BOARD":
                 logger.info("Received initial board: {}", parts[1]);
                 int[][] board = stringToBoard(parts[1]);
@@ -73,8 +74,7 @@ public class GameClient {
                 Config.setEnableLives(false);
                 game.initializeCustom(board);
                 break;
-            case "PROGRESS":
-            case "WINNER":
+            case "PROGRESS", "WINNER":
                 game.processNetworkMessage(message);
                 break;
         }
@@ -94,7 +94,6 @@ public class GameClient {
 
     public boolean testGameConnection(String serverAddress) {
         try (Socket ignored = createSocket(serverAddress)) {
-            logger.info("Successfully connected to server at {}", serverAddress);
             return true;
         } catch (IOException e) {
             logger.error("Failed to connect to server at {}: {}", serverAddress, e.getMessage());
@@ -111,15 +110,7 @@ public class GameClient {
         discoveredServers = ssdpClient.discover();
 
         for (String server : discoveredServers) {
-            if (server != null) {
-                logger.info("Found server: {}", server);
-            } else {
-                logger.warn("Received a null server address in SSDP response");
-            }
-        }
-
-        if (discoveredServers.isEmpty()) {
-            logger.warn("No servers discovered.");
+            logger.info("Found server: {}", server);
         }
     }
 }
