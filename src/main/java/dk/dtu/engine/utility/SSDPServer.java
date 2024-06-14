@@ -23,9 +23,9 @@ public class SSDPServer {
                     "EXT:\r\n" +
                     "LOCATION: http://%s:%d/description.xml\r\n" +
                     "SERVER: SSDPServer/1.0 UPnP/1.1\r\n" +
-                    "ST: upnp:rootdevice\r\n" +
+                    "ST: urn:schemas-upnp-org:device:basic:1\r\n" + // Adjust the ST value to match your specific service
                     "USN: uuid:your-unique-id::upnp:rootdevice\r\n\r\n";
-    private static final int SSDP_PORT = 1900;
+    private static final int SSDP_PORT = 1900; // Corrected port number for SSDP
     private static final String SSDP_IP = "239.255.255.250";
     private final String localIpAddress;
     private final int localPort;

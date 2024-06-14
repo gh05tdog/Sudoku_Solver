@@ -14,8 +14,8 @@ public class SSDPClient {
                     "HOST: 239.255.255.250:1900\r\n" +
                     "MAN: \"ssdp:discover\"\r\n" +
                     "MX: 3\r\n" +
-                    "ST: ssdp:all\r\n\r\n";
-    private static final int SSDP_PORT = 1900;
+                    "ST: urn:schemas-upnp-org:device:basic:1\r\n\r\n"; // Adjust the ST value to match your specific service
+    private static final int SSDP_PORT = 1900; // Corrected port number for SSDP
     private static final String SSDP_IP = "239.255.255.250";
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 

@@ -21,7 +21,6 @@ public class GameClient {
     private boolean isGameStarted = false;
     private List<String> discoveredServers = new ArrayList<>();
 
-    // Implement logger
     private static final Logger logger = LoggerFactory.getLogger(GameClient.class);
 
     public GameClient(WindowManager windowManager) {
@@ -52,7 +51,8 @@ public class GameClient {
     }
 
     protected Socket createSocket(String serverAddress) throws IOException {
-        return new Socket(serverAddress, 12345);
+        logger.info("Attempting to connect to server at {}:12345", serverAddress);
+        return new Socket(serverAddress, 12346);
     }
 
     public SudokuGame getGame() {
@@ -64,7 +64,6 @@ public class GameClient {
         String command = parts[0];
         logger.info("Command: {}", command);
         switch (command) {
-
             case "INITIAL_BOARD":
                 logger.info("Received initial board: {}", parts[1]);
                 int[][] board = stringToBoard(parts[1]);
@@ -74,7 +73,8 @@ public class GameClient {
                 Config.setEnableLives(false);
                 game.initializeCustom(board);
                 break;
-            case "PROGRESS", "WINNER":
+            case "PROGRESS":
+            case "WINNER":
                 game.processNetworkMessage(message);
                 break;
         }
@@ -94,6 +94,7 @@ public class GameClient {
 
     public boolean testGameConnection(String serverAddress) {
         try (Socket ignored = createSocket(serverAddress)) {
+            logger.info("Successfully connected to server at {}", serverAddress);
             return true;
         } catch (IOException e) {
             logger.error("Failed to connect to server at {}: {}", serverAddress, e.getMessage());
