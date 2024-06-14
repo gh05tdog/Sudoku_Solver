@@ -99,7 +99,7 @@ public class GameServer {
             serverDialog.dispose();
             serverDialog = null;
         }
-        
+
         StringBuilder boardString = new StringBuilder("INITIAL_BOARD ");
 
         Board board = new Board(3, 3);
