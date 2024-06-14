@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class SSDPClient {
     private static final String M_SEARCH_MESSAGE =
@@ -14,8 +13,8 @@ public class SSDPClient {
                     "HOST: 239.255.255.250:1900\r\n" +
                     "MAN: \"ssdp:discover\"\r\n" +
                     "MX: 3\r\n" +
-                    "ST: urn:schemas-upnp-org:device:basic:1\r\n\r\n"; // Adjust the ST value to match your specific service
-    private static final int SSDP_PORT = 1900; // Corrected port number for SSDP
+                    "ST: ssdp:all\r\n\r\n";
+    private static final int SSDP_PORT = 1900;
     private static final String SSDP_IP = "239.255.255.250";
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 
@@ -28,7 +27,6 @@ public class SSDPClient {
             byte[] sendData = M_SEARCH_MESSAGE.getBytes();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(SSDP_IP), SSDP_PORT);
             socket.send(sendPacket);
-            System.out.println("SSDP discovery message sent.");
 
             executorService.execute(() -> {
                 byte[] receiveData = new byte[1024];
@@ -37,24 +35,19 @@ public class SSDPClient {
                     try {
                         socket.receive(receivePacket);
                         String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                        System.out.println("Received SSDP response: " + response);
                         if (response.contains("LOCATION")) {
                             String serverIp = extractIp(response);
                             if (serverIp != null && !servers.contains(serverIp)) {
                                 servers.add(serverIp);
-                                System.out.println("Discovered server: " + serverIp);
                             }
                         }
                     } catch (IOException e) {
-                        System.out.println("Socket timeout reached or error occurred: " + e.getMessage());
                         break; // Timeout reached, stop listening
                     }
                 }
             });
 
             Thread.sleep(6000); // Wait for responses
-            executorService.shutdown();
-            executorService.awaitTermination(5, TimeUnit.SECONDS);
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -68,7 +61,7 @@ public class SSDPClient {
         for (String line : lines) {
             if (line.startsWith("LOCATION:")) {
                 try {
-                    URL url = new URL(line.split(" ", 2)[1].trim());
+                    URL url = new URL(line.split(" ", 2)[1]);
                     return url.getHost();
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
