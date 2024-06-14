@@ -804,7 +804,6 @@ public class StartMenu {
         return inputKField;
     }
 
-
     public CustomBoardPanel getFourByFour() {
         return fourByFour;
     }
