@@ -1,17 +1,17 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.SudokuGame;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /* The GameClient class is responsible for connecting to the game server and starting the game.
  * It listens for messages from the server and processes them accordingly.
@@ -53,7 +53,8 @@ public class GameClient {
         // Listen for messages from the server
         String message;
         while ((message = in.readLine()) != null) {
-            System.out.println("Received message: " + message); // Display the message in the console
+            System.out.println(
+                    "Received message: " + message); // Display the message in the console
             processNetworkMessage(message, game); // Process the received message
         }
     }
@@ -92,11 +93,13 @@ public class GameClient {
     // Method to convert a board string to a 2D integer array
     private int[][] stringToBoard(String boardString) {
         String[] rows = boardString.split(";"); // Split the string into rows
-        int[][] board = new int[rows.length][rows[0].split(",").length]; // Initialize the board array
+        int[][] board =
+                new int[rows.length][rows[0].split(",").length]; // Initialize the board array
         for (int i = 0; i < rows.length; i++) {
             String[] nums = rows[i].split(","); // Split the row into numbers
             for (int j = 0; j < nums.length; j++) {
-                board[i][j] = Integer.parseInt(nums[j]); // Parse each number and assign it to the board
+                board[i][j] =
+                        Integer.parseInt(nums[j]); // Parse each number and assign it to the board
             }
         }
         return board;

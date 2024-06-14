@@ -11,7 +11,6 @@ import java.util.Set;
  * The Cell class represents a single cell in the Sudoku board.
  * It contains information about the cell's number, notes, and visual state.
  */
-
 class Cell implements Serializable {
 
     boolean isMarked = false;
@@ -60,7 +59,6 @@ class Cell implements Serializable {
         isVisualizingHint = false;
         isHighlighted = wasHighlightedBeforeHint;
     }
-
 
     // This function is used to paint the cell
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {

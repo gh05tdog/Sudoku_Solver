@@ -10,7 +10,6 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-
 /**
  * The WindowManager class is responsible for managing the game window.
  * It sets up the window and adds components to it.
@@ -175,7 +174,7 @@ public class WindowManager {
         buttonPanel.repaint();
     }
 
-    //add a button to go back to the start menu
+    // add a button to go back to the start menu
     public void addGoBackButton(JButton goBackButton) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx =
@@ -206,8 +205,13 @@ public class WindowManager {
         whitePanel.repaint();
     }
 
-    public void layoutComponents(TimerFunction timer, Component numberHub, JButton goBackButton, JButton saveGameButton) {
-        JPanel combinedPanel = setupNumberAndTimerPanel(timer, numberHub, goBackButton, saveGameButton);
+    public void layoutComponents(
+            TimerFunction timer,
+            Component numberHub,
+            JButton goBackButton,
+            JButton saveGameButton) {
+        JPanel combinedPanel =
+                setupNumberAndTimerPanel(timer, numberHub, goBackButton, saveGameButton);
 
         // Layout the combined panel with the number hub, timer, and go back button
         GridBagConstraints gbcPanel = new GridBagConstraints();
@@ -221,10 +225,12 @@ public class WindowManager {
         frame.setVisible(true);
     }
 
-
     // This method is used to set up the panel that contains the number hub and timer
     public JPanel setupNumberAndTimerPanel(
-            TimerFunction timer, Component numberHub, JButton goBackButton, JButton saveGameButton) {
+            TimerFunction timer,
+            Component numberHub,
+            JButton goBackButton,
+            JButton saveGameButton) {
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
         combinedPanel.setBackground(backgroundColor);
         combinedPanel.setOpaque(false);
@@ -315,7 +321,7 @@ public class WindowManager {
                 usedLives++;
             }
         }
-        return new int[] {usedLives,Config.getNumberOfLives()};
+        return new int[] {usedLives, Config.getNumberOfLives()};
     }
 
     public void addProgressBar(JProgressBar progressBar, int yPos) {

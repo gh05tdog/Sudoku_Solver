@@ -96,12 +96,15 @@ public class TimerFunction extends JPanel {
     public void startWithTime(int time) {
         startTime = System.currentTimeMillis() - time * 1000L;
         timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                updateTimer();
-            }
-        }, 0, 1000);
+        timer.scheduleAtFixedRate(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        updateTimer();
+                    }
+                },
+                0,
+                1000);
     }
 
     public void update() {

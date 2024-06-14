@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import dk.dtu.game.core.Board;
@@ -17,8 +18,10 @@ import org.slf4j.LoggerFactory;
 public class GameServer {
     private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
     private static final int PORT = 12345;
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(4); // Thread pool to handle client connections
-    public final ConcurrentHashMap<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>(); // Map to store client connections and their writers
+    private final ExecutorService threadPool =
+            Executors.newFixedThreadPool(4); // Thread pool to handle client connections
+    public final ConcurrentHashMap<Socket, PrintWriter> clientWriters =
+            new ConcurrentHashMap<>(); // Map to store client connections and their writers
     private final Object lock = new Object(); // Lock for synchronizing critical sections
     private int connectedPlayers = 0; // Counter for connected players
     public ServerSocket serverSocket;
@@ -45,9 +48,13 @@ public class GameServer {
         while (running) {
             try {
                 Socket clientSocket = serverSocket.accept(); // Accept a new client connection
-                PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true); // Create a writer for the client
+                PrintWriter writer =
+                        new PrintWriter(
+                                clientSocket.getOutputStream(),
+                                true); // Create a writer for the client
                 clientWriters.put(clientSocket, writer); // Add the client to the map
-                threadPool.execute(new ClientHandler(clientSocket)); // Handle the client in a new thread
+                threadPool.execute(
+                        new ClientHandler(clientSocket)); // Handle the client in a new thread
             } catch (IOException e) {
                 if (running) {
                     logger.error("Error accepting client: {}", e.getMessage());
@@ -111,7 +118,8 @@ public class GameServer {
         @Override
         public void run() {
             try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                BufferedReader in =
+                        new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String message;
                 while ((message = in.readLine()) != null) {
                     processMessage(message); // Process each message from the client
@@ -142,8 +150,11 @@ public class GameServer {
                         int totalPlayers = 2;
                         if (connectedPlayers == totalPlayers) {
                             try {
-                                sendInitialBoard(); // Send the initial board when all players are connected
-                                broadcastMessage("READY"); // Notify all clients that the game is ready to start
+                                sendInitialBoard(); // Send the initial board when all players are
+                                // connected
+                                broadcastMessage(
+                                        "READY"); // Notify all clients that the game is ready to
+                                // start
                             } catch (Board.BoardNotCreatable e) {
                                 logger.error("Error creating board: {}", e.getMessage());
                             }
@@ -153,7 +164,8 @@ public class GameServer {
                 case "DISCONNECT" -> handleClientDisconnection();
                 case "COMPLETED" -> {
                     String playerName = parts[1];
-                    announceWinner(playerName); // Announce the winner when a client completes the game
+                    announceWinner(
+                            playerName); // Announce the winner when a client completes the game
                 }
             }
         }

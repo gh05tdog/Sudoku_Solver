@@ -196,7 +196,6 @@ class SudokuGameTest {
             {0, 0, 0, 0, 0, 0, 0, 0, 0}
         };
 
-
         game.gameboard.setGameBoard(tempboard);
         game.gameboard.setInitialBoard(tempboard);
         game.gameboard.setSolvedBoard(tempboard);

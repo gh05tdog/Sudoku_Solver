@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  * This is the start menu of the game. This is where you can choose difficulty, size, loadgame, show leader board etc.
  * It is also where you can chose the game rules.
  */
-
 public class StartMenu {
 
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
@@ -70,9 +69,9 @@ public class StartMenu {
     private static final Color lightaccentColor = new Color(237, 224, 186);
     private static Color AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
     private static Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
-    private final JComboBox<String> difficultyDropdown = new JComboBox<>(new String[] {"Easy", "Medium", "Hard", "Extreme"});
+    private final JComboBox<String> difficultyDropdown =
+            new JComboBox<>(new String[] {"Easy", "Medium", "Hard", "Extreme"});
     GameRulePopup gameRules = new GameRulePopup(this);
-
 
     private final JButton loadGameButton = new JButton("Load Game");
 
@@ -103,7 +102,7 @@ public class StartMenu {
         }
     }
 
-    //The custom board panel is the panel that shows the size, with the dynamically drawn board
+    // The custom board panel is the panel that shows the size, with the dynamically drawn board
     public void updateCustomBoardPanel(int n, int k) {
         if ((k * n) <= (n * n)) {
             customBoardPanel.updateBoard(n, k); // Update the board based on n and k
@@ -115,7 +114,7 @@ public class StartMenu {
     public void initialize() {
         // Initialize the start menu with all the buttons
         addSizePanelButtons();
-        addButtonPanelButtons();  // Updated method call to include both start button and dropdown
+        addButtonPanelButtons(); // Updated method call to include both start button and dropdown
         addInputPanelButtons();
         addImportButton();
         addLeaderboardButton();
@@ -131,10 +130,7 @@ public class StartMenu {
 
         addChangeListenerToField(inputNField);
         addChangeListenerToField(inputKField);
-
-
     }
-
 
     private void addLoadGameButton() {
         loadGameButton.setBounds(5, 165, 190, 40); // Adjust the size and position as needed
@@ -143,10 +139,9 @@ public class StartMenu {
         loadGameButton.setBorder(new LineBorder(AccentColor));
         loadGameButton.setFocusPainted(false);
         loadGameButton.addActionListener(this::onLoadGame);
-        startMenuWindowManager.addComponent(loadGameButton, startMenuWindowManager.getButtonPanel());
+        startMenuWindowManager.addComponent(
+                loadGameButton, startMenuWindowManager.getButtonPanel());
     }
-
-
 
     private void addNetworkGameButtons() {
         createGameButton.setBounds(5, 280, 190, 40); // Adjust the size and position as needed
@@ -178,19 +173,16 @@ public class StartMenu {
         gameRuleButton.addActionListener(
                 e -> {
                     gameRules.setVisible(true);
-                    });
-        startMenuWindowManager.addComponent(gameRuleButton, startMenuWindowManager.getButtonPanel());
+                });
+        startMenuWindowManager.addComponent(
+                gameRuleButton, startMenuWindowManager.getButtonPanel());
     }
 
-    private void initializeGamerulePopup(){
+    private void initializeGamerulePopup() {
+        gameRules.addJSwitchBox("Enable lives", Config.getEnableLives(), Config::setEnableLives);
+        gameRules.addJSwitchBox("Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
         gameRules.addJSwitchBox(
-                "Enable lives", Config.getEnableLives(), Config::setEnableLives);
-        gameRules.addJSwitchBox(
-                "Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
-        gameRules.addJSwitchBox(
-                "Enable easy mode",
-                Config.getEnableEasyMode(),
-                Config::setEnableEasyMode);
+                "Enable easy mode", Config.getEnableEasyMode(), Config::setEnableEasyMode);
         gameRules.addJSwitchBox("Dark Mode", Config.getDarkMode(), Config::setDarkMode);
         gameRules.addJSwitchBox(
                 "Killer Sudoku Mode",
@@ -198,16 +190,16 @@ public class StartMenu {
                 Config::setEnableKillerSudoku);
     }
 
-
-
     private void onLoadGame(ActionEvent e) {
         if (isLoadGameDialogOpen) {
             return;
         }
 
-        List<SavedGame.SavedGameData> savedGames = SavedGame.loadSavedGames("jdbc:sqlite:sudoku.db");
+        List<SavedGame.SavedGameData> savedGames =
+                SavedGame.loadSavedGames("jdbc:sqlite:sudoku.db");
         if (savedGames.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No saved games available.", "Error", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    null, "No saved games available.", "Error", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
@@ -244,33 +236,45 @@ public class StartMenu {
         loadButton.setBackground(backgroundColor);
         loadButton.setForeground(AccentColor);
         loadButton.setBorder(new LineBorder(AccentColor));
-        loadButton.addActionListener(event -> {
-            SavedGame.SavedGameData selectedGame = gameList.getSelectedValue();
-            if (selectedGame != null) {
-                int[][] initialBoard = deserializeBoard(selectedGame.getInitialBoard());
-                int[][] currentBoard = deserializeBoard(selectedGame.getCurrentBoard());
-                int time = selectedGame.getTime();
-                int[] usedLifeLines = selectedGame.getUsedLifeLines();
-                boolean lifeEnabled = selectedGame.isLifeEnabled();
-                int n = selectedGame.getNSize();
-                int k = selectedGame.getKSize();
-                int[][] serializedCages = deserializeBoard(selectedGame.getCages());
-                boolean isKillerSudoku = selectedGame.isKillerSudoku();
-                String notes = selectedGame.getNotes();
+        loadButton.addActionListener(
+                event -> {
+                    SavedGame.SavedGameData selectedGame = gameList.getSelectedValue();
+                    if (selectedGame != null) {
+                        int[][] initialBoard = deserializeBoard(selectedGame.getInitialBoard());
+                        int[][] currentBoard = deserializeBoard(selectedGame.getCurrentBoard());
+                        int time = selectedGame.getTime();
+                        int[] usedLifeLines = selectedGame.getUsedLifeLines();
+                        boolean lifeEnabled = selectedGame.isLifeEnabled();
+                        int n = selectedGame.getNSize();
+                        int k = selectedGame.getKSize();
+                        int[][] serializedCages = deserializeBoard(selectedGame.getCages());
+                        boolean isKillerSudoku = selectedGame.isKillerSudoku();
+                        String notes = selectedGame.getNotes();
 
-                startGameWithSavedData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, n, k, serializedCages, isKillerSudoku, notes);
-                loadGameDialog.dispose();
-                isLoadGameDialogOpen = false;
-            }
-        });
+                        startGameWithSavedData(
+                                initialBoard,
+                                currentBoard,
+                                time,
+                                usedLifeLines,
+                                lifeEnabled,
+                                n,
+                                k,
+                                serializedCages,
+                                isKillerSudoku,
+                                notes);
+                        loadGameDialog.dispose();
+                        isLoadGameDialogOpen = false;
+                    }
+                });
 
         // Add a listener to handle window closing
-        loadGameDialog.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent we) {
-                isLoadGameDialogOpen = false;
-            }
-        });
+        loadGameDialog.addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent we) {
+                        isLoadGameDialogOpen = false;
+                    }
+                });
 
         buttonPanel.add(loadButton);
         loadGameDialog.add(scrollPane, BorderLayout.CENTER);
@@ -278,8 +282,6 @@ public class StartMenu {
         loadGameDialog.setLocationRelativeTo(null);
         loadGameDialog.setVisible(true);
     }
-
-
 
     private int[][] deserializeBoard(String boardString) {
         String[] rows = boardString.split(";");
@@ -296,7 +298,17 @@ public class StartMenu {
         return board;
     }
 
-    private void startGameWithSavedData(int[][] initialBoard, int[][] currentBoard, int time, int[] usedLifeLines, boolean lifeEnabled, int n, int k, int[][] cages, boolean isKillerSudoku, String notes) {
+    private void startGameWithSavedData(
+            int[][] initialBoard,
+            int[][] currentBoard,
+            int time,
+            int[] usedLifeLines,
+            boolean lifeEnabled,
+            int n,
+            int k,
+            int[][] cages,
+            boolean isKillerSudoku,
+            String notes) {
         Config.setCellSize(550 / (k * n));
         Config.setK(k);
         Config.setN(n);
@@ -311,15 +323,25 @@ public class StartMenu {
             if (lifeEnabled) {
                 Config.setEnableLives(true);
             }
-            GameEngine gameEngine = new GameEngine(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
+            GameEngine gameEngine =
+                    new GameEngine(
+                            windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
             windowManager.updateBoard();
-            gameEngine.startCustomSaved(initialBoard, currentBoard, time, usedLives, n, k, cages, isKillerSudoku, notes);
+            gameEngine.startCustomSaved(
+                    initialBoard,
+                    currentBoard,
+                    time,
+                    usedLives,
+                    n,
+                    k,
+                    cages,
+                    isKillerSudoku,
+                    notes);
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             logBoardNotCreatable();
         }
     }
-
 
     private void onCreateGame(ActionEvent e) {
         createGameButton.setEnabled(false);
@@ -524,7 +546,6 @@ public class StartMenu {
         }
     }
 
-
     private void addButtonPanelButtons() {
         startButton.setBounds(5, 5, 190, 40);
         startButton.setBackground(backgroundColor);
@@ -557,14 +578,16 @@ public class StartMenu {
         difficultyDropdown.setSelectedItem("Medium"); // Set default selection
         Config.setDifficulty("medium");
 
-        difficultyDropdown.addActionListener(e -> {
-            String selectedDifficulty = (String) difficultyDropdown.getSelectedItem();
-            if (selectedDifficulty != null) {
-                Config.setDifficulty(selectedDifficulty.toLowerCase());
-            }
-        });
+        difficultyDropdown.addActionListener(
+                e -> {
+                    String selectedDifficulty = (String) difficultyDropdown.getSelectedItem();
+                    if (selectedDifficulty != null) {
+                        Config.setDifficulty(selectedDifficulty.toLowerCase());
+                    }
+                });
 
-        startMenuWindowManager.addComponent(difficultyDropdown, startMenuWindowManager.getButtonPanel());
+        startMenuWindowManager.addComponent(
+                difficultyDropdown, startMenuWindowManager.getButtonPanel());
     }
 
     private void addImportButton() {
@@ -659,7 +682,8 @@ public class StartMenu {
         }
     }
 
-    //Add the custom board panels with different prefixed sizes and the one you can set yourself with N and K values
+    // Add the custom board panels with different prefixed sizes and the one you can set yourself
+    // with N and K values
     private void addSizePanelButtons() {
         // This function adds the small boards for selecting size in game
 
@@ -759,7 +783,7 @@ public class StartMenu {
                 Config.getCellSize());
     }
 
-    private void logBoardNotCreatable(){
+    private void logBoardNotCreatable() {
         logger.error("This board-type is not creatable");
     }
 
@@ -803,5 +827,4 @@ public class StartMenu {
     public JComboBox<String> getDifficultyDropdown() {
         return difficultyDropdown;
     }
-
 }

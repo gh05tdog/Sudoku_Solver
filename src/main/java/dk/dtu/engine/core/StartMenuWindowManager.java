@@ -14,7 +14,6 @@ import javax.swing.*;
  * The StartMenuWindowManager class is responsible for managing the start menu window.
  * It sets up the window and adds components to it.
  */
-
 public class StartMenuWindowManager {
     private final JFrame frame;
     private final JPanel buttonPanel = new JPanel(null); // Panel for buttons
@@ -48,22 +47,14 @@ public class StartMenuWindowManager {
         welcomePanel.setBackground(backgroundColor);
         setStartMenuLogo();
 
-
-        sizePanel.setBounds((frame.getWidth()/2)-325, (frame.getHeight() / 2) + 200, 650, 160);
+        sizePanel.setBounds((frame.getWidth() / 2) - 325, (frame.getHeight() / 2) + 200, 650, 160);
         sizePanel.setBackground(backgroundColor);
 
-
-        buttonPanel.setBounds(
-                (frame.getWidth()) - 400,
-                80,
-                200,
-                50 + sizePanel.getHeight() + 300);
+        buttonPanel.setBounds((frame.getWidth()) - 400, 80, 200, 50 + sizePanel.getHeight() + 300);
         buttonPanel.setBackground(backgroundColor);
 
         inputPanel.setBounds(650, (frame.getHeight() / 2) + 150, 140, 50);
         inputPanel.setBackground(backgroundColor);
-
-
 
         // Add the panels to the main panel
         mainPanel.add(buttonPanel);
@@ -86,22 +77,23 @@ public class StartMenuWindowManager {
 
     public void setStartMenuLogo() {
         try {
-            BufferedImage originalImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/logo.png")));
-            int newWidth = 700;  // Change this to desired width
-            int newHeight = 700;  // Change this to desired height
+            BufferedImage originalImage =
+                    ImageIO.read(Objects.requireNonNull(getClass().getResource("/logo.png")));
+            int newWidth = 700; // Change this to desired width
+            int newHeight = 700; // Change this to desired height
 
-            Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            Image scaledImage =
+                    originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             JLabel logo = new JLabel(scaledIcon);
 
-            logo.setBounds(-30, -100, newWidth, newHeight );
+            logo.setBounds(-30, -100, newWidth, newHeight);
             welcomePanel.add(logo);
             welcomePanel.revalidate();
             welcomePanel.repaint();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void update() {
@@ -143,7 +135,6 @@ public class StartMenuWindowManager {
     public JPanel getButtonPanel() {
         return buttonPanel;
     }
-
 
     public JPanel getSizePanel() {
         return sizePanel;

@@ -119,7 +119,6 @@ class StartMenuTest {
                 });
     }
 
-
     @Test
     @DisplayName("Initialization Configuration Test")
     void testInitializationConfiguration() {
@@ -157,7 +156,6 @@ class StartMenuTest {
         assertEquals(4, Config.getN(), "N should be set to 4");
         assertEquals(4, Config.getK(), "K should be set to 4");
     }
-
 
     @Test
     @DisplayName("Input Field Invalid Data Handling")

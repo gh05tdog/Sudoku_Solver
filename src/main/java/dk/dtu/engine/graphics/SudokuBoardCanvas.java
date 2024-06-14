@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
  * it also makes a 2D array of cells, which is an object that stores the numbers on the board and the notes. This class also paints the
  * killer sudoku, the hightlighting of cells and the hint visualization
  */
-
 public class SudokuBoardCanvas extends JPanel {
     private final int gridSize;
     private final int subgridSize;
@@ -183,8 +182,8 @@ public class SudokuBoardCanvas extends JPanel {
             // Highlight the subgrid
             for (int subRow = subGridRowStart; subRow < subGridRowStart + subGridSize; subRow++) {
                 for (int subCol = subGridColStart;
-                     subCol < subGridColStart + subGridSize;
-                     subCol++) {
+                        subCol < subGridColStart + subGridSize;
+                        subCol++) {
                     cells[subRow][subCol].setHighlighted(highlight);
                 }
             }
@@ -211,8 +210,8 @@ public class SudokuBoardCanvas extends JPanel {
                             int r =
                                     startColor.getRed()
                                             + (backgroundColor.getRed() - startColor.getRed())
-                                            * step
-                                            / totalSteps;
+                                                    * step
+                                                    / totalSteps;
                             Color stepColor = getColor(r);
                             cell.setBackgroundColor(stepColor);
                             repaint();
@@ -230,13 +229,13 @@ public class SudokuBoardCanvas extends JPanel {
                         int g =
                                 startColor.getGreen()
                                         + (backgroundColor.getGreen() - startColor.getGreen())
-                                        * step
-                                        / totalSteps;
+                                                * step
+                                                / totalSteps;
                         int b =
                                 startColor.getBlue()
                                         + (backgroundColor.getBlue() - startColor.getBlue())
-                                        * step
-                                        / totalSteps;
+                                                * step
+                                                / totalSteps;
                         return new Color(r, g, b);
                     }
                 };
@@ -254,19 +253,21 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
-    //The marked cell is the cell clicked on, it is used to highlight the marked cell in a darker color
+    // The marked cell is the cell clicked on, it is used to highlight the marked cell in a darker
+    // color
     public int[] getMarkedCell() {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 if (cells[i][j].isMarked) {
-                    return new int[]{i, j};
+                    return new int[] {i, j};
                 }
             }
         }
         return new int[0];
     }
 
-    //The marked cell is the cell clicked on, it is used to highlight the marked cell in a darker color
+    // The marked cell is the cell clicked on, it is used to highlight the marked cell in a darker
+    // color
     public void setMarkedCell(int row, int col) {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
@@ -277,7 +278,8 @@ public class SudokuBoardCanvas extends JPanel {
         logger.debug("Setting the marked cell {} {}", row, col);
     }
 
-    //When easymode is enabled, this will highlight all the places where you can place the current number you have clicked on.
+    // When easymode is enabled, this will highlight all the places where you can place the current
+    // number you have clicked on.
     public void highlightPlaceableCells(int number) {
         clearUnplacableCells();
         boolean[][] unPlaceable = new boolean[gridSize][gridSize];
@@ -303,8 +305,7 @@ public class SudokuBoardCanvas extends JPanel {
                         unPlaceable[i][col] = true;
                     }
 
-                    int subgridSize =
-                            (int) Math.sqrt(gridSize);
+                    int subgridSize = (int) Math.sqrt(gridSize);
                     int startRow = (row / subgridSize) * subgridSize;
                     int startCol = (col / subgridSize) * subgridSize;
                     for (int i = startRow; i < startRow + subgridSize; i++) {
@@ -504,7 +505,8 @@ public class SudokuBoardCanvas extends JPanel {
             for (int col = 0; col < gridSize; col++) {
                 cageId = cages[row][col];
                 if (cageId != 0) {
-                    cageMap.computeIfAbsent(cageId, k -> new ArrayList<>()).add(new Point(col, row));
+                    cageMap.computeIfAbsent(cageId, k -> new ArrayList<>())
+                            .add(new Point(col, row));
                 }
             }
         }
@@ -540,7 +542,7 @@ public class SudokuBoardCanvas extends JPanel {
                     for (Integer note : cells[i][j].getNotes()) {
                         builder.append(note).append(",");
                     }
-                    builder.setLength(builder.length() - 1);  // Remove last comma
+                    builder.setLength(builder.length() - 1); // Remove last comma
                     builder.append(";");
                 }
             }

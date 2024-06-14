@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
 
-
 /**
  * The NumberHub class is responsible for displaying the numbers that can be placed on the Sudoku board.
  * It displays the numbers 1 to n*k.

@@ -20,7 +20,6 @@ import javax.swing.text.AbstractDocument;
  * It allows the user to toggle game rules on and off, such as dark mode, timer, lives and easy-mode.
  * It works by adding the JSwitchBoxes and makes the toggle action for those set values in the Config class.
  */
-
 public class GameRulePopup extends JFrame {
 
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
@@ -137,7 +136,6 @@ public class GameRulePopup extends JFrame {
         revalidate();
         repaint();
     }
-
 
     // Create a JTextField for the number of lives
     private JTextField createLivesField() {

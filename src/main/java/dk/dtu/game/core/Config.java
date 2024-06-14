@@ -8,7 +8,6 @@ import java.util.prefs.Preferences;
  * It contains information about the board size, cell size, and difficulty. Along with the gamerules.
  * It uses preferences to store values even when closing the game
  */
-
 public class Config {
     private static int k;
     private static int n;
