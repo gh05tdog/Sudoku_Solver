@@ -22,14 +22,14 @@ import javax.swing.text.AbstractDocument;
  */
 public class GameRulePopup extends JFrame {
 
-    private static final Color darkModebackgroundColor = new Color(64, 64, 64);
-    private static Color backgroundColor =
+    private final Color darkModebackgroundColor = new Color(64, 64, 64);
+    private Color backgroundColor =
             Config.getDarkMode()
                     ? darkModebackgroundColor
                     : Color.WHITE; // Default background color
     private static final Color lightAccentColor = new Color(237, 224, 186);
-    private static Color accentColor = Config.getDarkMode() ? lightAccentColor : Color.BLACK;
-    private final StartMenu startMenu;
+    private Color accentColor = Config.getDarkMode() ? lightAccentColor : Color.BLACK;
+    private final transient StartMenu startMenu;
     private final List<JLabel> labels = new ArrayList<>();
     JTextField livesField = new JTextField(1);
 
@@ -44,7 +44,7 @@ public class GameRulePopup extends JFrame {
 
     private void initialize() {
         setSize(500, 500); // Increased window size
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
@@ -121,7 +121,6 @@ public class GameRulePopup extends JFrame {
             add(moonLabel, gbc);
         } else {
             // Add switch box normally if not "Dark Mode"
-            gbc.gridx = 1;
             add(switchBox, gbc);
         }
 
@@ -129,8 +128,8 @@ public class GameRulePopup extends JFrame {
         if (description.equalsIgnoreCase("Enable lives")) {
             gbc.gridx = 2; // Align JTextField properly
             gbc.insets = new Insets(0, 5, 10, 5); // Adjust spacing for better visual separation
-            JTextField livesField = createLivesField();
-            add(livesField, gbc);
+            JTextField lives = createLivesField();
+            add(lives, gbc);
         }
 
         revalidate();

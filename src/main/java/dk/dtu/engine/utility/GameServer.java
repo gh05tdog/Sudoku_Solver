@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.slf4j.Logger;
@@ -20,11 +21,11 @@ public class GameServer {
     private static final int PORT = 12345;
     private final ExecutorService threadPool =
             Executors.newFixedThreadPool(4); // Thread pool to handle client connections
-    public final ConcurrentHashMap<Socket, PrintWriter> clientWriters =
+    public final ConcurrentMap<Socket, PrintWriter> clientWriters =
             new ConcurrentHashMap<>(); // Map to store client connections and their writers
     private final Object lock = new Object(); // Lock for synchronizing critical sections
     private int connectedPlayers = 0; // Counter for connected players
-    public ServerSocket serverSocket;
+    private ServerSocket serverSocket;
     private boolean running = true; // Flag to control the server running state
 
     // Method to start the server
@@ -33,13 +34,17 @@ public class GameServer {
         acceptClients(); // Accept client connections
     }
 
+    public ServerSocket getServerSocket() {
+        return serverSocket;
+    }
+
     // Method to start the server socket
     protected void startServerSocket() {
         try {
             serverSocket = new ServerSocket(PORT);
-            System.out.println("Server started on port " + serverSocket.getLocalPort());
+            logger.info("Server started on port {}", serverSocket.getLocalPort());
         } catch (IOException e) {
-            System.out.println("Error starting server: " + e.getMessage());
+            logger.info("Error starting server: {}", e.getMessage());
         }
     }
 
@@ -56,9 +61,8 @@ public class GameServer {
                 threadPool.execute(
                         new ClientHandler(clientSocket)); // Handle the client in a new thread
             } catch (IOException e) {
-                if (running) {
-                    logger.error("Error accepting client: {}", e.getMessage());
-                }
+                logger.error("Error accepting client: {}", e.getMessage());
+
             }
         }
     }
@@ -117,9 +121,8 @@ public class GameServer {
 
         @Override
         public void run() {
-            try {
-                BufferedReader in =
-                        new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            try (BufferedReader in =
+                    new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
                 String message;
                 while ((message = in.readLine()) != null) {
                     processMessage(message); // Process each message from the client
@@ -167,6 +170,7 @@ public class GameServer {
                     announceWinner(
                             playerName); // Announce the winner when a client completes the game
                 }
+                default -> logger.error("Unknown command: {}", command);
             }
         }
 
