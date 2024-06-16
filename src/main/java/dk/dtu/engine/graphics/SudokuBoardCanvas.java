@@ -109,7 +109,7 @@ public class SudokuBoardCanvas extends JPanel {
     }
 
     private void drawCageSum(Graphics2D g2, Cage cage, int sumMargin) {
-        Point firstCell = cage.getCells().get(0);
+        Point firstCell = cage.getCells().getFirst();
         int sum = cage.getSum();
         String sumStr = Integer.toString(sum);
 
@@ -128,7 +128,7 @@ public class SudokuBoardCanvas extends JPanel {
             int cellX = cell.x * cellSize + margin;
             int cellY = cell.y * cellSize + margin;
             int size = cellSize - 2 * margin;
-            boolean isSumCell = cell.equals(cageCells.get(0));
+            boolean isSumCell = cell.equals(cageCells.getFirst());
 
             drawBorder(g2, cell, cageCells, cellX, cellY, size, isSumCell, margin);
         }
