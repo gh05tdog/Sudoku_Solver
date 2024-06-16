@@ -98,7 +98,16 @@ public class SudokuGame {
         new Thread(this::processNetworkMessages).start();
 
         saveGameButton = createButton("Save Game", 30);
-        saveGameButton.addActionListener(e -> onSaveGame());
+        saveGameButton.setBackground(backgroundColor);
+        saveGameButton.setForeground(accentColor);
+        saveGameButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(accentColor, 1),
+                        new EmptyBorder(5, 5, 5, 5)));
+        saveGameButton.addActionListener(e -> {
+            onSaveGame();
+            board.requestFocusInWindow();
+        });
 
         Color textColor = Config.getDarkMode() ? Color.BLACK : Color.BLUE;
 
@@ -1009,7 +1018,6 @@ public class SudokuGame {
         eraseButton = createButton("Erase", 30);
         undoButton = createButton("Undo", 300);
         hintButton = createButton("Hint", 30);
-        saveGameButton = createButton("Save Game", 30);
         goBackButton = createButton("Go Back", 30);
 
         noteButton.setBackground(backgroundColor);
@@ -1024,7 +1032,7 @@ public class SudokuGame {
 
         JButton[] buttons = {
                 restartButton, solveButton, newGameButton, eraseButton,
-                undoButton, hintButton, goBackButton, saveGameButton
+                undoButton, hintButton, goBackButton
         };
 
         applyButtonStyles(buttons);
