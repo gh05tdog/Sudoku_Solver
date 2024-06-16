@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SudokuBoardCanvas extends JPanel {
     private final int gridSize;
-    private final int subgridSize;
     private final int cellSize;
     private final int nSize;
     private final Cell[][] cells;
@@ -41,7 +40,6 @@ public class SudokuBoardCanvas extends JPanel {
 
     public SudokuBoardCanvas(int n, int k, int cellSize) {
         this.gridSize = n * k;
-        this.subgridSize = n;
         this.cellSize = cellSize;
         this.nSize = n;
         cells = new Cell[gridSize][gridSize];
@@ -99,13 +97,13 @@ public class SudokuBoardCanvas extends JPanel {
         int sumMargin = 3; // Smaller margin for the sum display
 
         for (Cage cage : cages.values()) {
-            List<Point> cells = cage.getCells();
+            List<Point> cageCells = cage.getCells();
             int sum = cage.getSum();
             String sumStr = Integer.toString(sum);
 
-            if (!cells.isEmpty()) {
+            if (!cageCells.isEmpty()) {
                 // Calculate position for the sum
-                Point firstCell = cells.getFirst();
+                Point firstCell = cageCells.getFirst();
                 int sumX = firstCell.x * cellSize + sumMargin;
                 int sumY = firstCell.y * cellSize + sumMargin + 10;
 
@@ -117,7 +115,7 @@ public class SudokuBoardCanvas extends JPanel {
                 g2.drawString(sumStr, sumX, sumY);
 
                 // Draw the cage borders
-                for (Point cell : cells) {
+                for (Point cell : cageCells) {
                     int cellX = cell.x * cellSize + margin;
                     int cellY = cell.y * cellSize + margin;
                     int size = cellSize - 2 * margin;
@@ -125,7 +123,7 @@ public class SudokuBoardCanvas extends JPanel {
                     boolean isSumCell = cell.equals(firstCell);
 
                     // Draw the top border (skip small section if sum cell)
-                    if (cell.y == 0 || !cells.contains(new Point(cell.x, cell.y - 1))) {
+                    if (cell.y == 0 || !cageCells.contains(new Point(cell.x, cell.y - 1))) {
                         if (isSumCell) {
                             g2.drawLine(cellX + margin * 2, cellY, cellX + size, cellY);
                         } else {
@@ -134,12 +132,12 @@ public class SudokuBoardCanvas extends JPanel {
                     }
 
                     // Draw the bottom border
-                    if (cell.y == gridSize - 1 || !cells.contains(new Point(cell.x, cell.y + 1))) {
+                    if (cell.y == gridSize - 1 || !cageCells.contains(new Point(cell.x, cell.y + 1))) {
                         g2.drawLine(cellX, cellY + size, cellX + size, cellY + size);
                     }
 
                     // Draw the left border (skip small section if sum cell)
-                    if (cell.x == 0 || !cells.contains(new Point(cell.x - 1, cell.y))) {
+                    if (cell.x == 0 || !cageCells.contains(new Point(cell.x - 1, cell.y))) {
                         if (isSumCell) {
                             g2.drawLine(cellX, cellY + margin * 2, cellX, cellY + size);
                         } else {
@@ -148,7 +146,7 @@ public class SudokuBoardCanvas extends JPanel {
                     }
 
                     // Draw the right border
-                    if (cell.x == gridSize - 1 || !cells.contains(new Point(cell.x + 1, cell.y))) {
+                    if (cell.x == gridSize - 1 || !cageCells.contains(new Point(cell.x + 1, cell.y))) {
                         g2.drawLine(cellX + size, cellY, cellX + size, cellY + size);
                     }
                 }
@@ -319,11 +317,11 @@ public class SudokuBoardCanvas extends JPanel {
 
         if (Config.getEnableKillerSudoku()) {
             for (Cage cage : cages.values()) {
-                List<Point> cells = cage.getCells();
+                List<Point> cageCells = cage.getCells();
                 Set<Integer> currentNumbers = cage.getCurrentNumbers();
                 int currentSum = currentNumbers.stream().mapToInt(Integer::intValue).sum();
 
-                for (Point cell : cells) {
+                for (Point cell : cageCells) {
                     int row = cell.y;
                     int col = cell.x;
 
@@ -450,8 +448,12 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
+    private static void setAccentColor(Color color) {
+        accentColor = color;
+    }
+
     public void update() {
-        accentColor = Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
+        setAccentColor(Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK);
         revalidate();
         repaint();
     }

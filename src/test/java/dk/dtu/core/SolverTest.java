@@ -31,19 +31,19 @@ public class SolverTest {
     void TestIsColumnCovered() {
 
         DancingLinks dl = new DancingLinks(coverList);
-    //    printMatrix(dl);
+
         ColumnNode c = (ColumnNode) dl.getHeader().getRight();
 
         c.cover();
         System.out.println("Covered column: " + c.getName());
         System.out.println("After covering:");
-    //    printMatrix(dl);
+
         assertTrue(isColumnCovered(c));
 
         c.uncover();
         System.out.println("Uncovered column: " + c.getName());
         System.out.println("After uncovering:");
-    // printMatrix(dl);
+
         assertFalse(isColumnCovered(c));
     }
 

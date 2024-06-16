@@ -180,7 +180,7 @@ class SudokuGameTest {
     }
 
     @Test
-    void testPlaceWrongNumberWithLives() throws Board.BoardNotCreatable {
+    void testPlaceWrongNumberWithLives() {
         Config.setEnableLives(true);
 
         sudokuBoardCanvasBoard.setSize(550, 550);

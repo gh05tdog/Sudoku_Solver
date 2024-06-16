@@ -33,7 +33,7 @@ public class StartMenuWindowManager {
         this.frame.setSize(width, height);
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.frame.setResizable(false);
-        backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+        setBackgroundColor( Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE);
 
         buttonPanel.setOpaque(true);
         sizePanel.setOpaque(true);
@@ -96,8 +96,12 @@ public class StartMenuWindowManager {
         }
     }
 
+    private static void setBackgroundColor(Color color) {
+        backgroundColor = color;
+    }
+
     public void update() {
-        backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+        setBackgroundColor(Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE);
 
         mainPanel.setBackground(backgroundColor);
         mainPanel.revalidate();

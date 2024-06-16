@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The WindowManager class is responsible for managing the game window.
@@ -29,6 +31,8 @@ public class WindowManager {
     ImageIcon heartIcon;
     JPanel combinedPanel = new JPanel();
     private boolean[] heartStates; // true if the heart is full, false if empty
+    private static final Logger logger = LoggerFactory.getLogger(WindowManager.class);
+
 
     private static Color backgroundColor =
             Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
@@ -89,7 +93,8 @@ public class WindowManager {
             gbc.anchor = GridBagConstraints.NORTHWEST;
             gbc.insets = new Insets(10, 70, 10, 10);
             whitePanel.add(heartsPanel, gbc);
-        } catch (NullPointerException ignored) {
+        } catch (NullPointerException err) {
+            logger.error("Error while adding heart labels: {}", err.getMessage());
         }
     }
 
@@ -105,7 +110,7 @@ public class WindowManager {
                 emptyHeartIcon = new ImageIcon(scaledEmptyHeartImage);
             }
         } catch (IOException | NullPointerException e) {
-            System.out.println("Image not found, check the path.");
+           logger.error("Image not found, check the path.");
         }
 
         // Find the last "full" heart label and update its icon directly
@@ -121,10 +126,10 @@ public class WindowManager {
             if (comp instanceof JLabel label) {
                 label.setIcon(emptyHeartIcon);
                 heartStates[lastIndex] = false; // Update state to empty
-                System.out.println("Heart emptied at index: " + lastIndex);
+                logger.info("Heart emptied at index: {}",lastIndex);
             }
         } else {
-            System.out.println("No full heart found to replace");
+            logger.info("No full heart found to replace");
         }
 
         heartsPanel.revalidate();
@@ -142,7 +147,7 @@ public class WindowManager {
             }
 
         } catch (IOException | NullPointerException e) {
-            System.out.println("Image not found, check the path.");
+            logger.error("Image not found, ensure the path is correct.");
         }
 
         for (int i = 0; i < heartsPanel.getComponentCount(); i++) {
@@ -174,22 +179,6 @@ public class WindowManager {
         buttonPanel.repaint();
     }
 
-    // add a button to go back to the start menu
-    public void addGoBackButton(JButton goBackButton) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx =
-                1; // You might need to adjust this depending on how many columns your layout has
-        gbc.gridy = 0; // Top row
-        gbc.weightx = 1.0; // Take up space horizontally
-        gbc.weighty = 0; // No vertical expansion
-        gbc.anchor = GridBagConstraints.NORTHEAST; // Anchor the button to the northeast corner
-        gbc.insets = new Insets(10, 10, 10, 10); // Add some padding
-
-        mainPanel.add(goBackButton, gbc);
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
-
     public void drawBoard(Component board) {
         // This method is used to add the Sudoku board itself, centered in the boardPanel
         GridBagConstraints gbc = new GridBagConstraints();
@@ -210,7 +199,7 @@ public class WindowManager {
             Component numberHub,
             JButton goBackButton,
             JButton saveGameButton) {
-        JPanel combinedPanel =
+        JPanel panel =
                 setupNumberAndTimerPanel(timer, numberHub, goBackButton, saveGameButton);
 
         // Layout the combined panel with the number hub, timer, and go back button
@@ -220,7 +209,7 @@ public class WindowManager {
         gbcPanel.fill = GridBagConstraints.NORTH; // Align to the top of the space
         gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
 
-        mainPanel.add(combinedPanel, gbcPanel);
+        mainPanel.add(panel, gbcPanel);
 
         frame.setVisible(true);
     }
@@ -276,9 +265,12 @@ public class WindowManager {
         return combinedPanel;
     }
 
+    private static void setBackgroundColor(Color color) {
+        backgroundColor = color;
+    }
+
     public void updateBoard() {
-        System.out.println(Config.getDarkMode());
-        backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+        setBackgroundColor(Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE);
         frame.setBackground(backgroundColor);
         frame.revalidate();
         frame.repaint();
