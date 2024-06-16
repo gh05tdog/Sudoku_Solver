@@ -196,7 +196,6 @@ class SudokuGameTest {
             {0, 0, 0, 0, 0, 0, 0, 0, 0}
         };
 
-
         game.gameboard.setGameBoard(tempboard);
         game.gameboard.setInitialBoard(tempboard);
         game.gameboard.setSolvedBoard(tempboard);
@@ -223,9 +222,9 @@ class SudokuGameTest {
         };
 
         Config.setEnableLives(false);
-        game.getNewGameButton().doClick();
         game.gameboard.setGameBoard(tempboard);
         game.gameboard.setInitialBoard(tempboard);
+        game.gameboard.setSolvedBoard(tempboard);
 
         game.makeMove(2, 2, 5);
 

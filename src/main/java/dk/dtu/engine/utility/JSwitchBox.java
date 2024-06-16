@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import java.awt.*;
@@ -6,6 +7,9 @@ import java.awt.event.MouseEvent;
 import java.util.function.Consumer;
 import javax.swing.*;
 
+/**
+ * This class makes a custom Component that acts like a slider for the gamerules, it has an on/off state and is toggleable.
+ */
 public class JSwitchBox extends JComponent {
     private boolean selected;
     private final int width = 100;
@@ -33,6 +37,7 @@ public class JSwitchBox extends JComponent {
     private void toggle() {
         selected = !selected;
         toggleAction.accept(selected);
+        revalidate();
         repaint();
     }
 
@@ -48,6 +53,7 @@ public class JSwitchBox extends JComponent {
         // Draw slider
         g2.setColor(sliderColor);
         int sliderX = selected ? width - height : 0;
-        g2.fillRoundRect(sliderX, 0, height, height, 20, 20); // Adjusted width of the slider rectangle
+        g2.fillRoundRect(
+                sliderX, 0, height, height, 20, 20); // Adjusted width of the slider rectangle
     }
 }
