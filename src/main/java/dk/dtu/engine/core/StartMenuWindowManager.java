@@ -3,6 +3,9 @@ package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.game.core.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -23,7 +26,7 @@ public class StartMenuWindowManager {
     private final JPanel mainPanel = new JPanel(null);
     private static Color backgroundColor =
             Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
-    ImageIcon icon;
+    private static final Logger logger = LoggerFactory.getLogger(StartMenuWindowManager.class);
 
     // Add references to custom board panels
     private CustomBoardPanel[] customBoardPanels;
@@ -33,7 +36,7 @@ public class StartMenuWindowManager {
         this.frame.setSize(width, height);
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.frame.setResizable(false);
-        setBackgroundColor( Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE);
+        setBackgroundColor();
 
         buttonPanel.setOpaque(true);
         sizePanel.setOpaque(true);
@@ -92,16 +95,16 @@ public class StartMenuWindowManager {
             welcomePanel.revalidate();
             welcomePanel.repaint();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Failed to load logo image");
         }
     }
 
-    private static void setBackgroundColor(Color color) {
-        backgroundColor = color;
+    private static void setBackgroundColor() {
+        backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
     }
 
     public void update() {
-        setBackgroundColor(Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE);
+        setBackgroundColor();
 
         mainPanel.setBackground(backgroundColor);
         mainPanel.revalidate();

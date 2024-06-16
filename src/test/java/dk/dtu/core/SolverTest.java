@@ -138,34 +138,6 @@ public class SolverTest {
         assertEquals(4 * size * size * size, totalNodes);
     }
 
-    public static void printMatrix(DancingLinks dl) {
-        ColumnNode header = dl.getHeader();
-        ColumnNode columnNode = (ColumnNode) header.getRight();
-
-        // Traverse all columns from the header
-        while (columnNode != header) {
-            System.out.println("Column " + columnNode.getName() + " size: " + columnNode.getSize());
-            Node rowNode = columnNode.getDown();
-
-            // Traverse all rows in the current column
-            while (rowNode != columnNode) {
-                // Print details about each node in the row for the current column
-                System.out.print("Row " + getRowIndex(rowNode) + " -> ");
-                Node rightNode = rowNode.getRight();
-
-                // Traverse all nodes in this row (right direction from the current column's node)
-                while (rightNode != rowNode) {
-                    System.out.print(rightNode.getColumn().getName() + " ");
-                    rightNode = rightNode.getRight();
-                }
-
-                System.out.println(); // New line for each row
-                rowNode = rowNode.getDown();
-            }
-            columnNode = (ColumnNode) columnNode.getRight();
-        }
-    }
-
     // Utility function to check if a column is correctly covered
     public static boolean isColumnCovered(ColumnNode column) {
         // Check that the column's left and right links bypass this column
