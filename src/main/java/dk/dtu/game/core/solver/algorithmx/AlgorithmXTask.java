@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.concurrent.RecursiveTask;
 
 public class AlgorithmXTask extends RecursiveTask<Boolean> {
-    private final ColumnNode header;
-    private final List<Node> solution;
+    private final transient ColumnNode header;
+    private final transient List<Node> solution;
     private final boolean isTopLevel;
 
     public AlgorithmXTask(ColumnNode header, List<Node> solution, boolean isTopLevel) {

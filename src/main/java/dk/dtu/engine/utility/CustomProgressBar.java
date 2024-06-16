@@ -5,7 +5,7 @@ import java.awt.*;
 import javax.swing.*;
 
 public class CustomProgressBar extends JProgressBar {
-    private CustomProgressBarUI customUI;
+    private final transient CustomProgressBarUI customUI;
 
     public CustomProgressBar(int min, int max) {
         super(min, max);
