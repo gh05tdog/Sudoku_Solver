@@ -804,22 +804,6 @@ public class StartMenu {
         return inputKField;
     }
 
-    public JToggleButton getMediumButton() {
-        return mediumButton;
-    }
-
-    public JToggleButton getEasyButton() {
-        return easyButton;
-    }
-
-    public JToggleButton getExtremeButton() {
-        return extremeButton;
-    }
-
-    public JToggleButton getHardButton() {
-        return hardButton;
-    }
-
     public CustomBoardPanel getFourByFour() {
         return fourByFour;
     }
