@@ -1,5 +1,7 @@
-/* (C)2024 */
 package dk.dtu.engine.utility;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,13 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * This class is responsible for loading the leaderboard from the database.
- * It gets the strings from the database and creates a list of LeaderboardEntry objects.
- */
 public class Leaderboard {
 
     private static final Logger logger = LoggerFactory.getLogger(Leaderboard.class);
@@ -28,8 +24,8 @@ public class Leaderboard {
         String sql = "SELECT username, difficulty, time, timestamp FROM leaderboard ORDER BY time ";
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 String username = rs.getString("username");
@@ -53,19 +49,12 @@ public class Leaderboard {
 
         @Override
         public String toString() {
-            return "LeaderboardEntry{"
-                    + "username='"
-                    + username
-                    + '\''
-                    + ", difficulty='"
-                    + difficulty
-                    + '\''
-                    + ", time="
-                    + time
-                    + ", timestamp='"
-                    + timestamp
-                    + '\''
-                    + '}';
+            return "LeaderboardEntry{" +
+                    "username='" + username + '\'' +
+                    ", difficulty='" + difficulty + '\'' +
+                    ", time=" + time +
+                    ", timestamp='" + timestamp + '\'' +
+                    '}';
         }
     }
 }

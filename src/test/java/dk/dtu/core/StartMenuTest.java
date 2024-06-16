@@ -103,18 +103,13 @@ class StartMenuTest {
         // Tests if the difficulty panel is working correctly
         SwingUtilities.invokeAndWait(
                 () -> {
-                    JComboBox<String> difficultyDropdown = startMenu.getDifficultyDropdown();
-
-                    difficultyDropdown.setSelectedItem("Easy");
+                    startMenu.getEasyButton().doClick();
                     assertEquals("easy", Config.getDifficulty());
-
-                    difficultyDropdown.setSelectedItem("Medium");
+                    startMenu.getMediumButton().doClick();
                     assertEquals("medium", Config.getDifficulty());
-
-                    difficultyDropdown.setSelectedItem("Hard");
+                    startMenu.getHardButton().doClick();
                     assertEquals("hard", Config.getDifficulty());
-
-                    difficultyDropdown.setSelectedItem("Extreme");
+                    startMenu.getExtremeButton().doClick();
                     assertEquals("extreme", Config.getDifficulty());
                 });
     }
@@ -155,6 +150,16 @@ class StartMenuTest {
         // Assertions to check if the size is set to 4x4
         assertEquals(4, Config.getN(), "N should be set to 4");
         assertEquals(4, Config.getK(), "K should be set to 4");
+    }
+
+    @Test
+    @DisplayName("Difficulty Button Toggle Functionality")
+    void testDifficultyButtonToggles() throws Exception {
+        // tests if the difficulty panel works when clicking on the by simulating mouse event
+        SwingUtilities.invokeAndWait(() -> startMenu.getMediumButton().doClick());
+        assertEquals("medium", Config.getDifficulty());
+        SwingUtilities.invokeAndWait(() -> startMenu.getHardButton().doClick());
+        assertEquals("hard", Config.getDifficulty());
     }
 
     @Test

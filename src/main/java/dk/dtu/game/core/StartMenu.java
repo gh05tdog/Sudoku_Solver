@@ -15,14 +15,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.*;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -32,10 +29,6 @@ import javax.swing.text.AbstractDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This is the start menu of the game. This is where you can choose difficulty, size, loadgame, show leader board etc.
- * It is also where you can chose the game rules.
- */
 public class StartMenu {
 
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
@@ -46,9 +39,7 @@ public class StartMenu {
     private final JToggleButton mediumButton = new JToggleButton("Medium", true);
     private final JToggleButton hardButton = new JToggleButton("Hard");
     private final JToggleButton extremeButton = new JToggleButton("Extreme");
-    private final ButtonGroup difficultyGroup = new ButtonGroup();
 
-    private boolean isLoadGameDialogOpen = false;
     private final JButton gameRuleButton = new JButton("Game Rules");
 
     private final CustomBoardPanel twoByTwo = new CustomBoardPanel();
@@ -57,28 +48,16 @@ public class StartMenu {
     private final CustomBoardPanel customBoardPanel = new CustomBoardPanel();
     private final JButton createGameButton = new JButton("Create Game");
     private final JButton joinGameButton = new JButton("Join Game");
-    private final JButton importButton = new JButton("Import Sudoku");
-    private final JButton leaderboardButton = new JButton("Show Leaderboard");
     private final JTextField inputNField = new JTextField("N", 1);
     private final JTextField inputKField = new JTextField("K", 1);
+    private final ButtonGroup difficultyGroup = new ButtonGroup();
     private final CustomComponentGroup sizeGroup = new CustomComponentGroup();
     private final int[][] boardConfigs = {{2, 2}, {3, 3}, {4, 4}, {3, 3}};
-    CustomBoardPanel[] boardPanels = {twoByTwo, threeByThree, fourByFour, customBoardPanel};
-
-    private static final Color darkbackgroundColor = new Color(64, 64, 64);
-    private static final Color lightaccentColor = new Color(237, 224, 186);
-    private static Color AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
-    private static Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
-    private final JComboBox<String> difficultyDropdown =
-            new JComboBox<>(new String[] {"Easy", "Medium", "Hard", "Extreme"});
-    GameRulePopup gameRules = new GameRulePopup(this);
 
     private final JButton loadGameButton = new JButton("Load Game");
 
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
         this.startMenuWindowManager = startMenuWindowManager;
-        backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
-        AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
         startMenuWindowManager.display();
     }
 
@@ -89,10 +68,9 @@ public class StartMenu {
         int k = Config.getK();
         int cellSize = Config.getCellSize();
         WindowManager windowManager =
-                new WindowManager(startMenuWindowManager.getFrame(), 1000, 850);
+                new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
             GameEngine gameEngine = new GameEngine(windowManager, n, k, cellSize);
-            windowManager.updateBoard();
             windowManager.display();
             gameEngine.start();
             windowManager.display();
@@ -102,26 +80,25 @@ public class StartMenu {
         }
     }
 
-    // The custom board panel is the panel that shows the size, with the dynamically drawn board
     public void updateCustomBoardPanel(int n, int k) {
         if ((k * n) <= (n * n)) {
             customBoardPanel.updateBoard(n, k); // Update the board based on n and k
         } else {
-            customBoardPanel.setBackground(Config.getDarkMode() ? backgroundColor : Color.WHITE);
+            customBoardPanel.setBackground(Color.WHITE);
         }
     }
 
     public void initialize() {
         // Initialize the start menu with all the buttons
         addSizePanelButtons();
-        addButtonPanelButtons(); // Updated method call to include both start button and dropdown
+        addDifficultyPanelButtons();
+        addButtonPanelButtons();
         addInputPanelButtons();
         addImportButton();
         addLeaderboardButton();
         updateCustomBoardPanel(2, 2);
         addNetworkGameButtons();
-        initializeGamerulePopup();
-        addLoadGameButton();
+        addGameruleButton();
 
         threeByThree.updateBackgroundColor(Color.GRAY);
         Config.setK(3);
@@ -130,158 +107,62 @@ public class StartMenu {
 
         addChangeListenerToField(inputNField);
         addChangeListenerToField(inputKField);
+
+        addLoadGameButton();
     }
+
 
     private void addLoadGameButton() {
-        loadGameButton.setBounds(5, 165, 190, 40); // Adjust the size and position as needed
-        loadGameButton.setBackground(backgroundColor);
-        loadGameButton.setForeground(AccentColor);
-        loadGameButton.setBorder(new LineBorder(AccentColor));
+        loadGameButton.setBounds(5, 135, 190, 40); // Adjust the size and position as needed
+        loadGameButton.setBackground(Color.WHITE);
         loadGameButton.setFocusPainted(false);
         loadGameButton.addActionListener(this::onLoadGame);
-        startMenuWindowManager.addComponent(
-                loadGameButton, startMenuWindowManager.getButtonPanel());
+        startMenuWindowManager.addComponent(loadGameButton, startMenuWindowManager.getButtonPanel());
     }
 
-    private void addNetworkGameButtons() {
-        createGameButton.setBounds(5, 280, 190, 40); // Adjust the size and position as needed
-        createGameButton.setBackground(Config.getDarkMode() ? backgroundColor : Color.WHITE);
 
+    private void addNetworkGameButtons() {
+        createGameButton.setBounds(5, 400 - 90, 190, 40); // Adjust the size and position as needed
+        createGameButton.setBackground(Color.WHITE);
         createGameButton.setFocusPainted(false);
         createGameButton.addActionListener(this::onCreateGame);
 
-        joinGameButton.setBounds(5, 325, 190, 40); // Adjust the size and position as needed
-        joinGameButton.setBackground(Config.getDarkMode() ? backgroundColor : Color.WHITE);
+        joinGameButton.setBounds(5, 400 - 45, 190, 40); // Adjust the size and position as needed
+        joinGameButton.setBackground(Color.WHITE);
         joinGameButton.setFocusPainted(false);
         joinGameButton.addActionListener(this::onJoinGame);
-
-        createGameButton.setBorder(new LineBorder(AccentColor));
-        createGameButton.setForeground(AccentColor);
-        joinGameButton.setBorder(new LineBorder(AccentColor));
-        joinGameButton.setForeground(AccentColor);
 
         startMenuWindowManager.addComponent(
                 createGameButton, startMenuWindowManager.getButtonPanel());
         startMenuWindowManager.addComponent(
                 joinGameButton, startMenuWindowManager.getButtonPanel());
-
-        gameRuleButton.setBounds(5, 440, 190, 40); // Set bounds below join game button
-        gameRuleButton.setBackground(backgroundColor);
-        gameRuleButton.setFocusPainted(false);
-        gameRuleButton.setBorder(new LineBorder(AccentColor));
-        gameRuleButton.setForeground(AccentColor);
-        gameRuleButton.addActionListener(
-                e -> {
-                    gameRules.setVisible(true);
-                });
-        startMenuWindowManager.addComponent(
-                gameRuleButton, startMenuWindowManager.getButtonPanel());
-    }
-
-    private void initializeGamerulePopup() {
-        gameRules.addJSwitchBox("Enable lives", Config.getEnableLives(), Config::setEnableLives);
-        gameRules.addJSwitchBox("Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
-        gameRules.addJSwitchBox(
-                "Enable easy mode", Config.getEnableEasyMode(), Config::setEnableEasyMode);
-        gameRules.addJSwitchBox("Dark Mode", Config.getDarkMode(), Config::setDarkMode);
-        gameRules.addJSwitchBox(
-                "Killer Sudoku Mode",
-                Config.getEnableKillerSudoku(),
-                Config::setEnableKillerSudoku);
     }
 
     private void onLoadGame(ActionEvent e) {
-        if (isLoadGameDialogOpen) {
-            return;
-        }
-
-        List<SavedGame.SavedGameData> savedGames =
-                SavedGame.loadSavedGames("jdbc:sqlite:sudoku.db");
+        List<SavedGame.SavedGameData> savedGames = SavedGame.loadSavedGames("jdbc:sqlite:sudoku.db");
         if (savedGames.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    null, "No saved games available.", "Error", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No saved games available.", "Error", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        isLoadGameDialogOpen = true;
+        SavedGame.SavedGameData selectedGame = (SavedGame.SavedGameData) JOptionPane.showInputDialog(null, "Select a saved game:", "Load Game", JOptionPane.PLAIN_MESSAGE, null, savedGames.toArray(), savedGames.getFirst());
 
-        // Apply the current theme settings to the dialog
-        JDialog loadGameDialog = new JDialog();
-        loadGameDialog.setTitle("Load Game");
-        loadGameDialog.setSize(400, 300);
-        loadGameDialog.setLayout(new BorderLayout());
-        loadGameDialog.setBackground(backgroundColor);
-        loadGameDialog.getContentPane().setBackground(backgroundColor);
+        if (selectedGame != null) {
+            int[][] initialBoard = deserializeBoard(selectedGame.getInitialBoard());
+            int[][] currentBoard = deserializeBoard(selectedGame.getCurrentBoard());
+            int time = selectedGame.getTime();
+            int usedLifeLines = selectedGame.getUsedLifeLines();
+            boolean lifeEnabled = selectedGame.isLifeEnabled();
+            int n = selectedGame.getNSize();
+            int k = selectedGame.getKSize();
+            int[][] serializedCages = deserializeBoard(selectedGame.getCages());
+            boolean isKillerSudoku = selectedGame.isKillerSudoku();
+            String notes = selectedGame.getNotes();
 
-        // Create the list of saved games
-        JList<SavedGame.SavedGameData> gameList = new JList<>(new Vector<>(savedGames));
-        gameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        gameList.setBackground(backgroundColor);
-        gameList.setForeground(AccentColor);
-        gameList.setSelectionBackground(AccentColor.darker());
-        gameList.setSelectionForeground(backgroundColor);
-
-        // Add a scroll pane to the list
-        JScrollPane scrollPane = new JScrollPane(gameList);
-        scrollPane.setBackground(backgroundColor);
-        scrollPane.setForeground(AccentColor);
-        scrollPane.setBorder(new LineBorder(AccentColor));
-
-        // Create a button panel with a load button
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(backgroundColor);
-
-        JButton loadButton = new JButton("Load");
-        loadButton.setBackground(backgroundColor);
-        loadButton.setForeground(AccentColor);
-        loadButton.setBorder(new LineBorder(AccentColor));
-        loadButton.addActionListener(
-                event -> {
-                    SavedGame.SavedGameData selectedGame = gameList.getSelectedValue();
-                    if (selectedGame != null) {
-                        int[][] initialBoard = deserializeBoard(selectedGame.getInitialBoard());
-                        int[][] currentBoard = deserializeBoard(selectedGame.getCurrentBoard());
-                        int time = selectedGame.getTime();
-                        int[] usedLifeLines = selectedGame.getUsedLifeLines();
-                        boolean lifeEnabled = selectedGame.isLifeEnabled();
-                        int n = selectedGame.getNSize();
-                        int k = selectedGame.getKSize();
-                        int[][] serializedCages = deserializeBoard(selectedGame.getCages());
-                        boolean isKillerSudoku = selectedGame.isKillerSudoku();
-                        String notes = selectedGame.getNotes();
-
-                        startGameWithSavedData(
-                                initialBoard,
-                                currentBoard,
-                                time,
-                                usedLifeLines,
-                                lifeEnabled,
-                                n,
-                                k,
-                                serializedCages,
-                                isKillerSudoku,
-                                notes);
-                        loadGameDialog.dispose();
-                        isLoadGameDialogOpen = false;
-                    }
-                });
-
-        // Add a listener to handle window closing
-        loadGameDialog.addWindowListener(
-                new WindowAdapter() {
-                    @Override
-                    public void windowClosing(WindowEvent we) {
-                        isLoadGameDialogOpen = false;
-                    }
-                });
-
-        buttonPanel.add(loadButton);
-        loadGameDialog.add(scrollPane, BorderLayout.CENTER);
-        loadGameDialog.add(buttonPanel, BorderLayout.SOUTH);
-        loadGameDialog.setLocationRelativeTo(null);
-        loadGameDialog.setVisible(true);
+            startGameWithSavedData(initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, n, k, serializedCages, isKillerSudoku, notes);
+        }
     }
+
 
     private int[][] deserializeBoard(String boardString) {
         String[] rows = boardString.split(";");
@@ -298,23 +179,10 @@ public class StartMenu {
         return board;
     }
 
-    private void startGameWithSavedData(
-            int[][] initialBoard,
-            int[][] currentBoard,
-            int time,
-            int[] usedLifeLines,
-            boolean lifeEnabled,
-            int n,
-            int k,
-            int[][] cages,
-            boolean isKillerSudoku,
-            String notes) {
+    private void startGameWithSavedData(int[][] initialBoard, int[][] currentBoard, int time, int usedLifeLines, boolean lifeEnabled, int n, int k, int[][] cages, boolean isKillerSudoku, String notes) {
         Config.setCellSize(550 / (k * n));
         Config.setK(k);
         Config.setN(n);
-        System.out.println("Used life lines: " + Arrays.toString(usedLifeLines));
-        int usedLives = usedLifeLines[0];
-        Config.setNumberOfLives(usedLifeLines[1]);
         logConfigInfo();
 
         WindowManager windowManager =
@@ -323,25 +191,14 @@ public class StartMenu {
             if (lifeEnabled) {
                 Config.setEnableLives(true);
             }
-            GameEngine gameEngine =
-                    new GameEngine(
-                            windowManager, Config.getN(), Config.getK(), Config.getCellSize());
+            GameEngine gameEngine = new GameEngine(windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
-            windowManager.updateBoard();
-            gameEngine.startCustomSaved(
-                    initialBoard,
-                    currentBoard,
-                    time,
-                    usedLives,
-                    n,
-                    k,
-                    cages,
-                    isKillerSudoku,
-                    notes);
+            gameEngine.startCustomSaved(initialBoard, currentBoard, time, usedLifeLines, n, k, cages, isKillerSudoku, notes);
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             logBoardNotCreatable();
         }
     }
+
 
     private void onCreateGame(ActionEvent e) {
         createGameButton.setEnabled(false);
@@ -388,30 +245,24 @@ public class StartMenu {
 
     private void connectClient(String serverAddress) {
         new Thread(
-                        () -> {
-                            WindowManager windowManager =
-                                    new WindowManager(
-                                            startMenuWindowManager.getFrame(), 1000, 1000);
-                            GameClient client = new GameClient(serverAddress, windowManager);
-                            try {
-                                client.start();
-                            } catch (IOException | Board.BoardNotCreatable ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        })
-                .start();
+                () -> {
+                    WindowManager windowManager =
+                            new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
+                    GameClient client = new GameClient(serverAddress, windowManager);
+                    try {
+                        client.start();
+                    } catch (IOException | Board.BoardNotCreatable ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }).start();
     }
 
     private void addLeaderboardButton() {
-
+        JButton leaderboardButton = new JButton("Show Leaderboard");
         leaderboardButton.addActionListener(this::onShowLeaderboard);
-        leaderboardButton.setBounds(5, 95, 190, 40); // Adjust the size and position as needed
-        leaderboardButton.setBackground(backgroundColor);
+        leaderboardButton.setBounds(5, 180, 190, 40); // Adjust the size and position as needed
+        leaderboardButton.setBackground(Color.WHITE);
         leaderboardButton.setFocusPainted(false);
-
-        leaderboardButton.setBorder(new LineBorder(AccentColor));
-        leaderboardButton.setForeground(AccentColor);
-
         startMenuWindowManager.addComponent(
                 leaderboardButton, startMenuWindowManager.getButtonPanel());
     }
@@ -475,43 +326,43 @@ public class StartMenu {
         leaderboardDialog.setVisible(true);
     }
 
+
     private void addChangeListenerToField(JTextField field) {
         // This method adds a document listener to the input fields, so that the board is updated
         // when the user changes the values
-        field.getDocument()
-                .addDocumentListener(
-                        new DocumentListener() {
-                            public void changedUpdate(DocumentEvent e) {
-                                updateBoard();
-                            }
+        field.getDocument().addDocumentListener(
+                new DocumentListener() {
+                    public void changedUpdate(DocumentEvent e) {
+                        updateBoard();
+                    }
 
-                            public void removeUpdate(DocumentEvent e) {
-                                updateBoard();
-                            }
+                    public void removeUpdate(DocumentEvent e) {
+                        updateBoard();
+                    }
 
-                            public void insertUpdate(DocumentEvent e) {
-                                updateBoard();
-                            }
+                    public void insertUpdate(DocumentEvent e) {
+                        updateBoard();
+                    }
 
-                            // Method to parse the n and k values and update the custom board panel
-                            private void updateBoard() {
-                                try {
-                                    int n = Integer.parseInt(inputNField.getText().trim());
-                                    int k = Integer.parseInt(inputKField.getText().trim());
-                                    if (n * k <= n * n) {
-                                        Config.setN(n);
-                                        Config.setK(k);
-                                        updateCustomBoardPanel(n, k);
-                                        boardConfigs[3] = new int[] {n, k};
-                                    }
-                                } catch (NumberFormatException ex) {
-                                    // Handle the case where one of the fields is empty or does not
-                                    // contain a valid integer
-                                    logger.error("Invalid input: {}", ex.getMessage());
-                                }
+                    // Method to parse the n and k values and update the custom board panel
+                    private void updateBoard() {
+                        try {
+                            int n = Integer.parseInt(inputNField.getText().trim());
+                            int k = Integer.parseInt(inputKField.getText().trim());
+                            if (n * k <= n * n) {
+                                Config.setN(n);
+                                Config.setK(k);
+                                updateCustomBoardPanel(n, k);
+                                boardConfigs[3] = new int[]{n, k};
                             }
-                        });
+                        } catch (NumberFormatException ex) {
+                            // Handle the case where one of the fields is empty or does not contain a valid integer
+                            logger.error("Invalid input: {}", ex.getMessage());
+                        }
+                    }
+                });
     }
+
 
     private void addInputPanelButtons() {
         // This method adds the N and K fields for the custom board
@@ -523,7 +374,6 @@ public class StartMenu {
             JTextField field = fields[i];
             field.setFont(fieldFont);
             field.setHorizontalAlignment(SwingConstants.CENTER);
-            field.setBackground(backgroundColor);
             ((AbstractDocument) field.getDocument()).setDocumentFilter(new NumberDocumentFilter());
 
             String initialText = initialTexts[i];
@@ -538,67 +388,75 @@ public class StartMenu {
                     });
 
             field.setBounds(i == 0 ? 5 : 85, 5, 50, 40);
-
-            field.setBorder(new LineBorder(AccentColor));
-            field.setForeground(AccentColor);
-
             startMenuWindowManager.addComponent(field, startMenuWindowManager.getInputPanel());
         }
     }
 
+    private void addGameruleButton() {
+        gameRuleButton.setBounds(5, 5, 150, 40); // Set bounds appropriately if needed
+        gameRuleButton.setBackground(Color.WHITE);
+        gameRuleButton.setFocusPainted(false);
+        gameRuleButton.addMouseListener(
+                new java.awt.event.MouseAdapter() {
+                    public void mouseEntered(java.awt.event.MouseEvent evt) {
+                        gameRuleButton.setBackground(Color.LIGHT_GRAY);
+                    }
+
+                    public void mouseExited(java.awt.event.MouseEvent evt) {
+                        gameRuleButton.setBackground(Color.WHITE);
+                    }
+                });
+        startMenuWindowManager.addComponent(
+                gameRuleButton, startMenuWindowManager.getGameRulePanel());
+
+        gameRuleButton.addActionListener(
+                e -> {
+                    GameRulePopup gameRules = new GameRulePopup();
+                    gameRules.setVisible(true);
+                    gameRules.addJSwitchBox(
+                            "Enable lives", Config.getEnableLives(), Config::setEnableLives);
+                    gameRules.addJSwitchBox(
+                            "Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
+                    gameRules.addJSwitchBox(
+                            "Enable easy mode",
+                            Config.getEnableEasyMode(),
+                            Config::setEnableEasyMode);
+                    gameRules.addJSwitchBox(
+                            "Killer Sudoku Mode",
+                            Config.getEnableKillerSudoku(),
+                            Config::setEnableKillerSudoku);
+                });
+    }
+
     private void addButtonPanelButtons() {
+        // This method adds the start button and in the future different buttons
         startButton.setBounds(5, 5, 190, 40);
-        startButton.setBackground(backgroundColor);
+        startButton.setBackground(Color.WHITE);
         startButton.setFocusPainted(false);
         startButton.addItemListener(
                 e -> {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
                         startButton.setBackground(Color.GRAY);
+
                         try {
-                            gameRules.setVisible(false);
                             startGame();
                         } catch (Board.BoardNotCreatable ex) {
                             logger.error("This board-type is not creatable: {}", ex.getMessage());
                         }
+
                     } else {
                         startButton.setBackground(Color.WHITE);
                     }
                 });
-
-        startButton.setBorder(new LineBorder(AccentColor));
-        startButton.setForeground(AccentColor);
-
         startMenuWindowManager.addComponent(startButton, startMenuWindowManager.getButtonPanel());
-
-        int padding = 10;
-        difficultyDropdown.setBounds(5, 50, 190, 40); // Adjust bounds to add padding
-        difficultyDropdown.setBackground(backgroundColor);
-        difficultyDropdown.setForeground(AccentColor);
-        difficultyDropdown.setBorder(new LineBorder(AccentColor));
-        difficultyDropdown.setSelectedItem("Medium"); // Set default selection
-        Config.setDifficulty("medium");
-
-        difficultyDropdown.addActionListener(
-                e -> {
-                    String selectedDifficulty = (String) difficultyDropdown.getSelectedItem();
-                    if (selectedDifficulty != null) {
-                        Config.setDifficulty(selectedDifficulty.toLowerCase());
-                    }
-                });
-
-        startMenuWindowManager.addComponent(
-                difficultyDropdown, startMenuWindowManager.getButtonPanel());
     }
 
     private void addImportButton() {
+        JButton importButton = new JButton("Import Sudoku");
         importButton.addActionListener(this::onImportSudoku);
-        importButton.setBounds(5, 210, 190, 40); // Set bounds appropriately if needed
-        importButton.setBackground(backgroundColor);
+        importButton.setBounds(5, 90, 190, 40); // Set bounds appropriately if needed
+        importButton.setBackground(Color.WHITE);
         importButton.setFocusPainted(false);
-
-        importButton.setBorder(new LineBorder(AccentColor));
-        importButton.setForeground(AccentColor);
-
         startMenuWindowManager.addComponent(importButton, startMenuWindowManager.getButtonPanel());
     }
 
@@ -671,21 +529,18 @@ public class StartMenu {
                 new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
         try {
 
-            GameEngine gameEngine =
-                    new GameEngine(
+            GameEngine gameEngine = new GameEngine(
                             windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
-            windowManager.updateBoard();
             gameEngine.startCustom(board); // Pass the custom board to the game engine
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             logger.error("Board not creatable: {}", boardNotCreatable.getMessage());
         }
     }
 
-    // Add the custom board panels with different prefixed sizes and the one you can set yourself
-    // with N and K values
     private void addSizePanelButtons() {
         // This function adds the small boards for selecting size in game
+        CustomBoardPanel[] boardPanels = {twoByTwo, threeByThree, fourByFour, customBoardPanel};
 
         MouseAdapter mouseAdapter =
                 new MouseAdapter() {
@@ -725,56 +580,81 @@ public class StartMenu {
         }
     }
 
-    public void updateColors() {
-        backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
-        AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
-        startMenuWindowManager.setCustomBoardPanels(boardPanels);
+    private void addDifficultyPanelButtons() {
+        // This method adds the difficulty buttons to the start menu
+        Config.setDifficulty("medium");
+        difficultyGroup.add(easyButton);
+        difficultyGroup.add(mediumButton);
+        difficultyGroup.add(hardButton);
+        difficultyGroup.add(extremeButton);
 
-        // Update all relevant components with the new colors
-        startButton.setBackground(backgroundColor);
-        startButton.setForeground(AccentColor);
-        startButton.setBorder(new LineBorder(AccentColor));
+        easyButton.setBackground(Color.WHITE);
+        mediumButton.setBackground(Color.WHITE);
+        hardButton.setBackground(Color.WHITE);
+        extremeButton.setBackground(Color.WHITE);
+        easyButton.setFocusPainted(false);
+        mediumButton.setFocusPainted(false);
+        hardButton.setFocusPainted(false);
+        extremeButton.setFocusPainted(false);
 
-        difficultyDropdown.setBackground(backgroundColor);
-        difficultyDropdown.setForeground(AccentColor);
-        difficultyDropdown.setBorder(new LineBorder(AccentColor));
+        easyButton.addItemListener(
+                e -> {
+                    if (e.getStateChange() == ItemEvent.SELECTED) {
+                        easyButton.setBackground(Color.GRAY);
+                        Config.setDifficulty("easy");
+                    } else {
+                        easyButton.setBackground(Color.WHITE);
+                    }
+                });
+        mediumButton.addItemListener(
+                e -> {
+                    if (e.getStateChange() == ItemEvent.SELECTED) {
+                        mediumButton.setBackground(Color.GRAY);
+                        Config.setDifficulty("medium");
+                    } else {
+                        mediumButton.setBackground(Color.WHITE);
+                    }
+                });
+        hardButton.addItemListener(
+                e -> {
+                    if (e.getStateChange() == ItemEvent.SELECTED) {
+                        hardButton.setBackground(Color.GRAY);
+                        Config.setDifficulty("hard");
+                    } else {
+                        hardButton.setBackground(Color.WHITE);
+                    }
+                });
+        extremeButton.addItemListener(
+                e -> {
+                    if (e.getStateChange() == ItemEvent.SELECTED) {
+                        extremeButton.setBackground(Color.GRAY);
+                        Config.setDifficulty("extreme");
+                    } else {
+                        extremeButton.setBackground(Color.WHITE);
+                    }
+                });
 
-        gameRuleButton.setBackground(backgroundColor);
-        gameRuleButton.setForeground(AccentColor);
-        gameRuleButton.setBorder(new LineBorder(AccentColor));
+        easyButton.setBounds(5, 5, twoByTwo.getWidth(), 40);
+        mediumButton.setBounds(10 + easyButton.getWidth(), 5, twoByTwo.getWidth(), 40);
+        hardButton.setBounds(
+                15 + easyButton.getWidth() + mediumButton.getWidth(), 5, twoByTwo.getWidth(), 40);
+        extremeButton.setBounds(
+                20 + easyButton.getWidth() + mediumButton.getWidth() + hardButton.getWidth(),
+                5,
+                twoByTwo.getWidth(),
+                40);
 
-        createGameButton.setBackground(backgroundColor);
-        createGameButton.setForeground(AccentColor);
-        createGameButton.setBorder(new LineBorder(AccentColor));
-
-        joinGameButton.setBackground(backgroundColor);
-        joinGameButton.setForeground(AccentColor);
-        joinGameButton.setBorder(new LineBorder(AccentColor));
-
-        importButton.setBackground(backgroundColor);
-        importButton.setForeground(AccentColor);
-        importButton.setBorder(new LineBorder(AccentColor));
-
-        leaderboardButton.setBackground(backgroundColor);
-        leaderboardButton.setForeground(AccentColor);
-        leaderboardButton.setBorder(new LineBorder(AccentColor));
-
-        loadGameButton.setBackground(backgroundColor);
-        loadGameButton.setForeground(AccentColor);
-        loadGameButton.setBorder(new LineBorder(AccentColor));
-
-        inputNField.setBackground(backgroundColor);
-        inputNField.setForeground(AccentColor);
-        inputNField.setBorder(new LineBorder(AccentColor));
-        inputKField.setBackground(backgroundColor);
-        inputKField.setForeground(AccentColor);
-        inputKField.setBorder(new LineBorder(AccentColor));
-
-        // Ensure all panels and components are updated
-        startMenuWindowManager.update();
+        startMenuWindowManager.addComponent(
+                easyButton, startMenuWindowManager.getDifficultyPanel());
+        startMenuWindowManager.addComponent(
+                mediumButton, startMenuWindowManager.getDifficultyPanel());
+        startMenuWindowManager.addComponent(
+                hardButton, startMenuWindowManager.getDifficultyPanel());
+        startMenuWindowManager.addComponent(
+                extremeButton, startMenuWindowManager.getDifficultyPanel());
     }
 
-    private void logConfigInfo() {
+    private void logConfigInfo(){
         logger.info(
                 "startGame: {} {} {} {}",
                 Config.getK(),
@@ -783,7 +663,7 @@ public class StartMenu {
                 Config.getCellSize());
     }
 
-    private void logBoardNotCreatable() {
+    private void logBoardNotCreatable(){
         logger.error("This board-type is not creatable");
     }
 
@@ -804,11 +684,23 @@ public class StartMenu {
         return inputKField;
     }
 
-    public CustomBoardPanel getFourByFour() {
-        return fourByFour;
+    public JToggleButton getMediumButton() {
+        return mediumButton;
     }
 
-    public JComboBox<String> getDifficultyDropdown() {
-        return difficultyDropdown;
+    public JToggleButton getEasyButton() {
+        return easyButton;
+    }
+
+    public JToggleButton getExtremeButton() {
+        return extremeButton;
+    }
+
+    public JToggleButton getHardButton() {
+        return hardButton;
+    }
+
+    public CustomBoardPanel getFourByFour() {
+        return fourByFour;
     }
 }
