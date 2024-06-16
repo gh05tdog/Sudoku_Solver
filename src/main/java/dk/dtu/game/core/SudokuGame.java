@@ -65,7 +65,7 @@ public class SudokuGame {
     private JButton eraseButton;
     private JButton solveButton;
     JButton goBackButton = createButton("Go Back", 30);
-    private boolean usedSolveButton = false;
+
     private PrintWriter networkOut;
     private boolean isCustomBoard = false;
     private boolean isNetworkGame = false;
@@ -80,7 +80,6 @@ public class SudokuGame {
     private final Random rand = new Random();
     private static final String NEW_GAME = "new game";
     private static final String SAVE_GAME = "save game";
-
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -931,88 +930,68 @@ public class SudokuGame {
 
     // This function is run after every move, making sure to check when the game is over, either by
     // losing all lives or completing the sudoku.
+
     public void checkCompletionAndOfferNewGame() {
-        boolean completedSuccessfully = isSudokuCompleted() && !testMode();
-        boolean isGameOver = isGameOver();
-
-        if (completedSuccessfully || isGameOver) {
-            String message = null;
-            if (!usedSolveButton) {
-                timer.stop();
-
-                if (completedSuccessfully) {
-                    // Preferences object to store and retrieve the username
-
-                    if (networkOut != null) {
-                        networkOut.println("COMPLETED " + "Player1");
-                    }
-                    if (Config.getEnableTimer() || isNetworkGame) {
-                        Preferences pref = Preferences.userNodeForPackage(this.getClass());
-                        String storedUsername = pref.get("username", "");
-
-                        // Prompt user for their username
-                        String username =
-                                JOptionPane.showInputDialog(
-                                        null,
-                                        "Enter your name for the leaderboard:",
-                                        storedUsername);
-                        if (username != null && !username.trim().isEmpty()) {
-                            // Store the username in preferences
-                            pref.put("username", username.trim());
-
-                            // Add the completion details to the leaderboard
-                            String difficulty = Config.getDifficulty();
-                            int time = timer.getTimeToInt(); // returns time
-
-                            UpdateLeaderboard.addScore(
-                                    "jdbc:sqlite:sudoku.db", username, difficulty, time);
-                        }
-                    }
-
-                    message =
-                            "Congratulations! You've completed the Sudoku in\n"
-                                    + timer.getTimeString()
-                                    + "\n\n"
-                                    + "Would you like to start a new game?";
-                } else { // This is the game over scenario
-                    message =
-                            """
-                                                                        Game Over! You've run out of hearts.
-                                    \s
-                                                                        Would you like to start a new game?""";
-                }
-            }
-
-            Object[] options = {NEW_GAME, "Close"};
-            if (isCustomBoard) {
-                options[0] = "Replay";
-            }
-
-            int response =
-                    JOptionPane.showOptionDialog(
-                            null,
-                            message,
-                            completedSuccessfully ? "Game Completed" : "Game Over",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE,
-                            null,
-                            options,
-                            options[0]);
-
-            if (response == JOptionPane.YES_OPTION) {
-                try {
-                    startGame();
-                } catch (Exception e) {
-                    logger.error("Error creating new game: {}", e.getMessage());
-                }
-            } else {
-                JFrame frame = windowManager.getFrame();
-                StartMenuWindowManager startMenu = new StartMenuWindowManager(frame, 1000, 1000);
-                StartMenu startMenu1 = new StartMenu(startMenu);
-                startMenu1.initialize();
-            }
+        if (isGameOver()) {
+            handleGameOver();
+        } else if (isSudokuCompleted() && !testMode()) {
+            handleGameCompletion();
         }
     }
+
+    private void handleGameOver() {
+        timer.stop();
+        String message = "Game Over! You've run out of hearts.\n\nWould you like to start a new game?";
+        promptForNewGame(message, "Game Over");
+    }
+
+    private void handleGameCompletion() {
+        timer.stop();
+        if (networkOut != null) {
+            networkOut.println("COMPLETED " + "Player1");
+        }
+        if (Config.getEnableTimer() || isNetworkGame) {
+            promptForLeaderboardEntry();
+        }
+        String message = "Congratulations! You've completed the Sudoku in\n" + timer.getTimeString() + "\n\nWould you like to start a new game?";
+        promptForNewGame(message, "Game Completed");
+    }
+
+    private void promptForNewGame(String message, String title) {
+        Object[] options = {isCustomBoard ? "Replay" : NEW_GAME, "Close"};
+        int response = JOptionPane.showOptionDialog(null, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+
+        if (response == JOptionPane.YES_OPTION) {
+            try {
+                startGame();
+            } catch (Exception e) {
+                logger.error("Error creating new game: {}", e.getMessage());
+            }
+        } else {
+            returnToMainMenu();
+        }
+    }
+
+    private void promptForLeaderboardEntry() {
+        Preferences pref = Preferences.userNodeForPackage(this.getClass());
+        String storedUsername = pref.get("username", "");
+
+        String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", storedUsername);
+        if (username != null && !username.trim().isEmpty()) {
+            pref.put("username", username.trim());
+            String difficulty = Config.getDifficulty();
+            int time = timer.getTimeToInt();
+            UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db", username, difficulty, time);
+        }
+    }
+
+    private void returnToMainMenu() {
+        JFrame frame = windowManager.getFrame();
+        StartMenuWindowManager startMenu = new StartMenuWindowManager(frame, 1000, 1000);
+        StartMenu startMenu1 = new StartMenu(startMenu);
+        startMenu1.initialize();
+    }
+
 
     private boolean isGameOver() {
         return windowManager.checkGameOver();
@@ -1024,6 +1003,7 @@ public class SudokuGame {
 
     // Visually displays the buttons on the screen.
     private void displayButtons() {
+
         restartButton = createButton("Restart", 30);
         solveButton = createButton("Solve", 30);
         newGameButton = createButton(NEW_GAME, 30);
@@ -1076,13 +1056,11 @@ public class SudokuGame {
                     } else {
                         gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
                     }
-                    usedSolveButton = true;
                     updateNumberCount();
                     displayNumbersVisually();
                     board.revalidate();
                     board.repaint();
                     checkCompletionAndOfferNewGame();
-                    usedSolveButton = false;
                 });
 
         newGameButton.addActionListener(e -> startGame());
