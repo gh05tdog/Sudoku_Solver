@@ -1,6 +1,7 @@
 package dk.dtu.game.core.solver.heuristicsolver;
 
 import dk.dtu.game.core.Board;
+import dk.dtu.game.core.solver.SolverAlgorithm;
 
 import java.util.*;
 
@@ -9,19 +10,16 @@ public class HeuristicSolver {
     static int recursionCount;
 
 
-    public static void createPlayableSudoku (Board board) throws Board.BoardNotCreatable {
+    public static void createPlayableSudoku (Board board) {
         int n = board.getN();
         int k = board.getK();
         int[][][] possiblePlacements = createSetFromBoard(board, n, k);
         recursionCount = 0;
         fillBoard(possiblePlacements, n, k, new HashSet<>(), new HashMap<>());
-        int [][] playableSudoku = new int[n*k][n*k];
-        for (int i = 0; i < n*k; i++) {
-            for (int j = 0; j < n*k; j++) {
-                playableSudoku[i][j] = possiblePlacements[i][j][0];
-            }
-        }
+        int [][] playableSudoku = deepCopy3DBoard(possiblePlacements, n, k);
         board.setSolvedBoard(playableSudoku);
+
+        removeNumsFromBoard(possiblePlacements, n, k);
         board.setInitialBoard(new int[n*k][n*k]);
     }
 
@@ -66,6 +64,21 @@ public class HeuristicSolver {
         for (int i = (row / subgrid) * subgrid; i < subgrid + (row / subgrid) * subgrid; i++) {
             for (int j = (col / subgrid) * subgrid; j < subgrid + (col / subgrid) * subgrid; j++) {
                 arr[i][j][val] = 0;
+            }
+        }
+    }
+
+    public static void addPossiblePlacements (int[][][] arr, int row, int col, int val, int subgrid, int gridSize) {
+        int boardLength = subgrid * gridSize;
+
+        for (int i = 0; i < boardLength; i++) {
+            arr[row][i][val] = 1;
+            arr[i][col][val] = 1;
+        }
+
+        for (int i = (row / subgrid) * subgrid; i < subgrid + (row / subgrid) * subgrid; i++) {
+            for (int j = (col / subgrid) * subgrid; j < subgrid + (col / subgrid) * subgrid; j++) {
+                arr[i][j][val] = 1;
             }
         }
     }
@@ -298,5 +311,33 @@ public class HeuristicSolver {
         }
 
         return constraints;
+    }
+
+    public static int[][] removeNumsFromBoard(int[][][] sudokuBoard, int n, int k) {
+        int [] row = fisherYatesShuffle(new int[n*k]);
+        System.out.println(Arrays.toString(row));
+        return sudokuBoard[0];
+
+
+    }
+
+    public static int[][] deepCopy3DBoard (int [][][] arr, int n, int k) {
+        int [][] returnBoard = new int[n*k][n*k];
+        for (int i = 0; i < n*k; i++) {
+            for (int j = 0; j < n*k; j++) {
+                returnBoard[i][j] = arr[i][j][0];
+            }
+        }
+        return returnBoard;
+    }
+
+    public static int [] fisherYatesShuffle (int [] list) {
+        for (int i = list.length - 1; i > 0; i--) {
+            int index = random.nextInt(i + 1);
+            int temp = list[index];
+            list[index] = list[i];
+            list[i] = temp;
+        }
+        return list;
     }
 }

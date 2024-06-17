@@ -602,7 +602,7 @@ public class SudokuGame {
         // adjustInitialNumbersVisibility();
     }
 
-    public void initialize(int n, int k, int cellSize) {
+    public void initialize(int n, int k, int cellSize) throws Board.BoardNotCreatable {
 
         createBoard(n, k, cellSize);
 
@@ -862,11 +862,7 @@ public class SudokuGame {
 
     public void fillHintList() {
         int[][] solutionBoard;
-        if (nSize == kSize) {
-            solutionBoard = AlgorithmXSolver.getSolutionBoard();
-        } else {
-            solutionBoard = BruteForceAlgorithm.getSolvedBoard();
-        }
+        solutionBoard = gameboard.getSolvedBoard();
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (gameboard.getInitialNumber(row, col) == 0) {
@@ -1071,12 +1067,7 @@ public class SudokuGame {
                 e -> {
                     board.clearNotes();
                     timer.stop();
-                    if (nSize == kSize) {
-                        gameboard.setGameBoard(
-                                Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
-                    } else {
-                        gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
-                    }
+                    gameboard.setGameBoard(gameboard.getSolvedBoard());
                     usedSolveButton = true;
                     updateNumberCount();
                     displayNumbersVisually();
@@ -1086,7 +1077,13 @@ public class SudokuGame {
                     usedSolveButton = false;
                 });
 
-        newGameButton.addActionListener(e -> startGame());
+        newGameButton.addActionListener(e -> {
+            try {
+                startGame();
+            } catch (Board.BoardNotCreatable ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         eraseButton.addActionListener(
                 e -> {
@@ -1267,7 +1264,7 @@ public class SudokuGame {
         gameIsStarted = b;
     }
 
-    public void startGame() {
+    public void startGame() throws Board.BoardNotCreatable {
         newGame();
         displayNumbersVisually();
         setInitialBoardColor();
