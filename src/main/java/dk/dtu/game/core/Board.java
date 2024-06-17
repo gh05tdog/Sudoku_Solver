@@ -4,6 +4,11 @@ package dk.dtu.game.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class handles the backend of the board. It contains methods to check if a
+ * number can be placed in a cell, get rows, columns, and squares, and set and get numbers.
+ * It also initializes a board object with a given size. This is what makes the game work and displayable.
+ */
 public class Board {
 
     private static final Logger logger = LoggerFactory.getLogger(Board.class);
@@ -66,6 +71,7 @@ public class Board {
         fillZeros(initialBoard);
     }
 
+    // Makes sure that a board is creatable with a certain configuration.
     public boolean boardIsPossible(int k, int n) {
         return (k * n) <= (n * n);
     }
@@ -74,6 +80,8 @@ public class Board {
         gameBoard[x][y] = num;
     }
 
+    // Makes sure that the number can be placed in the cell, and no duplicates in row, col and
+    // subgrid.
     public boolean validPlace(int x, int y, int num) {
         // Check rows and check square
         logger.info("Checking if {} can be placed at {}, {}", num, x, y);
@@ -157,6 +165,8 @@ public class Board {
         }
     }
 
+    // The initial board is the board created with some of the numbers filled. This is the restart
+    // point for the game.
     public void setInitialBoard(int[][] tempBoard) {
         for (int i = 0; i < tempBoard.length; i++) {
             System.arraycopy(tempBoard[i], 0, this.initialBoard[i], 0, tempBoard[i].length);
