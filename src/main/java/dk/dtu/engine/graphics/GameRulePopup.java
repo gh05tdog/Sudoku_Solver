@@ -104,7 +104,6 @@ public class GameRulePopup extends JFrame {
             gbc.gridx = 2;
             add(moonLabel, gbc);
         } else {
-            gbc.gridx = 1;
             add(switchBox, gbc);
         }
 

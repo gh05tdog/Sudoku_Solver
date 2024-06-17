@@ -14,9 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The SudokuBoardCanvas class is the visual representation of the game. It features many functions to paint the grid and the subgrids,
+ * The SudokuBoardCanvas class is the visual representation of the game. It features many functions to paint the grid and the sub-grids,
  * it also makes a 2D array of cells, which is an object that stores the numbers on the board and the notes. This class also paints the
- * killer sudoku, the hightlighting of cells and the hint visualization
+ * killer sudoku, the highlighting of cells and the hint visualization
  */
 public class SudokuBoardCanvas extends JPanel {
     private final int gridSize;
@@ -303,21 +303,21 @@ public class SudokuBoardCanvas extends JPanel {
         logger.debug("Setting the marked cell {} {}", row, col);
     }
 
-    // When easymode is enabled, this will highlight all the places where you can place the current
+    // When easy-mode is enabled, this will highlight all the places where you can place the current
     // number you have clicked on.
     public void highlightPlaceableCells(int number) {
-        clearUnplacableCells();
+        clearUnPlaceableCells();
         if (number == 0) return;
 
-        boolean[][] unPlaceable = initializeUnplaceableGrid();
-        markUnplaceableCellsForNumber(number, unPlaceable);
+        boolean[][] unPlaceable = initializeUnPlaceableGrid();
+        markUnPlaceableCellsForNumber(number, unPlaceable);
         if (Config.getEnableKillerSudoku()) {
-            markUnplaceableCellsForKillerSudoku(number, unPlaceable);
+            markUnPlaceableCellsForKillerSudoku(number, unPlaceable);
         }
         applyPlaceableHighlights(unPlaceable);
     }
 
-    private boolean[][] initializeUnplaceableGrid() {
+    private boolean[][] initializeUnPlaceableGrid() {
         boolean[][] unPlaceable = new boolean[gridSize][gridSize];
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -327,25 +327,25 @@ public class SudokuBoardCanvas extends JPanel {
         return unPlaceable;
     }
 
-    private void markUnplaceableCellsForNumber(int number, boolean[][] unPlaceable) {
+    private void markUnPlaceableCellsForNumber(int number, boolean[][] unPlaceable) {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (cells[row][col].getNumber() == number) {
-                    markRowAndColumnAsUnplaceable(row, col, unPlaceable);
-                    markSubGridAsUnplaceable(row, col, unPlaceable);
+                    markRowAndColumnAsUnPlaceable(row, col, unPlaceable);
+                    markSubGridAsUnPlaceable(row, col, unPlaceable);
                 }
             }
         }
     }
 
-    private void markRowAndColumnAsUnplaceable(int row, int col, boolean[][] unPlaceable) {
+    private void markRowAndColumnAsUnPlaceable(int row, int col, boolean[][] unPlaceable) {
         for (int i = 0; i < gridSize; i++) {
             unPlaceable[row][i] = true;
             unPlaceable[i][col] = true;
         }
     }
 
-    private void markSubGridAsUnplaceable(int row, int col, boolean[][] unPlaceable) {
+    private void markSubGridAsUnPlaceable(int row, int col, boolean[][] unPlaceable) {
         int subgridSize = (int) Math.sqrt(gridSize);
         int startRow = (row / subgridSize) * subgridSize;
         int startCol = (col / subgridSize) * subgridSize;
@@ -356,13 +356,13 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
-    private void markUnplaceableCellsForKillerSudoku(int number, boolean[][] unPlaceable) {
+    private void markUnPlaceableCellsForKillerSudoku(int number, boolean[][] unPlaceable) {
         for (Cage cage : cages.values()) {
-            markCageCellsAsUnplaceable(cage, number, unPlaceable);
+            markCageCellsAsUnPlaceable(cage, number, unPlaceable);
         }
     }
 
-    private void markCageCellsAsUnplaceable(Cage cage, int number, boolean[][] unPlaceable) {
+    private void markCageCellsAsUnPlaceable(Cage cage, int number, boolean[][] unPlaceable) {
         List<Point> cageCells = cage.getCells();
         Set<Integer> currentNumbers = cage.getCurrentNumbers();
         int currentSum = currentNumbers.stream().mapToInt(Integer::intValue).sum();
@@ -380,17 +380,17 @@ public class SudokuBoardCanvas extends JPanel {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (!unPlaceable[row][col] && cells[row][col].getNumber() == 0) {
-                    cells[row][col].setUnplaceableCell(true);
+                    cells[row][col].setUnPlaceableCell(true);
                 }
             }
         }
     }
 
 
-    public void clearUnplacableCells() {
+    public void clearUnPlaceableCells() {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
-                cells[i][j].setUnplaceableCell(false);
+                cells[i][j].setUnPlaceableCell(false);
             }
         }
     }
@@ -555,7 +555,7 @@ public class SudokuBoardCanvas extends JPanel {
         for (Map.Entry<Integer, List<Point>> entry : cageMap.entrySet()) {
             int sum = 0;
             for (Point cell : entry.getValue()) {
-                sum += board.getNumber(cell.x, cell.y); // Use gameboard to get the number
+                sum += board.getNumber(cell.x, cell.y); // Use game-board to get the number
             }
             addCage(entry.getKey(), new Cage(entry.getValue(), sum, entry.getKey()));
         }

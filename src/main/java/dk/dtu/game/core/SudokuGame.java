@@ -802,7 +802,7 @@ public class SudokuGame {
             moveList.clear();
             wrongMoveList.clear();
             windowManager.setHeart();
-            board.clearUnplacableCells();
+            board.clearUnPlaceableCells();
             board.clearWrongNumbers();
             timer.stop();
             timer.reset();
@@ -1213,10 +1213,6 @@ public class SudokuGame {
             }
         }
         return false;
-    }
-
-    public int getLives() {
-        return windowManager.getHearts();
     }
 
     public int[] getUsedLives() {

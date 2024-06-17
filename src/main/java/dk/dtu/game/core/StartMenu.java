@@ -79,7 +79,7 @@ public class StartMenu {
 
         if (!GraphicsEnvironment.isHeadless()) {
             gameRules = new GameRulePopup(this);
-            initializeGamerulePopup();
+            initializeGameRulePopup();
         }
     }
 
@@ -186,7 +186,7 @@ public class StartMenu {
                 gameRuleButton, startMenuWindowManager.getButtonPanel());
     }
 
-    private void initializeGamerulePopup() {
+    private void initializeGameRulePopup() {
         gameRules.addJSwitchBox("Enable lives", Config.getEnableLives(), Config::setEnableLives);
         gameRules.addJSwitchBox("Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
         gameRules.addJSwitchBox(
@@ -240,6 +240,25 @@ public class StartMenu {
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(backgroundColor);
 
+        JButton loadButton = getjButton(gameList, loadGameDialog);
+
+        // Add a listener to handle window closing
+        loadGameDialog.addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent we) {
+                        isLoadGameDialogOpen = false;
+                    }
+                });
+
+        buttonPanel.add(loadButton);
+        loadGameDialog.add(scrollPane, BorderLayout.CENTER);
+        loadGameDialog.add(buttonPanel, BorderLayout.SOUTH);
+        loadGameDialog.setLocationRelativeTo(null);
+        loadGameDialog.setVisible(true);
+    }
+
+    private JButton getjButton(JList<SavedGame.SavedGameData> gameList, JDialog loadGameDialog) {
         JButton loadButton = new JButton("Load");
         loadButton.setBackground(backgroundColor);
         loadButton.setForeground(accentColor);
@@ -274,21 +293,7 @@ public class StartMenu {
                         isLoadGameDialogOpen = false;
                     }
                 });
-
-        // Add a listener to handle window closing
-        loadGameDialog.addWindowListener(
-                new WindowAdapter() {
-                    @Override
-                    public void windowClosing(WindowEvent we) {
-                        isLoadGameDialogOpen = false;
-                    }
-                });
-
-        buttonPanel.add(loadButton);
-        loadGameDialog.add(scrollPane, BorderLayout.CENTER);
-        loadGameDialog.add(buttonPanel, BorderLayout.SOUTH);
-        loadGameDialog.setLocationRelativeTo(null);
-        loadGameDialog.setVisible(true);
+        return loadButton;
     }
 
     private int[][] deserializeBoard(String boardString) {
