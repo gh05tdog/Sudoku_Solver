@@ -15,6 +15,7 @@ import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
@@ -27,6 +28,9 @@ import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import dk.dtu.game.core.solver.heuristicsolver.HeuristicSolver;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +50,7 @@ public class SudokuGame {
     private final int kSize;
     private final JToggleButton noteButton = new JToggleButton("Note Mode", false);
     private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
-    private JButton saveGameButton;
+    private final JButton saveGameButton;
     int gridSize;
     int cellSize;
     private int placeableNumber = 0;
@@ -67,7 +71,7 @@ public class SudokuGame {
     private JButton eraseButton;
     private JButton solveButton;
     JButton goBackButton = createButton("Go Back", 30);
-    private boolean usedSolveButton = false;
+
     private PrintWriter networkOut;
     private boolean isCustomBoard = false;
     private boolean isNetworkGame = false;
@@ -79,14 +83,16 @@ public class SudokuGame {
     private static final Color lightaccentcolor = new Color(237, 224, 186);
     private static final Color initialColor = new Color(159, 148, 102);
     private static Color backgroundColor;
+    private static final String NEW_GAME = "new game";
+    private static final String SAVE_GAME = "save game";
 
-    private static final String NEW_GAME = "New game";
+    private Boolean usedSolveButton = false;
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
         this.windowManager = windowManager;
-        backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
-        accentColor = Config.getDarkMode() ? lightaccentcolor : Color.BLACK;
+        setBackgroundColor(Config.getDarkMode() ? darkbackgroundColor : Color.WHITE);
+        setAccentColor(Config.getDarkMode() ? lightaccentcolor : Color.BLACK);
 
         try {
             gameboard = new Board(n, k);
@@ -101,7 +107,7 @@ public class SudokuGame {
 
         new Thread(this::processNetworkMessages).start();
 
-        saveGameButton = createButton("Save Game", 30);
+        saveGameButton = createButton(SAVE_GAME, 30);
         saveGameButton.setBackground(backgroundColor);
         saveGameButton.setForeground(accentColor);
         saveGameButton.setBorder(
@@ -134,12 +140,20 @@ public class SudokuGame {
         playerProgressBar.setTextColor(textColor);
     }
 
+    private static void setAccentColor(Color color) {
+        accentColor = color;
+    }
+
+    private static void setBackgroundColor(Color color) {
+        backgroundColor = color;
+    }
+
     private void onSaveGame() {
         String name =
                 JOptionPane.showInputDialog(
                         null,
                         "Enter a name for your saved game:",
-                        "Save Game",
+                        SAVE_GAME,
                         JOptionPane.PLAIN_MESSAGE);
         if (name != null && !name.trim().isEmpty()) {
             int[] hearts = getUsedLives();
@@ -158,12 +172,12 @@ public class SudokuGame {
                     Config.getEnableKillerSudoku(),
                     getNotesToString());
             JOptionPane.showMessageDialog(
-                    null, "Game saved successfully.", "Save Game", JOptionPane.INFORMATION_MESSAGE);
+                    null, "Game saved successfully.", SAVE_GAME, JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(
                     null,
                     "Game save canceled. Name cannot be empty.",
-                    "Save Game",
+                    SAVE_GAME,
                     JOptionPane.WARNING_MESSAGE);
         }
     }
@@ -174,12 +188,13 @@ public class SudokuGame {
     }
 
     private void processNetworkMessages() {
-        while (true) {
+        while (!isGameOver() && isNetworkGame) {
             try {
                 String message = messageQueue.take();
                 processNetworkMessage(message);
             } catch (InterruptedException e) {
                 logger.error("Error processing network message: {}", e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -195,13 +210,10 @@ public class SudokuGame {
     public void processNetworkMessage(String message) {
         String[] parts = message.split(" ");
         String command = parts[0];
-        System.out.println("Received message: " + message);
+        logger.info("Received message: {}", message);
 
         switch (command) {
-            default :
-                int progress = Integer.parseInt(parts[1]);
-                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress));
-                break;
+
 
             case "WINNER":
                 timer.stop();
@@ -221,6 +233,9 @@ public class SudokuGame {
                 int progress1 = Integer.parseInt(parts[1]);
                 SwingUtilities.invokeLater(() -> updateOpponentProgress(progress1));
                 break;
+
+            default:
+                logger.error("Unknown command: {}", command);
         }
     }
 
@@ -375,7 +390,7 @@ public class SudokuGame {
 
             if (gameboard.getNumber(row, col) != solutionB[row][col]
                     || (Config.getEnableKillerSudoku()
-                            && cageContains(new Point(col, row), number))) {
+                    && cageContains(new Point(col, row), number))) {
                 windowManager.removeHeart();
                 board.setWrongNumber(row, col, number);
                 wrongMoveList.add(new Move(row, col, number, previousNumber));
@@ -516,7 +531,8 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new NumberHub(n, 40) {};
+        numbers = new NumberHub(n, 40) {
+        };
         getNumbersBoard().update();
         board.update();
 
@@ -534,7 +550,7 @@ public class SudokuGame {
     public void generateKillerSudokuCages() {
         int[][] solvedBoard = gameboard.getSolvedBoard();
         board.clearCages();
-        Random rand = new Random();
+
         boolean[][] used = new boolean[gridSize][gridSize];
 
         int minCageSize = 1;
@@ -596,11 +612,9 @@ public class SudokuGame {
                 }
             }
         }
-
-        // adjustInitialNumbersVisibility();
     }
 
-    public void initialize(int n, int k, int cellSize) {
+    public void initialize(int n, int k, int cellSize) throws Board.BoardNotCreatable {
 
         createBoard(n, k, cellSize);
 
@@ -615,7 +629,7 @@ public class SudokuGame {
     }
 
     // This method is used to initialize the game with a custom imported board
-    public void initializeCustom(int[][] customBoard) {
+    public void initializeCustom(int[][] customBoard) throws Board.BoardNotCreatable {
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -628,7 +642,7 @@ public class SudokuGame {
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
         } else {
-            BruteForceAlgorithm.createSudoku(gameboard);
+            HeuristicSolver.createPlayableSudoku(gameboard);
         }
 
         fillHintList();
@@ -668,7 +682,7 @@ public class SudokuGame {
             int usedLifeLines,
             int[][] cages,
             boolean isKillerSudoku,
-            String notes) {
+            String notes) throws Board.BoardNotCreatable {
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -682,7 +696,7 @@ public class SudokuGame {
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
         } else {
-            BruteForceAlgorithm.createSudoku(gameboard);
+            HeuristicSolver.createPlayableSudoku(gameboard);
         }
 
         if (isKillerSudoku) {
@@ -794,7 +808,7 @@ public class SudokuGame {
         }
     }
 
-    public void newGame() {
+    public void newGame() throws Board.BoardNotCreatable {
 
         if (!isCustomBoard) {
             gameboard.clear();
@@ -811,7 +825,7 @@ public class SudokuGame {
             if (nSize == kSize) {
                 AlgorithmXSolver.createXSudoku(gameboard);
             } else {
-                BruteForceAlgorithm.createSudoku(gameboard);
+                HeuristicSolver.createPlayableSudoku(gameboard);
             }
             fillHintList();
         } else {
@@ -860,11 +874,7 @@ public class SudokuGame {
 
     public void fillHintList() {
         int[][] solutionBoard;
-        if (nSize == kSize) {
-            solutionBoard = AlgorithmXSolver.getSolutionBoard();
-        } else {
-            solutionBoard = BruteForceAlgorithm.getSolvedBoard();
-        }
+        solutionBoard = gameboard.getSolvedBoard();
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (gameboard.getInitialNumber(row, col) == 0) {
@@ -919,99 +929,87 @@ public class SudokuGame {
 
             // Visualize the hint
             board.visualizeCell(row, col, Color.blue);
-
+            updateNumberCount();
             checkCompletionAndOfferNewGame();
 
         } else {
             logger.info("No more hints available.");
         }
         updateNumberCount();
+        board.revalidate();
+        board.repaint();
     }
 
     // This function is run after every move, making sure to check when the game is over, either by
     // losing all lives or completing the sudoku.
+
     public void checkCompletionAndOfferNewGame() {
-        boolean completedSuccessfully = isSudokuCompleted() && !testMode();
-        boolean isGameOver = isGameOver();
-
-        if (completedSuccessfully || isGameOver) {
-            String message = null;
-            if (!usedSolveButton) {
-                timer.stop();
-
-                if (completedSuccessfully) {
-                    // Preferences object to store and retrieve the username
-
-                    if (networkOut != null) {
-                            networkOut.println("Congratulations! You won!");
-                    }
-                    if (Config.getEnableTimer() || (isNetworkGame && gameboard.equalsSolvedBoard())) {
-                        Preferences pref = Preferences.userNodeForPackage(this.getClass());
-                        String storedUsername = pref.get("username", "");
-
-                        // Prompt user for their username
-                        String username =
-                                JOptionPane.showInputDialog(
-                                        null,
-                                        "Enter your name for the leaderboard:",
-                                        storedUsername);
-                        if (username != null && !username.trim().isEmpty()) {
-                            // Store the username in preferences
-                            pref.put("username", username.trim());
-
-                            // Add the completion details to the leaderboard
-                            String difficulty = Config.getDifficulty();
-                            int time = timer.getTimeToInt(); // returns time
-
-                            UpdateLeaderboard.addScore(
-                                    "jdbc:sqlite:sudoku.db", username, difficulty, time);
-                        }
-                    }
-
-                    message =
-                            "Congratulations! You've completed the Sudoku in\n"
-                                    + timer.getTimeString()
-                                    + "\n\n"
-                                    + "Would you like to start a new game?";
-                } else { // This is the game over scenario
-                    message =
-                            """
-                                                                        Game Over! You've run out of hearts.
-                                    \s
-                                                                        Would you like to start a new game?""";
-                }
+        if (Boolean.FALSE.equals(usedSolveButton)) {
+            if (isGameOver()) {
+                handleGameOver();
+            } else if (isSudokuCompleted() && !testMode()) {
+                handleGameCompletion();
             }
+        } else {
+            //Make a pop-up to tell the user that they have used the solve button
+            JOptionPane.showMessageDialog(null, "You have used the solve button, you will not be able to enter the leaderboard");
+        }
+        usedSolveButton = false;
+    }
 
-            Object[] options = {NEW_GAME, "Close"};
-            if (isCustomBoard) {
-                options[0] = "Replay";
+    private void handleGameOver() {
+        timer.stop();
+        String message = "Game Over! You've run out of hearts.\n\nWould you like to start a new game?";
+        promptForNewGame(message, "Game Over");
+    }
+
+    private void handleGameCompletion() {
+        timer.stop();
+        if (networkOut != null) {
+            networkOut.println("COMPLETED " + "Player1");
+        }
+        if (Config.getEnableTimer() || isNetworkGame) {
+            promptForLeaderboardEntry();
+        }
+        String message = "Congratulations! You've completed the Sudoku in\n" + timer.getTimeString() + "\n\nWould you like to start a new game?";
+        promptForNewGame(message, "Game Completed");
+    }
+
+    private void promptForNewGame(String message, String title) {
+        Object[] options = {isCustomBoard ? "Replay" : NEW_GAME, "Close"};
+        int response = JOptionPane.showOptionDialog(null, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+
+        if (response == JOptionPane.YES_OPTION) {
+            try {
+                startGame();
+            } catch (Exception e) {
+                logger.error("Error creating new game: {}", e.getMessage());
             }
-
-            int response =
-                    JOptionPane.showOptionDialog(
-                            null,
-                            message,
-                            completedSuccessfully ? "Game Completed" : "Game Over",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE,
-                            null,
-                            options,
-                            options[0]);
-
-            if (response == JOptionPane.YES_OPTION) {
-                try {
-                    startGame();
-                } catch (Exception e) {
-                    logger.error("Error creating new game: {}", e.getMessage());
-                }
-            } else {
-                JFrame frame = windowManager.getFrame();
-                StartMenuWindowManager startMenu = new StartMenuWindowManager(frame, 1000, 1000);
-                StartMenu startMenu1 = new StartMenu(startMenu);
-                startMenu1.initialize();
-            }
+        } else {
+            returnToMainMenu();
         }
     }
+
+    private void promptForLeaderboardEntry() {
+        Preferences pref = Preferences.userNodeForPackage(this.getClass());
+        String storedUsername = pref.get("username", "");
+
+        String username = JOptionPane.showInputDialog(null, "Enter your name for the leaderboard:", storedUsername);
+        if (username != null && !username.trim().isEmpty()) {
+            pref.put("username", username.trim());
+            String difficulty = Config.getDifficulty();
+            int time = timer.getTimeToInt();
+            UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db", username, difficulty, time);
+        }
+    }
+
+    private void returnToMainMenu() {
+        JFrame frame = windowManager.getFrame();
+        StartMenuWindowManager startMenu = new StartMenuWindowManager(frame, 1000, 1000);
+        StartMenu startMenu1 = new StartMenu(startMenu);
+        startMenu1.initialize();
+    }
+
 
     private boolean isGameOver() {
         return windowManager.checkGameOver();
@@ -1023,6 +1021,7 @@ public class SudokuGame {
 
     // Visually displays the buttons on the screen.
     private void displayButtons() {
+
         restartButton = createButton("Restart", 30);
         solveButton = createButton("Solve", 30);
         newGameButton = createButton(NEW_GAME, 30);
@@ -1067,24 +1066,27 @@ public class SudokuGame {
 
         solveButton.addActionListener(
                 e -> {
+                    usedSolveButton = true;
                     board.clearNotes();
                     timer.stop();
-                    if (nSize == kSize) {
-                        gameboard.setGameBoard(
-                                Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
-                    } else {
-                        gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
-                    }
+                    gameboard.setGameBoard(gameboard.getSolvedBoard());
                     usedSolveButton = true;
                     updateNumberCount();
                     displayNumbersVisually();
                     board.revalidate();
                     board.repaint();
-                    checkCompletionAndOfferNewGame();
-                    usedSolveButton = false;
+                    if (!GraphicsEnvironment.isHeadless()) {
+                        checkCompletionAndOfferNewGame();
+                    }
                 });
 
-        newGameButton.addActionListener(e -> startGame());
+        newGameButton.addActionListener(e -> {
+            try {
+                startGame();
+            } catch (Board.BoardNotCreatable ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         eraseButton.addActionListener(
                 e -> {
@@ -1130,6 +1132,9 @@ public class SudokuGame {
             windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
         }
         windowManager.addComponentToButtonPanel(noteButton);
+        if(!(nSize == 3) || !(kSize == 3)){
+            noteButton.setEnabled(false);
+        }
     }
 
     private void applyButtonStyles(JButton[] buttons) {
@@ -1228,17 +1233,12 @@ public class SudokuGame {
         for (Cage cage : cages) {
             if (cage.getCells().contains(cell)) {
                 logger.info(
-                        "printing numbers in cage {} {} "
-                                ,cage.getId()
-                                ,Arrays.toString(cage.getNumbers()));
+                        "printing numbers in cage {} {} ",
+                        cage.getId(), cage.getNumbers());
                 return cage.contains(num);
             }
         }
         return false;
-    }
-
-    public int getLives() {
-        return windowManager.getHearts();
     }
 
     public int[] getUsedLives() {
@@ -1265,7 +1265,7 @@ public class SudokuGame {
         gameIsStarted = b;
     }
 
-    public void startGame() {
+    public void startGame() throws Board.BoardNotCreatable {
         newGame();
         displayNumbersVisually();
         setInitialBoardColor();

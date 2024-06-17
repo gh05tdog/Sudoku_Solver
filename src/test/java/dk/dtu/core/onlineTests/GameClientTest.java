@@ -10,6 +10,7 @@ import dk.dtu.game.core.SudokuGame;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
@@ -65,6 +66,7 @@ class GameClientTest {
         writer.println("INITIAL_BOARD 1,2,3,4,5,6,7,8,9;");
 
         // Allow some time for the client to process the message
+
         Thread.sleep(1000);
 
         // Stop the client thread
@@ -74,6 +76,7 @@ class GameClientTest {
         SudokuGame game = client.getGame();
         assertNotNull(game, "Game should be initialized");
         int[][] board = game.gameboard.getGameBoard();
+
         assertNotNull(board, "Board should be initialized");
         assertEquals(1, board[0][0], "First cell should be 1");
     }

@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import dk.dtu.engine.utility.GameServer;
 import dk.dtu.game.core.Board;
+import dk.dtu.game.core.Config;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import java.io.*;
 import java.net.ServerSocket;
@@ -24,7 +25,7 @@ class GameServerTest {
                             @Override
                             protected void startServerSocket() {
                                 try {
-                                    serverSocket = new ServerSocket(0); // Use any available port
+                                    ServerSocket serverSocket = new ServerSocket(0); // Use any available port
                                     System.out.println(
                                             "Server started on port "
                                                     + serverSocket.getLocalPort());
@@ -50,8 +51,8 @@ class GameServerTest {
         server.stop();
         serverThread.interrupt();
         try {
-            if (server.serverSocket != null && !server.serverSocket.isClosed()) {
-                server.serverSocket.close();
+            if (server.getServerSocket() != null && !server.getServerSocket().isClosed()) {
+                server.getServerSocket().close();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -68,6 +69,7 @@ class GameServerTest {
         when(mockSocket.isConnected()).thenReturn(true);
 
         Board board = new Board(3, 3);
+        Config.setDifficulty("medium");
         AlgorithmXSolver.createXSudoku(board);
 
         server.clientWriters.put(mockSocket, mockWriter);

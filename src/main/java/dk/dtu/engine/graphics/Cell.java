@@ -18,17 +18,17 @@ class Cell implements Serializable {
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
     private Color backgroundColor =
             Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
-    private Color accentColor;
+    private final Color accentColor;
 
-    private Color highlightColor =
+    private final Color highlightColor =
             Config.getDarkMode() ? new Color(105, 104, 104) : new Color(225, 223, 221);
-    private Color markedColor =
+    private final Color markedColor =
             Config.getDarkMode() ? new Color(84, 84, 84) : new Color(169, 169, 167);
-    private Color placeAbleColor =
+    private final Color placeAbleColor =
             Config.getDarkMode() ? new Color(119, 111, 73) : new Color(250, 200, 200);
 
     private Color textColor;
-    boolean isUnplacable = false;
+    boolean isUnPlaceable = false;
 
     private int number = 0; // 0 indicates no number
     private int wrongNumber = 0;
@@ -62,7 +62,7 @@ class Cell implements Serializable {
 
     // This function is used to paint the cell
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
-        if (isUnplacable && currentNumber != 0) {
+        if (isUnPlaceable && currentNumber != 0) {
             g.setColor(placeAbleColor);
         } else if (isMarked) {
             g.setColor(markedColor);
@@ -177,7 +177,7 @@ class Cell implements Serializable {
         return number;
     }
 
-    public void setUnplaceableCell(boolean unPlaceable) {
-        this.isUnplacable = unPlaceable;
+    public void setUnPlaceableCell(boolean isUnPlaceable) {
+        this.isUnPlaceable = isUnPlaceable;
     }
 }

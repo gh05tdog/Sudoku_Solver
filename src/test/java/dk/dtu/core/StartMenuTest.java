@@ -1,14 +1,16 @@
-/* (C)2024 */
 package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
+import dk.dtu.engine.graphics.GameRulePopup;
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.StartMenu;
+
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.*;
@@ -22,16 +24,26 @@ class StartMenuTest {
     private StartMenu startMenu;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        System.setProperty("java.awt.headless", "true");
         JFrame mockedFrame = mock(JFrame.class);
-        StartMenuWindowManager startMenuWindowManager =
-                new StartMenuWindowManager(mockedFrame, 800, 600);
-        startMenu = new StartMenu(startMenuWindowManager);
-        startMenu.initialize();
+        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(mockedFrame, 800, 600);
+
+        if (!GraphicsEnvironment.isHeadless()) {
+            startMenu = new StartMenu(startMenuWindowManager);
+            SwingUtilities.invokeAndWait(() -> {
+                startMenu.initialize();
+            });
+        } else {
+            // If running in headless mode, initialize without creating GUI components
+            startMenu = new StartMenu(startMenuWindowManager);
+            startMenu.initialize();
+        }
     }
 
+
     private void simulateTextFieldInput(JTextField textField, String input) {
-        // helper function to test input fields N and K
+        // Helper function to test input fields N and K
         Document doc = textField.getDocument();
         try {
             doc.remove(0, doc.getLength());
@@ -46,9 +58,10 @@ class StartMenuTest {
     void testStartGame()
             throws Board.BoardNotCreatable, InterruptedException, InvocationTargetException {
         // Testing the start game button, and if the start menu closes and the difficulties + size
-        // is
-        // the correct
-        SwingUtilities.invokeAndWait(() -> startMenu.getStartButton().doClick());
+        // are correct
+        SwingUtilities.invokeAndWait(() -> {
+            startMenu.getStartButton().doClick();
+        });
         startMenu.startGame();
         assertEquals(3, Config.getK());
         assertEquals(3, Config.getN());
@@ -69,11 +82,10 @@ class StartMenuTest {
     @DisplayName("Input Field Testing")
     void testInputFieldFunctionality() throws Exception {
         // Tests if the input fields are working correctly
-        SwingUtilities.invokeAndWait(
-                () -> {
-                    simulateTextFieldInput(startMenu.getInputNField(), "4");
-                    simulateTextFieldInput(startMenu.getInputKField(), "4");
-                });
+        SwingUtilities.invokeAndWait(() -> {
+            simulateTextFieldInput(startMenu.getInputNField(), "4");
+            simulateTextFieldInput(startMenu.getInputKField(), "4");
+        });
         assertEquals("4", startMenu.getInputNField().getText());
         assertEquals("4", startMenu.getInputKField().getText());
     }
@@ -82,7 +94,9 @@ class StartMenuTest {
     @DisplayName("Button Panel Testing")
     void testButtonPanelFunctionality() throws Exception {
         // Testing the start button
-        SwingUtilities.invokeAndWait(() -> startMenu.getStartButton().doClick());
+        SwingUtilities.invokeAndWait(() -> {
+            startMenu.getStartButton().doClick();
+        });
         // Assert the start button is working correctly
         assertEquals(3, Config.getN());
         assertEquals(3, Config.getK());
@@ -101,22 +115,21 @@ class StartMenuTest {
     @DisplayName("Difficulty Panel Testing")
     void testDifficultyPanelFunctionality() throws Exception {
         // Tests if the difficulty panel is working correctly
-        SwingUtilities.invokeAndWait(
-                () -> {
-                    JComboBox<String> difficultyDropdown = startMenu.getDifficultyDropdown();
+        SwingUtilities.invokeAndWait(() -> {
+            JComboBox<String> difficultyDropdown = startMenu.getDifficultyDropdown();
 
-                    difficultyDropdown.setSelectedItem("Easy");
-                    assertEquals("easy", Config.getDifficulty());
+            difficultyDropdown.setSelectedItem("Easy");
+            assertEquals("easy", Config.getDifficulty());
 
-                    difficultyDropdown.setSelectedItem("Medium");
-                    assertEquals("medium", Config.getDifficulty());
+            difficultyDropdown.setSelectedItem("Medium");
+            assertEquals("medium", Config.getDifficulty());
 
-                    difficultyDropdown.setSelectedItem("Hard");
-                    assertEquals("hard", Config.getDifficulty());
+            difficultyDropdown.setSelectedItem("Hard");
+            assertEquals("hard", Config.getDifficulty());
 
-                    difficultyDropdown.setSelectedItem("Extreme");
-                    assertEquals("extreme", Config.getDifficulty());
-                });
+            difficultyDropdown.setSelectedItem("Extreme");
+            assertEquals("extreme", Config.getDifficulty());
+        });
     }
 
     @Test
@@ -137,20 +150,19 @@ class StartMenuTest {
         assertEquals(3, Config.getK(), "K should be set to 3, at the beginning");
 
         // Simulate mouse click on the 4x4 CustomBoardPanel
-        SwingUtilities.invokeAndWait(
-                () -> {
-                    CustomBoardPanel fourByFourPanel = startMenu.getFourByFour();
-                    fourByFourPanel.getMouseListeners()[0].mouseClicked(
-                            new MouseEvent(
-                                    fourByFourPanel,
-                                    MouseEvent.MOUSE_CLICKED,
-                                    System.currentTimeMillis(),
-                                    0,
-                                    10,
-                                    10,
-                                    1,
-                                    false));
-                });
+        SwingUtilities.invokeAndWait(() -> {
+            CustomBoardPanel fourByFourPanel = startMenu.getFourByFour();
+            fourByFourPanel.getMouseListeners()[0].mouseClicked(
+                    new MouseEvent(
+                            fourByFourPanel,
+                            MouseEvent.MOUSE_CLICKED,
+                            System.currentTimeMillis(),
+                            0,
+                            10,
+                            10,
+                            1,
+                            false));
+        });
 
         // Assertions to check if the size is set to 4x4
         assertEquals(4, Config.getN(), "N should be set to 4");
@@ -161,11 +173,10 @@ class StartMenuTest {
     @DisplayName("Input Field Invalid Data Handling")
     void testInputFieldInvalidData() throws Exception {
         // Tests if the input fields are working correctly
-        SwingUtilities.invokeAndWait(
-                () -> {
-                    simulateTextFieldInput(startMenu.getInputNField(), "invalid");
-                    simulateTextFieldInput(startMenu.getInputKField(), "");
-                });
+        SwingUtilities.invokeAndWait(() -> {
+            simulateTextFieldInput(startMenu.getInputNField(), "invalid");
+            simulateTextFieldInput(startMenu.getInputKField(), "");
+        });
         assertInstanceOf(Integer.class, Config.getN());
         assertInstanceOf(Integer.class, Config.getK());
     }

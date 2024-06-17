@@ -14,8 +14,6 @@ public class Config {
     private static int cellSize;
     private static String difficulty;
 
-    private static boolean darkMode = true;
-
     private Config() {
         throw new IllegalStateException("Utility class");
     }

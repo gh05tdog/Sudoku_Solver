@@ -24,12 +24,12 @@ public abstract class NumberHub extends JPanel {
     private final Map<Integer, Boolean> numberAvailability;
 
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
-    private static Color backgroundColor =
+    private Color backgroundColor =
             Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
-    private static Color accentColor =
+    private Color accentColor =
             Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
 
-    private static Color NON_HIGHLIGHT_COLOR = backgroundColor;
+    private Color nonhighlightColor = backgroundColor;
 
     protected NumberHub(int n, int cellSize) {
         this.subGrid = n;
@@ -68,8 +68,8 @@ public abstract class NumberHub extends JPanel {
                 int y = j * cellSize;
                 int number = j * subGrid + i + 1;
 
-                if (numberAvailability.getOrDefault(number, true)) {
-                    g.setColor(NON_HIGHLIGHT_COLOR);
+                if (Boolean.TRUE.equals(numberAvailability.getOrDefault(number, true))) {
+                    g.setColor(nonhighlightColor);
                 } else {
                     g.setColor(CROSS_OUT_COLOR);
                 }
@@ -90,18 +90,9 @@ public abstract class NumberHub extends JPanel {
         }
 
         int clearBoxY = subGrid * cellSize;
-        g.setColor(NON_HIGHLIGHT_COLOR);
+        g.setColor(nonhighlightColor);
         g.fillRect(0, clearBoxY, subGrid * cellSize, 2 * cellSize);
         g.setColor(accentColor);
-        g2d.setStroke(new BasicStroke(STROKE_WIDTH));
-        g.drawRect(0, clearBoxY, subGrid * cellSize, cellSize);
-        Font font = new Font("Arial", Font.BOLD, cellSize / 2);
-        g.setFont(font);
-        g.setColor(accentColor);
-        g.drawString(
-                "Clear",
-                subGrid * cellSize / 2 - g.getFontMetrics().stringWidth("Clear") / 2,
-                clearBoxY + cellSize / 2 + g.getFontMetrics().getAscent() / 2);
     }
 
     // Get the number that was clicked
@@ -128,7 +119,7 @@ public abstract class NumberHub extends JPanel {
         accentColor = Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
 
         // Ensure NON_HIGHLIGHT_COLOR is updated as well
-        NON_HIGHLIGHT_COLOR = backgroundColor;
+        nonhighlightColor = backgroundColor;
 
         setBackground(backgroundColor);
         revalidate();

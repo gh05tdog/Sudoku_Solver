@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The WindowManager class is responsible for managing the game window.
@@ -33,6 +35,7 @@ public class WindowManager {
     ImageIcon heartIcon;
     JPanel combinedPanel = new JPanel();
     private boolean[] heartStates; // true if the heart is full, false if empty
+
 
     private static final String STR_NOT_FOUND_MSG = "Image not found, check path";
 
@@ -131,7 +134,7 @@ public class WindowManager {
             if (comp instanceof JLabel label) {
                 label.setIcon(emptyHeartIcon);
                 heartStates[lastIndex] = false; // Update state to empty
-                logger.info("Heart emptied at index: {}", lastIndex);
+                logger.info("Heart emptied at index: {}",lastIndex);
             }
         } else {
             logger.info("No full heart found to replace");
@@ -184,22 +187,6 @@ public class WindowManager {
         buttonPanel.add(component);
         buttonPanel.revalidate();
         buttonPanel.repaint();
-    }
-
-    // add a button to go back to the start menu
-    public void addGoBackButton(JButton goBackButton) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx =
-                1; // You might need to adjust this depending on how many columns your layout has
-        gbc.gridy = 0; // Top row
-        gbc.weightx = 1.0; // Take up space horizontally
-        gbc.weighty = 0; // No vertical expansion
-        gbc.anchor = GridBagConstraints.NORTHEAST; // Anchor the button to the northeast corner
-        gbc.insets = new Insets(10, 10, 10, 10); // Add some padding
-
-        mainPanel.add(goBackButton, gbc);
-        mainPanel.revalidate();
-        mainPanel.repaint();
     }
 
     public void drawBoard(Component board) {
@@ -288,9 +275,12 @@ public class WindowManager {
         return combinedPanel;
     }
 
+    private static void setBackgroundColor(Color color) {
+        backgroundColor = color;
+    }
+
     public void updateBoard() {
-        System.out.println(Config.getDarkMode());
-        backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+        setBackgroundColor(Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE);
         frame.setBackground(backgroundColor);
         frame.revalidate();
         frame.repaint();

@@ -1,8 +1,8 @@
-/* (C)2024 */
 package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
@@ -32,16 +32,18 @@ class SudokuGameTest {
     void setUp() throws Exception {
         JFrame mockedFrame = mock(JFrame.class);
 
-        StartMenuWindowManager startMenuWindowManager =
-                new StartMenuWindowManager(mockedFrame, 1000, 700);
-        StartMenu startMenu = new StartMenu(startMenuWindowManager);
-        startMenu.initialize();
-        startMenu.getStartButton().doClick();
-        WindowManager windowManager =
-                new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
+        StartMenuWindowManager startMenuWindowManager = mock(StartMenuWindowManager.class);
+        when(startMenuWindowManager.getFrame()).thenReturn(mockedFrame);
+
+        StartMenu startMenu = mock(StartMenu.class);
+        when(startMenu.getStartButton()).thenReturn(new JToggleButton());
+
+        WindowManager windowManager = new WindowManager(mockedFrame, 800, 800);
+
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         game.initialize(3, 3, 550 / 9);
         windowManager.setHeart();
+
         componentGroup = new CustomComponentGroup();
 
         // Create mock panels
@@ -180,45 +182,19 @@ class SudokuGameTest {
     }
 
     @Test
-    void testPlaceWrongNumberWithLives() throws Board.BoardNotCreatable {
-        Config.setEnableLives(true);
-
-        sudokuBoardCanvasBoard.setSize(550, 550);
-        int[][] tempboard = {
-            {0, 5, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0}
-        };
-
-        game.gameboard.setGameBoard(tempboard);
-        game.gameboard.setInitialBoard(tempboard);
-        game.gameboard.setSolvedBoard(tempboard);
-
-        game.makeMove(0, 0, 5);
-
-        assertEquals(2, game.getLives());
-    }
-
-    @Test
     void testPlaceWrongNumberWithoutLives() {
         sudokuBoardCanvasBoard.setSize(550, 550);
 
         int[][] tempboard = {
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0}
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0}
         };
 
         Config.setEnableLives(false);

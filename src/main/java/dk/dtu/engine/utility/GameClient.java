@@ -36,7 +36,7 @@ public class GameClient {
 
         // Create a socket connection to the server
         Socket socket = createSocket(serverAddress);
-        logger.info("Connected to server at {}", serverAddress);
+        logger.info("Connected to server at {}",serverAddress);
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -51,7 +51,7 @@ public class GameClient {
         // Listen for messages from the server
         String message;
         while ((message = in.readLine()) != null) {
-            logger.info("Received message: {}", message); // Display the message in the console
+           logger.info("Received message: {}", message); // Display the message in the console
             processNetworkMessage(message, game);
         }
     }
@@ -68,7 +68,7 @@ public class GameClient {
     }
 
     // Method to process messages received from the server
-    private void processNetworkMessage(String message, SudokuGame game) {
+    private void processNetworkMessage(String message, SudokuGame game) throws Board.BoardNotCreatable {
         String[] parts = message.split(" ", 2);
         String command = parts[0];
         logger.info("Command: {}", command);
@@ -86,6 +86,8 @@ public class GameClient {
             case "PROGRESS", "WINNER":
                 game.processNetworkMessage(message); // Process winner message
                 break;
+            default:
+                logger.error("Unknown command: {}", command);
         }
     }
 

@@ -52,11 +52,11 @@ public class Cage {
     }
 
     public void calculateSumFromSolution(int[][] solutionBoard) {
-        int sum = 0;
+        int totalSum = 0;
         for (Point cell : cells) {
-            sum += solutionBoard[cell.y][cell.x];
+            totalSum += solutionBoard[cell.y][cell.x];
         }
-        this.sum = sum;
+        this.sum = totalSum;
     }
 
 }
