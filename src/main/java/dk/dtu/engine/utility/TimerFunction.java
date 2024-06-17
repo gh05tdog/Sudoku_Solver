@@ -26,8 +26,8 @@ public class TimerFunction extends JPanel {
         setPreferredSize(new Dimension(180, 80));
         timeLabel = new JLabel("00:00:00", SwingConstants.CENTER);
         timeLabel.setFont(new Font("SansSerif", Font.BOLD, 42));
-        accentColor = Config.getDarkMode() ? accentColor : Color.BLACK;
-        backgroundColor = Config.getDarkMode() ? backgroundColor : Color.WHITE;
+        calculateAccentColor();
+        calculateBackgroundColor();
         timeLabel.setForeground(accentColor);
         setBackground(backgroundColor);
         add(timeLabel);
@@ -107,9 +107,17 @@ public class TimerFunction extends JPanel {
                 1000);
     }
 
-    public void update() {
+    private static void calculateAccentColor() {
         accentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
+    }
+
+    private static void calculateBackgroundColor() {
         backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
+    }
+
+    public void update() {
+        calculateAccentColor();
+        calculateBackgroundColor();
         timeLabel.setForeground(accentColor);
         setBackground(backgroundColor);
         repaint();

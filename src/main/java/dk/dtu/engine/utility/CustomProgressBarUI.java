@@ -2,7 +2,6 @@
 package dk.dtu.engine.utility;
 
 import java.awt.*;
-import javax.swing.*;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 
 public class CustomProgressBarUI extends BasicProgressBarUI {

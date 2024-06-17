@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 public class SavedGame {
 
     private static final Logger logger = LoggerFactory.getLogger(SavedGame.class);
+    private SavedGame() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static void saveGame(
             String dbUrl,
@@ -202,7 +205,7 @@ public class SavedGame {
                     + ", Time: "
                     + time
                     + ", Used Life Lines: "
-                    + usedLifeLines
+                    + Arrays.toString(usedLifeLines)
                     + ", Life Enabled: "
                     + lifeEnabled
                     + ", KSize: "

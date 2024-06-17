@@ -181,8 +181,6 @@ class SudokuGameTest {
         assertEquals(game.getHintList().size(), hintListSize);
     }
 
-
-
     @Test
     void testPlaceWrongNumberWithoutLives() {
         sudokuBoardCanvasBoard.setSize(550, 550);

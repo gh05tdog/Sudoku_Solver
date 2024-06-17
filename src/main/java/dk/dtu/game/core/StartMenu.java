@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
@@ -35,8 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the start menu of the game. This is where you can choose difficulty, size, loadgame, show leader board etc.
- * It is also where you can chose the game rules.
+ * This is the start menu of the game. This is where you can choose difficulty, size, load game, show leader board etc.
+ * It is also where you can choose the game rules.
  */
 public class StartMenu {
 
@@ -44,11 +43,6 @@ public class StartMenu {
     private static final String FONT = "SansSerif";
     private final StartMenuWindowManager startMenuWindowManager;
     private final JToggleButton startButton = new JToggleButton("Start Game");
-    private final JToggleButton easyButton = new JToggleButton("Easy");
-    private final JToggleButton mediumButton = new JToggleButton("Medium", true);
-    private final JToggleButton hardButton = new JToggleButton("Hard");
-    private final JToggleButton extremeButton = new JToggleButton("Extreme");
-    private final ButtonGroup difficultyGroup = new ButtonGroup();
 
     private boolean isLoadGameDialogOpen = false;
     private final JButton gameRuleButton = new JButton("Game Rules");
@@ -69,7 +63,7 @@ public class StartMenu {
 
     private static final Color darkbackgroundColor = new Color(64, 64, 64);
     private static final Color lightaccentColor = new Color(237, 224, 186);
-    private static Color AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
+    private static Color accentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
     private static Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
     private final JComboBox<String> difficultyDropdown =
             new JComboBox<>(new String[]{"Easy", "Medium", "Hard", "Extreme"});
@@ -79,14 +73,23 @@ public class StartMenu {
 
     public StartMenu(StartMenuWindowManager startMenuWindowManager) {
         this.startMenuWindowManager = startMenuWindowManager;
-        backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
-        AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
+        setBackgroundColor(Config.getDarkMode() ? darkbackgroundColor : Color.WHITE);
+        setAccentColor(Config.getDarkMode() ? lightaccentColor : Color.BLACK);
         startMenuWindowManager.display();
 
         if (!GraphicsEnvironment.isHeadless()) {
             gameRules = new GameRulePopup(this);
             initializeGamerulePopup();
         }
+    }
+
+
+
+    private static void setAccentColor(Color color) {
+        accentColor = color;
+    }
+    private static void setBackgroundColor(Color color) {
+        backgroundColor = color;
     }
 
 
@@ -128,7 +131,6 @@ public class StartMenu {
         addLeaderboardButton();
         updateCustomBoardPanel(2, 2);
         addNetworkGameButtons();
-        //initializeGamerulePopup();
         addLoadGameButton();
 
         threeByThree.updateBackgroundColor(Color.GRAY);
@@ -143,8 +145,8 @@ public class StartMenu {
     private void addLoadGameButton() {
         loadGameButton.setBounds(5, 165, 190, 40); // Adjust the size and position as needed
         loadGameButton.setBackground(backgroundColor);
-        loadGameButton.setForeground(AccentColor);
-        loadGameButton.setBorder(new LineBorder(AccentColor));
+        loadGameButton.setForeground(accentColor);
+        loadGameButton.setBorder(new LineBorder(accentColor));
         loadGameButton.setFocusPainted(false);
         loadGameButton.addActionListener(this::onLoadGame);
         startMenuWindowManager.addComponent(
@@ -163,10 +165,10 @@ public class StartMenu {
         joinGameButton.setFocusPainted(false);
         joinGameButton.addActionListener(this::onJoinGame);
 
-        createGameButton.setBorder(new LineBorder(AccentColor));
-        createGameButton.setForeground(AccentColor);
-        joinGameButton.setBorder(new LineBorder(AccentColor));
-        joinGameButton.setForeground(AccentColor);
+        createGameButton.setBorder(new LineBorder(accentColor));
+        createGameButton.setForeground(accentColor);
+        joinGameButton.setBorder(new LineBorder(accentColor));
+        joinGameButton.setForeground(accentColor);
 
         startMenuWindowManager.addComponent(
                 createGameButton, startMenuWindowManager.getButtonPanel());
@@ -176,12 +178,10 @@ public class StartMenu {
         gameRuleButton.setBounds(5, 440, 190, 40); // Set bounds below join game button
         gameRuleButton.setBackground(backgroundColor);
         gameRuleButton.setFocusPainted(false);
-        gameRuleButton.setBorder(new LineBorder(AccentColor));
-        gameRuleButton.setForeground(AccentColor);
+        gameRuleButton.setBorder(new LineBorder(accentColor));
+        gameRuleButton.setForeground(accentColor);
         gameRuleButton.addActionListener(
-                e -> {
-                    gameRules.setVisible(true);
-                });
+                e -> gameRules.setVisible(true));
         startMenuWindowManager.addComponent(
                 gameRuleButton, startMenuWindowManager.getButtonPanel());
     }
@@ -207,7 +207,7 @@ public class StartMenu {
                 SavedGame.loadSavedGames("jdbc:sqlite:sudoku.db");
         if (savedGames.isEmpty()) {
             JOptionPane.showMessageDialog(
-                    null, "No saved games available.", "Error", JOptionPane.INFORMATION_MESSAGE);
+                    null, "No saved games available.", "Error conserving saving", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
@@ -225,15 +225,15 @@ public class StartMenu {
         JList<SavedGame.SavedGameData> gameList = new JList<>(new Vector<>(savedGames));
         gameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         gameList.setBackground(backgroundColor);
-        gameList.setForeground(AccentColor);
-        gameList.setSelectionBackground(AccentColor.darker());
+        gameList.setForeground(accentColor);
+        gameList.setSelectionBackground(accentColor.darker());
         gameList.setSelectionForeground(backgroundColor);
 
         // Add a scroll pane to the list
         JScrollPane scrollPane = new JScrollPane(gameList);
         scrollPane.setBackground(backgroundColor);
-        scrollPane.setForeground(AccentColor);
-        scrollPane.setBorder(new LineBorder(AccentColor));
+        scrollPane.setForeground(accentColor);
+        scrollPane.setBorder(new LineBorder(accentColor));
 
         // Create a button panel with a load button
         JPanel buttonPanel = new JPanel();
@@ -242,8 +242,8 @@ public class StartMenu {
 
         JButton loadButton = new JButton("Load");
         loadButton.setBackground(backgroundColor);
-        loadButton.setForeground(AccentColor);
-        loadButton.setBorder(new LineBorder(AccentColor));
+        loadButton.setForeground(accentColor);
+        loadButton.setBorder(new LineBorder(accentColor));
         loadButton.addActionListener(
                 event -> {
                     SavedGame.SavedGameData selectedGame = gameList.getSelectedValue();
@@ -320,7 +320,7 @@ public class StartMenu {
         Config.setCellSize(550 / (k * n));
         Config.setK(k);
         Config.setN(n);
-        System.out.println("Used life lines: " + Arrays.toString(usedLifeLines));
+        logger.info("Used life lines: {}", usedLifeLines);
         int usedLives = usedLifeLines[0];
         Config.setNumberOfLives(usedLifeLines[1]);
         logConfigInfo();
@@ -396,17 +396,17 @@ public class StartMenu {
 
     private void connectClient(String serverAddress) {
         new Thread(
-                () -> {
-                    WindowManager windowManager =
-                            new WindowManager(
-                                    startMenuWindowManager.getFrame(), 1000, 1000);
-                    GameClient client = new GameClient(serverAddress, windowManager);
-                    try {
-                        client.start();
-                    } catch (IOException | Board.BoardNotCreatable ex) {
-                        throw new RuntimeException(ex);
-                    }
-                })
+                        () -> {
+                            WindowManager windowManager =
+                                    new WindowManager(
+                                            startMenuWindowManager.getFrame(), 1000, 1000);
+                            GameClient client = new GameClient(serverAddress, windowManager);
+                            try {
+                                client.start();
+                            } catch (IOException | Board.BoardNotCreatable ex) {
+                                logger.error("Failed to start the game client: {}", ex.getMessage());
+                            }
+                        })
                 .start();
     }
 
@@ -417,8 +417,8 @@ public class StartMenu {
         leaderboardButton.setBackground(backgroundColor);
         leaderboardButton.setFocusPainted(false);
 
-        leaderboardButton.setBorder(new LineBorder(AccentColor));
-        leaderboardButton.setForeground(AccentColor);
+        leaderboardButton.setBorder(new LineBorder(accentColor));
+        leaderboardButton.setForeground(accentColor);
 
         startMenuWindowManager.addComponent(
                 leaderboardButton, startMenuWindowManager.getButtonPanel());
@@ -547,8 +547,8 @@ public class StartMenu {
 
             field.setBounds(i == 0 ? 5 : 85, 5, 50, 40);
 
-            field.setBorder(new LineBorder(AccentColor));
-            field.setForeground(AccentColor);
+            field.setBorder(new LineBorder(accentColor));
+            field.setForeground(accentColor);
 
             startMenuWindowManager.addComponent(field, startMenuWindowManager.getInputPanel());
         }
@@ -575,16 +575,15 @@ public class StartMenu {
                     }
                 });
 
-        startButton.setBorder(new LineBorder(AccentColor));
-        startButton.setForeground(AccentColor);
+        startButton.setBorder(new LineBorder(accentColor));
+        startButton.setForeground(accentColor);
 
         startMenuWindowManager.addComponent(startButton, startMenuWindowManager.getButtonPanel());
 
-        int padding = 10;
         difficultyDropdown.setBounds(5, 50, 190, 40); // Adjust bounds to add padding
         difficultyDropdown.setBackground(backgroundColor);
-        difficultyDropdown.setForeground(AccentColor);
-        difficultyDropdown.setBorder(new LineBorder(AccentColor));
+        difficultyDropdown.setForeground(accentColor);
+        difficultyDropdown.setBorder(new LineBorder(accentColor));
         difficultyDropdown.setSelectedItem("Medium"); // Set default selection
         Config.setDifficulty("medium");
 
@@ -606,8 +605,8 @@ public class StartMenu {
         importButton.setBackground(backgroundColor);
         importButton.setFocusPainted(false);
 
-        importButton.setBorder(new LineBorder(AccentColor));
-        importButton.setForeground(AccentColor);
+        importButton.setBorder(new LineBorder(accentColor));
+        importButton.setForeground(accentColor);
 
         startMenuWindowManager.addComponent(importButton, startMenuWindowManager.getButtonPanel());
     }
@@ -736,49 +735,49 @@ public class StartMenu {
     }
 
     public void updateColors() {
-        backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
-        AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
+        setBackgroundColor(Config.getDarkMode() ? darkbackgroundColor : Color.WHITE);
+        setAccentColor(Config.getDarkMode() ? lightaccentColor : Color.BLACK);
         startMenuWindowManager.setCustomBoardPanels(boardPanels);
 
         // Update all relevant components with the new colors
         startButton.setBackground(backgroundColor);
-        startButton.setForeground(AccentColor);
-        startButton.setBorder(new LineBorder(AccentColor));
+        startButton.setForeground(accentColor);
+        startButton.setBorder(new LineBorder(accentColor));
 
         difficultyDropdown.setBackground(backgroundColor);
-        difficultyDropdown.setForeground(AccentColor);
-        difficultyDropdown.setBorder(new LineBorder(AccentColor));
+        difficultyDropdown.setForeground(accentColor);
+        difficultyDropdown.setBorder(new LineBorder(accentColor));
 
         gameRuleButton.setBackground(backgroundColor);
-        gameRuleButton.setForeground(AccentColor);
-        gameRuleButton.setBorder(new LineBorder(AccentColor));
+        gameRuleButton.setForeground(accentColor);
+        gameRuleButton.setBorder(new LineBorder(accentColor));
 
         createGameButton.setBackground(backgroundColor);
-        createGameButton.setForeground(AccentColor);
-        createGameButton.setBorder(new LineBorder(AccentColor));
+        createGameButton.setForeground(accentColor);
+        createGameButton.setBorder(new LineBorder(accentColor));
 
         joinGameButton.setBackground(backgroundColor);
-        joinGameButton.setForeground(AccentColor);
-        joinGameButton.setBorder(new LineBorder(AccentColor));
+        joinGameButton.setForeground(accentColor);
+        joinGameButton.setBorder(new LineBorder(accentColor));
 
         importButton.setBackground(backgroundColor);
-        importButton.setForeground(AccentColor);
-        importButton.setBorder(new LineBorder(AccentColor));
+        importButton.setForeground(accentColor);
+        importButton.setBorder(new LineBorder(accentColor));
 
         leaderboardButton.setBackground(backgroundColor);
-        leaderboardButton.setForeground(AccentColor);
-        leaderboardButton.setBorder(new LineBorder(AccentColor));
+        leaderboardButton.setForeground(accentColor);
+        leaderboardButton.setBorder(new LineBorder(accentColor));
 
         loadGameButton.setBackground(backgroundColor);
-        loadGameButton.setForeground(AccentColor);
-        loadGameButton.setBorder(new LineBorder(AccentColor));
+        loadGameButton.setForeground(accentColor);
+        loadGameButton.setBorder(new LineBorder(accentColor));
 
         inputNField.setBackground(backgroundColor);
-        inputNField.setForeground(AccentColor);
-        inputNField.setBorder(new LineBorder(AccentColor));
+        inputNField.setForeground(accentColor);
+        inputNField.setBorder(new LineBorder(accentColor));
         inputKField.setBackground(backgroundColor);
-        inputKField.setForeground(AccentColor);
-        inputKField.setBorder(new LineBorder(AccentColor));
+        inputKField.setForeground(accentColor);
+        inputKField.setBorder(new LineBorder(accentColor));
 
         // Ensure all panels and components are updated
         startMenuWindowManager.update();

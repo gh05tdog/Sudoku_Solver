@@ -31,19 +31,19 @@ public class SolverTest {
     void TestIsColumnCovered() {
 
         DancingLinks dl = new DancingLinks(coverList);
-    //    printMatrix(dl);
+
         ColumnNode c = (ColumnNode) dl.getHeader().getRight();
 
         c.cover();
         System.out.println("Covered column: " + c.getName());
         System.out.println("After covering:");
-    //    printMatrix(dl);
+
         assertTrue(isColumnCovered(c));
 
         c.uncover();
         System.out.println("Uncovered column: " + c.getName());
         System.out.println("After uncovering:");
-    // printMatrix(dl);
+
         assertFalse(isColumnCovered(c));
     }
 
@@ -136,34 +136,6 @@ public class SolverTest {
             totalNodes += columnNode.getSize();
         }
         assertEquals(4 * size * size * size, totalNodes);
-    }
-
-    public static void printMatrix(DancingLinks dl) {
-        ColumnNode header = dl.getHeader();
-        ColumnNode columnNode = (ColumnNode) header.getRight();
-
-        // Traverse all columns from the header
-        while (columnNode != header) {
-            System.out.println("Column " + columnNode.getName() + " size: " + columnNode.getSize());
-            Node rowNode = columnNode.getDown();
-
-            // Traverse all rows in the current column
-            while (rowNode != columnNode) {
-                // Print details about each node in the row for the current column
-                System.out.print("Row " + getRowIndex(rowNode) + " -> ");
-                Node rightNode = rowNode.getRight();
-
-                // Traverse all nodes in this row (right direction from the current column's node)
-                while (rightNode != rowNode) {
-                    System.out.print(rightNode.getColumn().getName() + " ");
-                    rightNode = rightNode.getRight();
-                }
-
-                System.out.println(); // New line for each row
-                rowNode = rowNode.getDown();
-            }
-            columnNode = (ColumnNode) columnNode.getRight();
-        }
     }
 
     // Utility function to check if a column is correctly covered

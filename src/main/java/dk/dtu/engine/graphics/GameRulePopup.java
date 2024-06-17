@@ -16,13 +16,14 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 
 public class GameRulePopup extends JFrame {
-
-    private static final Color darkModebackgroundColor = new Color(64, 64, 64);
-    private static Color backgroundColor =
-            Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE;
+    private final Color darkModebackgroundColor = new Color(64, 64, 64);
+    private Color backgroundColor =
+            Config.getDarkMode()
+                    ? darkModebackgroundColor
+                    : Color.WHITE; // Default background color
     private static final Color lightAccentColor = new Color(237, 224, 186);
-    private static Color accentColor = Config.getDarkMode() ? lightAccentColor : Color.BLACK;
-    private final StartMenu startMenu;
+    private Color accentColor = Config.getDarkMode() ? lightAccentColor : Color.BLACK;
+    private final transient StartMenu startMenu;
     private final List<JLabel> labels = new ArrayList<>();
     JTextField livesField = new JTextField(1);
 
@@ -108,10 +109,10 @@ public class GameRulePopup extends JFrame {
         }
 
         if (description.equalsIgnoreCase("Enable lives")) {
-            gbc.gridx = 2;
-            gbc.insets = new Insets(0, 5, 10, 5);
-            JTextField livesField = createLivesField();
-            add(livesField, gbc);
+            gbc.gridx = 2; // Align JTextField properly
+            gbc.insets = new Insets(0, 5, 10, 5); // Adjust spacing for better visual separation
+            JTextField lives = createLivesField();
+            add(lives, gbc);
         }
 
         revalidate();
