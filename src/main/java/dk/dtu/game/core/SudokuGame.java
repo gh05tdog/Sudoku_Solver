@@ -1132,6 +1132,9 @@ public class SudokuGame {
             windowManager.addComponentToButtonPanel(Box.createRigidArea(new Dimension(10, 10)));
         }
         windowManager.addComponentToButtonPanel(noteButton);
+        if(!(nSize == 3) || !(kSize == 3)){
+            noteButton.setEnabled(false);
+        }
     }
 
     private void applyButtonStyles(JButton[] buttons) {
