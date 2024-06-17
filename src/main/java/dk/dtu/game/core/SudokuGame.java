@@ -15,6 +15,7 @@ import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
@@ -27,6 +28,7 @@ import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,6 +141,7 @@ public class SudokuGame {
     private static void setAccentColor(Color color) {
         accentColor = color;
     }
+
     private static void setBackgroundColor(Color color) {
         backgroundColor = color;
     }
@@ -205,7 +208,7 @@ public class SudokuGame {
     public void processNetworkMessage(String message) {
         String[] parts = message.split(" ");
         String command = parts[0];
-        logger.info("Received message: {}",message);
+        logger.info("Received message: {}", message);
 
         switch (command) {
 
@@ -229,7 +232,7 @@ public class SudokuGame {
                 SwingUtilities.invokeLater(() -> updateOpponentProgress(progress1));
                 break;
 
-            default :
+            default:
                 logger.error("Unknown command: {}", command);
         }
     }
@@ -385,7 +388,7 @@ public class SudokuGame {
 
             if (gameboard.getNumber(row, col) != solutionB[row][col]
                     || (Config.getEnableKillerSudoku()
-                            && cageContains(new Point(col, row), number))) {
+                    && cageContains(new Point(col, row), number))) {
                 windowManager.removeHeart();
                 board.setWrongNumber(row, col, number);
                 wrongMoveList.add(new Move(row, col, number, previousNumber));
@@ -526,7 +529,8 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new NumberHub(n, 40) {};
+        numbers = new NumberHub(n, 40) {
+        };
         getNumbersBoard().update();
         board.update();
 
@@ -934,19 +938,21 @@ public class SudokuGame {
             logger.info("No more hints available.");
         }
         updateNumberCount();
+        board.revalidate();
+        board.repaint();
     }
 
     // This function is run after every move, making sure to check when the game is over, either by
     // losing all lives or completing the sudoku.
 
     public void checkCompletionAndOfferNewGame() {
-        if(Boolean.FALSE.equals(usedSolveButton)) {
+        if (Boolean.FALSE.equals(usedSolveButton)) {
             if (isGameOver()) {
                 handleGameOver();
             } else if (isSudokuCompleted() && !testMode()) {
                 handleGameCompletion();
             }
-        }else{
+        } else {
             //Make a pop-up to tell the user that they have used the solve button
             JOptionPane.showMessageDialog(null, "You have used the solve button, you will not be able to enter the leaderboard");
         }
@@ -1075,7 +1081,9 @@ public class SudokuGame {
                     displayNumbersVisually();
                     board.revalidate();
                     board.repaint();
-                    checkCompletionAndOfferNewGame();
+                    if (!GraphicsEnvironment.isHeadless()) {
+                        checkCompletionAndOfferNewGame();
+                    }
                 });
 
         newGameButton.addActionListener(e -> startGame());
@@ -1223,7 +1231,7 @@ public class SudokuGame {
             if (cage.getCells().contains(cell)) {
                 logger.info(
                         "printing numbers in cage {} {} ",
-                                 cage.getId(), cage.getNumbers());
+                        cage.getId(), cage.getNumbers());
                 return cage.contains(num);
             }
         }
