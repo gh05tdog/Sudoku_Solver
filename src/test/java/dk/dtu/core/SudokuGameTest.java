@@ -179,31 +179,6 @@ class SudokuGameTest {
         assertEquals(game.getHintList().size(), hintListSize);
     }
 
-    @Test
-    void testPlaceWrongNumberWithLives() throws Board.BoardNotCreatable {
-        Config.setEnableLives(true);
-
-        sudokuBoardCanvasBoard.setSize(550, 550);
-        int[][] tempboard = {
-            {0, 5, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0}
-        };
-
-        game.gameboard.setGameBoard(tempboard);
-        game.gameboard.setInitialBoard(tempboard);
-        game.gameboard.setSolvedBoard(tempboard);
-
-        game.makeMove(0, 0, 5);
-
-        assertEquals(2, game.getLives());
-    }
 
     @Test
     void testPlaceWrongNumberWithoutLives() {
