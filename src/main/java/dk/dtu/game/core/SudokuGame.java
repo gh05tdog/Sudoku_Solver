@@ -79,11 +79,8 @@ public class SudokuGame {
     private static final Color lightaccentcolor = new Color(237, 224, 186);
     private static final Color initialColor = new Color(159, 148, 102);
     private static Color backgroundColor;
-    private final Random rand = new Random();
     private static final String NEW_GAME = "new game";
     private static final String SAVE_GAME = "save game";
-
-    private static final String NEW_GAME = "New game";
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -232,8 +229,6 @@ public class SudokuGame {
                 int progress1 = Integer.parseInt(parts[1]);
                 SwingUtilities.invokeLater(() -> updateOpponentProgress(progress1));
                 break;
-            default:
-                logger.error("Unknown command: {}", command);
         }
     }
 

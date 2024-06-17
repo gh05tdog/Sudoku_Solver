@@ -35,7 +35,6 @@ public class WindowManager {
     ImageIcon heartIcon;
     JPanel combinedPanel = new JPanel();
     private boolean[] heartStates; // true if the heart is full, false if empty
-    private static final Logger logger = LoggerFactory.getLogger(WindowManager.class);
 
 
     private static final String STR_NOT_FOUND_MSG = "Image not found, check path";
