@@ -49,11 +49,13 @@ public class SudokuGame {
     private JButton saveGameButton;
     int gridSize;
     int cellSize;
+    private int placeableNumber = 0;
+    private int nextCageId = 1;
+    private static final Random rand = new Random();
+
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
     Random random = new SecureRandom();
-    private int placeableNumber = 0;
-    private int nextCageId = 1;
     private SudokuBoardCanvas board;
     private NumberHub numbers;
     private TimerFunction timer;
@@ -77,6 +79,8 @@ public class SudokuGame {
     private static final Color lightaccentcolor = new Color(237, 224, 186);
     private static final Color initialColor = new Color(159, 148, 102);
     private static Color backgroundColor;
+
+    private static final String NEW_GAME = "New game";
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -194,11 +198,17 @@ public class SudokuGame {
         System.out.println("Received message: " + message);
 
         switch (command) {
+            default :
+                int progress = Integer.parseInt(parts[1]);
+                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress));
+                break;
+
             case "WINNER":
                 timer.stop();
                 String winner = parts[1];
                 SwingUtilities.invokeLater(() -> announceWinner(winner));
                 break;
+
             case "COMPLETED":
                 timer.stop();
                 String playerName = parts[1];
@@ -208,8 +218,8 @@ public class SudokuGame {
                                         null, playerName + " has completed the Sudoku!"));
                 break;
             case "PROGRESS":
-                int progress = Integer.parseInt(parts[1]);
-                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress));
+                int progress1 = Integer.parseInt(parts[1]);
+                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress1));
                 break;
         }
     }
@@ -219,6 +229,7 @@ public class SudokuGame {
         if (progress != calculateProgress()) {
             opponentProgressBar.setValue(progress);
         }
+
     }
 
     private void announceWinner(String winner) {
@@ -314,15 +325,15 @@ public class SudokuGame {
         // Loop through the board and add all the numbers to a list,
         // then check if each number is equal to the max needed number,
         // if it is, then update the number display
-        List<Integer> numbers = new ArrayList<>();
+        List<Integer> numberList = new ArrayList<>();
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
-                numbers.add(gameboard.getNumber(row, col));
+                numberList.add(gameboard.getNumber(row, col));
             }
         }
 
         for (int i = 1; i <= gameboard.getDimensions(); i++) {
-            int count = Collections.frequency(numbers, i);
+            int count = Collections.frequency(numberList, i);
             getNumbersBoard().updateNumberDisplay(i, count != gameboard.getDimensions());
         }
     }
@@ -774,11 +785,11 @@ public class SudokuGame {
     }
 
     public void sendProgress() {
-        System.out.println("Sending progress");
+        logger.info("Sending progress");
         if (networkOut != null) {
             int progress = calculateProgress();
             playerProgressBar.setValue(progress);
-            System.out.println("Progress: " + progress);
+            logger.info("Progress: {}", progress);
             networkOut.println("PROGRESS " + progress);
         }
     }
@@ -791,7 +802,7 @@ public class SudokuGame {
             moveList.clear();
             wrongMoveList.clear();
             windowManager.setHeart();
-            board.clearUnplacableCells();
+            board.clearUnPlaceableCells();
             board.clearWrongNumbers();
             timer.stop();
             timer.reset();
@@ -827,7 +838,7 @@ public class SudokuGame {
         setInitialBoardColor();
 
         if (!isCustomBoard) {
-            newGameButton.setText("New Game");
+            newGameButton.setText(NEW_GAME);
         }
         updateNumberCount();
     }
@@ -932,9 +943,9 @@ public class SudokuGame {
                     // Preferences object to store and retrieve the username
 
                     if (networkOut != null) {
-                        networkOut.println("COMPLETED " + "Player1");
+                            networkOut.println("Congratulations! You won!");
                     }
-                    if (Config.getEnableTimer() || isNetworkGame) {
+                    if (Config.getEnableTimer() || (isNetworkGame && gameboard.equalsSolvedBoard())) {
                         Preferences pref = Preferences.userNodeForPackage(this.getClass());
                         String storedUsername = pref.get("username", "");
 
@@ -971,7 +982,7 @@ public class SudokuGame {
                 }
             }
 
-            Object[] options = {"New Game", "Close"};
+            Object[] options = {NEW_GAME, "Close"};
             if (isCustomBoard) {
                 options[0] = "Replay";
             }
@@ -1014,7 +1025,7 @@ public class SudokuGame {
     private void displayButtons() {
         restartButton = createButton("Restart", 30);
         solveButton = createButton("Solve", 30);
-        newGameButton = createButton("New Game", 30);
+        newGameButton = createButton(NEW_GAME, 30);
         eraseButton = createButton("Erase", 30);
         undoButton = createButton("Undo", 300);
         hintButton = createButton("Hint", 30);
@@ -1216,11 +1227,10 @@ public class SudokuGame {
         List<Cage> cages = board.getCages();
         for (Cage cage : cages) {
             if (cage.getCells().contains(cell)) {
-                System.out.println(
-                        "printing numbers in cage "
-                                + cage.getId()
-                                + " "
-                                + Arrays.toString(cage.getNumbers()));
+                logger.info(
+                        "printing numbers in cage {} {} "
+                                ,cage.getId()
+                                ,Arrays.toString(cage.getNumbers()));
                 return cage.contains(num);
             }
         }

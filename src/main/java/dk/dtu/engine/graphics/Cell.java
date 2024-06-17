@@ -177,7 +177,7 @@ class Cell implements Serializable {
         return number;
     }
 
-    public void setUnplaceableCell(boolean isUnplacable) {
-        this.isUnplacable = isUnplacable;
+    public void setUnplaceableCell(boolean unPlaceable) {
+        this.isUnplacable = unPlaceable;
     }
 }

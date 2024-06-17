@@ -1,6 +1,7 @@
 package dk.dtu.game.core.solver.algorithmx;
 
 public class Node {
+    
     private Node left;
     private Node right;
     private Node up;

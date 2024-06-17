@@ -1,7 +1,9 @@
 /* (C)2024 */
 package dk.dtu.game.core.solver.algorithmx;
 
-public class ColumnNode extends Node {
+import java.io.Serializable;
+
+public class ColumnNode extends Node implements Serializable {
     private int size;
     private final String name;
 
