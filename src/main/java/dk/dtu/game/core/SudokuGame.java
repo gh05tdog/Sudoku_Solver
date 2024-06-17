@@ -27,6 +27,8 @@ import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import dk.dtu.game.core.solver.heuristicsolver.HeuristicSolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -615,7 +617,7 @@ public class SudokuGame {
     }
 
     // This method is used to initialize the game with a custom imported board
-    public void initializeCustom(int[][] customBoard) {
+    public void initializeCustom(int[][] customBoard) throws Board.BoardNotCreatable {
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -628,7 +630,7 @@ public class SudokuGame {
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
         } else {
-            BruteForceAlgorithm.createSudoku(gameboard);
+            HeuristicSolver.createPlayableSudoku(gameboard);
         }
 
         fillHintList();
@@ -668,7 +670,7 @@ public class SudokuGame {
             int usedLifeLines,
             int[][] cages,
             boolean isKillerSudoku,
-            String notes) {
+            String notes) throws Board.BoardNotCreatable {
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -682,7 +684,7 @@ public class SudokuGame {
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
         } else {
-            BruteForceAlgorithm.createSudoku(gameboard);
+            HeuristicSolver.createPlayableSudoku(gameboard);
         }
 
         if (isKillerSudoku) {
@@ -794,7 +796,7 @@ public class SudokuGame {
         }
     }
 
-    public void newGame() {
+    public void newGame() throws Board.BoardNotCreatable {
 
         if (!isCustomBoard) {
             gameboard.clear();
@@ -811,7 +813,7 @@ public class SudokuGame {
             if (nSize == kSize) {
                 AlgorithmXSolver.createXSudoku(gameboard);
             } else {
-                BruteForceAlgorithm.createSudoku(gameboard);
+                HeuristicSolver.createPlayableSudoku(gameboard);
             }
             fillHintList();
         } else {

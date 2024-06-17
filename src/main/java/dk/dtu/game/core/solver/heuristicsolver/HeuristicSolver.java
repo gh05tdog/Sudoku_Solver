@@ -8,49 +8,24 @@ public class HeuristicSolver {
     static Random random = new Random();
     static int recursionCount;
 
-    public static void main(String[] args) throws Board.BoardNotCreatable {
 
-        testRuntime(2, true);
-        testRuntime(2, false);
-        testRuntime(3, true);
-        testRuntime(3, false);
-        testRuntime(4, true);
-        testRuntime(4, false);
-        testRuntime(5, true);
-        testRuntime(5, false);
-    }
-
-    public static void testRuntime(int n, boolean iterate) throws Board.BoardNotCreatable {
-        System.out.println("Size : " + n);
-        long totalTime = 0L;
-        int runs = 100;
-        for (int i = 0; i < runs; i++) {
-            Long start = System.currentTimeMillis();
-            Board board = new Board(n, n);
-            int[][][] possiblePlacements = createSetFromBoard(board);
-            fillBoard(possiblePlacements, n, n, iterate, new HashSet<>(), new HashMap<>());
-            Long end = System.currentTimeMillis();
-            if (i > 0) {
-                totalTime += end - start;
+    public static void createPlayableSudoku (Board board) throws Board.BoardNotCreatable {
+        int n = board.getN();
+        int k = board.getK();
+        int[][][] possiblePlacements = createSetFromBoard(board, n, k);
+        recursionCount = 0;
+        fillBoard(possiblePlacements, n, k, new HashSet<>(), new HashMap<>());
+        int [][] playableSudoku = new int[n*k][n*k];
+        for (int i = 0; i < n*k; i++) {
+            for (int j = 0; j < n*k; j++) {
+                playableSudoku[i][j] = possiblePlacements[i][j][0];
             }
         }
-        long avgTime = totalTime / (runs - 1);
-        System.out.println("Average time: " + avgTime);
-        System.out.println("Average recursion count: " + recursionCount / (runs - 1));
-        recursionCount = 0;
+        board.setSolvedBoard(playableSudoku);
+        board.setInitialBoard(new int[n*k][n*k]);
     }
 
-    public static void createAndPrintBoard(int n, boolean iterate) throws Board.BoardNotCreatable {
-        Board board = new Board(n, n);
-        int[][][] possiblePlacements = createSetFromBoard(board);
-        recursionCount = 0;
-        fillBoard(possiblePlacements, n, n, iterate, new HashSet<>(), new HashMap<>());
-        printBoard(possiblePlacements);
-    }
-
-    public static int[][][] createSetFromBoard(Board board) {
-        int subGrid = board.getN();
-        int gridSize = board.getGameBoard().length / subGrid;
+    public static int[][][] createSetFromBoard(Board board, int subGrid, int gridSize) {
         int[][] smallBoard = new int[subGrid * gridSize][subGrid * gridSize];
         board.setInitialBoard(smallBoard);
         int boardLength = subGrid * gridSize;
@@ -95,13 +70,12 @@ public class HeuristicSolver {
         }
     }
 
-    private static boolean fillBoard(int[][][] arr, int subgrid, int gridSize, boolean iterate, Set<int[]> conflictSet, Map<String, Integer> conflictMap) {
+    private static boolean fillBoard(int[][][] arr, int subgrid, int gridSize, Set<int[]> conflictSet, Map<String, Integer> conflictMap) {
         recursionCount++;
         int boardLength = subgrid * gridSize;
 
-        if (iterate) {
+
             boolean isChanged = true;
-            long startInitialPlacement = System.currentTimeMillis();
 
             // Initial pass to make obvious placements
             while (isChanged) {
@@ -117,17 +91,12 @@ public class HeuristicSolver {
                     }
                 }
             }
-            long endInitialPlacement = System.currentTimeMillis();
-        }
 
         if (isFullyFilled(arr)) {
             return true;
         }
-
-        long startMRVTime = System.currentTimeMillis();
         // Find the cell with the minimum remaining values (MRV) and highest degree
         int[] mrvCell = findMRVAndHighestDegreeCell(arr, subgrid, gridSize, conflictMap);
-        long endMRVTime = System.currentTimeMillis();
 
         if (mrvCell == null) {
             return false;
@@ -135,11 +104,8 @@ public class HeuristicSolver {
 
         int row = mrvCell[0];
         int col = mrvCell[1];
-
-        long startLCVTime = System.currentTimeMillis();
         List<Integer> possibleValues = getLCV(arr, row, col, subgrid, gridSize);
         Collections.shuffle(possibleValues, random); // Shuffle possible values to introduce randomness
-        long endLCVTime = System.currentTimeMillis();
 
         for (int value : possibleValues) {
             int[][][] arrCopy = copyBoard(arr); // Make a copy of the board
@@ -147,11 +113,9 @@ public class HeuristicSolver {
             removePossiblePlacements(arrCopy, row, col, value, subgrid, gridSize);
 
             // Perform forward checking
-            long startForwardCheckTime = System.currentTimeMillis();
             boolean consistent = isConsistent(arrCopy, subgrid, gridSize);
-            long endForwardCheckTime = System.currentTimeMillis();
 
-            if (consistent && fillBoard(arrCopy, subgrid, gridSize, iterate, conflictSet, conflictMap)) {
+            if (consistent && fillBoard(arrCopy, subgrid, gridSize, conflictSet, conflictMap)) {
                 // If the recursive call returns true, copy the solution back to the original array
                 for (int r = 0; r < arr.length; r++) {
                     for (int c = 0; c < arr[r].length; c++) {
@@ -208,9 +172,9 @@ public class HeuristicSolver {
     }
 
     private static boolean isFullyFilled(int[][][] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < arr[i].length; j++) {
-                if (arr[i][j][0] == 0) {
+        for (int[][] integer : arr) {
+            for (int[] anInt : integer) {
+                if (anInt[0] == 0) {
                     return false;
                 }
             }
@@ -235,33 +199,6 @@ public class HeuristicSolver {
             }
         }
         return count;
-    }
-
-    public static int[] fisherYatesShuffle(int size) {
-        int[] shuffleIndices = new int[size];
-        for (int i = 0; i < size; i++) {
-            shuffleIndices[i] = i;
-        }
-        for (int i = size - 1; i > 0; i--) {
-            int index = random.nextInt(i + 1);
-            int temp = shuffleIndices[index];
-            shuffleIndices[index] = shuffleIndices[i];
-            shuffleIndices[i] = temp;
-        }
-        return shuffleIndices;
-    }
-
-    public static void printBoard(int[][][] arr) {
-        for (int[][] row : arr) {
-            for (int[] cell : row) {
-                if (cell[0] > 9) {
-                    System.out.print("" + cell[0] + " ");
-                } else {
-                    System.out.print(" " + cell[0] + " ");
-                }
-            }
-            System.out.println();
-        }
     }
 
     private static int[] findMRVAndHighestDegreeCell(int[][][] arr, int subgrid, int gridSize, Map<String, Integer> conflictMap) {
