@@ -331,6 +331,7 @@ public class StartMenu {
         logger.info("Used life lines: {}", usedLifeLines);
         int usedLives = usedLifeLines[0];
         Config.setNumberOfLives(usedLifeLines[1]);
+        Config.setEnableLives(lifeEnabled);
         logConfigInfo();
 
         WindowManager windowManager =
