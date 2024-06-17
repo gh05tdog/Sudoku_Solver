@@ -14,13 +14,14 @@ public class HeuristicSolver {
         int n = board.getN();
         int k = board.getK();
         int[][][] possiblePlacements = createSetFromBoard(board, n, k);
-        recursionCount = 0;
         fillBoard(possiblePlacements, n, k, new HashSet<>(), new HashMap<>());
         int [][] playableSudoku = deepCopy3DBoard(possiblePlacements, n, k);
         board.setSolvedBoard(playableSudoku);
 
-        removeNumsFromBoard(possiblePlacements, n, k);
-        board.setInitialBoard(new int[n*k][n*k]);
+        int [][] gameBoard = removeNumsFromBoard(possiblePlacements, n, k);
+
+
+        board.setBoard(gameBoard);
     }
 
     public static int[][][] createSetFromBoard(Board board, int subGrid, int gridSize) {
@@ -314,12 +315,68 @@ public class HeuristicSolver {
     }
 
     public static int[][] removeNumsFromBoard(int[][][] sudokuBoard, int n, int k) {
-        int [] row = fisherYatesShuffle(new int[n*k]);
-        System.out.println(Arrays.toString(row));
-        return sudokuBoard[0];
+        int[] row = new int[n * k];
+        int[] col = new int[n * k];
+        for (int i = 0; i < n * k; i++) {
+            row[i] = i;
+            col[i] = i;
+        }
+        row = fisherYatesShuffle(row);
+        col = fisherYatesShuffle(col);
 
+        int tempVal;
 
+        int numsRemoved = 0;
+        int maxNumRemoved = SolverAlgorithm.setNumsRemoved(new int[n * k][n * k]);
+
+        int i = 0;
+        int j = 0;
+
+        while (numsRemoved < maxNumRemoved && i < n * k) {
+            if (sudokuBoard[row[i]][col[j]][0] != 0) {
+                tempVal = sudokuBoard[row[i]][col[j]][0];
+
+                sudokuBoard[row[i]][col[j]][0] = 0;
+                addPossiblePlacements(sudokuBoard, row[i], col[j], tempVal, n, k);
+
+                List<Integer> tempPossibleValues = getPossibleValues(sudokuBoard[row[i]][col[j]]);
+                Collections.shuffle(tempPossibleValues, random);
+
+                int count = 0;
+
+                for (int val : tempPossibleValues) {
+                    int[][][] copyBoard = copyBoard(sudokuBoard);
+                    copyBoard[row[i]][col[j]][0] = val;
+                    removePossiblePlacements(copyBoard, row[i], col[j], val, n, k);
+                    if (fillBoard(copyBoard, n, k, new HashSet<>(), new HashMap<>())) {
+                        count++;
+                        i = 0;
+                        j = 0;
+                        row = fisherYatesShuffle(row);
+                        col = fisherYatesShuffle(col);
+                    }
+                    if (count > 1) {
+                        break;
+                    }
+                }
+                if (count != 1) {
+                    sudokuBoard[row[i]][col[j]][0] = tempVal;
+                    removePossiblePlacements(sudokuBoard, row[i], col[j], tempVal, n, k);
+                } else {
+                    numsRemoved++;
+                }
+            }
+
+            j++;
+            if (j >= n * k) {
+                j = 0;
+                i++;
+            }
+        }
+        return deepCopy3DBoard(sudokuBoard, n, k);
     }
+
+
 
     public static int[][] deepCopy3DBoard (int [][][] arr, int n, int k) {
         int [][] returnBoard = new int[n*k][n*k];
