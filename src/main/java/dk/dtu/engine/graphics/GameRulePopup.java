@@ -1,10 +1,10 @@
-/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import dk.dtu.engine.utility.JSwitchBox;
 import dk.dtu.engine.utility.NumberDocumentFilter;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.StartMenu;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,18 +15,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 
-/**
- * The GameRulePopup class is responsible for displaying the game rules as a popup.
- * It allows the user to toggle game rules on and off, such as dark mode, timer, lives and easy-mode.
- * It works by adding the JSwitchBoxes and makes the toggle action for those set values in the Config class.
- */
 public class GameRulePopup extends JFrame {
 
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
     private static Color backgroundColor =
-            Config.getDarkMode()
-                    ? darkModebackgroundColor
-                    : Color.WHITE; // Default background color
+            Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE;
     private static final Color lightAccentColor = new Color(237, 224, 186);
     private static Color accentColor = Config.getDarkMode() ? lightAccentColor : Color.BLACK;
     private final StartMenu startMenu;
@@ -37,13 +30,15 @@ public class GameRulePopup extends JFrame {
         super("Game Rules");
         this.startMenu = startMenu;
         if (!GraphicsEnvironment.isHeadless()) {
-            backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE;
             initialize();
         }
     }
 
     private void initialize() {
-        setSize(500, 500); // Increased window size
+        backgroundColor = Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE;
+        accentColor = Config.getDarkMode() ? lightAccentColor : Color.BLACK;
+
+        setSize(500, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -51,29 +46,24 @@ public class GameRulePopup extends JFrame {
         getContentPane().setBackground(backgroundColor);
     }
 
-    // Add a JSwitchBox to the popup
-    public void addJSwitchBox(
-            String description, boolean initialState, Consumer<Boolean> toggleAction) {
+    public void addJSwitchBox(String description, boolean initialState, Consumer<Boolean> toggleAction) {
         if (GraphicsEnvironment.isHeadless()) {
             return;
         }
 
-        // Add GridBag constraints to position the components
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Add label
         JLabel label = new JLabel(description);
-        labels.add(label); // Store the label reference
+        labels.add(label);
         label.setForeground(accentColor);
 
         gbc.gridy = getContentPane().getComponentCount();
         gbc.gridx = 0;
-        gbc.gridwidth = 3; // Span across multiple columns
+        gbc.gridwidth = 3;
         add(label, gbc);
 
-        // Add switch box
         JSwitchBox switchBox =
                 new JSwitchBox(
                         initialState,
@@ -86,11 +76,9 @@ public class GameRulePopup extends JFrame {
                         });
         gbc.gridy = getContentPane().getComponentCount();
         gbc.gridx = 1;
-        gbc.gridwidth = 1; // Reset gridwidth
+        gbc.gridwidth = 1;
 
-        // Check if the description is "Dark Mode"
         if (description.equalsIgnoreCase("Dark Mode")) {
-            // Load sun and moon images
             ImageIcon sunIcon =
                     new ImageIcon(
                             Objects.requireNonNull(getClass().getResource("/sun_symbol.png")));
@@ -98,37 +86,30 @@ public class GameRulePopup extends JFrame {
                     new ImageIcon(
                             Objects.requireNonNull(getClass().getResource("/moon_symbol.png")));
 
-            // Scale the images
             Image sunImage = sunIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
             Image moonImage = moonIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
 
-            // Create new ImageIcon objects
             sunIcon = new ImageIcon(sunImage);
             moonIcon = new ImageIcon(moonImage);
 
-            // Add sun icon to the left
             JLabel sunLabel = new JLabel(sunIcon);
             gbc.gridx = 0;
             add(sunLabel, gbc);
 
-            // Add switch box in the middle
             gbc.gridx = 1;
             add(switchBox, gbc);
 
-            // Add moon icon to the right
             JLabel moonLabel = new JLabel(moonIcon);
             gbc.gridx = 2;
             add(moonLabel, gbc);
         } else {
-            // Add switch box normally if not "Dark Mode"
             gbc.gridx = 1;
             add(switchBox, gbc);
         }
 
-        // If the description is "Enable lives", add a JTextField next to the switch box
         if (description.equalsIgnoreCase("Enable lives")) {
-            gbc.gridx = 2; // Align JTextField properly
-            gbc.insets = new Insets(0, 5, 10, 5); // Adjust spacing for better visual separation
+            gbc.gridx = 2;
+            gbc.insets = new Insets(0, 5, 10, 5);
             JTextField livesField = createLivesField();
             add(livesField, gbc);
         }
@@ -137,18 +118,15 @@ public class GameRulePopup extends JFrame {
         repaint();
     }
 
-    // Create a JTextField for the number of lives
     private JTextField createLivesField() {
         livesField.setBackground(backgroundColor);
         livesField.setText(String.valueOf(Config.getNumberOfLives()));
-        livesField.setPreferredSize(new Dimension(30, 30)); // Make the box a square
+        livesField.setPreferredSize(new Dimension(30, 30));
 
         livesField.setForeground(accentColor);
 
-        // Apply the NumberDocumentFilter to restrict input to one digit only
         ((AbstractDocument) livesField.getDocument()).setDocumentFilter(new NumberDocumentFilter());
 
-        // Add a DocumentListener to update the number of lives in the Config
         livesField
                 .getDocument()
                 .addDocumentListener(

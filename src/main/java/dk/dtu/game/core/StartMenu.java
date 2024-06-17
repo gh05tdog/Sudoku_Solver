@@ -9,6 +9,7 @@ import dk.dtu.engine.utility.*;
 import dk.dtu.engine.utility.Leaderboard;
 import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -29,6 +30,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.AbstractDocument;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,8 +72,8 @@ public class StartMenu {
     private static Color AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
     private static Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
     private final JComboBox<String> difficultyDropdown =
-            new JComboBox<>(new String[] {"Easy", "Medium", "Hard", "Extreme"});
-    GameRulePopup gameRules = new GameRulePopup(this);
+            new JComboBox<>(new String[]{"Easy", "Medium", "Hard", "Extreme"});
+    GameRulePopup gameRules;
 
     private final JButton loadGameButton = new JButton("Load Game");
 
@@ -80,7 +82,13 @@ public class StartMenu {
         backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
         AccentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
         startMenuWindowManager.display();
+
+        if (!GraphicsEnvironment.isHeadless()) {
+            gameRules = new GameRulePopup(this);
+            initializeGamerulePopup();
+        }
     }
+
 
     public void startGame() throws Board.BoardNotCreatable {
         logConfigInfo();
@@ -120,7 +128,7 @@ public class StartMenu {
         addLeaderboardButton();
         updateCustomBoardPanel(2, 2);
         addNetworkGameButtons();
-        initializeGamerulePopup();
+        //initializeGamerulePopup();
         addLoadGameButton();
 
         threeByThree.updateBackgroundColor(Color.GRAY);
@@ -349,10 +357,10 @@ public class StartMenu {
 
         // Start the server in a separate thread
         new Thread(
-                        () -> {
-                            GameServer server = new GameServer();
-                            server.start();
-                        })
+                () -> {
+                    GameServer server = new GameServer();
+                    server.start();
+                })
                 .start();
 
         // Allow some time for the server to start before connecting the client
@@ -388,17 +396,17 @@ public class StartMenu {
 
     private void connectClient(String serverAddress) {
         new Thread(
-                        () -> {
-                            WindowManager windowManager =
-                                    new WindowManager(
-                                            startMenuWindowManager.getFrame(), 1000, 1000);
-                            GameClient client = new GameClient(serverAddress, windowManager);
-                            try {
-                                client.start();
-                            } catch (IOException | Board.BoardNotCreatable ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        })
+                () -> {
+                    WindowManager windowManager =
+                            new WindowManager(
+                                    startMenuWindowManager.getFrame(), 1000, 1000);
+                    GameClient client = new GameClient(serverAddress, windowManager);
+                    try {
+                        client.start();
+                    } catch (IOException | Board.BoardNotCreatable ex) {
+                        throw new RuntimeException(ex);
+                    }
+                })
                 .start();
     }
 
@@ -425,13 +433,13 @@ public class StartMenu {
         List<String[]> rowData = new ArrayList<>();
         for (LeaderboardEntry entry : leaderboard) {
             rowData.add(
-                    new String[] {
-                        entry.username(),
-                        entry.difficulty(),
-                        String.format(
-                                "%02d:%02d:%02d",
-                                entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
-                        entry.timestamp()
+                    new String[]{
+                            entry.username(),
+                            entry.difficulty(),
+                            String.format(
+                                    "%02d:%02d:%02d",
+                                    entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
+                            entry.timestamp()
                     });
         }
 
@@ -502,7 +510,7 @@ public class StartMenu {
                                         Config.setN(n);
                                         Config.setK(k);
                                         updateCustomBoardPanel(n, k);
-                                        boardConfigs[3] = new int[] {n, k};
+                                        boardConfigs[3] = new int[]{n, k};
                                     }
                                 } catch (NumberFormatException ex) {
                                     // Handle the case where one of the fields is empty or does not
@@ -555,7 +563,9 @@ public class StartMenu {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
                         startButton.setBackground(Color.GRAY);
                         try {
-                            gameRules.setVisible(false);
+                            if (!GraphicsEnvironment.isHeadless()) {
+                                gameRules.setVisible(false);
+                            }
                             startGame();
                         } catch (Board.BoardNotCreatable ex) {
                             logger.error("This board-type is not creatable: {}", ex.getMessage());
