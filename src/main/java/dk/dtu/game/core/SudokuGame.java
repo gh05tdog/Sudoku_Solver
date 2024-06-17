@@ -927,7 +927,7 @@ public class SudokuGame {
 
             // Visualize the hint
             board.visualizeCell(row, col, Color.blue);
-
+            updateNumberCount();
             checkCompletionAndOfferNewGame();
 
         } else {
