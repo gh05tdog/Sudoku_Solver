@@ -1,5 +1,6 @@
 package dk.dtu.game.core.solver.algorithmx;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RecursiveTask;
@@ -24,7 +25,7 @@ public class AlgorithmXTask extends RecursiveTask<Boolean> {
         ColumnNode c = AlgorithmXSolver.chooseHeuristicColumn(header);
         c.cover();
 
-        boolean result = false;
+        boolean result;
 
         for (Node r = c.getDown(); r != c; r = r.getDown()) {
             AlgorithmXSolver.selectRow(r);

@@ -27,7 +27,7 @@ class GameClientTest {
         serverSocket = new ServerSocket(12345);
 
         // Create a client that will connect to the local server
-        client = new GameClient("localhost", windowManager);
+        client = new GameClient( windowManager);
     }
 
     @AfterEach
@@ -47,7 +47,7 @@ class GameClientTest {
                 new Thread(
                         () -> {
                             try {
-                                client.start();
+                                client.start("localhost");
                             } catch (IOException | Board.BoardNotCreatable e) {
                                 e.printStackTrace();
                             }

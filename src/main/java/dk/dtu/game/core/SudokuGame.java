@@ -49,11 +49,13 @@ public class SudokuGame {
     private final JButton saveGameButton;
     int gridSize;
     int cellSize;
+    private int placeableNumber = 0;
+    private int nextCageId = 1;
+    private static final Random rand = new Random();
+
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
     Random random = new SecureRandom();
-    private int placeableNumber = 0;
-    private int nextCageId = 1;
     private SudokuBoardCanvas board;
     private NumberHub numbers;
     private TimerFunction timer;
@@ -80,6 +82,8 @@ public class SudokuGame {
     private final Random rand = new Random();
     private static final String NEW_GAME = "new game";
     private static final String SAVE_GAME = "save game";
+
+    private static final String NEW_GAME = "New game";
 
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
@@ -205,11 +209,17 @@ public class SudokuGame {
         logger.info("Received message: {}",message);
 
         switch (command) {
+            default :
+                int progress = Integer.parseInt(parts[1]);
+                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress));
+                break;
+
             case "WINNER":
                 timer.stop();
                 String winner = parts[1];
                 SwingUtilities.invokeLater(() -> announceWinner(winner));
                 break;
+
             case "COMPLETED":
                 timer.stop();
                 String playerName = parts[1];
@@ -219,8 +229,8 @@ public class SudokuGame {
                                         null, playerName + " has completed the Sudoku!"));
                 break;
             case "PROGRESS":
-                int progress = Integer.parseInt(parts[1]);
-                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress));
+                int progress1 = Integer.parseInt(parts[1]);
+                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress1));
                 break;
             default:
                 logger.error("Unknown command: {}", command);
@@ -232,6 +242,7 @@ public class SudokuGame {
         if (progress != calculateProgress()) {
             opponentProgressBar.setValue(progress);
         }
+
     }
 
     private void announceWinner(String winner) {
@@ -327,15 +338,15 @@ public class SudokuGame {
         // Loop through the board and add all the numbers to a list,
         // then check if each number is equal to the max needed number,
         // if it is, then update the number display
-        List<Integer> arrayList = new ArrayList<>();
+        List<Integer> numberList = new ArrayList<>();
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
-                arrayList.add(gameboard.getNumber(row, col));
+                numberList.add(gameboard.getNumber(row, col));
             }
         }
 
         for (int i = 1; i <= gameboard.getDimensions(); i++) {
-            int count = Collections.frequency(arrayList, i);
+            int count = Collections.frequency(numberList, i);
             getNumbersBoard().updateNumberDisplay(i, count != gameboard.getDimensions());
         }
     }

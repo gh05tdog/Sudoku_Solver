@@ -3,6 +3,9 @@ package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -18,6 +21,7 @@ import org.slf4j.LoggerFactory;
  * It keeps track visually of the hearts when lives are enabled and makes sure one can add components to panels from the sudoku game.
  */
 public class WindowManager {
+    private static final Logger logger = LoggerFactory.getLogger(WindowManager.class);
     private final JFrame frame;
     private final JPanel mainPanel =
             new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
@@ -32,6 +36,9 @@ public class WindowManager {
     JPanel combinedPanel = new JPanel();
     private boolean[] heartStates; // true if the heart is full, false if empty
     private static final Logger logger = LoggerFactory.getLogger(WindowManager.class);
+
+
+    private static final String STR_NOT_FOUND_MSG = "Image not found, check path";
 
 
     private static Color backgroundColor =
@@ -93,8 +100,8 @@ public class WindowManager {
             gbc.anchor = GridBagConstraints.NORTHWEST;
             gbc.insets = new Insets(10, 70, 10, 10);
             whitePanel.add(heartsPanel, gbc);
-        } catch (NullPointerException err) {
-            logger.error("Error while adding heart labels: {}", err.getMessage());
+        } catch (NullPointerException ignored) {
+            logMessageNotFound(); // Debug message
         }
     }
 
@@ -109,8 +116,10 @@ public class WindowManager {
                         emptyHeartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                 emptyHeartIcon = new ImageIcon(scaledEmptyHeartImage);
             }
-        } catch (IOException | NullPointerException e) {
-           logger.error("Image not found, check the path.");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        } catch (NullPointerException e) {
+            logMessageNotFound(); // Debug message
         }
 
         // Find the last "full" heart label and update its icon directly
@@ -146,8 +155,10 @@ public class WindowManager {
                 heartIcon = new ImageIcon(scaledHeartImage);
             }
 
-        } catch (IOException | NullPointerException e) {
-            logger.error("Image not found, ensure the path is correct.");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        } catch (NullPointerException e) {
+            logMessageNotFound(); // Debug message
         }
 
         for (int i = 0; i < heartsPanel.getComponentCount(); i++) {
@@ -199,7 +210,7 @@ public class WindowManager {
             Component numberHub,
             JButton goBackButton,
             JButton saveGameButton) {
-        JPanel panel =
+        JPanel combinationPanel =
                 setupNumberAndTimerPanel(timer, numberHub, goBackButton, saveGameButton);
 
         // Layout the combined panel with the number hub, timer, and go back button
@@ -209,7 +220,7 @@ public class WindowManager {
         gbcPanel.fill = GridBagConstraints.NORTH; // Align to the top of the space
         gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
 
-        mainPanel.add(panel, gbcPanel);
+        mainPanel.add(combinationPanel, gbcPanel);
 
         frame.setVisible(true);
     }
@@ -328,6 +339,11 @@ public class WindowManager {
         whitePanel.revalidate();
         whitePanel.repaint();
     }
+
+    public static void logMessageNotFound () {
+        logger.info(STR_NOT_FOUND_MSG);
+    }
+
 
     public void setHearts(int usedLifeLines) {
         for (int i = 1; i <= usedLifeLines; i++) {

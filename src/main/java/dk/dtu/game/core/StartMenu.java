@@ -14,6 +14,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StartMenu {
 
+    private static final String ERROR = "Error";
     private static final Logger logger = LoggerFactory.getLogger(StartMenu.class);
     private static final String FONT = "SansSerif";
     private final StartMenuWindowManager startMenuWindowManager;
@@ -357,62 +360,114 @@ public class StartMenu {
     }
 
     private void onCreateGame(ActionEvent e) {
-        createGameButton.setEnabled(false);
+        Config.setDifficulty("Easy");
         joinGameButton.setEnabled(false);
+        createGameButton.setEnabled(false);
 
-        // Start the server in a separate thread
-        new Thread(
-                () -> {
+        // Start the server in a new thread
+        new Thread(() -> {
+
                     GameServer server = new GameServer();
                     server.start();
-                })
-                .start();
+                }).start();
 
-        // Allow some time for the server to start before connecting the client
-        Timer time = new Timer(1000, event -> connectClient("localhost"));
-        time.setRepeats(false);
-        time.start();
-    }
+        try {
+            // Get the local IP address of the server
+            String localIpAddress = InetAddress.getLocalHost().getHostAddress();
+            logger.info("Server started on IP: {}", localIpAddress);
 
-    private void onJoinGame(ActionEvent e) {
-        joinGameButton.setEnabled(false);
-        createGameButton.setEnabled(false);
-        String serverAddress = JOptionPane.showInputDialog("Enter server address:");
-        if (serverAddress != null && !serverAddress.isEmpty()) {
-            // Test the connection
-            GameClient client = new GameClient(serverAddress, null);
-            if (client.testGameConnection()) {
-                connectClient(serverAddress);
-            } else {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Failed to connect to the server. Please check the server address and try"
-                                + " again.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                joinGameButton.setEnabled(true);
-                createGameButton.setEnabled(true);
-            }
-        } else {
+            // Connect the client to the newly started server
+            connectClient(localIpAddress);
+
+        } catch (UnknownHostException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Failed to determine the server's IP address.",
+                    ERROR,
+                    JOptionPane.ERROR_MESSAGE);
             joinGameButton.setEnabled(true);
             createGameButton.setEnabled(true);
         }
     }
 
+    private void onJoinGame(ActionEvent e) {
+        joinGameButton.setEnabled(false);
+        createGameButton.setEnabled(false);
+
+        // Prompt user for an IP address
+        String serverAddress = JOptionPane.showInputDialog(
+                null,
+                "Enter server IP address (leave empty to search):",
+                "Join Game",
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+
+        // Create a GameClient to discover servers
+        GameClient client = new GameClient(new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000));
+
+        if (serverAddress.isEmpty()) {
+            client.discoverServers();
+
+            List<String> discoveredServers = client.getDiscoveredServers();
+
+            boolean connected = false;
+            for (String address : discoveredServers) {
+                logger.info("Attempting to connect to server at IP: {}", address);
+                if (client.testGameConnection(address)) {
+                    logger.info("Connected to server at IP: {}", address);
+                    connectClient(address);
+                    connected = true;
+                    break;
+                }
+            }
+            if (!connected) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Failed to connect to any server. Please check the server addresses and try again.",
+                        ERROR,
+                        JOptionPane.ERROR_MESSAGE);
+
+                joinGameButton.setEnabled(true);
+                createGameButton.setEnabled(true);
+            }
+        }
+        else {
+            logger.info("Attempting to directly to IP: {}", serverAddress);
+            if (client.testGameConnection(serverAddress)) {
+                logger.info("Connected to server at IP: {}", serverAddress);
+                connectClient(serverAddress);
+            }
+        }
+
+    }
+
     private void connectClient(String serverAddress) {
-        new Thread(
-                        () -> {
-                            WindowManager windowManager =
-                                    new WindowManager(
-                                            startMenuWindowManager.getFrame(), 1000, 1000);
-                            GameClient client = new GameClient(serverAddress, windowManager);
-                            try {
-                                client.start();
-                            } catch (IOException | Board.BoardNotCreatable ex) {
-                                logger.error("Failed to start the game client: {}", ex.getMessage());
+        new Thread(() -> {
+            WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
+            GameClient client = new GameClient(windowManager);
+            try {
+                client.start(serverAddress);
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
+                        null,
+                        "Connected to server at " + serverAddress,
+                        "Connected",
+                        JOptionPane.INFORMATION_MESSAGE));
+            } catch (IOException | Board.BoardNotCreatable ex) {
+                ex.printStackTrace();
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Failed to start the game with the server.",
+                            ERROR,
+                            JOptionPane.ERROR_MESSAGE);
+                    joinGameButton.setEnabled(true);
+                    createGameButton.setEnabled(true);
+                });
                             }
-                        })
-                .start();
+            })
+        .start();
     }
 
     private void addLeaderboardButton() {
@@ -630,7 +685,7 @@ public class StartMenu {
                 JOptionPane.showMessageDialog(
                         null,
                         "Failed to load the Sudoku file: " + ex.getMessage(),
-                        "Error",
+                        ERROR,
                         JOptionPane.ERROR_MESSAGE);
             }
         }
