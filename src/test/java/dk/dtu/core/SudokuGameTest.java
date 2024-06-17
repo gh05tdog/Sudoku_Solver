@@ -2,6 +2,7 @@ package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
@@ -22,10 +23,6 @@ import org.junit.jupiter.api.Test;
 
 class SudokuGameTest {
 
-    static {
-        System.setProperty("java.awt.headless", "true");
-    }
-
     private SudokuGame game;
     private CustomComponentGroup componentGroup;
     private CustomBoardPanel panel2;
@@ -35,16 +32,18 @@ class SudokuGameTest {
     void setUp() throws Exception {
         JFrame mockedFrame = mock(JFrame.class);
 
-        StartMenuWindowManager startMenuWindowManager =
-                new StartMenuWindowManager(mockedFrame, 1000, 700);
-        StartMenu startMenu = new StartMenu(startMenuWindowManager);
-        startMenu.initialize();
-        startMenu.getStartButton().doClick();
-        WindowManager windowManager =
-                new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
+        StartMenuWindowManager startMenuWindowManager = mock(StartMenuWindowManager.class);
+        when(startMenuWindowManager.getFrame()).thenReturn(mockedFrame);
+
+        StartMenu startMenu = mock(StartMenu.class);
+        when(startMenu.getStartButton()).thenReturn(new JToggleButton());
+
+        WindowManager windowManager = new WindowManager(mockedFrame, 800, 800);
+
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         game.initialize(3, 3, 550 / 9);
         windowManager.setHeart();
+
         componentGroup = new CustomComponentGroup();
 
         // Create mock panels
