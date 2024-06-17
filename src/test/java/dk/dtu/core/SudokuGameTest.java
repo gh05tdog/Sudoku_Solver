@@ -3,7 +3,6 @@ package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
@@ -32,33 +31,35 @@ class SudokuGameTest {
     @BeforeEach
     void setUp() throws Exception {
         JFrame mockedFrame = mock(JFrame.class);
-        StartMenuWindowManager startMenuWindowManager = mock(StartMenuWindowManager.class);
-        when(startMenuWindowManager.getFrame()).thenReturn(mockedFrame);
 
-        StartMenu startMenu = mock(StartMenu.class);
-        when(startMenu.getStartButton()).thenReturn(new JToggleButton());
-
-        WindowManager windowManager = mock(WindowManager.class);
+        StartMenuWindowManager startMenuWindowManager =
+                new StartMenuWindowManager(mockedFrame, 1000, 700);
+        StartMenu startMenu = new StartMenu(startMenuWindowManager);
+        startMenu.initialize();
+        startMenu.getStartButton().doClick();
+        WindowManager windowManager =
+                new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
-
+        game.initialize(3, 3, 550 / 9);
+        windowManager.setHeart();
         componentGroup = new CustomComponentGroup();
 
-        CustomBoardPanel panel1 = mock(CustomBoardPanel.class);
-        panel2 = mock(CustomBoardPanel.class);
-        CustomBoardPanel panel3 = mock(CustomBoardPanel.class);
+        // Create mock panels
+        CustomBoardPanel panel1 = new CustomBoardPanel();
+        panel2 = new CustomBoardPanel();
+        CustomBoardPanel panel3 = new CustomBoardPanel();
 
+        // Add panels to the group
         componentGroup.addComponent(panel1);
         componentGroup.addComponent(panel2);
         componentGroup.addComponent(panel3);
 
-        sudokuBoardCanvasBoard = mock(SudokuBoardCanvas.class);
-        when(game.getBoard()).thenReturn(sudokuBoardCanvasBoard);
+        sudokuBoardCanvasBoard = game.getBoard();
 
         System.setProperty("testMode", "true");
         game.clearBoard();
         Config.setEnableLives(true);
     }
-
 
     @Test
     @DisplayName("Test if the game is initialized correctly")
@@ -177,6 +178,7 @@ class SudokuGameTest {
         assertTrue(game.wrongMoveList.isEmpty());
         assertEquals(game.getHintList().size(), hintListSize);
     }
+
 
 
     @Test

@@ -3,7 +3,6 @@ package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.utility.CustomBoardPanel;
@@ -24,18 +23,11 @@ class StartMenuTest {
 
     @BeforeEach
     void setUp() {
+        System.setProperty("java.awt.headless", "true");
         JFrame mockedFrame = mock(JFrame.class);
-        StartMenuWindowManager startMenuWindowManager = mock(StartMenuWindowManager.class);
-        when(startMenuWindowManager.getFrame()).thenReturn(mockedFrame);
-
+        StartMenuWindowManager startMenuWindowManager =
+                new StartMenuWindowManager(mockedFrame, 800, 600);
         startMenu = new StartMenu(startMenuWindowManager);
-
-        JButton startButton = mock(JButton.class);
-        when(startMenu.getStartButton()).thenReturn(new JToggleButton());
-
-        JComboBox<String> difficultyDropdown = mock(JComboBox.class);
-        when(startMenu.getDifficultyDropdown()).thenReturn(difficultyDropdown);
-
         startMenu.initialize();
     }
 
