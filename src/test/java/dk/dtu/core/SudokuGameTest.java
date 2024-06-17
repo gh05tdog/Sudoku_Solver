@@ -3,6 +3,7 @@ package dk.dtu.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
@@ -30,30 +31,28 @@ class SudokuGameTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // Mocking JFrame and other GUI components
         JFrame mockedFrame = mock(JFrame.class);
-        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(mockedFrame, 1000, 700);
-        StartMenu startMenu = new StartMenu(startMenuWindowManager);
-        startMenu.initialize();
-        startMenu.getStartButton().doClick();
+        StartMenuWindowManager startMenuWindowManager = mock(StartMenuWindowManager.class);
+        when(startMenuWindowManager.getFrame()).thenReturn(mockedFrame);
 
-        WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
+        StartMenu startMenu = mock(StartMenu.class);
+        when(startMenu.getStartButton()).thenReturn(new JToggleButton());
+
+        WindowManager windowManager = mock(WindowManager.class);
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
-        game.initialize(3, 3, 550 / 9);
-        windowManager.setHeart();
+
         componentGroup = new CustomComponentGroup();
 
-        // Create mock panels
         CustomBoardPanel panel1 = mock(CustomBoardPanel.class);
         panel2 = mock(CustomBoardPanel.class);
         CustomBoardPanel panel3 = mock(CustomBoardPanel.class);
 
-        // Add panels to the group
         componentGroup.addComponent(panel1);
         componentGroup.addComponent(panel2);
         componentGroup.addComponent(panel3);
 
-        sudokuBoardCanvasBoard = game.getBoard();
+        sudokuBoardCanvasBoard = mock(SudokuBoardCanvas.class);
+        when(game.getBoard()).thenReturn(sudokuBoardCanvasBoard);
 
         System.setProperty("testMode", "true");
         game.clearBoard();
