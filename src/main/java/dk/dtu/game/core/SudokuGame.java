@@ -82,6 +82,8 @@ public class SudokuGame {
     private static final String NEW_GAME = "new game";
     private static final String SAVE_GAME = "save game";
 
+    private Boolean usedSolveButton = false;
+
     public SudokuGame(WindowManager windowManager, int n, int k, int cellSize)
             throws Board.BoardNotCreatable {
         this.windowManager = windowManager;
@@ -206,10 +208,7 @@ public class SudokuGame {
         logger.info("Received message: {}",message);
 
         switch (command) {
-            default :
-                int progress = Integer.parseInt(parts[1]);
-                SwingUtilities.invokeLater(() -> updateOpponentProgress(progress));
-                break;
+
 
             case "WINNER":
                 timer.stop();
@@ -229,6 +228,9 @@ public class SudokuGame {
                 int progress1 = Integer.parseInt(parts[1]);
                 SwingUtilities.invokeLater(() -> updateOpponentProgress(progress1));
                 break;
+
+            default :
+                logger.error("Unknown command: {}", command);
         }
     }
 
@@ -938,11 +940,17 @@ public class SudokuGame {
     // losing all lives or completing the sudoku.
 
     public void checkCompletionAndOfferNewGame() {
-        if (isGameOver()) {
-            handleGameOver();
-        } else if (isSudokuCompleted() && !testMode()) {
-            handleGameCompletion();
+        if(Boolean.FALSE.equals(usedSolveButton)) {
+            if (isGameOver()) {
+                handleGameOver();
+            } else if (isSudokuCompleted() && !testMode()) {
+                handleGameCompletion();
+            }
+        }else{
+            //Make a pop-up to tell the user that they have used the solve button
+            JOptionPane.showMessageDialog(null, "You have used the solve button, you will not be able to enter the leaderboard");
         }
+        usedSolveButton = false;
     }
 
     private void handleGameOver() {
@@ -1054,6 +1062,7 @@ public class SudokuGame {
 
         solveButton.addActionListener(
                 e -> {
+                    usedSolveButton = true;
                     board.clearNotes();
                     timer.stop();
                     if (nSize == kSize) {
