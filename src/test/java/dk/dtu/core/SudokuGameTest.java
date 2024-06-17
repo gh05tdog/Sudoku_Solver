@@ -30,24 +30,23 @@ class SudokuGameTest {
 
     @BeforeEach
     void setUp() throws Exception {
+        // Mocking JFrame and other GUI components
         JFrame mockedFrame = mock(JFrame.class);
-
-        StartMenuWindowManager startMenuWindowManager =
-                new StartMenuWindowManager(mockedFrame, 1000, 700);
+        StartMenuWindowManager startMenuWindowManager = new StartMenuWindowManager(mockedFrame, 1000, 700);
         StartMenu startMenu = new StartMenu(startMenuWindowManager);
         startMenu.initialize();
         startMenu.getStartButton().doClick();
-        WindowManager windowManager =
-                new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
+
+        WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 800, 800);
         game = new SudokuGame(windowManager, 3, 3, 550 / 9);
         game.initialize(3, 3, 550 / 9);
         windowManager.setHeart();
         componentGroup = new CustomComponentGroup();
 
         // Create mock panels
-        CustomBoardPanel panel1 = new CustomBoardPanel();
-        panel2 = new CustomBoardPanel();
-        CustomBoardPanel panel3 = new CustomBoardPanel();
+        CustomBoardPanel panel1 = mock(CustomBoardPanel.class);
+        panel2 = mock(CustomBoardPanel.class);
+        CustomBoardPanel panel3 = mock(CustomBoardPanel.class);
 
         // Add panels to the group
         componentGroup.addComponent(panel1);
@@ -60,6 +59,7 @@ class SudokuGameTest {
         game.clearBoard();
         Config.setEnableLives(true);
     }
+
 
     @Test
     @DisplayName("Test if the game is initialized correctly")

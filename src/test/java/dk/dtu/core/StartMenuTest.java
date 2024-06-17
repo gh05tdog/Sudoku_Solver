@@ -23,6 +23,7 @@ class StartMenuTest {
 
     @BeforeEach
     void setUp() {
+        System.setProperty("java.awt.headless", "true");
         JFrame mockedFrame = mock(JFrame.class);
         StartMenuWindowManager startMenuWindowManager =
                 new StartMenuWindowManager(mockedFrame, 800, 600);
