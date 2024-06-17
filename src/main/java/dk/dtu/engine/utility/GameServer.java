@@ -1,4 +1,3 @@
-/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import dk.dtu.game.core.Board;
@@ -7,35 +6,60 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+
 public class GameServer {
     private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
     private static final int PORT = 12345;
     private final ExecutorService threadPool = Executors.newFixedThreadPool(4);
-    public final ConcurrentHashMap<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>();
+    public final ConcurrentMap<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>();
     private final Object lock = new Object();
     private int connectedPlayers = 0;
     public ServerSocket serverSocket;
     private boolean running = true;
+    public static String LOCAL_IP_ADDRESS;
+    JDialog serverDialog;
+
+    static {
+        try {
+            LOCAL_IP_ADDRESS = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void start() {
         startServerSocket();
+        startSSDPServer();
+        SwingUtilities.invokeLater(this::showServerDialog); // Ensure dialog is created on EDT
         acceptClients();
     }
 
     protected void startServerSocket() {
         try {
             serverSocket = new ServerSocket(PORT);
-            System.out.println("Server started on port " + serverSocket.getLocalPort());
+            logger.info("Server started on port {}", serverSocket.getLocalPort());
         } catch (IOException e) {
-            System.out.println("Error starting server: " + e.getMessage());
+            logger.error("Error starting server: {}", e.getMessage());
+        }
+    }
+
+    private void startSSDPServer() {
+        try {
+            String localIp = getLocalIpAddress();
+            SSDPServer ssdpServer = new SSDPServer(localIp, PORT);
+            ssdpServer.start();
+        } catch (IOException e) {
+            logger.error("Error starting SSDP server: {}", e.getMessage());
         }
     }
 
@@ -46,10 +70,9 @@ public class GameServer {
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
                 clientWriters.put(clientSocket, writer);
                 threadPool.execute(new ClientHandler(clientSocket));
+
             } catch (IOException e) {
-                if (running) {
-                    logger.error("Error accepting client: {}", e.getMessage());
-                }
+                logger.error("Error accepting client: {}", e.getMessage());
             }
         }
     }
@@ -71,6 +94,12 @@ public class GameServer {
     }
 
     public void sendInitialBoard() throws Board.BoardNotCreatable {
+
+        if (serverDialog != null) {  // Close the dialog when a client connects
+            serverDialog.dispose();
+            serverDialog = null;
+        }
+
         StringBuilder boardString = new StringBuilder("INITIAL_BOARD ");
 
         Board board = new Board(3, 3);
@@ -104,8 +133,7 @@ public class GameServer {
 
         @Override
         public void run() {
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
                 String message;
                 while ((message = in.readLine()) != null) {
                     processMessage(message);
@@ -119,7 +147,7 @@ public class GameServer {
                         clientWriters.remove(clientSocket);
                     }
                 } catch (IOException e) {
-                    logger.error("Error closing client socket: {}", e.getMessage());
+                    closingSocketErr(e);
                 }
             }
         }
@@ -148,8 +176,10 @@ public class GameServer {
                     String playerName = parts[1];
                     announceWinner(playerName);
                 }
+                case "PROGRESS" -> broadcastMessage(message); // Forward the progress message to all clients
             }
         }
+
         private void handleClientDisconnection() {
             try {
                 clientSocket.close();
@@ -158,7 +188,7 @@ public class GameServer {
                     connectedPlayers--;
                 }
             } catch (IOException e) {
-                logger.error("Error closing client socket: {}", e.getMessage());
+                closingSocketErr(e);
             }
         }
 
@@ -166,5 +196,38 @@ public class GameServer {
             broadcastMessage("WINNER " + winner);
             broadcastMessage("COMPLETED " + winner);
         }
+    }
+
+    private String getLocalIpAddress() throws SocketException {
+        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+        while (interfaces.hasMoreElements()) {
+            NetworkInterface networkInterface = interfaces.nextElement();
+            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress address = addresses.nextElement();
+                if (!address.isLoopbackAddress() && address instanceof Inet4Address) {
+                    return address.getHostAddress();
+                }
+            }
+        }
+        throw new SocketException("No non-loopback IPv4 address found.");
+    }
+
+
+    public static void closingSocketErr(IOException e) {
+        logger.error("Error closing client socket: {}", e.getMessage());
+    }
+
+    private void showServerDialog() {
+        serverDialog = new JDialog();
+        serverDialog.setTitle("Server Started");
+        serverDialog.setModal(true);
+        serverDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        JLabel messageLabel = new JLabel("Server started on IP: " + LOCAL_IP_ADDRESS + ". Waiting for clients to join.");
+        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        serverDialog.add(messageLabel);
+        serverDialog.setSize(500, 150);
+        serverDialog.setLocationRelativeTo(null);
+        serverDialog.setVisible(true);
     }
 }

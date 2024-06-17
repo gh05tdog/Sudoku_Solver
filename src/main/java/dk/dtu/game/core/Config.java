@@ -3,11 +3,18 @@ package dk.dtu.game.core;
 
 import java.util.prefs.Preferences;
 
+/**
+ * The Config class is a utility class that stores the configuration of the game.
+ * It contains information about the board size, cell size, and difficulty. Along with the gamerules.
+ * It uses preferences to store values even when closing the game
+ */
 public class Config {
     private static int k;
     private static int n;
     private static int cellSize;
     private static String difficulty;
+
+    private static boolean darkMode = true;
 
     private Config() {
         throw new IllegalStateException("Utility class");
@@ -45,6 +52,16 @@ public class Config {
         Config.difficulty = difficulty;
     }
 
+    public static void setDarkMode(boolean darkMode) {
+        Preferences pref = Preferences.userRoot();
+        pref.putBoolean("darkMode", darkMode);
+    }
+
+    public static boolean getDarkMode() {
+        Preferences pref = Preferences.userRoot();
+        String darkMode = pref.get("darkMode", String.valueOf(true));
+        return Boolean.parseBoolean(darkMode);
+    }
 
     // Game rules:
     public static void setEnableLives(boolean enableLives) {
@@ -93,5 +110,16 @@ public class Config {
         Preferences pref = Preferences.userRoot();
         String numberOfLives = pref.get("numberOfLives", String.valueOf(3));
         return Integer.parseInt(numberOfLives);
+    }
+
+    public static void setEnableKillerSudoku(boolean enableKillerSudoku) {
+        Preferences pref = Preferences.userRoot();
+        pref.put("enableKillerSudoku", String.valueOf(enableKillerSudoku));
+    }
+
+    public static boolean getEnableKillerSudoku() {
+        Preferences pref = Preferences.userRoot();
+        String enableKillerSudoku = pref.get("enableKillerSudoku", String.valueOf(true));
+        return Boolean.parseBoolean(enableKillerSudoku);
     }
 }

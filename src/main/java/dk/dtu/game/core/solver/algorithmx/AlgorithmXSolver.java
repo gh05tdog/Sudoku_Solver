@@ -27,7 +27,7 @@ public class AlgorithmXSolver {
     }
 
     public static int[][] solveExistingBoard(Board board) {
-        int[][] arr = board.getGameBoard();
+        int[][] arr = board.getInitialBoard();
         arraySize = arr.length;
         List<Placement> placements = new ArrayList<>();
         List<int[]> xBoard = createExactCoverFromBoard(arr, placements);

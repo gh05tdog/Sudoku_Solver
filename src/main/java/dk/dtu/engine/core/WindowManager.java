@@ -3,6 +3,9 @@ package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -10,7 +13,13 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+/**
+ * The WindowManager class is responsible for managing the game window.
+ * It sets up the window and adds components to it.
+ * It keeps track visually of the hearts when lives are enabled and makes sure one can add components to panels from the sudoku game.
+ */
 public class WindowManager {
+    private static final Logger logger = LoggerFactory.getLogger(WindowManager.class);
     private final JFrame frame;
     private final JPanel mainPanel =
             new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
@@ -18,10 +27,18 @@ public class WindowManager {
     private final JPanel whitePanel =
             new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
     JPanel heartsPanel = new JPanel();
-    BufferedImage emptyHeartImage = null;
-    ImageIcon emptyHeartIcon = null;
-    BufferedImage heartImage = null;
-    ImageIcon heartIcon = null;
+    BufferedImage emptyHeartImage;
+    ImageIcon emptyHeartIcon;
+    BufferedImage heartImage;
+    ImageIcon heartIcon;
+    JPanel combinedPanel = new JPanel();
+    private boolean[] heartStates; // true if the heart is full, false if empty
+
+    private static final String STR_NOT_FOUND_MSG = "Image not found, check path";
+
+
+    private static Color backgroundColor =
+            Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
 
     public WindowManager(JFrame frame, int width, int height) {
         this.frame = frame;
@@ -31,18 +48,18 @@ public class WindowManager {
         whitePanel.setOpaque(true);
         buttonPanel.setOpaque(true);
         mainPanel.setOpaque(true);
-        whitePanel.setBackground(Color.WHITE);
-        buttonPanel.setBackground(Color.WHITE);
-        mainPanel.setBackground(Color.WHITE);
+        whitePanel.setBackground(backgroundColor);
+        buttonPanel.setBackground(backgroundColor);
+        mainPanel.setBackground(backgroundColor);
 
         // Configure the button panel
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Center buttons horizontally
-        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBackground(backgroundColor);
 
         GridBagConstraints buttonConstraints = new GridBagConstraints();
-        buttonConstraints.insets = new Insets(10, 0, 10, 0); // Add padding
+        buttonConstraints.insets = new Insets(10, 70, 10, 0); // Add padding
 
-        whitePanel.setBackground(Color.WHITE);
+        whitePanel.setBackground(backgroundColor);
         whitePanel.setLayout(new GridBagLayout()); // GridBagLayout to center the board
 
         // Add the white panel to the main panel
@@ -57,12 +74,10 @@ public class WindowManager {
         addHeartLabels();
     }
 
-    private boolean[] heartStates; // true if the heart is full, false if empty
-
     private void addHeartLabels() {
         heartStates = new boolean[Config.getNumberOfLives()]; // Assuming 5 hearts as maximum
         try {
-            heartsPanel.setBackground(Color.WHITE);
+            heartsPanel.setBackground(backgroundColor);
             heartsPanel.setLayout(
                     new FlowLayout(FlowLayout.LEFT, 5, 0)); // Horizontal layout with small gaps
 
@@ -79,9 +94,10 @@ public class WindowManager {
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.NORTHWEST;
-            gbc.insets = new Insets(10, 10, 10, 10);
+            gbc.insets = new Insets(10, 70, 10, 10);
             whitePanel.add(heartsPanel, gbc);
         } catch (NullPointerException ignored) {
+            logMessageNotFound(); // Debug message
         }
     }
 
@@ -91,15 +107,15 @@ public class WindowManager {
                 emptyHeartImage =
                         ImageIO.read(
                                 Objects.requireNonNull(
-                                        getClass().getResource("/pixil-frame-0.png")));
+                                        getClass().getResource("/pixel-frame-0.png")));
                 Image scaledEmptyHeartImage =
                         emptyHeartImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                 emptyHeartIcon = new ImageIcon(scaledEmptyHeartImage);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } catch (NullPointerException e) {
-            System.out.println("Image not found, check the path."); // Debug message
+            logMessageNotFound(); // Debug message
         }
 
         // Find the last "full" heart label and update its icon directly
@@ -115,10 +131,10 @@ public class WindowManager {
             if (comp instanceof JLabel label) {
                 label.setIcon(emptyHeartIcon);
                 heartStates[lastIndex] = false; // Update state to empty
-                System.out.println("Heart emptied at index: " + lastIndex);
+                logger.info("Heart emptied at index: {}", lastIndex);
             }
         } else {
-            System.out.println("No full heart found to replace");
+            logger.info("No full heart found to replace");
         }
 
         heartsPanel.revalidate();
@@ -136,9 +152,9 @@ public class WindowManager {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } catch (NullPointerException e) {
-            System.out.println("Image not found, check the path."); // Debug message
+            logMessageNotFound(); // Debug message
         }
 
         for (int i = 0; i < heartsPanel.getComponentCount(); i++) {
@@ -165,12 +181,12 @@ public class WindowManager {
     }
 
     public void addComponentToButtonPanel(Component component) {
-        // Adds a component (like a button) to the button panel
         buttonPanel.add(component);
         buttonPanel.revalidate();
         buttonPanel.repaint();
     }
 
+    // add a button to go back to the start menu
     public void addGoBackButton(JButton goBackButton) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx =
@@ -194,46 +210,102 @@ public class WindowManager {
         gbc.weightx = 0.5; // Give column some weight so the component will be centered
         gbc.weighty = 1; // Give row some weight so the component will be centered
         gbc.fill = GridBagConstraints.BOTH; // Let component fill its display area
+        gbc.insets = new Insets(0, 70, 0, 30); // Add padding from the left (100 pixels)
 
         whitePanel.add(board, gbc);
         whitePanel.revalidate();
         whitePanel.repaint();
     }
 
-    public void layoutComponents(TimerFunction timer, Component numberHub) {
-        JPanel combinedPanel = setupNumberAndTimerPanel(timer, numberHub);
+    public void layoutComponents(
+            TimerFunction timer,
+            Component numberHub,
+            JButton goBackButton,
+            JButton saveGameButton) {
+        JPanel combinationPanel =
+                setupNumberAndTimerPanel(timer, numberHub, goBackButton, saveGameButton);
 
-        // Layout the combined panel with the number hub and timer
+        // Layout the combined panel with the number hub, timer, and go back button
         GridBagConstraints gbcPanel = new GridBagConstraints();
         gbcPanel.gridx = 1;
         gbcPanel.gridy = 0;
         gbcPanel.fill = GridBagConstraints.NORTH; // Align to the top of the space
         gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
-        mainPanel.add(combinedPanel, gbcPanel);
+
+        mainPanel.add(combinationPanel, gbcPanel);
 
         frame.setVisible(true);
     }
 
-    public JPanel setupNumberAndTimerPanel(TimerFunction timer, Component numberHub) {
-        JPanel combinedPanel = new JPanel();
+    // This method is used to set up the panel that contains the number hub and timer
+    public JPanel setupNumberAndTimerPanel(
+            TimerFunction timer,
+            Component numberHub,
+            JButton goBackButton,
+            JButton saveGameButton) {
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
+        combinedPanel.setBackground(backgroundColor);
         combinedPanel.setOpaque(false);
 
+        // Add vertical glue to push the components towards the center vertically
+        combinedPanel.add(Box.createVerticalGlue());
+
+        // Create a wrapper panel to center the numberHub with padding
+        JPanel numberHubWrapper = new JPanel();
+        numberHubWrapper.setLayout(new BoxLayout(numberHubWrapper, BoxLayout.X_AXIS));
+        numberHubWrapper.setBackground(backgroundColor);
+        numberHubWrapper.setOpaque(false);
+        numberHubWrapper.setBorder(
+                BorderFactory.createEmptyBorder(0, 7, 0, 0)); // Add 10 pixels padding to the left
+        numberHubWrapper.add(Box.createHorizontalGlue());
+        numberHubWrapper.add(numberHub);
+        numberHubWrapper.add(Box.createHorizontalGlue());
+
         timer.setAlignmentX(Component.CENTER_ALIGNMENT);
-        if (Config.getEnableTimer()) {
-            combinedPanel.add(timer);
-        }
+        timer.setVisibility(Config.getEnableTimer());
+        combinedPanel.add(timer);
         combinedPanel.add(
                 Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
 
-        combinedPanel.add(numberHub);
+        combinedPanel.add(numberHubWrapper);
+
+        combinedPanel.add(
+                Box.createRigidArea(
+                        new Dimension(0, 10))); // Space between number hub and go back button
+
+        goBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        combinedPanel.add(goBackButton);
+
+        combinedPanel.add(
+                Box.createRigidArea(
+                        new Dimension(0, 10))); // Space between go back button and save game button
+        saveGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        combinedPanel.add(saveGameButton);
+
+        // Add vertical glue to push the components towards the center vertically
+        combinedPanel.add(Box.createVerticalGlue());
 
         return combinedPanel;
     }
 
     public void updateBoard() {
+        System.out.println(Config.getDarkMode());
+        backgroundColor = Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
+        frame.setBackground(backgroundColor);
+        frame.revalidate();
+        frame.repaint();
+        mainPanel.setBackground(backgroundColor);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+        whitePanel.setBackground(backgroundColor);
         whitePanel.revalidate();
         whitePanel.repaint();
+        buttonPanel.setBackground(backgroundColor);
+        buttonPanel.revalidate();
+        buttonPanel.repaint();
+        heartsPanel.setBackground(backgroundColor);
+        heartsPanel.revalidate();
+        heartsPanel.repaint();
     }
 
     public void display() {
@@ -252,5 +324,39 @@ public class WindowManager {
             }
         }
         return hearts;
+    }
+
+    public int[] getUsedLives() {
+        int usedLives = 0;
+        for (boolean heartState : heartStates) {
+            if (!heartState) {
+                usedLives++;
+            }
+        }
+        return new int[] {usedLives, Config.getNumberOfLives()};
+    }
+
+    public void addProgressBar(JProgressBar progressBar, int yPos) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = yPos; // Position set based on yPos
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 0, 10, 0); // Add some space around the progress bar
+
+        whitePanel.add(progressBar, gbc); // Add to whitePanel to ensure proper layout
+        whitePanel.revalidate();
+        whitePanel.repaint();
+    }
+
+    public static void logMessageNotFound () {
+        logger.info(STR_NOT_FOUND_MSG);
+    }
+
+
+    public void setHearts(int usedLifeLines) {
+        for (int i = 1; i <= usedLifeLines; i++) {
+            removeHeart();
+        }
     }
 }
