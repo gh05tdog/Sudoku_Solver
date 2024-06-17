@@ -124,6 +124,10 @@ public class GameServer {
         }
     }
 
+    public ServerSocket getServerSocket() {
+        return serverSocket;
+    }
+
     private class ClientHandler implements Runnable {
         private final Socket clientSocket;
 
