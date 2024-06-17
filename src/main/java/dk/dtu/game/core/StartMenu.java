@@ -600,44 +600,6 @@ public class StartMenu {
         }
     }
 
-    private void addGameruleButton() {
-        gameRuleButton.setBounds(5, 5, 150, 40); // Set bounds appropriately if needed
-        gameRuleButton.setBackground(Color.WHITE);
-        gameRuleButton.setFocusPainted(false);
-        gameRuleButton.addMouseListener(
-                new java.awt.event.MouseAdapter() {
-                    @Override
-                    public void mouseEntered(java.awt.event.MouseEvent evt) {
-                        gameRuleButton.setBackground(Color.LIGHT_GRAY);
-                    }
-
-                    @Override
-                    public void mouseExited(java.awt.event.MouseEvent evt) {
-                        gameRuleButton.setBackground(Color.WHITE);
-                    }
-                });
-        startMenuWindowManager.addComponent(
-                gameRuleButton, startMenuWindowManager.getGameRulePanel());
-
-        gameRuleButton.addActionListener(
-                e -> {
-                    GameRulePopup gameRules = new GameRulePopup();
-                    gameRules.setVisible(true);
-                    gameRules.addJSwitchBox(
-                            "Enable lives", Config.getEnableLives(), Config::setEnableLives);
-                    gameRules.addJSwitchBox(
-                            "Enable timer", Config.getEnableTimer(), Config::setEnableTimer);
-                    gameRules.addJSwitchBox(
-                            "Enable easy mode",
-                            Config.getEnableEasyMode(),
-                            Config::setEnableEasyMode);
-                    gameRules.addJSwitchBox(
-                            "Killer Sudoku Mode",
-                            Config.getEnableKillerSudoku(),
-                            Config::setEnableKillerSudoku);
-                });
-    }
-
     private void addButtonPanelButtons() {
         startButton.setBounds(5, 5, 190, 40);
         startButton.setBackground(backgroundColor);

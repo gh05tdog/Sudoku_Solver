@@ -178,6 +178,6 @@ class Cell implements Serializable {
     }
 
     public void setUnplaceableCell(boolean unPlaceable) {
-        this.unPlaceable = unPlaceable;
+        this.isUnplacable = unPlaceable;
     }
 }
