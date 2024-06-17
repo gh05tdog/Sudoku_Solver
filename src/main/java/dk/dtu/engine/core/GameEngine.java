@@ -31,13 +31,13 @@ public class GameEngine {
         }
     }
 
-    private void initialize() {
+    private void initialize() throws Board.BoardNotCreatable {
         windowManager.display(); // Show the game window
         sudokuGame.initialize(this.n, this.k, this.cellSize); // Initialize game-specific components
     }
 
     // Start the game loop
-    public void start() {
+    public void start() throws Board.BoardNotCreatable {
         if (running) return;
         running = true;
 

@@ -29,6 +29,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import dk.dtu.game.core.solver.heuristicsolver.HeuristicSolver;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -612,7 +614,7 @@ public class SudokuGame {
         }
     }
 
-    public void initialize(int n, int k, int cellSize) {
+    public void initialize(int n, int k, int cellSize) throws Board.BoardNotCreatable {
 
         createBoard(n, k, cellSize);
 
@@ -627,7 +629,7 @@ public class SudokuGame {
     }
 
     // This method is used to initialize the game with a custom imported board
-    public void initializeCustom(int[][] customBoard) {
+    public void initializeCustom(int[][] customBoard) throws Board.BoardNotCreatable {
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -640,7 +642,7 @@ public class SudokuGame {
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
         } else {
-            BruteForceAlgorithm.createSudoku(gameboard);
+            HeuristicSolver.createPlayableSudoku(gameboard);
         }
 
         fillHintList();
@@ -680,7 +682,7 @@ public class SudokuGame {
             int usedLifeLines,
             int[][] cages,
             boolean isKillerSudoku,
-            String notes) {
+            String notes) throws Board.BoardNotCreatable {
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -694,7 +696,7 @@ public class SudokuGame {
         if (nSize == kSize) {
             AlgorithmXSolver.solveExistingBoard(gameboard);
         } else {
-            BruteForceAlgorithm.createSudoku(gameboard);
+            HeuristicSolver.createPlayableSudoku(gameboard);
         }
 
         if (isKillerSudoku) {
@@ -806,7 +808,7 @@ public class SudokuGame {
         }
     }
 
-    public void newGame() {
+    public void newGame() throws Board.BoardNotCreatable {
 
         if (!isCustomBoard) {
             gameboard.clear();
@@ -823,7 +825,7 @@ public class SudokuGame {
             if (nSize == kSize) {
                 AlgorithmXSolver.createXSudoku(gameboard);
             } else {
-                BruteForceAlgorithm.createSudoku(gameboard);
+                HeuristicSolver.createPlayableSudoku(gameboard);
             }
             fillHintList();
         } else {
@@ -872,11 +874,7 @@ public class SudokuGame {
 
     public void fillHintList() {
         int[][] solutionBoard;
-        if (nSize == kSize) {
-            solutionBoard = AlgorithmXSolver.getSolutionBoard();
-        } else {
-            solutionBoard = BruteForceAlgorithm.getSolvedBoard();
-        }
+        solutionBoard = gameboard.getSolvedBoard();
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 if (gameboard.getInitialNumber(row, col) == 0) {
@@ -1071,12 +1069,8 @@ public class SudokuGame {
                     usedSolveButton = true;
                     board.clearNotes();
                     timer.stop();
-                    if (nSize == kSize) {
-                        gameboard.setGameBoard(
-                                Objects.requireNonNull(AlgorithmXSolver.getSolutionBoard()));
-                    } else {
-                        gameboard.setGameBoard(BruteForceAlgorithm.getSolvedBoard());
-                    }
+                    gameboard.setGameBoard(gameboard.getSolvedBoard());
+                    usedSolveButton = true;
                     updateNumberCount();
                     displayNumbersVisually();
                     board.revalidate();
@@ -1086,7 +1080,13 @@ public class SudokuGame {
                     }
                 });
 
-        newGameButton.addActionListener(e -> startGame());
+        newGameButton.addActionListener(e -> {
+            try {
+                startGame();
+            } catch (Board.BoardNotCreatable ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         eraseButton.addActionListener(
                 e -> {
@@ -1262,7 +1262,7 @@ public class SudokuGame {
         gameIsStarted = b;
     }
 
-    public void startGame() {
+    public void startGame() throws Board.BoardNotCreatable {
         newGame();
         displayNumbersVisually();
         setInitialBoardColor();

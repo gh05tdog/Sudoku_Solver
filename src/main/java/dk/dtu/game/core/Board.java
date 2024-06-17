@@ -49,6 +49,10 @@ public class Board {
         return true;
     }
 
+    public int getK() {
+        return k;
+    }
+
     public static class BoardNotCreatable extends Exception {
         public BoardNotCreatable(String errorMessage) {
             super(errorMessage);
