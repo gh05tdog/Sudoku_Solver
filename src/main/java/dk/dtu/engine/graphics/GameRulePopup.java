@@ -14,6 +14,9 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
+/**
+ * This class is responsible for creating a popup window that displays the game rules.
+ */
 
 public class GameRulePopup extends JFrame {
     private final Color darkModebackgroundColor = new Color(64, 64, 64);

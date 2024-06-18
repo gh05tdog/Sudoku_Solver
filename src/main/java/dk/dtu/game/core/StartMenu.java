@@ -86,8 +86,6 @@ public class StartMenu {
         }
     }
 
-
-
     private static void setAccentColor(Color color) {
         accentColor = color;
     }
@@ -95,7 +93,7 @@ public class StartMenu {
         backgroundColor = color;
     }
 
-
+    //Initializes the window-manager and game engine with the given parameters for board size
     public void startGame() throws Board.BoardNotCreatable {
         logConfigInfo();
 
@@ -125,10 +123,11 @@ public class StartMenu {
         }
     }
 
+    //Main initializer calling all the lesser initializers
     public void initialize() {
         // Initialize the start menu with all the buttons
         addSizePanelButtons();
-        addButtonPanelButtons(); // Updated method call to include both start button and dropdown
+        addButtonPanelButtons();
         addInputPanelButtons();
         addImportButton();
         addLeaderboardButton();
@@ -146,7 +145,7 @@ public class StartMenu {
     }
 
     private void addLoadGameButton() {
-        loadGameButton.setBounds(5, 165, 190, 40); // Adjust the size and position as needed
+        loadGameButton.setBounds(5, 165, 190, 40);
         loadGameButton.setBackground(backgroundColor);
         loadGameButton.setForeground(accentColor);
         loadGameButton.setBorder(new LineBorder(accentColor));
@@ -157,13 +156,13 @@ public class StartMenu {
     }
 
     private void addNetworkGameButtons() {
-        createGameButton.setBounds(5, 280, 190, 40); // Adjust the size and position as needed
+        createGameButton.setBounds(5, 280, 190, 40);
         createGameButton.setBackground(Config.getDarkMode() ? backgroundColor : Color.WHITE);
 
         createGameButton.setFocusPainted(false);
         createGameButton.addActionListener(this::onCreateGame);
 
-        joinGameButton.setBounds(5, 325, 190, 40); // Adjust the size and position as needed
+        joinGameButton.setBounds(5, 325, 190, 40);
         joinGameButton.setBackground(Config.getDarkMode() ? backgroundColor : Color.WHITE);
         joinGameButton.setFocusPainted(false);
         joinGameButton.addActionListener(this::onJoinGame);
@@ -178,7 +177,7 @@ public class StartMenu {
         startMenuWindowManager.addComponent(
                 joinGameButton, startMenuWindowManager.getButtonPanel());
 
-        gameRuleButton.setBounds(5, 440, 190, 40); // Set bounds below join game button
+        gameRuleButton.setBounds(5, 440, 190, 40);
         gameRuleButton.setBackground(backgroundColor);
         gameRuleButton.setFocusPainted(false);
         gameRuleButton.setBorder(new LineBorder(accentColor));
@@ -201,6 +200,7 @@ public class StartMenu {
                 Config::setEnableKillerSudoku);
     }
 
+    //Method to handle the logic for loading the game
     private void onLoadGame(ActionEvent e) {
         if (isLoadGameDialogOpen) {
             return;
@@ -245,7 +245,6 @@ public class StartMenu {
 
         JButton loadButton = getjButton(gameList, loadGameDialog);
 
-        // Add a listener to handle window closing
         loadGameDialog.addWindowListener(
                 new WindowAdapter() {
                     @Override
@@ -261,6 +260,7 @@ public class StartMenu {
         loadGameDialog.setVisible(true);
     }
 
+    //Helper method for the load game popup
     private JButton getjButton(JList<SavedGame.SavedGameData> gameList, JDialog loadGameDialog) {
         JButton loadButton = new JButton("Load");
         loadButton.setBackground(backgroundColor);
@@ -299,6 +299,7 @@ public class StartMenu {
         return loadButton;
     }
 
+    //Takes a board representation as a string from the database and makes it into a 2D int array, so it can be used by the backend
     private int[][] deserializeBoard(String boardString) {
         String[] rows = boardString.split(";");
         int size = rows.length;
@@ -314,6 +315,7 @@ public class StartMenu {
         return board;
     }
 
+    //Custom start game method to start with a loaded game
     private void startGameWithSavedData(
             int[][] initialBoard,
             int[][] currentBoard,
@@ -360,6 +362,7 @@ public class StartMenu {
         }
     }
 
+    //Handles what happens when creating an online game, gets the ip address from the host and starts the server along with a game thread
     private void onCreateGame(ActionEvent e) {
         Config.setDifficulty("Easy");
         joinGameButton.setEnabled(false);
@@ -385,13 +388,17 @@ public class StartMenu {
             JOptionPane.showMessageDialog(
                     null,
                     "Failed to determine the server's IP address.",
-                    ERROR,
+                    ERROR,-
                     JOptionPane.ERROR_MESSAGE);
             joinGameButton.setEnabled(true);
             createGameButton.setEnabled(true);
         }
     }
 
+    /**
+     * Handles what happens when joining a game. It is either possible to search for IPS on the current network or manually typing an ip address.
+     * It then makes a game client with a new window-manager and then starts the game
+     */
     private void onJoinGame(ActionEvent e) {
         joinGameButton.setEnabled(false);
         createGameButton.setEnabled(false);
@@ -444,6 +451,7 @@ public class StartMenu {
 
     }
 
+    //Method to connect the client to the server and starting the thread
     private void connectClient(String serverAddress) {
         new Thread(() -> {
             WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
@@ -472,7 +480,6 @@ public class StartMenu {
     }
 
     private void addLeaderboardButton() {
-
         leaderboardButton.addActionListener(this::onShowLeaderboard);
         leaderboardButton.setBounds(5, 95, 190, 40); // Adjust the size and position as needed
         leaderboardButton.setBackground(backgroundColor);
@@ -532,10 +539,8 @@ public class StartMenu {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
         leaderboardTable.setRowSorter(sorter);
 
-        // Create a JScrollPane containing the JTable
         JScrollPane leaderboardScrollPane = new JScrollPane(leaderboardTable);
 
-        // Create a JDialog to display the leaderboard
         JDialog leaderboardDialog = new JDialog();
         leaderboardDialog.setTitle("Leaderboard");
         leaderboardDialog.setSize(600, 400);
@@ -544,8 +549,9 @@ public class StartMenu {
         leaderboardDialog.setVisible(true);
     }
 
+    //This method adds listeners for the input fiels that make up the custom board, allowing different configurations of game boards
     private void addChangeListenerToField(JTextField field) {
-        // This method adds a document listener to the input fields, so that the board is updated
+        // This method adds a document listener to the input fields, so that the board & config is updated
         // when the user changes the values
         field.getDocument()
                 .addDocumentListener(
@@ -641,11 +647,11 @@ public class StartMenu {
 
         startMenuWindowManager.addComponent(startButton, startMenuWindowManager.getButtonPanel());
 
-        difficultyDropdown.setBounds(5, 50, 190, 40); // Adjust bounds to add padding
+        difficultyDropdown.setBounds(5, 50, 190, 40);
         difficultyDropdown.setBackground(backgroundColor);
         difficultyDropdown.setForeground(accentColor);
         difficultyDropdown.setBorder(new LineBorder(accentColor));
-        difficultyDropdown.setSelectedItem("Medium"); // Set default selection
+        difficultyDropdown.setSelectedItem("Medium");
         Config.setDifficulty("medium");
 
         difficultyDropdown.addActionListener(
@@ -662,7 +668,7 @@ public class StartMenu {
 
     private void addImportButton() {
         importButton.addActionListener(this::onImportSudoku);
-        importButton.setBounds(5, 210, 190, 40); // Set bounds appropriately if needed
+        importButton.setBounds(5, 210, 190, 40);
         importButton.setBackground(backgroundColor);
         importButton.setFocusPainted(false);
 
@@ -672,6 +678,7 @@ public class StartMenu {
         startMenuWindowManager.addComponent(importButton, startMenuWindowManager.getButtonPanel());
     }
 
+    //Calls the correct start game method when importing a sudoku from a file
     private void onImportSudoku(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select a Sudoku Puzzle File");
@@ -681,7 +688,7 @@ public class StartMenu {
             try {
                 List<String> lines = Files.readAllLines(selectedFile.toPath());
                 int[][] customBoard = importSudokuFromFile(lines);
-                startGameWithBoard(customBoard); // Start game with custom board
+                startGameWithBoard(customBoard);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                         null,
@@ -692,6 +699,7 @@ public class StartMenu {
         }
     }
 
+    //This method takes in a list of strings by reading a file and then it spits out a game board represented as a 2D int array
     public int[][] importSudokuFromFile(List<String> lines)
             throws IOException, Board.BoardNotCreatable {
         if (lines.isEmpty()) {
@@ -755,8 +763,6 @@ public class StartMenu {
     // Add the custom board panels with different prefixed sizes and the one you can set yourself
     // with N and K values
     private void addSizePanelButtons() {
-        // This function adds the small boards for selecting size in game
-
         MouseAdapter mouseAdapter =
                 new MouseAdapter() {
                     @Override
@@ -795,12 +801,13 @@ public class StartMenu {
         }
     }
 
+    // Making sure to dynamically update the colors of the start menu when switching between light and dark mode in the game rule menu
+    // Making sure that you do not need to open and close the game between each swap.
     public void updateColors() {
         setBackgroundColor(Config.getDarkMode() ? darkbackgroundColor : Color.WHITE);
         setAccentColor(Config.getDarkMode() ? lightaccentColor : Color.BLACK);
         startMenuWindowManager.setCustomBoardPanels(boardPanels);
 
-        // Update all relevant components with the new colors
         startButton.setBackground(backgroundColor);
         startButton.setForeground(accentColor);
         startButton.setBorder(new LineBorder(accentColor));
@@ -840,7 +847,6 @@ public class StartMenu {
         inputKField.setForeground(accentColor);
         inputKField.setBorder(new LineBorder(accentColor));
 
-        // Ensure all panels and components are updated
         startMenuWindowManager.update();
     }
 

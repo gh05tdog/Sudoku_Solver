@@ -87,7 +87,6 @@ public class Board {
     // Makes sure that the number can be placed in the cell, and no duplicates in row, col and
     // subgrid.
     public boolean validPlace(int x, int y, int num) {
-        // Check rows and check square
         logger.info("Checking if {} can be placed at {}, {}", num, x, y);
         return contains(getRow(x), num)
                 && contains(getColumn(y), num)

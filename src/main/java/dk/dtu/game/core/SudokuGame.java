@@ -14,7 +14,6 @@ import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.engine.utility.UpdateLeaderboard;
 import dk.dtu.game.core.solver.SolverAlgorithm;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
-import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -148,6 +147,7 @@ public class SudokuGame {
         backgroundColor = color;
     }
 
+    //Saves the current game for further playing, it saves all the necessary information to the database
     private void onSaveGame() {
         String name =
                 JOptionPane.showInputDialog(
@@ -213,8 +213,6 @@ public class SudokuGame {
         logger.info("Received message: {}", message);
 
         switch (command) {
-
-
             case "WINNER":
                 timer.stop();
                 String winner = parts[1];
@@ -328,6 +326,8 @@ public class SudokuGame {
         }
     }
 
+    //This method updates a cell to determine if the notes in the cell should be hidden or not. They should
+    //be hidden when a number is placed in the cell.
     private void updateHideList(int row, int col, int number, String mode) {
         if (mode.equals("show")) {
             board.removeFromHideList(row, col, number);
@@ -432,6 +432,7 @@ public class SudokuGame {
         }
     }
 
+    //The logic behind setting the visual number and setting the backend number
     private void applyMove(int row, int col, int number, int previousNumber) {
         board.setHiddenProperty(row, col, true);
         checkCellsForNotes(row, col, number, "hide");
@@ -442,6 +443,7 @@ public class SudokuGame {
         moveList.push(move); // Log the move for undo functionality
     }
 
+    //Add a note to the cell if all the right conditions are met
     public void makeNote(int row, int col, int number) {
         if (gameIsStarted) {
             if (isNumberInRow(row, number)
@@ -520,6 +522,7 @@ public class SudokuGame {
         }
     }
 
+    //An initializer for the visual and backend board, vital for the game to start
     public void createBoard(int n, int k, int cellSize) {
         board = new SudokuBoardCanvas(n, k, cellSize);
         board.setLocation(50, 50);
@@ -547,6 +550,7 @@ public class SudokuGame {
         timer.update();
     }
 
+    //This method generates all the cages for the killer sudoku game mode and determines their sum
     public void generateKillerSudokuCages() {
         int[][] solvedBoard = gameboard.getSolvedBoard();
         board.clearCages();
@@ -614,8 +618,8 @@ public class SudokuGame {
         }
     }
 
+    //The main initializer, which is calling all the lesser initializers such as createBoard and displayButtons
     public void initialize(int n, int k, int cellSize) throws Board.BoardNotCreatable {
-
         createBoard(n, k, cellSize);
 
         displayButtons();
@@ -629,7 +633,7 @@ public class SudokuGame {
     }
 
     // This method is used to initialize the game with a custom imported board
-    public void initializeCustom(int[][] customBoard) throws Board.BoardNotCreatable {
+    public void initializeCustom(int[][] customBoard) {
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -675,6 +679,7 @@ public class SudokuGame {
         board.requestFocusInWindow();
     }
 
+    //This initializes a custom game, when the game is loaded form the saved games.
     public void initializeCustomSaved(
             int[][] initialBoard,
             int[][] currentBoard,
@@ -682,7 +687,7 @@ public class SudokuGame {
             int usedLifeLines,
             int[][] cages,
             boolean isKillerSudoku,
-            String notes) throws Board.BoardNotCreatable {
+            String notes)  {
         isCustomBoard = true;
         createBoard(Config.getN(), Config.getK(), Config.getCellSize());
         displayButtons();
@@ -732,6 +737,7 @@ public class SudokuGame {
         board.requestFocusInWindow();
     }
 
+    //This method calculates the progress of the game, this is used by the online multiplayer.
     public int calculateProgress() {
         int filledCells = 0;
         int totalCells = gridSize * gridSize;
@@ -746,6 +752,7 @@ public class SudokuGame {
 
         return (int) ((filledCells / (double) totalCells) * 100);
     }
+
 
     public void applyNotesToCells() {
         for (int row = 0; row < gridSize; row++) {
@@ -798,6 +805,7 @@ public class SudokuGame {
         return false;
     }
 
+    //A multiplayer function to send the progress update to the other player
     public void sendProgress() {
         logger.info("Sending progress");
         if (networkOut != null) {
@@ -808,8 +816,8 @@ public class SudokuGame {
         }
     }
 
-    public void newGame() throws Board.BoardNotCreatable {
-
+    //This is what makes a new game, either from the start menu or the new game button inside the game window
+    public void newGame() {
         if (!isCustomBoard) {
             gameboard.clear();
             hintList.clear();
@@ -990,6 +998,7 @@ public class SudokuGame {
         }
     }
 
+    //If the game is over and not solved with the solve button, the player will be prompted to enter the leaderboard
     private void promptForLeaderboardEntry() {
         Preferences pref = Preferences.userNodeForPackage(this.getClass());
         String storedUsername = pref.get("username", "");
@@ -1019,9 +1028,8 @@ public class SudokuGame {
         return System.getProperty("testMode") != null;
     }
 
-    // Visually displays the buttons on the screen.
+    // Visually displays the buttons on the screen, and adds action-listeners to each button
     private void displayButtons() {
-
         restartButton = createButton("Restart", 30);
         solveButton = createButton("Solve", 30);
         newGameButton = createButton(NEW_GAME, 30);
@@ -1137,6 +1145,7 @@ public class SudokuGame {
         }
     }
 
+    //The styling of the buttons visual look
     private void applyButtonStyles(JButton[] buttons) {
         int padding = 5; // Adjust the padding as desired
         for (JButton button : buttons) {
@@ -1150,6 +1159,7 @@ public class SudokuGame {
     }
 
 
+    //A method that separates which numbers were originally there and which the player has set.
     private void setInitialBoardColor() {
         for (int row = 0; row < gameboard.getDimensions(); row++) {
             for (int col = 0; col < gameboard.getDimensions(); col++) {
@@ -1228,6 +1238,7 @@ public class SudokuGame {
         gameboard.clearInitialBoard();
     }
 
+    //A killer sudoku game-mode method, which helps easy mode determine if the number can be placed
     public boolean cageContains(Point cell, int num) {
         List<Cage> cages = board.getCages();
         for (Cage cage : cages) {

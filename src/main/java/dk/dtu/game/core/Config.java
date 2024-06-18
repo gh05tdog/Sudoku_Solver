@@ -61,9 +61,8 @@ public class Config {
         return Boolean.parseBoolean(darkMode);
     }
 
-    // Game rules:
+    ////////////////////////////////// Game rules:///////////////////////////////////////////
     public static void setEnableLives(boolean enableLives) {
-        // Store the value in the system preferences
         Preferences pref = Preferences.userRoot();
         pref.put("enableLives", String.valueOf(enableLives));
     }
@@ -75,7 +74,6 @@ public class Config {
     }
 
     public static void setEnableTimer(boolean enableTimer) {
-        // Store the value in the system preferences
         Preferences pref = Preferences.userRoot();
         pref.put("enableTimer", String.valueOf(enableTimer));
     }
@@ -87,7 +85,6 @@ public class Config {
     }
 
     public static void setEnableEasyMode(boolean enableEasyMode) {
-        // Store the value in the system preferences
         Preferences pref = Preferences.userRoot();
         pref.put("enableEasyMode", String.valueOf(enableEasyMode));
     }
@@ -99,7 +96,7 @@ public class Config {
     }
 
     public static void setNumberOfLives(int numberOfLives) {
-        // Store the value in the system preferences
+
         Preferences pref = Preferences.userRoot();
         pref.put("numberOfLives", String.valueOf(numberOfLives));
     }
