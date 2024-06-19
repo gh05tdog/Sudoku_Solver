@@ -410,6 +410,13 @@ public class StartMenu {
         // Prompt user for an IP address
         String serverAddress = showInputDialog(null, "Enter server IP address (leave empty to search):");
 
+        // Check if the dialog was cancelled
+        if (serverAddress == null) {
+            joinGameButton.setEnabled(true);
+            createGameButton.setEnabled(true);
+            return;
+        }
+
         // Create a GameClient to discover servers
         GameClient client = new GameClient(new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000));
 
@@ -443,15 +450,27 @@ public class StartMenu {
             if (client.testGameConnection(serverAddress)) {
                 logger.info("Connected to server at IP: {}", serverAddress);
                 connectClient(serverAddress);
+            } else {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Failed to connect to the specified server. Please check the server address and try again.",
+                        ERROR,
+                        JOptionPane.ERROR_MESSAGE);
+
+                joinGameButton.setEnabled(true);
+                createGameButton.setEnabled(true);
             }
         }
     }
+
+
 
 
     private String showInputDialog(Frame parent, String message) {
         final JDialog dialog = new JDialog(parent, "Join Game", true);
         final JTextField textField = new JTextField(20);
         final JButton okButton = new JButton("OK");
+        final boolean[] okPressed = {false};
 
         dialog.setLayout(new BorderLayout());
         dialog.add(new JLabel(message), BorderLayout.NORTH);
@@ -464,11 +483,26 @@ public class StartMenu {
         dialog.pack();
         dialog.setLocationRelativeTo(parent);
 
-        okButton.addActionListener(e -> dialog.dispose());
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                okPressed[0] = true;
+                dialog.dispose();
+            }
+        });
+
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dialog.dispose();
+            }
+        });
 
         dialog.setVisible(true);
-        return textField.getText();
+
+        return okPressed[0] ? textField.getText() : null;
     }
+
 
 
     //Method to connect the client to the server and starting the thread
