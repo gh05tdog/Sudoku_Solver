@@ -170,7 +170,8 @@ public class SudokuGame {
                     Config.getN(),
                     board.getCagesIntArray(),
                     Config.getEnableKillerSudoku(),
-                    getNotesToString());
+                    getNotesToString(),
+                    Config.getDifficulty());
             JOptionPane.showMessageDialog(
                     null, "Game saved successfully.", SAVE_GAME, JOptionPane.INFORMATION_MESSAGE);
         } else {

@@ -28,14 +28,15 @@ public class SavedGame {
             int nSize,
             int[][] cages,
             boolean isKillerSudoku,
-            String notes) {
+            String notes,
+            String difficulty) {
         String initialBoardString = serializeBoard(initialBoard);
         String currentBoardString = serializeBoard(currentBoard);
         String usedLifeLinesString = serializeIntArray(usedLifeLines);
         String insertGame =
                 "INSERT INTO saved_games (name, initialBoard, currentBoard, time, usedLifeLines,"
-                    + " lifeEnabled, kSize, nSize, cages, isKillerSudoku, notes) VALUES (?, ?, ?,"
-                    + " ?, ?, ?, ?, ?, ?, ?, ?)";
+                    + " lifeEnabled, kSize, nSize, cages, isKillerSudoku, notes, difficulty) VALUES (?, ?, ?,"
+                    + " ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
                 PreparedStatement stmt = conn.prepareStatement(insertGame)) {
@@ -50,6 +51,7 @@ public class SavedGame {
             stmt.setString(9, serializeBoard(cages));
             stmt.setBoolean(10, isKillerSudoku);
             stmt.setString(11, notes);
+            stmt.setString(12, difficulty);
             stmt.executeUpdate();
             logger.info("Game saved successfully");
         } catch (SQLException e) {
@@ -61,7 +63,7 @@ public class SavedGame {
     public static List<SavedGameData> loadSavedGames(String dbUrl) {
         String selectGames =
                 "SELECT name, initialBoard, currentBoard, time, usedLifeLines, lifeEnabled, kSize,"
-                        + " nSize, cages, isKillerSudoku, notes FROM saved_games";
+                        + " nSize, cages, isKillerSudoku, notes, difficulty FROM saved_games";
         List<SavedGameData> savedGames = new ArrayList<>();
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
@@ -80,6 +82,7 @@ public class SavedGame {
                 String cages = rs.getString("cages");
                 boolean isKillerSudoku = rs.getBoolean("isKillerSudoku");
                 String notes = rs.getString("notes");
+                String difficulty = rs.getString("difficulty");
                 savedGames.add(
                         new SavedGameData(
                                 name,
@@ -92,7 +95,8 @@ public class SavedGame {
                                 nSize,
                                 cages,
                                 isKillerSudoku,
-                                notes));
+                                notes,
+                                difficulty));
             }
         } catch (SQLException e) {
             logger.error("Failed to load saved games");
@@ -128,6 +132,7 @@ public class SavedGame {
         private final String cages;
         private final boolean isKillerSudoku;
         private final String notes;
+        private final String difficulty;
 
         public SavedGameData(
                 String name,
@@ -140,7 +145,8 @@ public class SavedGame {
                 int nSize,
                 String cages,
                 boolean isKillerSudoku,
-                String notes) {
+                String notes,
+                String difficulty) {
             this.name = name;
             this.initialBoard = initialBoard;
             this.currentBoard = currentBoard;
@@ -152,6 +158,7 @@ public class SavedGame {
             this.cages = cages;
             this.isKillerSudoku = isKillerSudoku;
             this.notes = notes;
+            this.difficulty = difficulty;
         }
 
         public String getName() {
@@ -198,6 +205,10 @@ public class SavedGame {
             return notes;
         }
 
+        public String getDifficulty() {
+            return difficulty;
+        }
+
         @Override
         public String toString() {
             return "Name: "
@@ -213,8 +224,10 @@ public class SavedGame {
                     + ", NSize: "
                     + nSize
                     + "\n"
-                    + "isKillerSudoku:"
-                    + isKillerSudoku;
+                    + " isKillerSudoku: "
+                    + isKillerSudoku
+                    + ", Difficulty: "
+                    + difficulty;
         }
     }
 

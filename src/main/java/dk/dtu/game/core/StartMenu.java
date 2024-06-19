@@ -219,7 +219,7 @@ public class StartMenu {
         // Apply the current theme settings to the dialog
         JDialog loadGameDialog = new JDialog();
         loadGameDialog.setTitle("Load Game");
-        loadGameDialog.setSize(400, 300);
+        loadGameDialog.setSize(750, 300);
         loadGameDialog.setLayout(new BorderLayout());
         loadGameDialog.setBackground(backgroundColor);
         loadGameDialog.getContentPane().setBackground(backgroundColor);
@@ -280,6 +280,7 @@ public class StartMenu {
                         int[][] serializedCages = deserializeBoard(selectedGame.getCages());
                         boolean isKillerSudoku = selectedGame.isKillerSudoku();
                         String notes = selectedGame.getNotes();
+                        String difficulty = selectedGame.getDifficulty();
 
                         startGameWithSavedData(
                                 initialBoard,
@@ -291,7 +292,8 @@ public class StartMenu {
                                 k,
                                 serializedCages,
                                 isKillerSudoku,
-                                notes);
+                                notes,
+                                difficulty);
                         loadGameDialog.dispose();
                         isLoadGameDialogOpen = false;
                     }
@@ -326,7 +328,8 @@ public class StartMenu {
             int k,
             int[][] cages,
             boolean isKillerSudoku,
-            String notes) {
+            String notes,
+            String difficulty) {
         Config.setCellSize(550 / (k * n));
         Config.setK(k);
         Config.setN(n);
@@ -334,6 +337,8 @@ public class StartMenu {
         int usedLives = usedLifeLines[0];
         Config.setNumberOfLives(usedLifeLines[1]);
         Config.setEnableLives(lifeEnabled);
+        Config.setDifficulty(difficulty);
+        System.out.println("loaded game: " + Config.getDifficulty());
         logConfigInfo();
 
         WindowManager windowManager =

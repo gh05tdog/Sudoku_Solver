@@ -40,7 +40,8 @@ public class DatabaseSetup {
                 "isKillerSudoku BOOLEAN NOT NULL," +
                 "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP," +
                 "notes TEXT," +
-                "name TEXT NOT NULL" +
+                "name TEXT NOT NULL," +
+                "difficulty TEXT NOT NULL" +
                 ");";
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
