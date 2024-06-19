@@ -393,8 +393,7 @@ public class StartMenu {
             JOptionPane.showMessageDialog(
                     null,
                     "Failed to determine the server's IP address.",
-                    ERROR,-
-                    JOptionPane.ERROR_MESSAGE);
+                    ERROR, JOptionPane.ERROR_MESSAGE);
             joinGameButton.setEnabled(true);
             createGameButton.setEnabled(true);
         }
@@ -409,13 +408,7 @@ public class StartMenu {
         createGameButton.setEnabled(false);
 
         // Prompt user for an IP address
-        String serverAddress = JOptionPane.showInputDialog(
-                null,
-                "Enter server IP address (leave empty to search):",
-                "Join Game",
-                JOptionPane.QUESTION_MESSAGE
-        );
-
+        String serverAddress = showInputDialog(null, "Enter server IP address (leave empty to search):");
 
         // Create a GameClient to discover servers
         GameClient client = new GameClient(new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000));
@@ -445,16 +438,38 @@ public class StartMenu {
                 joinGameButton.setEnabled(true);
                 createGameButton.setEnabled(true);
             }
-        }
-        else {
+        } else {
             logger.info("Attempting to directly to IP: {}", serverAddress);
             if (client.testGameConnection(serverAddress)) {
                 logger.info("Connected to server at IP: {}", serverAddress);
                 connectClient(serverAddress);
             }
         }
-
     }
+
+
+    private String showInputDialog(Frame parent, String message) {
+        final JDialog dialog = new JDialog(parent, "Join Game", true);
+        final JTextField textField = new JTextField(20);
+        final JButton okButton = new JButton("OK");
+
+        dialog.setLayout(new BorderLayout());
+        dialog.add(new JLabel(message), BorderLayout.NORTH);
+        dialog.add(textField, BorderLayout.CENTER);
+
+        JPanel panel = new JPanel();
+        panel.add(okButton);
+        dialog.add(panel, BorderLayout.SOUTH);
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(parent);
+
+        okButton.addActionListener(e -> dialog.dispose());
+
+        dialog.setVisible(true);
+        return textField.getText();
+    }
+
 
     //Method to connect the client to the server and starting the thread
     private void connectClient(String serverAddress) {
