@@ -24,9 +24,26 @@ public class HeuristicSolver {
         board.setBoard(gameBoard);
     }
 
+    public static void makeAndFillBoard(Board board) {
+        int n = board.getN();
+        int k = board.getK();
+        int[][][] possiblePlacements = createSetFromBoard(board, n, k);
+        fillBoard(possiblePlacements, n, k, new HashSet<>(), new HashMap<>());
+
+    }
+
+    public static void makeAndRemoveHalf(Board board) {
+        int n = board.getN();
+        int k = board.getK();
+        int[][][] possiblePlacements = createSetFromBoard(board, n, k);
+        fillBoard(possiblePlacements, n, k, new HashSet<>(), new HashMap<>());
+
+
+        int [][] gameBoard = removeNumsFromBoard(possiblePlacements, n, k);
+
+    }
+
     public static int[][][] createSetFromBoard(Board board, int subGrid, int gridSize) {
-        int[][] smallBoard = new int[subGrid * gridSize][subGrid * gridSize];
-        board.setInitialBoard(smallBoard);
         int boardLength = subGrid * gridSize;
         int numCount = subGrid * subGrid;
         int[][][] possiblePlacements = new int[boardLength][boardLength][numCount + 1];
@@ -71,20 +88,83 @@ public class HeuristicSolver {
 
     public static void addPossiblePlacements (int[][][] arr, int row, int col, int val, int subgrid, int gridSize) {
         int boardLength = subgrid * gridSize;
+        boolean [] rowContains = isRowPlacementPossible(arr, row, val, boardLength);
+        boolean [] colContains = isColPlacementPossible(arr, col, val, boardLength);
 
         for (int i = 0; i < boardLength; i++) {
-            arr[row][i][val] = 1;
-            arr[i][col][val] = 1;
-        }
-
-        for (int i = (row / subgrid) * subgrid; i < subgrid + (row / subgrid) * subgrid; i++) {
-            for (int j = (col / subgrid) * subgrid; j < subgrid + (col / subgrid) * subgrid; j++) {
-                arr[i][j][val] = 1;
+            if (!rowContains[i]) {
+                arr[row][i][val] = 1;
+            }
+            if (!colContains[i]) {
+                arr[i][col][val] = 1;
             }
         }
+        boolean [][] subgridContains = isSubgridPlacementPossible(arr, row, col, val, subgrid, gridSize);
+        for (int i = 0; i < subgrid; i++) {
+            for (int j = 0; j < subgrid; j++) {
+                if (!subgridContains[i][j]) {
+                    arr[(row / subgrid) * subgrid + i][(col / subgrid) * subgrid + j][val] = 1;
+                }
+            }
+        }
+
     }
 
-    private static boolean fillBoard(int[][][] arr, int subgrid, int gridSize, Set<int[]> conflictSet, Map<String, Integer> conflictMap) {
+    private static boolean[][] isSubgridPlacementPossible(int[][][] arr, int row, int col, int val, int subgrid, int gridSize) {
+        int boardLength = subgrid * gridSize;
+        boolean[][] subgridContains = new boolean[subgrid][subgrid];
+        int startRow = (row / subgrid) * subgrid;
+        int startCol = (col / subgrid) * subgrid;
+        for (int i = startRow; i < startRow + subgrid; i++) {
+            for (int j = 0; j < boardLength; j++) {
+                if (arr[i][j][0] == val) {
+                    for (int n = 0; n < subgrid; n++) {
+                        subgridContains[i - startRow][n] = true;
+                    }
+                }
+            }
+        }
+        for (int i = startCol; i < startCol + subgrid; i++) {
+            for (int j = 0; j < boardLength; j++) {
+                if (arr[j][i][0] == val) {
+                    for (int n = 0; n < subgrid; n++) {
+                        subgridContains[n][i - startCol] = true;
+                    }
+                }
+            }
+        }
+        return subgridContains;
+    }
+
+    public static boolean [] isRowPlacementPossible(int[][][]arr, int row, int val, int boardLength) {
+        boolean[] rowContains = new boolean[boardLength];
+        for (int i = 0; i < boardLength; i++) {
+            for (int j = 0; j < boardLength; j++) {
+                if (arr[i][j][0] == val) {
+                    rowContains[i] = true;
+                    break;
+                }
+            }
+        }
+        return rowContains;
+    }
+
+    public static boolean [] isColPlacementPossible(int[][][]arr, int col, int val, int boardLength) {
+        boolean[] colContains = new boolean[boardLength];
+        for (int i = 0; i < boardLength; i++) {
+            for (int j = 0; j < boardLength; j++) {
+                if (arr[j][i][0] == val) {
+                    colContains[i] = true;
+                    break;
+                }
+            }
+        }
+        return colContains;
+    }
+
+
+
+    public static boolean fillBoard(int[][][] arr, int subgrid, int gridSize, Set<int[]> conflictSet, Map<String, Integer> conflictMap) {
         recursionCount++;
         int boardLength = subgrid * gridSize;
 
@@ -315,6 +395,8 @@ public class HeuristicSolver {
     }
 
     public static int[][] removeNumsFromBoard(int[][][] sudokuBoard, int n, int k) {
+
+
         int[] row = new int[n * k];
         int[] col = new int[n * k];
         for (int i = 0; i < n * k; i++) {
@@ -324,46 +406,50 @@ public class HeuristicSolver {
         row = fisherYatesShuffle(row);
         col = fisherYatesShuffle(col);
 
-        int tempVal;
-
         int numsRemoved = 0;
         int maxNumRemoved = SolverAlgorithm.setNumsRemoved(new int[n * k][n * k]);
+        int tempVal;
+
 
         int i = 0;
         int j = 0;
 
         while (numsRemoved < maxNumRemoved && i < n * k) {
             if (sudokuBoard[row[i]][col[j]][0] != 0) {
-                tempVal = sudokuBoard[row[i]][col[j]][0];
 
+                List<Integer> possibleValues = getPossibleValues(sudokuBoard[row[i]][col[j]]);
+                Collections.shuffle(possibleValues, random);
+
+                tempVal = sudokuBoard[row[i]][col[j]][0];
                 sudokuBoard[row[i]][col[j]][0] = 0;
                 addPossiblePlacements(sudokuBoard, row[i], col[j], tempVal, n, k);
 
-                List<Integer> tempPossibleValues = getPossibleValues(sudokuBoard[row[i]][col[j]]);
-                Collections.shuffle(tempPossibleValues, random);
+                int [][][] copyBoard = copyBoard(sudokuBoard);
 
-                int count = 0;
+                boolean uniqueSolution = true;
 
-                for (int val : tempPossibleValues) {
-                    int[][][] copyBoard = copyBoard(sudokuBoard);
+                for (int val : possibleValues) {
                     copyBoard[row[i]][col[j]][0] = val;
                     removePossiblePlacements(copyBoard, row[i], col[j], val, n, k);
+
                     if (fillBoard(copyBoard, n, k, new HashSet<>(), new HashMap<>())) {
-                        count++;
-                        i = 0;
-                        j = 0;
-                        row = fisherYatesShuffle(row);
-                        col = fisherYatesShuffle(col);
-                    }
-                    if (count > 1) {
+                        uniqueSolution = false;
                         break;
                     }
+
+                    addPossiblePlacements(copyBoard, row[i], col[j], val, n, k);
                 }
-                if (count != 1) {
+
+                if (uniqueSolution) {
+                    row = fisherYatesShuffle(row);
+                    col = fisherYatesShuffle(col);
+                    i = 0;
+                    j = 0;
+                    numsRemoved++;
+
+                } else {
                     sudokuBoard[row[i]][col[j]][0] = tempVal;
                     removePossiblePlacements(sudokuBoard, row[i], col[j], tempVal, n, k);
-                } else {
-                    numsRemoved++;
                 }
             }
 
@@ -373,10 +459,9 @@ public class HeuristicSolver {
                 i++;
             }
         }
+
         return deepCopy3DBoard(sudokuBoard, n, k);
     }
-
-
 
     public static int[][] deepCopy3DBoard (int [][][] arr, int n, int k) {
         int [][] returnBoard = new int[n*k][n*k];

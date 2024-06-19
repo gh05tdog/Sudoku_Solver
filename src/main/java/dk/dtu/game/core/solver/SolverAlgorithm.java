@@ -11,7 +11,6 @@ public class SolverAlgorithm {
     }
 
 
-
     public static boolean checkBoard(int[][] board, int row, int col, int c, int constant) {
         boolean legalRowCol = true;
         boolean legalSquare = true;
