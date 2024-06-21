@@ -18,10 +18,12 @@ public class HeuristicSolver { // Class for solving the sudoku puzzle using a he
         int [][] playableSudoku = deepCopy3DBoard(possiblePlacements, n, k); // extract the solution from the 3-dimensional board
         board.setSolvedBoard(playableSudoku); // send the solved board to board for easy storage
 
+
         int [][] gameBoard = removeNumsFromBoard(possiblePlacements, n, k); // remove numbers from the board to create a playable board
 
 
         board.setBoard(gameBoard); // set the board to the playable board
+        board.setInitialBoard(gameBoard);
     }
 
     public static int[][][] createSetFromBoard(Board board, int subGrid, int gridSize) { // 3D board containing each cell of the sudoku, as well as each possible placement for each cell

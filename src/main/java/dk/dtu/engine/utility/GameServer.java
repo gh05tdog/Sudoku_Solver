@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * The GameServer class is responsible for starting the game server and accepting client connections.
  * It listens for messages from clients and processes them accordingly.
  */
-public class GameServer {
+public class  GameServer {
     private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
     private static final int PORT = 12345;
     private final ExecutorService threadPool = Executors.newFixedThreadPool(4);
