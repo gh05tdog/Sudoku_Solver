@@ -61,5 +61,4 @@ public class Cage {
         }
         this.sum = totalSum;
     }
-
 }

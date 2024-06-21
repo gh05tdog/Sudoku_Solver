@@ -1,29 +1,26 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver.heuristicsolver;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.SolverAlgorithm;
-
 import java.util.*;
 
 public class HeuristicSolver {
     static Random random = new Random();
     static int recursionCount;
 
-
-    public static void createPlayableSudoku (Board board) {
+    public static void createPlayableSudoku(Board board) {
         int n = board.getN();
         int k = board.getK();
         int[][][] possiblePlacements = createSetFromBoard(board, n, k);
         fillBoard(possiblePlacements, n, k, new HashSet<>(), new HashMap<>());
-        int [][] playableSudoku = deepCopy3DBoard(possiblePlacements, n, k);
+        int[][] playableSudoku = deepCopy3DBoard(possiblePlacements, n, k);
         board.setSolvedBoard(playableSudoku);
 
-        int [][] gameBoard = removeNumsFromBoard(possiblePlacements, n, k);
-
+        int[][] gameBoard = removeNumsFromBoard(possiblePlacements, n, k);
 
         board.setBoard(gameBoard);
     }
-
 
     public static int[][][] createSetFromBoard(Board board, int subGrid, int gridSize) {
         int boardLength = subGrid * gridSize;
@@ -45,7 +42,8 @@ public class HeuristicSolver {
         for (int i = 0; i < boardLength; i++) {
             for (int j = 0; j < boardLength; j++) {
                 if (initialBoard[i][j] != 0) {
-                    removePossiblePlacements(possiblePlacements, i, j, initialBoard[i][j], subGrid, gridSize);
+                    removePossiblePlacements(
+                            possiblePlacements, i, j, initialBoard[i][j], subGrid, gridSize);
                 }
             }
         }
@@ -53,7 +51,8 @@ public class HeuristicSolver {
         return possiblePlacements;
     }
 
-    public static void removePossiblePlacements(int[][][] arr, int row, int col, int val, int subgrid, int gridSize) {
+    public static void removePossiblePlacements(
+            int[][][] arr, int row, int col, int val, int subgrid, int gridSize) {
         int boardLength = subgrid * gridSize;
 
         for (int i = 0; i < boardLength; i++) {
@@ -68,10 +67,11 @@ public class HeuristicSolver {
         }
     }
 
-    public static void addPossiblePlacements (int[][][] arr, int row, int col, int val, int subgrid, int gridSize) {
+    public static void addPossiblePlacements(
+            int[][][] arr, int row, int col, int val, int subgrid, int gridSize) {
         int boardLength = subgrid * gridSize;
-        boolean [] rowContains = isRowPlacementPossible(arr, val, boardLength);
-        boolean [] colContains = isColPlacementPossible(arr, val, boardLength);
+        boolean[] rowContains = isRowPlacementPossible(arr, val, boardLength);
+        boolean[] colContains = isColPlacementPossible(arr, val, boardLength);
 
         for (int i = 0; i < boardLength; i++) {
             if (!rowContains[i]) {
@@ -81,7 +81,8 @@ public class HeuristicSolver {
                 arr[i][col][val] = 1;
             }
         }
-        boolean [][] subgridContains = isSubgridPlacementPossible(arr, row, col, val, subgrid, gridSize);
+        boolean[][] subgridContains =
+                isSubgridPlacementPossible(arr, row, col, val, subgrid, gridSize);
         for (int i = 0; i < subgrid; i++) {
             for (int j = 0; j < subgrid; j++) {
                 if (!subgridContains[i][j]) {
@@ -89,10 +90,10 @@ public class HeuristicSolver {
                 }
             }
         }
-
     }
 
-    private static boolean[][] isSubgridPlacementPossible(int[][][] arr, int row, int col, int val, int subgrid, int gridSize) {
+    private static boolean[][] isSubgridPlacementPossible(
+            int[][][] arr, int row, int col, int val, int subgrid, int gridSize) {
         int boardLength = subgrid * gridSize;
         boolean[][] subgridContains = new boolean[subgrid][subgrid];
         int startRow = (row / subgrid) * subgrid;
@@ -118,7 +119,7 @@ public class HeuristicSolver {
         return subgridContains;
     }
 
-    public static boolean [] isRowPlacementPossible(int[][][]arr, int val, int boardLength) {
+    public static boolean[] isRowPlacementPossible(int[][][] arr, int val, int boardLength) {
         boolean[] rowContains = new boolean[boardLength];
         for (int i = 0; i < boardLength; i++) {
             for (int j = 0; j < boardLength; j++) {
@@ -131,7 +132,7 @@ public class HeuristicSolver {
         return rowContains;
     }
 
-    public static boolean [] isColPlacementPossible(int[][][]arr, int val, int boardLength) {
+    public static boolean[] isColPlacementPossible(int[][][] arr, int val, int boardLength) {
         boolean[] colContains = new boolean[boardLength];
         for (int i = 0; i < boardLength; i++) {
             for (int j = 0; j < boardLength; j++) {
@@ -144,29 +145,31 @@ public class HeuristicSolver {
         return colContains;
     }
 
-
-
-    public static boolean fillBoard(int[][][] arr, int subgrid, int gridSize, Set<int[]> conflictSet, Map<String, Integer> conflictMap) {
+    public static boolean fillBoard(
+            int[][][] arr,
+            int subgrid,
+            int gridSize,
+            Set<int[]> conflictSet,
+            Map<String, Integer> conflictMap) {
         recursionCount++;
         int boardLength = subgrid * gridSize;
 
+        boolean isChanged = true;
 
-            boolean isChanged = true;
-
-            // Initial pass to make obvious placements
-            while (isChanged) {
-                isChanged = false;
-                for (int i = 0; i < boardLength; i++) {
-                    for (int j = 0; j < boardLength; j++) {
-                        if (placementCount(arr[i][j]) == 1 && arr[i][j][0] == 0) {
-                            int value = placeableValue(arr[i][j]);
-                            arr[i][j][0] = value;
-                            removePossiblePlacements(arr, i, j, value, subgrid, gridSize);
-                            isChanged = true;
-                        }
+        // Initial pass to make obvious placements
+        while (isChanged) {
+            isChanged = false;
+            for (int i = 0; i < boardLength; i++) {
+                for (int j = 0; j < boardLength; j++) {
+                    if (placementCount(arr[i][j]) == 1 && arr[i][j][0] == 0) {
+                        int value = placeableValue(arr[i][j]);
+                        arr[i][j][0] = value;
+                        removePossiblePlacements(arr, i, j, value, subgrid, gridSize);
+                        isChanged = true;
                     }
                 }
             }
+        }
 
         if (isFullyFilled(arr)) {
             return true;
@@ -181,7 +184,8 @@ public class HeuristicSolver {
         int row = mrvCell[0];
         int col = mrvCell[1];
         List<Integer> possibleValues = getLCV(arr, row, col, subgrid, gridSize);
-        Collections.shuffle(possibleValues, random); // Shuffle possible values to introduce randomness
+        Collections.shuffle(
+                possibleValues, random); // Shuffle possible values to introduce randomness
 
         for (int value : possibleValues) {
             int[][][] arrCopy = copyBoard(arr); // Make a copy of the board
@@ -200,7 +204,7 @@ public class HeuristicSolver {
                 }
                 return true;
             }
-            conflictSet.add(new int[]{row, col});
+            conflictSet.add(new int[] {row, col});
             String conflictKey = row + "-" + col + "-" + value;
             conflictMap.put(conflictKey, conflictMap.getOrDefault(conflictKey, 0) + 1);
 
@@ -275,7 +279,8 @@ public class HeuristicSolver {
         return count;
     }
 
-    private static int[] findMRVAndHighestDegreeCell(int[][][] arr, int subgrid, int gridSize, Map<String, Integer> conflictMap) {
+    private static int[] findMRVAndHighestDegreeCell(
+            int[][][] arr, int subgrid, int gridSize, Map<String, Integer> conflictMap) {
         int boardLength = subgrid * gridSize;
         int minCount = Integer.MAX_VALUE;
         int maxDegree = -1;
@@ -289,7 +294,7 @@ public class HeuristicSolver {
                     if (count < minCount || (count == minCount && degree > maxDegree)) {
                         minCount = count;
                         maxDegree = degree;
-                        cell = new int[]{i, j};
+                        cell = new int[] {i, j};
                     }
                 }
             }
@@ -333,14 +338,18 @@ public class HeuristicSolver {
         return degree;
     }
 
-    private static List<Integer> getLCV(int[][][] arr, int row, int col, int subgrid, int gridSize) {
+    private static List<Integer> getLCV(
+            int[][][] arr, int row, int col, int subgrid, int gridSize) {
         List<Integer> possibleValues = getPossibleValues(arr[row][col]);
         Collections.shuffle(possibleValues, random); // Shuffle to introduce randomness
-        possibleValues.sort(Comparator.comparingInt(a -> countConstraints(arr, row, col, a, subgrid, gridSize)));
+        possibleValues.sort(
+                Comparator.comparingInt(
+                        a -> countConstraints(arr, row, col, a, subgrid, gridSize)));
         return possibleValues;
     }
 
-    private static int countConstraints(int[][][] arr, int row, int col, int value, int subgrid, int gridSize) {
+    private static int countConstraints(
+            int[][][] arr, int row, int col, int value, int subgrid, int gridSize) {
         int boardLength = subgrid * gridSize;
         int constraints = 0;
 
@@ -374,7 +383,6 @@ public class HeuristicSolver {
 
     public static int[][] removeNumsFromBoard(int[][][] sudokuBoard, int n, int k) {
 
-
         int[] row = new int[n * k];
         int[] col = new int[n * k];
         for (int i = 0; i < n * k; i++) {
@@ -387,7 +395,6 @@ public class HeuristicSolver {
         int numsRemoved = 0;
         int maxNumRemoved = SolverAlgorithm.setNumsRemoved(new int[n * k][n * k]);
         int tempVal;
-
 
         int i = 0;
         int j = 0;
@@ -402,7 +409,7 @@ public class HeuristicSolver {
                 sudokuBoard[row[i]][col[j]][0] = 0;
                 addPossiblePlacements(sudokuBoard, row[i], col[j], tempVal, n, k);
 
-                int [][][] copyBoard = copyBoard(sudokuBoard);
+                int[][][] copyBoard = copyBoard(sudokuBoard);
 
                 boolean uniqueSolution = true;
 
@@ -441,17 +448,17 @@ public class HeuristicSolver {
         return deepCopy3DBoard(sudokuBoard, n, k);
     }
 
-    public static int[][] deepCopy3DBoard (int [][][] arr, int n, int k) {
-        int [][] returnBoard = new int[n*k][n*k];
-        for (int i = 0; i < n*k; i++) {
-            for (int j = 0; j < n*k; j++) {
+    public static int[][] deepCopy3DBoard(int[][][] arr, int n, int k) {
+        int[][] returnBoard = new int[n * k][n * k];
+        for (int i = 0; i < n * k; i++) {
+            for (int j = 0; j < n * k; j++) {
                 returnBoard[i][j] = arr[i][j][0];
             }
         }
         return returnBoard;
     }
 
-    public static int [] fisherYatesShuffle (int [] list) {
+    public static int[] fisherYatesShuffle(int[] list) {
         for (int i = list.length - 1; i > 0; i--) {
             int index = random.nextInt(i + 1);
             int temp = list[index];

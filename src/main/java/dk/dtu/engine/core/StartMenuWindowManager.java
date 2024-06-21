@@ -3,15 +3,14 @@ package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.game.core.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The StartMenuWindowManager class is responsible for managing the start menu window.

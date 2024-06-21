@@ -1,10 +1,10 @@
+/* (C)2024 */
 package dk.dtu.engine.graphics;
 
 import dk.dtu.engine.utility.JSwitchBox;
 import dk.dtu.engine.utility.NumberDocumentFilter;
 import dk.dtu.game.core.Config;
 import dk.dtu.game.core.StartMenu;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +14,10 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
+
 /**
  * This class is responsible for creating a popup window that displays the game rules.
  */
-
 public class GameRulePopup extends JFrame {
     private final Color darkModebackgroundColor = new Color(64, 64, 64);
     private Color backgroundColor =
@@ -50,7 +50,8 @@ public class GameRulePopup extends JFrame {
         getContentPane().setBackground(backgroundColor);
     }
 
-    public void addJSwitchBox(String description, boolean initialState, Consumer<Boolean> toggleAction) {
+    public void addJSwitchBox(
+            String description, boolean initialState, Consumer<Boolean> toggleAction) {
         if (GraphicsEnvironment.isHeadless()) {
             return;
         }

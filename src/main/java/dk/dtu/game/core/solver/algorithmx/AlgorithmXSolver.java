@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver.algorithmx;
 
 import dk.dtu.game.core.Board;
@@ -61,7 +62,8 @@ public class AlgorithmXSolver {
                 }
                 for (int n : nums) {
                     int[] cover = new int[4];
-                    setCoverRow(coverList, i, j, n, cover, board.length, (int) Math.sqrt(board.length));
+                    setCoverRow(
+                            coverList, i, j, n, cover, board.length, (int) Math.sqrt(board.length));
                     placements.add(new Placement(i, j, n));
                 }
             }
@@ -71,14 +73,19 @@ public class AlgorithmXSolver {
     }
 
     private static void setCoverRow(
-            List<int[]> coverList, int i, int j, int n, int[] cover, int boardSize, int subGridSize) {
+            List<int[]> coverList,
+            int i,
+            int j,
+            int n,
+            int[] cover,
+            int boardSize,
+            int subGridSize) {
         cover[0] = i * boardSize + j; // Cell constraint
         cover[1] = boardSize * boardSize + i * boardSize + n - 1; // Row constraint
         cover[2] = 2 * boardSize * boardSize + j * boardSize + n - 1; // Column constraint
         int subGridID = (i / subGridSize) * subGridSize + (j / subGridSize);
         cover[3] = 3 * boardSize * boardSize + subGridID * boardSize + n - 1; // Sub-grid constraint
         coverList.add(cover);
-
     }
 
     public static void removeXNumbers(int[][] arr) {
@@ -100,7 +107,9 @@ public class AlgorithmXSolver {
                 if (checkUniqueSolution(arr) == 1) {
                     numRemoved++;
                 } else {
-                    arr[row][col] = tempNumber; // Restore the number if removing it doesn't lead to a unique solution.
+                    arr[row][col] =
+                            tempNumber; // Restore the number if removing it doesn't lead to a
+                    // unique solution.
                 }
             }
         }

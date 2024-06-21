@@ -9,7 +9,6 @@ import dk.dtu.engine.utility.*;
 import dk.dtu.engine.utility.Leaderboard;
 import dk.dtu.engine.utility.Leaderboard.LeaderboardEntry;
 import dk.dtu.game.core.solver.bruteforce.BruteForceAlgorithm;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -31,7 +30,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.AbstractDocument;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +67,7 @@ public class StartMenu {
     private static Color accentColor = Config.getDarkMode() ? lightaccentColor : Color.BLACK;
     private static Color backgroundColor = Config.getDarkMode() ? darkbackgroundColor : Color.WHITE;
     private final JComboBox<String> difficultyDropdown =
-            new JComboBox<>(new String[]{"Easy", "Medium", "Hard", "Extreme"});
+            new JComboBox<>(new String[] {"Easy", "Medium", "Hard", "Extreme"});
     GameRulePopup gameRules;
 
     private final JButton loadGameButton = new JButton("Load Game");
@@ -89,11 +87,12 @@ public class StartMenu {
     private static void setAccentColor(Color color) {
         accentColor = color;
     }
+
     private static void setBackgroundColor(Color color) {
         backgroundColor = color;
     }
 
-    //Initializes the window-manager and game engine with the given parameters for board size
+    // Initializes the window-manager and game engine with the given parameters for board size
     public void startGame() throws Board.BoardNotCreatable {
         logConfigInfo();
 
@@ -123,7 +122,7 @@ public class StartMenu {
         }
     }
 
-    //Main initializer calling all the lesser initializers
+    // Main initializer calling all the lesser initializers
     public void initialize() {
         // Initialize the start menu with all the buttons
         addSizePanelButtons();
@@ -182,8 +181,7 @@ public class StartMenu {
         gameRuleButton.setFocusPainted(false);
         gameRuleButton.setBorder(new LineBorder(accentColor));
         gameRuleButton.setForeground(accentColor);
-        gameRuleButton.addActionListener(
-                e -> gameRules.setVisible(true));
+        gameRuleButton.addActionListener(e -> gameRules.setVisible(true));
         startMenuWindowManager.addComponent(
                 gameRuleButton, startMenuWindowManager.getButtonPanel());
     }
@@ -200,7 +198,7 @@ public class StartMenu {
                 Config::setEnableKillerSudoku);
     }
 
-    //Method to handle the logic for loading the game
+    // Method to handle the logic for loading the game
     private void onLoadGame(ActionEvent e) {
         if (isLoadGameDialogOpen) {
             return;
@@ -210,7 +208,10 @@ public class StartMenu {
                 SavedGame.loadSavedGames("jdbc:sqlite:sudoku.db");
         if (savedGames.isEmpty()) {
             JOptionPane.showMessageDialog(
-                    null, "No saved games available.", "Error conserving saving", JOptionPane.INFORMATION_MESSAGE);
+                    null,
+                    "No saved games available.",
+                    "Error conserving saving",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
@@ -260,7 +261,7 @@ public class StartMenu {
         loadGameDialog.setVisible(true);
     }
 
-    //Helper method for the load game popup
+    // Helper method for the load game popup
     private JButton getjButton(JList<SavedGame.SavedGameData> gameList, JDialog loadGameDialog) {
         JButton loadButton = new JButton("Load");
         loadButton.setBackground(backgroundColor);
@@ -301,7 +302,8 @@ public class StartMenu {
         return loadButton;
     }
 
-    //Takes a board representation as a string from the database and makes it into a 2D int array, so it can be used by the backend
+    // Takes a board representation as a string from the database and makes it into a 2D int array,
+    // so it can be used by the backend
     private int[][] deserializeBoard(String boardString) {
         String[] rows = boardString.split(";");
         int size = rows.length;
@@ -317,7 +319,7 @@ public class StartMenu {
         return board;
     }
 
-    //Custom start game method to start with a loaded game
+    // Custom start game method to start with a loaded game
     private void startGameWithSavedData(
             int[][] initialBoard,
             int[][] currentBoard,
@@ -367,18 +369,20 @@ public class StartMenu {
         }
     }
 
-    //Handles what happens when creating an online game, gets the ip address from the host and starts the server along with a game thread
+    // Handles what happens when creating an online game, gets the ip address from the host and
+    // starts the server along with a game thread
     private void onCreateGame(ActionEvent e) {
         Config.setDifficulty("Easy");
         joinGameButton.setEnabled(false);
         createGameButton.setEnabled(false);
 
         // Start the server in a new thread
-        new Thread(() -> {
-
-                    GameServer server = new GameServer();
-                    server.start();
-                }).start();
+        new Thread(
+                        () -> {
+                            GameServer server = new GameServer();
+                            server.start();
+                        })
+                .start();
 
         try {
             // Get the local IP address of the server
@@ -389,11 +393,12 @@ public class StartMenu {
             connectClient(localIpAddress);
 
         } catch (UnknownHostException ex) {
-            ex.printStackTrace();
+            logger.error("Failed to determine the server's IP address: {}", ex.getMessage());
             JOptionPane.showMessageDialog(
                     null,
                     "Failed to determine the server's IP address.",
-                    ERROR, JOptionPane.ERROR_MESSAGE);
+                    ERROR,
+                    JOptionPane.ERROR_MESSAGE);
             joinGameButton.setEnabled(true);
             createGameButton.setEnabled(true);
         }
@@ -408,7 +413,8 @@ public class StartMenu {
         createGameButton.setEnabled(false);
 
         // Prompt user for an IP address
-        String serverAddress = showInputDialog(null, "Enter server IP address (leave empty to search):");
+        String serverAddress =
+                showInputDialog(null);
 
         // Check if the dialog was cancelled
         if (serverAddress == null) {
@@ -418,7 +424,8 @@ public class StartMenu {
         }
 
         // Create a GameClient to discover servers
-        GameClient client = new GameClient(new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000));
+        GameClient client =
+                new GameClient(new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000));
 
         if (serverAddress.isEmpty()) {
             client.discoverServers();
@@ -438,7 +445,8 @@ public class StartMenu {
             if (!connected) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Failed to connect to any server. Please check the server addresses and try again.",
+                        "Failed to connect to any server. Please check the server addresses and try"
+                                + " again.",
                         ERROR,
                         JOptionPane.ERROR_MESSAGE);
 
@@ -453,7 +461,8 @@ public class StartMenu {
             } else {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Failed to connect to the specified server. Please check the server address and try again.",
+                        "Failed to connect to the specified server. Please check the server address"
+                                + " and try again.",
                         ERROR,
                         JOptionPane.ERROR_MESSAGE);
 
@@ -463,17 +472,14 @@ public class StartMenu {
         }
     }
 
-
-
-
-    private String showInputDialog(Frame parent, String message) {
+    private String showInputDialog(Frame parent) {
         final JDialog dialog = new JDialog(parent, "Join Game", true);
         final JTextField textField = new JTextField(20);
         final JButton okButton = new JButton("OK");
         final boolean[] okPressed = {false};
 
         dialog.setLayout(new BorderLayout());
-        dialog.add(new JLabel(message), BorderLayout.NORTH);
+        dialog.add(new JLabel("Enter server IP address (leave empty to search):"), BorderLayout.NORTH);
         dialog.add(textField, BorderLayout.CENTER);
 
         JPanel panel = new JPanel();
@@ -483,54 +489,57 @@ public class StartMenu {
         dialog.pack();
         dialog.setLocationRelativeTo(parent);
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                okPressed[0] = true;
-                dialog.dispose();
-            }
-        });
+        okButton.addActionListener(
+                e -> {
+                    okPressed[0] = true;
+                    dialog.dispose();
+                });
 
-        dialog.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                dialog.dispose();
-            }
-        });
+        dialog.addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        dialog.dispose();
+                    }
+                });
 
         dialog.setVisible(true);
 
         return okPressed[0] ? textField.getText() : null;
     }
 
-
-
-    //Method to connect the client to the server and starting the thread
+    // Method to connect the client to the server and starting the thread
     private void connectClient(String serverAddress) {
-        new Thread(() -> {
-            WindowManager windowManager = new WindowManager(startMenuWindowManager.getFrame(), 1000, 1000);
-            GameClient client = new GameClient(windowManager);
-            try {
-                client.start(serverAddress);
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
-                        null,
-                        "Connected to server at " + serverAddress,
-                        "Connected",
-                        JOptionPane.INFORMATION_MESSAGE));
-            } catch (IOException | Board.BoardNotCreatable ex) {
-                ex.printStackTrace();
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Failed to start the game with the server.",
-                            ERROR,
-                            JOptionPane.ERROR_MESSAGE);
-                    joinGameButton.setEnabled(true);
-                    createGameButton.setEnabled(true);
-                });
+        new Thread(
+                        () -> {
+                            WindowManager windowManager =
+                                    new WindowManager(
+                                            startMenuWindowManager.getFrame(), 1000, 1000);
+                            GameClient client = new GameClient(windowManager);
+                            try {
+                                client.start(serverAddress);
+                                SwingUtilities.invokeLater(
+                                        () ->
+                                                JOptionPane.showMessageDialog(
+                                                        null,
+                                                        "Connected to server at " + serverAddress,
+                                                        "Connected",
+                                                        JOptionPane.INFORMATION_MESSAGE));
+                            } catch (IOException | Board.BoardNotCreatable ex) {
+                                logger.error("Failed to start the game with the server: {}", ex.getMessage());
+                                SwingUtilities.invokeLater(
+                                        () -> {
+                                            JOptionPane.showMessageDialog(
+                                                    null,
+                                                    "Failed to start the game with the server.",
+                                                    ERROR,
+                                                    JOptionPane.ERROR_MESSAGE);
+                                            joinGameButton.setEnabled(true);
+                                            createGameButton.setEnabled(true);
+                                        });
                             }
-            })
-        .start();
+                        })
+                .start();
     }
 
     private void addLeaderboardButton() {
@@ -555,13 +564,13 @@ public class StartMenu {
         List<String[]> rowData = new ArrayList<>();
         for (LeaderboardEntry entry : leaderboard) {
             rowData.add(
-                    new String[]{
-                            entry.username(),
-                            entry.difficulty(),
-                            String.format(
-                                    "%02d:%02d:%02d",
-                                    entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
-                            entry.timestamp()
+                    new String[] {
+                        entry.username(),
+                        entry.difficulty(),
+                        String.format(
+                                "%02d:%02d:%02d",
+                                entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
+                        entry.timestamp()
                     });
         }
 
@@ -603,9 +612,11 @@ public class StartMenu {
         leaderboardDialog.setVisible(true);
     }
 
-    //This method adds listeners for the input fiels that make up the custom board, allowing different configurations of game boards
+    // This method adds listeners for the input fiels that make up the custom board, allowing
+    // different configurations of game boards
     private void addChangeListenerToField(JTextField field) {
-        // This method adds a document listener to the input fields, so that the board & config is updated
+        // This method adds a document listener to the input fields, so that the board & config is
+        // updated
         // when the user changes the values
         field.getDocument()
                 .addDocumentListener(
@@ -631,7 +642,7 @@ public class StartMenu {
                                         Config.setN(n);
                                         Config.setK(k);
                                         updateCustomBoardPanel(n, k);
-                                        boardConfigs[3] = new int[]{n, k};
+                                        boardConfigs[3] = new int[] {n, k};
                                     }
                                 } catch (NumberFormatException ex) {
                                     // Handle the case where one of the fields is empty or does not
@@ -732,7 +743,7 @@ public class StartMenu {
         startMenuWindowManager.addComponent(importButton, startMenuWindowManager.getButtonPanel());
     }
 
-    //Calls the correct start game method when importing a sudoku from a file
+    // Calls the correct start game method when importing a sudoku from a file
     private void onImportSudoku(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select a Sudoku Puzzle File");
@@ -753,7 +764,8 @@ public class StartMenu {
         }
     }
 
-    //This method takes in a list of strings by reading a file and then it spits out a game board represented as a 2D int array
+    // This method takes in a list of strings by reading a file and then it spits out a game board
+    // represented as a 2D int array
     public int[][] importSudokuFromFile(List<String> lines)
             throws IOException, Board.BoardNotCreatable {
         if (lines.isEmpty()) {
@@ -855,7 +867,8 @@ public class StartMenu {
         }
     }
 
-    // Making sure to dynamically update the colors of the start menu when switching between light and dark mode in the game rule menu
+    // Making sure to dynamically update the colors of the start menu when switching between light
+    // and dark mode in the game rule menu
     // Making sure that you do not need to open and close the game between each swap.
     public void updateColors() {
         setBackgroundColor(Config.getDarkMode() ? darkbackgroundColor : Color.WHITE);

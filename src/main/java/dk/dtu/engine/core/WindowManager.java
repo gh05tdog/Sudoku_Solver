@@ -3,15 +3,14 @@ package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.TimerFunction;
 import dk.dtu.game.core.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The WindowManager class is responsible for managing the game window.
@@ -21,11 +20,9 @@ import javax.swing.*;
 public class WindowManager {
     private static final Logger logger = LoggerFactory.getLogger(WindowManager.class);
     private final JFrame frame;
-    private final JPanel mainPanel =
-            new JPanel(new GridBagLayout());
+    private final JPanel mainPanel = new JPanel(new GridBagLayout());
     private final JPanel buttonPanel = new JPanel(); // Panel for buttons
-    private final JPanel whitePanel =
-            new JPanel(new GridBagLayout());
+    private final JPanel whitePanel = new JPanel(new GridBagLayout());
     JPanel heartsPanel = new JPanel();
     BufferedImage emptyHeartImage;
     ImageIcon emptyHeartIcon;
@@ -34,9 +31,7 @@ public class WindowManager {
     JPanel combinedPanel = new JPanel();
     private boolean[] heartStates; // true if the heart is full, false if empty
 
-
     private static final String STR_NOT_FOUND_MSG = "Image not found, check path";
-
 
     private static Color backgroundColor =
             Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
@@ -133,7 +128,7 @@ public class WindowManager {
             if (comp instanceof JLabel label) {
                 label.setIcon(emptyHeartIcon);
                 heartStates[lastIndex] = false; // Update state to empty
-                logger.info("Heart emptied at index: {}",lastIndex);
+                logger.info("Heart emptied at index: {}", lastIndex);
             }
         } else {
             logger.info("No full heart found to replace");
@@ -330,10 +325,9 @@ public class WindowManager {
         whitePanel.repaint();
     }
 
-    public static void logMessageNotFound () {
+    public static void logMessageNotFound() {
         logger.info(STR_NOT_FOUND_MSG);
     }
-
 
     public void setHearts(int usedLifeLines) {
         for (int i = 1; i <= usedLifeLines; i++) {

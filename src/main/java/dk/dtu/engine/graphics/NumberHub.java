@@ -103,7 +103,11 @@ public abstract class NumberHub extends JPanel {
         if (j == subGrid) {
             return 0;
         } else {
-            return numberArray[j][i];
+            try {
+                return numberArray[j][i];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                return 0;
+            }
         }
     }
 

@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import java.io.IOException;
@@ -11,11 +12,14 @@ import org.slf4j.LoggerFactory;
 
 public class SSDPClient {
     private static final String M_SEARCH_MESSAGE =
-            "M-SEARCH * HTTP/1.1\r\n" +
-                    "HOST: 239.255.255.250:1900\r\n" +
-                    "MAN: \"ssdp:discover\"\r\n" +
-                    "MX: 3\r\n" +
-                    "ST: ssdp:all\r\n\r\n";
+            """
+                    M-SEARCH * HTTP/1.1\r
+                    HOST: 239.255.255.250:1900\r
+                    MAN: "ssdp:discover"\r
+                    MX: 3\r
+                    ST: ssdp:all\r
+                    \r
+                    """;
     private static final int SSDP_PORT = 1900;
     private static final String SSDP_IP = "239.255.255.250";
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
@@ -23,37 +27,45 @@ public class SSDPClient {
 
     public List<String> discover() {
         List<String> servers = new ArrayList<>();
-        try (DatagramSocket socket = new DatagramSocket();) {
+        try (DatagramSocket socket = new DatagramSocket()) {
 
             socket.setSoTimeout(5000);
 
             byte[] sendData = M_SEARCH_MESSAGE.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(SSDP_IP), SSDP_PORT);
+            DatagramPacket sendPacket =
+                    new DatagramPacket(
+                            sendData, sendData.length, InetAddress.getByName(SSDP_IP), SSDP_PORT);
             socket.send(sendPacket);
 
-            executorService.execute(() -> {
-                byte[] receiveData = new byte[1024];
-                while (true) {
-                    DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                    try {
-                        socket.receive(receivePacket);
-                        String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                        if (response.contains("LOCATION")) {
-                            String serverIp = extractIp(response);
-                            if (serverIp != null && !servers.contains(serverIp)) {
-                                servers.add(serverIp);
+            executorService.execute(
+                    () -> {
+                        byte[] receiveData = new byte[1024];
+                        while (true) {
+                            DatagramPacket receivePacket =
+                                    new DatagramPacket(receiveData, receiveData.length);
+                            try {
+                                socket.receive(receivePacket);
+                                String response =
+                                        new String(
+                                                receivePacket.getData(),
+                                                0,
+                                                receivePacket.getLength());
+                                if (response.contains("LOCATION")) {
+                                    String serverIp = extractIp(response);
+                                    if (serverIp != null && !servers.contains(serverIp)) {
+                                        servers.add(serverIp);
+                                    }
+                                }
+                            } catch (IOException e) {
+                                break; // Timeout reached, stop listening
                             }
                         }
-                    } catch (IOException e) {
-                        break; // Timeout reached, stop listening
-                    }
-                }
-            });
+                    });
 
             Thread.sleep(6000); // Wait for responses
 
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Failed to discover servers", e);
         }
         return servers;
     }

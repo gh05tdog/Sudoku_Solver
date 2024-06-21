@@ -1,3 +1,4 @@
+/* (C)2024 */
 package dk.dtu.engine.utility;
 
 import dk.dtu.game.core.Board;
@@ -12,16 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.swing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
 
 /**
  * The GameServer class is responsible for starting the game server and accepting client connections.
  * It listens for messages from clients and processes them accordingly.
  */
-
 public class GameServer {
     private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
     private static final int PORT = 12345;
@@ -101,7 +100,7 @@ public class GameServer {
     // Send the initial board to all clients
     public void sendInitialBoard() throws Board.BoardNotCreatable {
 
-        if (serverDialog != null) {  // Close the dialog when a client connects
+        if (serverDialog != null) { // Close the dialog when a client connects
             serverDialog.dispose();
             serverDialog = null;
         }
@@ -143,7 +142,8 @@ public class GameServer {
 
         @Override
         public void run() {
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
+            try (BufferedReader in =
+                    new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ) {
                 String message;
                 while ((message = in.readLine()) != null) {
                     processMessage(message);
@@ -174,7 +174,9 @@ public class GameServer {
                         if (connectedPlayers == totalPlayers) {
                             try {
                                 sendInitialBoard();
-                                broadcastMessage("READY"); // Notify all clients that the game is ready to start
+                                broadcastMessage(
+                                        "READY"); // Notify all clients that the game is ready to
+                                // start
                             } catch (Board.BoardNotCreatable e) {
                                 logger.error("Error creating board: {}", e.getMessage());
                             }
@@ -186,7 +188,8 @@ public class GameServer {
                     String playerName = parts[1];
                     announceWinner(playerName);
                 }
-                case "PROGRESS" -> broadcastMessage(message); // Forward the progress message to all clients
+                case "PROGRESS" ->
+                        broadcastMessage(message); // Forward the progress message to all clients
             }
         }
 
@@ -223,7 +226,6 @@ public class GameServer {
         throw new SocketException("No non-loopback IPv4 address found.");
     }
 
-
     public static void closingSocketErr(IOException e) {
         logger.error("Error closing client socket: {}", e.getMessage());
     }
@@ -233,7 +235,11 @@ public class GameServer {
         serverDialog.setTitle("Server Started");
         serverDialog.setModal(true);
         serverDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        JLabel messageLabel = new JLabel("Server started on IP: " + LOCAL_IP_ADDRESS + ". Waiting for clients to join.");
+        JLabel messageLabel =
+                new JLabel(
+                        "Server started on IP: "
+                                + LOCAL_IP_ADDRESS
+                                + ". Waiting for clients to join.");
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         serverDialog.add(messageLabel);
         serverDialog.setSize(500, 150);

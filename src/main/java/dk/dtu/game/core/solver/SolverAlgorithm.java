@@ -1,7 +1,7 @@
+/* (C)2024 */
 package dk.dtu.game.core.solver;
 
 import dk.dtu.game.core.Config;
-
 import java.util.List;
 
 public class SolverAlgorithm {
@@ -9,7 +9,6 @@ public class SolverAlgorithm {
     private SolverAlgorithm() {
         throw new IllegalStateException("Utility class");
     }
-
 
     public static boolean checkBoard(int[][] board, int row, int col, int c, int constant) {
         boolean legalRowCol = true;
@@ -21,7 +20,9 @@ public class SolverAlgorithm {
             }
         }
         for (int p = (row / constant) * constant; p < (row / constant) * constant + constant; p++) {
-            for (int q = (col / constant) * constant; q < (col / constant) * constant + constant; q++) {
+            for (int q = (col / constant) * constant;
+                    q < (col / constant) * constant + constant;
+                    q++) {
                 if (board[p][q] == c) {
                     legalSquare = false;
                     break;
@@ -50,18 +51,18 @@ public class SolverAlgorithm {
         }
         return possiblePlacements;
     }
-    public static int setNumsRemoved (int [][] arr) {
-        int numOfCells = arr.length*arr.length;
+
+    public static int setNumsRemoved(int[][] arr) {
+        int numOfCells = arr.length * arr.length;
         String difficulty = Config.getDifficulty();
         int maxNumRemoved;
         maxNumRemoved =
                 switch (difficulty) {
-                    case "medium" -> numOfCells/2;
-                    case "hard" -> 2*numOfCells/3;
-                    case "extreme" -> 4*numOfCells/5;
-                    default -> numOfCells/3;
+                    case "medium" -> numOfCells / 2;
+                    case "hard" -> 2 * numOfCells / 3;
+                    case "extreme" -> 4 * numOfCells / 5;
+                    default -> numOfCells / 3;
                 };
         return maxNumRemoved;
     }
 }
-
