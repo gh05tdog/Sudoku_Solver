@@ -157,7 +157,6 @@ public class SolverTest {
                 }
             }
         }
-
         return true;
     }
 

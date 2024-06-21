@@ -273,7 +273,7 @@ class SudokuGameTest {
                 new NumberHub(9, 550 / 9) {
                     @Override
                     public int getNumber(int x, int y) {
-                        return 5; // Mock behavior
+                        return 5;
                     }
                 });
 

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The SudokuGame class is responsible for managing all the actions taken on the main game window. It handles making moves, undoing moves,
- * providing hints etc. It also manages the game board and the number hub. It serves as a connection between the board and the sudoku-board canvas,
+ * providing hints, etc. It also manages the game board and the number hub. It serves as a connection between the board and the sudoku-board canvas,
  * whilst also adding buttons and panels etc. to the window-manager. It is the core logic of
  */
 public class SudokuGame {
@@ -962,7 +962,7 @@ public class SudokuGame {
                 handleGameCompletion();
             }
         } else {
-            // Make a pop-up to tell the user that they have used the solve button
+            // Make a pop-up to tell the user that they have used the solved button
             JOptionPane.showMessageDialog(
                     null,
                     "You have used the solve button, you will not be able to enter the"
@@ -1017,7 +1017,7 @@ public class SudokuGame {
         }
     }
 
-    // If the game is over and not solved with the solve button, the player will be prompted to
+    // If the game is over and not solved with the solved button, the player will be prompted to
     // enter the leaderboard
     private void promptForLeaderboardEntry() {
         Preferences pref = Preferences.userNodeForPackage(this.getClass());
