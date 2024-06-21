@@ -220,6 +220,7 @@ public class StartMenu {
 
         // Apply the current theme settings to the dialog
         JDialog loadGameDialog = new JDialog();
+        loadGameDialog.setAlwaysOnTop(true);
         loadGameDialog.setTitle("Load Game");
         loadGameDialog.setSize(750, 300);
         loadGameDialog.setLayout(new BorderLayout());
