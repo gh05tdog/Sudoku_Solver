@@ -21,7 +21,7 @@ public class WindowManager {
     private static final Logger logger = LoggerFactory.getLogger(WindowManager.class);
     private final JFrame frame;
     private final JPanel mainPanel = new JPanel(new GridBagLayout());
-    private final JPanel buttonPanel = new JPanel(); // Panel for buttons
+    private final JPanel buttonPanel = new JPanel();
     private final JPanel whitePanel = new JPanel(new GridBagLayout());
     JPanel heartsPanel = new JPanel();
     BufferedImage emptyHeartImage;
@@ -29,7 +29,7 @@ public class WindowManager {
     BufferedImage heartImage;
     ImageIcon heartIcon;
     JPanel combinedPanel = new JPanel();
-    private boolean[] heartStates; // true if the heart is full, false if empty
+    private boolean[] heartStates;
 
     private static final String STR_NOT_FOUND_MSG = "Image not found, check path";
 
@@ -49,40 +49,40 @@ public class WindowManager {
         mainPanel.setBackground(backgroundColor);
 
         // Configure the button panel
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Center buttons horizontally
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(backgroundColor);
 
         GridBagConstraints buttonConstraints = new GridBagConstraints();
-        buttonConstraints.insets = new Insets(10, 70, 10, 0); // Add padding
+        buttonConstraints.insets = new Insets(10, 70, 10, 0);
 
         whitePanel.setBackground(backgroundColor);
-        whitePanel.setLayout(new GridBagLayout()); // GridBagLayout to center the board
+        whitePanel.setLayout(new GridBagLayout());
 
         // Add the white panel to the main panel
         mainPanel.add(whitePanel, new GridBagConstraints());
 
         // Add the button panel below the board
-        buttonConstraints.gridy = 1; // Place buttonPanel below the board
-        buttonConstraints.weighty = 0; // Don't allow vertical stretching
+        buttonConstraints.gridy = 1;
+        buttonConstraints.weighty = 0;
         mainPanel.add(buttonPanel, buttonConstraints);
 
-        this.frame.setContentPane(mainPanel); // Add the main panel to the frame
+        this.frame.setContentPane(mainPanel);
         addHeartLabels();
     }
 
     // This method is used to add the heart labels to the window
     private void addHeartLabels() {
-        heartStates = new boolean[Config.getNumberOfLives()]; // Assuming 5 hearts as maximum
+        heartStates = new boolean[Config.getNumberOfLives()];
         try {
             heartsPanel.setBackground(backgroundColor);
             heartsPanel.setLayout(
-                    new FlowLayout(FlowLayout.LEFT, 5, 0)); // Horizontal layout with small gaps
+                    new FlowLayout(FlowLayout.LEFT, 5, 0));
 
             if (Config.getEnableLives()) {
                 for (int i = 0; i < Config.getNumberOfLives(); i++) {
                     JLabel heartLabel = new JLabel();
                     heartsPanel.add(heartLabel);
-                    heartStates[i] = true; // Mark the heart as full
+                    heartStates[i] = true;
                 }
             }
 
@@ -94,7 +94,7 @@ public class WindowManager {
             gbc.insets = new Insets(10, 70, 10, 10);
             whitePanel.add(heartsPanel, gbc);
         } catch (NullPointerException ignored) {
-            logMessageNotFound(); // Debug message
+            logMessageNotFound();
         }
     }
 
@@ -112,13 +112,13 @@ public class WindowManager {
         } catch (IOException e) {
             logger.error(e.getMessage());
         } catch (NullPointerException e) {
-            logMessageNotFound(); // Debug message
+            logMessageNotFound();
         }
 
         // Find the last "full" heart label and update its icon directly
         int lastIndex = -1;
         for (int i = 0; i < heartStates.length; i++) {
-            if (heartStates[i]) { // Check if the heart is marked as full
+            if (heartStates[i]) {
                 lastIndex = i;
             }
         }
@@ -127,7 +127,7 @@ public class WindowManager {
             Component comp = heartsPanel.getComponent(lastIndex);
             if (comp instanceof JLabel label) {
                 label.setIcon(emptyHeartIcon);
-                heartStates[lastIndex] = false; // Update state to empty
+                heartStates[lastIndex] = false;
                 logger.info("Heart emptied at index: {}", lastIndex);
             }
         } else {
@@ -151,14 +151,14 @@ public class WindowManager {
         } catch (IOException e) {
             logger.error(e.getMessage());
         } catch (NullPointerException e) {
-            logMessageNotFound(); // Debug message
+            logMessageNotFound();
         }
 
         for (int i = 0; i < heartsPanel.getComponentCount(); i++) {
             Component comp = heartsPanel.getComponent(i);
             if (comp instanceof JLabel label) {
-                label.setIcon(heartIcon); // Set each heart to full
-                heartStates[i] = true; // Mark the heart as full
+                label.setIcon(heartIcon);
+                heartStates[i] = true;
             }
         }
         heartsPanel.revalidate();
@@ -187,11 +187,11 @@ public class WindowManager {
     public void drawBoard(Component board) {
         // This method is used to add the Sudoku board itself, centered in the boardPanel
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0; // Align component at the grid's center
-        gbc.gridy = 1; // Align component at the grid's center (below the heart label)
-        gbc.weightx = 0.5; // Give column some weight so the component will be centered
-        gbc.weighty = 1; // Give row some weight so the component will be centered
-        gbc.fill = GridBagConstraints.BOTH; // Let component fill its display area
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 0.5;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(0, 70, 0, 30);
 
         whitePanel.add(board, gbc);
@@ -211,8 +211,8 @@ public class WindowManager {
         GridBagConstraints gbcPanel = new GridBagConstraints();
         gbcPanel.gridx = 1;
         gbcPanel.gridy = 0;
-        gbcPanel.fill = GridBagConstraints.NORTH; // Align to the top of the space
-        gbcPanel.insets = new Insets(60, 20, 10, 10); // Adds padding around the combined panel
+        gbcPanel.fill = GridBagConstraints.NORTH;
+        gbcPanel.insets = new Insets(60, 20, 10, 10);
 
         mainPanel.add(combinationPanel, gbcPanel);
 
@@ -238,7 +238,7 @@ public class WindowManager {
         numberHubWrapper.setBackground(backgroundColor);
         numberHubWrapper.setOpaque(false);
         numberHubWrapper.setBorder(
-                BorderFactory.createEmptyBorder(0, 7, 0, 0)); // Add 10 pixels padding to the left
+                BorderFactory.createEmptyBorder(0, 7, 0, 0));
         numberHubWrapper.add(Box.createHorizontalGlue());
         numberHubWrapper.add(numberHub);
         numberHubWrapper.add(Box.createHorizontalGlue());
@@ -247,20 +247,20 @@ public class WindowManager {
         timer.setVisibility(Config.getEnableTimer());
         combinedPanel.add(timer);
         combinedPanel.add(
-                Box.createRigidArea(new Dimension(0, 10))); // Space between timer and number hub
+                Box.createRigidArea(new Dimension(0, 10)));
 
         combinedPanel.add(numberHubWrapper);
 
         combinedPanel.add(
                 Box.createRigidArea(
-                        new Dimension(0, 10))); // Space between number hub and go back button
+                        new Dimension(0, 10)));
 
         goBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         combinedPanel.add(goBackButton);
 
         combinedPanel.add(
                 Box.createRigidArea(
-                        new Dimension(0, 10))); // Space between go back button and save game button
+                        new Dimension(0, 10)));
         saveGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         combinedPanel.add(saveGameButton);
 
@@ -318,9 +318,9 @@ public class WindowManager {
         gbc.gridy = yPos; // Position set based on yPos
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 0, 10, 0); // Add some space around the progress bar
+        gbc.insets = new Insets(10, 0, 10, 0);
 
-        whitePanel.add(progressBar, gbc); // Add to whitePanel to ensure proper layout
+        whitePanel.add(progressBar, gbc);
         whitePanel.revalidate();
         whitePanel.repaint();
     }

@@ -18,10 +18,10 @@ import org.slf4j.LoggerFactory;
  */
 public class StartMenuWindowManager {
     private final JFrame frame;
-    private final JPanel buttonPanel = new JPanel(null); // Panel for buttons
-    private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
-    private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
-    private final JPanel welcomePanel = new JPanel(null); // Panel for welcome message
+    private final JPanel buttonPanel = new JPanel(null);
+    private final JPanel sizePanel = new JPanel(null);
+    private final JPanel inputPanel = new JPanel(null);
+    private final JPanel welcomePanel = new JPanel(null);
     private final JPanel mainPanel = new JPanel(null);
     private static Color backgroundColor =
             Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
@@ -64,7 +64,7 @@ public class StartMenuWindowManager {
         mainPanel.add(inputPanel);
         mainPanel.add(welcomePanel);
 
-        frame.setContentPane(mainPanel); // Add the main panel to the frame
+        frame.setContentPane(mainPanel);
     }
 
     public void setCustomBoardPanels(CustomBoardPanel[] panels) {
