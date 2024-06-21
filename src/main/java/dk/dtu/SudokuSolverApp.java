@@ -4,6 +4,8 @@ package dk.dtu;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.utility.DatabaseSetup;
 import dk.dtu.game.core.StartMenu;
+
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -14,6 +16,8 @@ public class SudokuSolverApp {
 
     public static void main(String[] args) {
         logger.info("Starting Sudoku Solver Application...");
+        //Get icon from resources
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(SudokuSolverApp.class.getResource("/logo.png")));
 
         try {
             // Generate the database
@@ -26,8 +30,10 @@ public class SudokuSolverApp {
                     () -> {
                         try {
                             logger.info("Initializing GUI...");
+                            JFrame frame = new JFrame("Sudoku");
+                            frame.setIconImage(icon.getImage());
                             StartMenuWindowManager startMenu =
-                                    new StartMenuWindowManager(new JFrame(), 1000, 1000);
+                                    new StartMenuWindowManager(frame, 1000, 1000);
                             StartMenu startMenu1 = new StartMenu(startMenu);
                             startMenu1.initialize();
                             logger.info("GUI initialized successfully.");

@@ -544,7 +544,7 @@ public class StartMenu {
 
     private void addLeaderboardButton() {
         leaderboardButton.addActionListener(this::onShowLeaderboard);
-        leaderboardButton.setBounds(5, 95, 190, 40); // Adjust the size and position as needed
+        leaderboardButton.setBounds(5, 95, 190, 40);
         leaderboardButton.setBackground(backgroundColor);
         leaderboardButton.setFocusPainted(false);
 
