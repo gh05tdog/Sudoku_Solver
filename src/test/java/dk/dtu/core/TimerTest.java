@@ -26,7 +26,7 @@ class TimerTest {
     void testTimer() {
         timer.start();
 
-        /* Use Awaitility to wait up to 2 seconds until the timer counts at least 1 second */
+        /* Use Availability to wait up to 2 seconds until the timer counts at least 1 second */
         await().atMost(ofSeconds(2)).until(timerHasReachedOneSecond());
 
         String time = timer.getTimeString();

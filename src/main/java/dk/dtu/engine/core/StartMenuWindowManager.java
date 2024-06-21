@@ -3,15 +3,14 @@ package dk.dtu.engine.core;
 
 import dk.dtu.engine.utility.CustomBoardPanel;
 import dk.dtu.game.core.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The StartMenuWindowManager class is responsible for managing the start menu window.
@@ -19,10 +18,10 @@ import javax.swing.*;
  */
 public class StartMenuWindowManager {
     private final JFrame frame;
-    private final JPanel buttonPanel = new JPanel(null); // Panel for buttons
-    private final JPanel sizePanel = new JPanel(null); // Panel for size buttons
-    private final JPanel inputPanel = new JPanel(null); // Panel for input buttons
-    private final JPanel welcomePanel = new JPanel(null); // Panel for welcome message
+    private final JPanel buttonPanel = new JPanel(null);
+    private final JPanel sizePanel = new JPanel(null);
+    private final JPanel inputPanel = new JPanel(null);
+    private final JPanel welcomePanel = new JPanel(null);
     private final JPanel mainPanel = new JPanel(null);
     private static Color backgroundColor =
             Config.getDarkMode() ? new Color(64, 64, 64) : Color.WHITE;
@@ -65,7 +64,7 @@ public class StartMenuWindowManager {
         mainPanel.add(inputPanel);
         mainPanel.add(welcomePanel);
 
-        frame.setContentPane(mainPanel); // Add the main panel to the frame
+        frame.setContentPane(mainPanel);
     }
 
     public void setCustomBoardPanels(CustomBoardPanel[] panels) {
@@ -78,12 +77,13 @@ public class StartMenuWindowManager {
         panel.repaint();
     }
 
+    // Set the logo on the start menu
     public void setStartMenuLogo() {
         try {
             BufferedImage originalImage =
                     ImageIO.read(Objects.requireNonNull(getClass().getResource("/logo.png")));
-            int newWidth = 700; // Change this to desired width
-            int newHeight = 700; // Change this to desired height
+            int newWidth = 700;
+            int newHeight = 700;
 
             Image scaledImage =
                     originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);

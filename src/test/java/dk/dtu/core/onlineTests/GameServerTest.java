@@ -24,8 +24,8 @@ class GameServerTest {
                         new GameServer() {
                             @Override
                             protected void startServerSocket() {
-                                try {
-                                    ServerSocket serverSocket = new ServerSocket(0); // Use any available port
+                                try ( ServerSocket serverSocket = new ServerSocket(0)){
+
                                     System.out.println(
                                             "Server started on port "
                                                     + serverSocket.getLocalPort());

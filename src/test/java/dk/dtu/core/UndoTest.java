@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import dk.dtu.engine.core.StartMenuWindowManager;
 import dk.dtu.engine.core.WindowManager;
 import dk.dtu.game.core.Board;
-import dk.dtu.game.core.Move;
 import dk.dtu.game.core.StartMenu;
 import dk.dtu.game.core.SudokuGame;
 import dk.dtu.game.core.solver.algorithmx.AlgorithmXSolver;
@@ -67,7 +66,7 @@ class UndoTest {
         game.fillHintList();
 
         // Apply all hints to the board
-        for (Move hint : game.getHintList()) {
+        for (SudokuGame.Move hint : game.getHintList()) {
             game.gameboard.setNumber(hint.row(), hint.column(), hint.number());
         }
 

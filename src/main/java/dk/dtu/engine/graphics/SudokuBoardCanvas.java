@@ -51,6 +51,11 @@ public class SudokuBoardCanvas extends JPanel {
         setPreferredSize(new Dimension(gridSize * cellSize, gridSize * cellSize));
     }
 
+    /**
+     * The main paint method, it determines which of the smaller paint methods should be run.
+     * It loop through all cells and sets them to be painted, it then draws all the subgrids
+     * and if the killer sudoku game mode is activated it also draws the cages
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -84,6 +89,7 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
+    // Main distributor to draw killer sudoku cages
     public void drawCages(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         configureGraphics(g2);
@@ -102,12 +108,14 @@ public class SudokuBoardCanvas extends JPanel {
 
     private void configureGraphics(Graphics2D g2) {
         float[] dash = {4f, 4f};
-        BasicStroke stroke = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0f);
+        BasicStroke stroke =
+                new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0f);
         g2.setStroke(stroke);
         g2.setColor(accentColor);
         g2.setFont(new Font("Arial", Font.BOLD, 12));
     }
 
+    // draws the little sum in the top left corner of the first cell of the cage
     private void drawCageSum(Graphics2D g2, Cage cage, int sumMargin) {
         Point firstCell = cage.getCells().getFirst();
         int sum = cage.getSum();
@@ -123,6 +131,12 @@ public class SudokuBoardCanvas extends JPanel {
         g2.drawString(sumStr, sumX, sumY);
     }
 
+    /**
+     * The next many methods are used to draw the border of the cages
+     * It is a bit complex, but essentially it checks each border of the cell, if
+     * the cell next to it, is part of the same cages, if it is, then it does not draw that border
+     * This is how the cages are created visually.
+     */
     private void drawCageBorders(Graphics2D g2, List<Point> cageCells, int margin) {
         for (Point cell : cageCells) {
             int cellX = cell.x * cellSize + margin;
@@ -134,7 +148,15 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
-    private void drawBorder(Graphics2D g2, Point cell, List<Point> cageCells, int cellX, int cellY, int size, boolean isSumCell, int margin) {
+    private void drawBorder(
+            Graphics2D g2,
+            Point cell,
+            List<Point> cageCells,
+            int cellX,
+            int cellY,
+            int size,
+            boolean isSumCell,
+            int margin) {
         if (shouldDrawTopBorder(cell, cageCells)) {
             drawTopBorder(g2, cellX, cellY, size, isSumCell, margin);
         }
@@ -165,7 +187,8 @@ public class SudokuBoardCanvas extends JPanel {
         return cell.x == gridSize - 1 || !cageCells.contains(new Point(cell.x + 1, cell.y));
     }
 
-    private void drawTopBorder(Graphics2D g2, int cellX, int cellY, int size, boolean isSumCell, int margin) {
+    private void drawTopBorder(
+            Graphics2D g2, int cellX, int cellY, int size, boolean isSumCell, int margin) {
         if (isSumCell) {
             g2.drawLine(cellX + margin * 2, cellY, cellX + size, cellY);
         } else {
@@ -173,7 +196,8 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
-    private void drawLeftBorder(Graphics2D g2, int cellX, int cellY, int size, boolean isSumCell, int margin) {
+    private void drawLeftBorder(
+            Graphics2D g2, int cellX, int cellY, int size, boolean isSumCell, int margin) {
         if (isSumCell) {
             g2.drawLine(cellX, cellY + margin * 2, cellX, cellY + size);
         } else {
@@ -188,8 +212,8 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
+    // Highlights entire row, column and subgrid of the clicked cell
     public void highlightCell(int row, int col, boolean highlight) {
-        // First, clear all existing highlights
         clearHighlights();
 
         if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
@@ -213,12 +237,14 @@ public class SudokuBoardCanvas extends JPanel {
                 }
             }
 
-            // Set the clicked cell as highlighted to keep track of the last clicked cell
+            // Highlight the current cell
             cells[row][col].setHighlighted(highlight);
             repaint();
         }
     }
 
+    // This method makes a fading highlight when using a hint, for easier visibility and a cool
+    // transition effect
     public void visualizeCell(int row, int col, Color startColor) {
         final int totalSteps = 5; // Total steps to fade color
         final int delay = 100;
@@ -242,7 +268,8 @@ public class SudokuBoardCanvas extends JPanel {
                             repaint();
                             step++;
                         } else {
-                            // Stop the timer and reset the background color to white at the end
+                            // Stop the timer and reset the background color to the background-color
+                            // at the end
                             ((Timer) e.getSource()).stop();
                             cell.setBackgroundColor(backgroundColor);
                             cell.endHintVisualization();
@@ -317,6 +344,7 @@ public class SudokuBoardCanvas extends JPanel {
         applyPlaceableHighlights(unPlaceable);
     }
 
+    // Sets all cell initialize to be unplaceable, this is used for easymode
     private boolean[][] initializeUnPlaceableGrid() {
         boolean[][] unPlaceable = new boolean[gridSize][gridSize];
         for (int row = 0; row < gridSize; row++) {
@@ -327,6 +355,7 @@ public class SudokuBoardCanvas extends JPanel {
         return unPlaceable;
     }
 
+    // Method which marks all the plaecs where the highlighted number can be placed
     private void markUnPlaceableCellsForNumber(int number, boolean[][] unPlaceable) {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -362,6 +391,9 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
+    // Additionally check if the same numbers appear twice in a cell, if they do, then that cell is
+    // NOT marked as placeable.
+    // Only applicable for killer sudoku
     private void markCageCellsAsUnPlaceable(Cage cage, int number, boolean[][] unPlaceable) {
         List<Point> cageCells = cage.getCells();
         Set<Integer> currentNumbers = cage.getCurrentNumbers();
@@ -376,6 +408,7 @@ public class SudokuBoardCanvas extends JPanel {
         }
     }
 
+    // Actually applying the placeable cells for the highlighted number
     private void applyPlaceableHighlights(boolean[][] unPlaceable) {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -385,7 +418,6 @@ public class SudokuBoardCanvas extends JPanel {
             }
         }
     }
-
 
     public void clearUnPlaceableCells() {
         for (int i = 0; i < gridSize; i++) {

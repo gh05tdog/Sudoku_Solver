@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The cage object for killer sudoku, contains the cells and the sum of the cage
+ */
 public class Cage {
     private final List<Point> cells;
     private int sum;
@@ -58,5 +61,4 @@ public class Cage {
         }
         this.sum = totalSum;
     }
-
 }

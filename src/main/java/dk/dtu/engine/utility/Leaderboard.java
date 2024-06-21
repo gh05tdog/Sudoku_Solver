@@ -25,7 +25,7 @@ public class Leaderboard {
 
     public static List<LeaderboardEntry> loadLeaderboard(String dbUrl) {
         List<LeaderboardEntry> leaderboard = new ArrayList<>();
-        String sql = "SELECT username, difficulty, time, timestamp FROM leaderboard ORDER BY time ";
+        String sql = "SELECT username, difficulty, time, timestamp, sizeN, sizeK FROM leaderboard ORDER BY time ";
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
                 Statement stmt = conn.createStatement();
@@ -36,8 +36,10 @@ public class Leaderboard {
                 String difficulty = rs.getString("difficulty");
                 int time = rs.getInt("time");
                 String timestamp = rs.getString("timestamp");
+                int sizeN = rs.getInt("sizeN");
+                int sizeK = rs.getInt("sizeK");
 
-                leaderboard.add(new LeaderboardEntry(username, difficulty, time, timestamp));
+                leaderboard.add(new LeaderboardEntry(username, difficulty, time, timestamp, sizeN, sizeK));
             }
 
         } catch (SQLException e) {
@@ -49,7 +51,7 @@ public class Leaderboard {
     }
 
     // Leaderboard entry class to represent each row in the leaderboard
-    public record LeaderboardEntry(String username, String difficulty, int time, String timestamp) {
+    public record LeaderboardEntry(String username, String difficulty, int time, String timestamp, int sizeN, int sizeK) {
 
         @Override
         public String toString() {
@@ -65,7 +67,19 @@ public class Leaderboard {
                     + ", timestamp='"
                     + timestamp
                     + '\''
+                    + ", sizeN="
+                    + sizeN
+                    + ", sizeK="
+                    + sizeK
                     + '}';
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getDifficulty() {
+            return difficulty;
         }
     }
 }

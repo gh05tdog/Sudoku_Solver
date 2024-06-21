@@ -61,21 +61,19 @@ public class Config {
         return Boolean.parseBoolean(darkMode);
     }
 
-    // Game rules:
+    ////////////////////////////////// Game rules:///////////////////////////////////////////
     public static void setEnableLives(boolean enableLives) {
-        // Store the value in the system preferences
         Preferences pref = Preferences.userRoot();
         pref.put("enableLives", String.valueOf(enableLives));
     }
 
     public static boolean getEnableLives() {
         Preferences pref = Preferences.userRoot();
-        String enableLives = pref.get("enableLives", String.valueOf(true));
+        String enableLives = pref.get("enableLives", String.valueOf(false));
         return Boolean.parseBoolean(enableLives);
     }
 
     public static void setEnableTimer(boolean enableTimer) {
-        // Store the value in the system preferences
         Preferences pref = Preferences.userRoot();
         pref.put("enableTimer", String.valueOf(enableTimer));
     }
@@ -87,19 +85,18 @@ public class Config {
     }
 
     public static void setEnableEasyMode(boolean enableEasyMode) {
-        // Store the value in the system preferences
         Preferences pref = Preferences.userRoot();
         pref.put("enableEasyMode", String.valueOf(enableEasyMode));
     }
 
     public static boolean getEnableEasyMode() {
         Preferences pref = Preferences.userRoot();
-        String enableEasyMode = pref.get("enableEasyMode", String.valueOf(true));
+        String enableEasyMode = pref.get("enableEasyMode", String.valueOf(false));
         return Boolean.parseBoolean(enableEasyMode);
     }
 
     public static void setNumberOfLives(int numberOfLives) {
-        // Store the value in the system preferences
+
         Preferences pref = Preferences.userRoot();
         pref.put("numberOfLives", String.valueOf(numberOfLives));
     }
@@ -117,7 +114,7 @@ public class Config {
 
     public static boolean getEnableKillerSudoku() {
         Preferences pref = Preferences.userRoot();
-        String enableKillerSudoku = pref.get("enableKillerSudoku", String.valueOf(true));
+        String enableKillerSudoku = pref.get("enableKillerSudoku", String.valueOf(false));
         return Boolean.parseBoolean(enableKillerSudoku);
     }
 }

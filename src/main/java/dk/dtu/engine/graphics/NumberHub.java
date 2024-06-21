@@ -16,7 +16,7 @@ public abstract class NumberHub extends JPanel {
     private final int subGrid;
     private final int[][] numberArray;
     private static final float STROKE_WIDTH = 3.0f;
-    private static final int MIN_CELL_SIZE = 50;
+    private static final int MIN_CELL_SIZE = 10;
 
     private static final Color CROSS_OUT_COLOR = Color.GRAY; // Color to cross out the numbers
 
@@ -103,7 +103,11 @@ public abstract class NumberHub extends JPanel {
         if (j == subGrid) {
             return 0;
         } else {
-            return numberArray[j][i];
+            try {
+                return numberArray[j][i];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                return 0;
+            }
         }
     }
 

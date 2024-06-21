@@ -13,8 +13,12 @@ import java.util.Set;
  */
 class Cell implements Serializable {
 
+    // The marked number is the number that is currently clicked on, this is highlighted with a
+    // darker color than the rest of the highlights
     boolean isMarked = false;
+    // The other cells in the row, col and subgrid, from which the cell that is marked
     boolean isHighlighted = false;
+
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
     private Color backgroundColor =
             Config.getDarkMode() ? darkModebackgroundColor : Color.WHITE; // Default background
@@ -47,20 +51,19 @@ class Cell implements Serializable {
         this.accentColor = Config.getDarkMode() ? new Color(237, 224, 186) : Color.BLACK;
     }
 
-    // This functions makes a little animation when a hint is asked for
     public void startHintVisualization() {
         wasHighlightedBeforeHint = isHighlighted;
         isVisualizingHint = true;
         isHighlighted = false;
     }
 
-    // This function ends the hint visualization
     public void endHintVisualization() {
         isVisualizingHint = false;
         isHighlighted = wasHighlightedBeforeHint;
     }
 
-    // This function is used to paint the cell
+    // This function is used to paint the cell. It checks if the cell is marked, highlighted or
+    // unplaceable and paints it accordingly
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
         if (isUnPlaceable && currentNumber != 0) {
             g.setColor(placeAbleColor);
@@ -94,24 +97,22 @@ class Cell implements Serializable {
         g.drawRect(x, y, cellSize, cellSize);
     }
 
-    // This function makes the notes visible
+    // This function makes the notes visible, checks if the notes should be hidden and paints them
+    // accordingly
+    // There are a lot of calculations to make sure the notes are placed correctly in the cell (the
+    // center)
     public void paintNotes(Graphics g2, int x, int y, int cellSize) {
         if (shouldHideNotes) {
             return;
         }
         g2.setColor(accentColor);
-        Font font = new Font("Arial", Font.BOLD, cellSize / 6); // Smaller font size
+        Font font = new Font("Arial", Font.BOLD, cellSize / 6);
         g2.setFont(font);
-        int subCellSize =
-                cellSize / 3 - 6; // Further reduce the sub-cell size to bring notes closer
-        int gridOffsetX = ((cellSize - (subCellSize * 3)) / 2); // Center the 3x3 grid horizontally
-        int gridOffsetY =
-                ((cellSize - (subCellSize * 3)) / 2) + 2; // Center the 3x3 grid vertically
-        int offsetX = subCellSize / 2; // Center the number horizontally within sub-cell
-        int offsetY =
-                subCellSize / 2
-                        + g2.getFontMetrics().getAscent()
-                                / 3; // Center the number vertically within sub-cell
+        int subCellSize = cellSize / 3 - 6;
+        int gridOffsetX = ((cellSize - (subCellSize * 3)) / 2);
+        int gridOffsetY = ((cellSize - (subCellSize * 3)) / 2) + 2;
+        int offsetX = subCellSize / 2;
+        int offsetY = subCellSize / 2 + g2.getFontMetrics().getAscent() / 3;
 
         for (int note : notes) {
             String noteStr = Integer.toString(note);
@@ -137,6 +138,7 @@ class Cell implements Serializable {
         g2.drawRect(x, y, cellSize, cellSize);
     }
 
+    //////////////// Getters and Setters ////////////////
     public void addNote(int note) {
         notes.add(note);
     }
