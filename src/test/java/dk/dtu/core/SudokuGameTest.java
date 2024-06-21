@@ -172,7 +172,7 @@ class SudokuGameTest {
 
     @Test
     void testProvideRemoveWrongNumber() {
-        Move wrongMove = new Move(0, 0, 5, 0);
+        SudokuGame.Move wrongMove = new SudokuGame.Move(0, 0, 5, 0);
         game.wrongMoveList.remove(wrongMove);
         int hintListSize = game.getHintList().size();
         game.getHintButton().doClick(); // Provide a hint

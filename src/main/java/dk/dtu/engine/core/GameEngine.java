@@ -44,7 +44,7 @@ public class GameEngine {
         initialize();
     }
 
-    // Stop the game loop for the custom board
+    // used to start the game with a custom import board
     public void startCustom(int[][] customBoard) throws Board.BoardNotCreatable {
         if (running) return;
         running = true;
@@ -54,6 +54,7 @@ public class GameEngine {
         windowManager.display();
     }
 
+    // Used to start the game with a custom saved board
     public void startCustomSaved(
             int[][] initialBoard,
             int[][] currentBoard,

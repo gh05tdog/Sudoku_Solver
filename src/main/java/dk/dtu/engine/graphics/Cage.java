@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The cage boject ofr killer sudoku, contains the cells and the sum of the cage
+ * The cage object for killer sudoku, contains the cells and the sum of the cage
  */
 public class Cage {
     private final List<Point> cells;
@@ -61,5 +61,4 @@ public class Cage {
         }
         this.sum = totalSum;
     }
-
 }

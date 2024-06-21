@@ -13,9 +13,10 @@ import java.util.Set;
  */
 class Cell implements Serializable {
 
-    //The marked number is the number that is currently clicked on, this is highlighted with a darker color than the rest of the highlights
+    // The marked number is the number that is currently clicked on, this is highlighted with a
+    // darker color than the rest of the highlights
     boolean isMarked = false;
-    //The other cells in the row, col and subgrid, from which the cell that is marked
+    // The other cells in the row, col and subgrid, from which the cell that is marked
     boolean isHighlighted = false;
 
     private static final Color darkModebackgroundColor = new Color(64, 64, 64);
@@ -61,7 +62,8 @@ class Cell implements Serializable {
         isHighlighted = wasHighlightedBeforeHint;
     }
 
-    // This function is used to paint the cell. It checks if the cell is marked, highlighted or unplaceable and paints it accordingly
+    // This function is used to paint the cell. It checks if the cell is marked, highlighted or
+    // unplaceable and paints it accordingly
     public void paintCell(Graphics g, int x, int y, int cellSize, int currentNumber) {
         if (isUnPlaceable && currentNumber != 0) {
             g.setColor(placeAbleColor);
@@ -95,8 +97,10 @@ class Cell implements Serializable {
         g.drawRect(x, y, cellSize, cellSize);
     }
 
-    // This function makes the notes visible, checks if the notes should be hidden and paints them accordingly
-    // There are a lot of calculations to make sure the notes are placed correctly in the cell (the center)
+    // This function makes the notes visible, checks if the notes should be hidden and paints them
+    // accordingly
+    // There are a lot of calculations to make sure the notes are placed correctly in the cell (the
+    // center)
     public void paintNotes(Graphics g2, int x, int y, int cellSize) {
         if (shouldHideNotes) {
             return;
@@ -104,16 +108,11 @@ class Cell implements Serializable {
         g2.setColor(accentColor);
         Font font = new Font("Arial", Font.BOLD, cellSize / 6);
         g2.setFont(font);
-        int subCellSize =
-                cellSize / 3 - 6;
+        int subCellSize = cellSize / 3 - 6;
         int gridOffsetX = ((cellSize - (subCellSize * 3)) / 2);
-        int gridOffsetY =
-                ((cellSize - (subCellSize * 3)) / 2) + 2;
+        int gridOffsetY = ((cellSize - (subCellSize * 3)) / 2) + 2;
         int offsetX = subCellSize / 2;
-        int offsetY =
-                subCellSize / 2
-                        + g2.getFontMetrics().getAscent()
-                                / 3;
+        int offsetY = subCellSize / 2 + g2.getFontMetrics().getAscent() / 3;
 
         for (int note : notes) {
             String noteStr = Integer.toString(note);

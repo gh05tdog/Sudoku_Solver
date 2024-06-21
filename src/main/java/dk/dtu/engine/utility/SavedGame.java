@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 public class SavedGame {
 
     private static final Logger logger = LoggerFactory.getLogger(SavedGame.class);
+
     private SavedGame() {
         throw new IllegalStateException("Utility class");
     }
@@ -35,8 +36,8 @@ public class SavedGame {
         String usedLifeLinesString = serializeIntArray(usedLifeLines);
         String insertGame =
                 "INSERT INTO saved_games (name, initialBoard, currentBoard, time, usedLifeLines,"
-                    + " lifeEnabled, kSize, nSize, cages, isKillerSudoku, notes, difficulty) VALUES (?, ?, ?,"
-                    + " ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    + " lifeEnabled, kSize, nSize, cages, isKillerSudoku, notes, difficulty) VALUES"
+                    + " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(dbUrl);
                 PreparedStatement stmt = conn.prepareStatement(insertGame)) {
