@@ -288,8 +288,9 @@ public class SudokuGame {
             int row = markedCell[0];
             int col = markedCell[1];
 
-            makeMove(row, col, number);
-
+            if(number > 0 && number <= Config.getN()*Config.getN()) {
+                makeMove(row, col, number);
+            }
             if (Config.getEnableEasyMode()) {
                 board.highlightPlaceableCells(number);
             }
