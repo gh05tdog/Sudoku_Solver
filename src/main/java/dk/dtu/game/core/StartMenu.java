@@ -820,7 +820,7 @@ public class StartMenu {
                             windowManager, Config.getN(), Config.getK(), Config.getCellSize());
             windowManager.display();
             windowManager.updateBoard();
-            gameEngine.startCustom(board); // Pass the custom board to the game engine
+            gameEngine.startCustom(board);
         } catch (Board.BoardNotCreatable boardNotCreatable) {
             logger.error("Board not creatable: {}", boardNotCreatable.getMessage());
         }
@@ -853,17 +853,17 @@ public class StartMenu {
             int k = boardConfigs[i][1];
 
             CustomBoardPanel panel = boardPanels[i];
-            panel.updateBoard(n, k); // Initialize with the correct board configuration
+            panel.updateBoard(n, k);
 
-            panel.addMouseListener(mouseAdapter); // Add the mouse listener
+            panel.addMouseListener(mouseAdapter);
 
             panel.setBounds(xPosition, 5, 150, 150);
-            xPosition += 150 + 5; // Increment for the next panel
+            xPosition += 150 + 5;
 
             startMenuWindowManager.addComponent(
                     panel,
-                    startMenuWindowManager.getSizePanel()); // Add the panel to the size panel
-            sizeGroup.addComponent(panel); // Add the panel to the custom component group
+                    startMenuWindowManager.getSizePanel());
+            sizeGroup.addComponent(panel);
         }
     }
 

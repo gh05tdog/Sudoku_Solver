@@ -69,7 +69,7 @@ public class Config {
 
     public static boolean getEnableLives() {
         Preferences pref = Preferences.userRoot();
-        String enableLives = pref.get("enableLives", String.valueOf(true));
+        String enableLives = pref.get("enableLives", String.valueOf(false));
         return Boolean.parseBoolean(enableLives);
     }
 
@@ -91,7 +91,7 @@ public class Config {
 
     public static boolean getEnableEasyMode() {
         Preferences pref = Preferences.userRoot();
-        String enableEasyMode = pref.get("enableEasyMode", String.valueOf(true));
+        String enableEasyMode = pref.get("enableEasyMode", String.valueOf(false));
         return Boolean.parseBoolean(enableEasyMode);
     }
 
@@ -114,7 +114,7 @@ public class Config {
 
     public static boolean getEnableKillerSudoku() {
         Preferences pref = Preferences.userRoot();
-        String enableKillerSudoku = pref.get("enableKillerSudoku", String.valueOf(true));
+        String enableKillerSudoku = pref.get("enableKillerSudoku", String.valueOf(false));
         return Boolean.parseBoolean(enableKillerSudoku);
     }
 }
