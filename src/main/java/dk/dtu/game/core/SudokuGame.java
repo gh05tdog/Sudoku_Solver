@@ -267,7 +267,7 @@ public class SudokuGame {
             }
 
             int cellIndex = row * gridSize + column;
-            logger.info("Cell {} clicked. Row: {}, Column: {}", cellIndex, row, column);
+            logger.debug("Cell {} clicked. Row: {}, Column: {}", cellIndex, row, column);
 
             board.highlightCell(row, column, true);
             checkCompletionAndOfferNewGame();
@@ -808,11 +808,11 @@ public class SudokuGame {
 
     // A multiplayer function to send the progress update to the other player
     public void sendProgress() {
-        logger.info("Sending progress");
+        logger.debug("Sending progress");
         if (networkOut != null) {
             int progress = calculateProgress();
             playerProgressBar.setValue(progress);
-            logger.info("Progress: {}", progress);
+            logger.debug("Progress: {}", progress);
             networkOut.println("PROGRESS " + progress);
         }
     }
@@ -1267,7 +1267,7 @@ public class SudokuGame {
         List<Cage> cages = board.getCages();
         for (Cage cage : cages) {
             if (cage.getCells().contains(cell)) {
-                logger.info("printing numbers in cage {} {} ", cage.getId(), cage.getNumbers());
+                logger.debug("printing numbers in cage {} {} ", cage.getId(), cage.getNumbers());
                 return cage.contains(num);
             }
         }
