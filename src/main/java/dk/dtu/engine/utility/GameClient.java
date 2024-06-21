@@ -68,7 +68,7 @@ public class GameClient {
     }
 
     // Method to process messages received from the server
-    private void processNetworkMessage(String message, SudokuGame game) throws Board.BoardNotCreatable {
+    private void processNetworkMessage(String message, SudokuGame game) {
         String[] parts = message.split(" ", 2);
         String command = parts[0];
         logger.info("Command: {}", command);
