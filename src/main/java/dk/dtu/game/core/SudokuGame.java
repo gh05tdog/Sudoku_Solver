@@ -391,7 +391,7 @@ public class SudokuGame {
 
             if (gameboard.getNumber(row, col) != solutionB[row][col]
                     || (Config.getEnableKillerSudoku()
-                            && cageContains(new Point(col, row), number))) {
+                    && cageContains(new Point(col, row), number))) {
                 windowManager.removeHeart();
                 board.setWrongNumber(row, col, number);
                 wrongMoveList.add(new Move(row, col, number, previousNumber));
@@ -1068,13 +1068,13 @@ public class SudokuGame {
         solveButton.setEnabled(false);
 
         JButton[] buttons = {
-            restartButton,
-            solveButton,
-            newGameButton,
-            eraseButton,
-            undoButton,
-            hintButton,
-            goBackButton
+                restartButton,
+                solveButton,
+                newGameButton,
+                eraseButton,
+                undoButton,
+                hintButton,
+                goBackButton
         };
 
         applyButtonStyles(buttons);
