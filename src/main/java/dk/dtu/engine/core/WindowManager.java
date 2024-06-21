@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The WindowManager class is responsible for managing the game window.
@@ -24,10 +22,10 @@ public class WindowManager {
     private static final Logger logger = LoggerFactory.getLogger(WindowManager.class);
     private final JFrame frame;
     private final JPanel mainPanel =
-            new JPanel(new GridBagLayout()); // Use GridBagLayout for more control
+            new JPanel(new GridBagLayout());
     private final JPanel buttonPanel = new JPanel(); // Panel for buttons
     private final JPanel whitePanel =
-            new JPanel(new GridBagLayout()); // Create a new JPanel for the Sudoku board
+            new JPanel(new GridBagLayout());
     JPanel heartsPanel = new JPanel();
     BufferedImage emptyHeartImage;
     ImageIcon emptyHeartIcon;
@@ -77,6 +75,7 @@ public class WindowManager {
         addHeartLabels();
     }
 
+    // This method is used to add the heart labels to the window
     private void addHeartLabels() {
         heartStates = new boolean[Config.getNumberOfLives()]; // Assuming 5 hearts as maximum
         try {
@@ -171,7 +170,8 @@ public class WindowManager {
         heartsPanel.repaint();
     }
 
-    public boolean checkGameOver() {
+    // This method is used to check if the game is lost based on the number of lives
+    public boolean checkIfLostGame() {
         if (!Config.getEnableLives()) {
             return false;
         }
@@ -197,7 +197,7 @@ public class WindowManager {
         gbc.weightx = 0.5; // Give column some weight so the component will be centered
         gbc.weighty = 1; // Give row some weight so the component will be centered
         gbc.fill = GridBagConstraints.BOTH; // Let component fill its display area
-        gbc.insets = new Insets(0, 70, 0, 30); // Add padding from the left (100 pixels)
+        gbc.insets = new Insets(0, 70, 0, 30);
 
         whitePanel.add(board, gbc);
         whitePanel.revalidate();
@@ -306,16 +306,6 @@ public class WindowManager {
         return frame;
     }
 
-    public int getHearts() {
-        int hearts = 0;
-        for (boolean heartState : heartStates) {
-            if (heartState) {
-                hearts++;
-            }
-        }
-        return hearts;
-    }
-
     public int[] getUsedLives() {
         int usedLives = 0;
         for (boolean heartState : heartStates) {
@@ -326,6 +316,7 @@ public class WindowManager {
         return new int[] {usedLives, Config.getNumberOfLives()};
     }
 
+    // This method is used to add a progress bar to the window when playing online mode
     public void addProgressBar(JProgressBar progressBar, int yPos) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;

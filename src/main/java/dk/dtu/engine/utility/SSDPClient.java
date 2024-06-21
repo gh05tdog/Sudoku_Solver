@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SSDPClient {
     private static final String M_SEARCH_MESSAGE =
@@ -17,11 +19,12 @@ public class SSDPClient {
     private static final int SSDP_PORT = 1900;
     private static final String SSDP_IP = "239.255.255.250";
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
+    private static final Logger logger = LoggerFactory.getLogger(SSDPClient.class);
 
     public List<String> discover() {
         List<String> servers = new ArrayList<>();
-        try {
-            DatagramSocket socket = new DatagramSocket();
+        try (DatagramSocket socket = new DatagramSocket();) {
+
             socket.setSoTimeout(5000);
 
             byte[] sendData = M_SEARCH_MESSAGE.getBytes();
@@ -64,7 +67,7 @@ public class SSDPClient {
                     URL url = new URL(line.split(" ", 2)[1]);
                     return url.getHost();
                 } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                    logger.error("Failed to extract IP from LOCATION header", e);
                 }
             }
         }

@@ -24,24 +24,6 @@ public class HeuristicSolver {
         board.setBoard(gameBoard);
     }
 
-    public static void makeAndFillBoard(Board board) {
-        int n = board.getN();
-        int k = board.getK();
-        int[][][] possiblePlacements = createSetFromBoard(board, n, k);
-        fillBoard(possiblePlacements, n, k, new HashSet<>(), new HashMap<>());
-
-    }
-
-    public static void makeAndRemoveHalf(Board board) {
-        int n = board.getN();
-        int k = board.getK();
-        int[][][] possiblePlacements = createSetFromBoard(board, n, k);
-        fillBoard(possiblePlacements, n, k, new HashSet<>(), new HashMap<>());
-
-
-        int [][] gameBoard = removeNumsFromBoard(possiblePlacements, n, k);
-
-    }
 
     public static int[][][] createSetFromBoard(Board board, int subGrid, int gridSize) {
         int boardLength = subGrid * gridSize;
@@ -88,8 +70,8 @@ public class HeuristicSolver {
 
     public static void addPossiblePlacements (int[][][] arr, int row, int col, int val, int subgrid, int gridSize) {
         int boardLength = subgrid * gridSize;
-        boolean [] rowContains = isRowPlacementPossible(arr, row, val, boardLength);
-        boolean [] colContains = isColPlacementPossible(arr, col, val, boardLength);
+        boolean [] rowContains = isRowPlacementPossible(arr, val, boardLength);
+        boolean [] colContains = isColPlacementPossible(arr, val, boardLength);
 
         for (int i = 0; i < boardLength; i++) {
             if (!rowContains[i]) {
@@ -136,7 +118,7 @@ public class HeuristicSolver {
         return subgridContains;
     }
 
-    public static boolean [] isRowPlacementPossible(int[][][]arr, int row, int val, int boardLength) {
+    public static boolean [] isRowPlacementPossible(int[][][]arr, int val, int boardLength) {
         boolean[] rowContains = new boolean[boardLength];
         for (int i = 0; i < boardLength; i++) {
             for (int j = 0; j < boardLength; j++) {
@@ -149,7 +131,7 @@ public class HeuristicSolver {
         return rowContains;
     }
 
-    public static boolean [] isColPlacementPossible(int[][][]arr, int col, int val, int boardLength) {
+    public static boolean [] isColPlacementPossible(int[][][]arr, int val, int boardLength) {
         boolean[] colContains = new boolean[boardLength];
         for (int i = 0; i < boardLength; i++) {
             for (int j = 0; j < boardLength; j++) {
@@ -222,7 +204,7 @@ public class HeuristicSolver {
             String conflictKey = row + "-" + col + "-" + value;
             conflictMap.put(conflictKey, conflictMap.getOrDefault(conflictKey, 0) + 1);
 
-            // Backjumping
+            // Back jumping
             if (conflictMap.get(conflictKey) > 1) {
                 return false;
             }
@@ -247,9 +229,7 @@ public class HeuristicSolver {
         int[][][] copy = new int[arr.length][arr[0].length][arr[0][0].length];
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < arr[i].length; j++) {
-                for (int k = 0; k < arr[i][j].length; k++) {
-                    copy[i][j][k] = arr[i][j][k];
-                }
+                System.arraycopy(arr[i][j], 0, copy[i][j], 0, arr[i][j].length);
             }
         }
         return copy;
@@ -356,9 +336,7 @@ public class HeuristicSolver {
     private static List<Integer> getLCV(int[][][] arr, int row, int col, int subgrid, int gridSize) {
         List<Integer> possibleValues = getPossibleValues(arr[row][col]);
         Collections.shuffle(possibleValues, random); // Shuffle to introduce randomness
-        possibleValues.sort((a, b) -> {
-            return countConstraints(arr, row, col, a, subgrid, gridSize) - countConstraints(arr, row, col, b, subgrid, gridSize);
-        });
+        possibleValues.sort(Comparator.comparingInt(a -> countConstraints(arr, row, col, a, subgrid, gridSize)));
         return possibleValues;
     }
 

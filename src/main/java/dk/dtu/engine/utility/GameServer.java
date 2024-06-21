@@ -17,6 +17,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
+/**
+ * The GameServer class is responsible for starting the game server and accepting client connections.
+ * It listens for messages from clients and processes them accordingly.
+ */
+
 public class GameServer {
     private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
     private static final int PORT = 12345;
@@ -93,6 +98,7 @@ public class GameServer {
         threadPool.shutdown(); // Ensure the thread pool is also shut down
     }
 
+    // Send the initial board to all clients
     public void sendInitialBoard() throws Board.BoardNotCreatable {
 
         if (serverDialog != null) {  // Close the dialog when a client connects

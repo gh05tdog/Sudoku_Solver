@@ -1022,7 +1022,7 @@ public class SudokuGame {
 
 
     private boolean isGameOver() {
-        return windowManager.checkGameOver();
+        return windowManager.checkIfLostGame();
     }
 
     private boolean testMode() {

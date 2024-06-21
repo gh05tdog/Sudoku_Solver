@@ -8,6 +8,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
+/**
+ * Class to setup the database tables
+ */
 public class DatabaseSetup {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseSetup.class);

@@ -78,12 +78,13 @@ public class StartMenuWindowManager {
         panel.repaint();
     }
 
+    // Set the logo on the start menu
     public void setStartMenuLogo() {
         try {
             BufferedImage originalImage =
                     ImageIO.read(Objects.requireNonNull(getClass().getResource("/logo.png")));
-            int newWidth = 700; // Change this to desired width
-            int newHeight = 700; // Change this to desired height
+            int newWidth = 700;
+            int newHeight = 700;
 
             Image scaledImage =
                     originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);

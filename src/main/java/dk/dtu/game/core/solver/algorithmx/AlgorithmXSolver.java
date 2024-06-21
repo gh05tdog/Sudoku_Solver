@@ -2,8 +2,6 @@ package dk.dtu.game.core.solver.algorithmx;
 
 import dk.dtu.game.core.Board;
 import dk.dtu.game.core.solver.SolverAlgorithm;
-
-
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 
