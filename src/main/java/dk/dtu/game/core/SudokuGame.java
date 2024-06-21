@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SudokuGame {
     public final Board gameboard;
+    public record Move(int row, int column, int number, int previousNumber) {}
     public final Deque<Move> moveList = new ArrayDeque<>();
     public final List<Move> wrongMoveList = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(SudokuGame.class);
@@ -52,6 +53,7 @@ public class SudokuGame {
     private int placeableNumber = 0;
     private int nextCageId = 1;
     private static final Random rand = new Random();
+
 
     MouseActionListener mouseActionListener = new MouseActionListener(this);
     KeyboardListener keyboardListener = new KeyboardListener(this);
@@ -397,7 +399,6 @@ public class SudokuGame {
         }
     }
 
-    public record Move(int row, int column, int number, int previousNumber) {}
 
 
     // This only lets you place a number in a valid place, meaning you cannot place 2 numbers in the
