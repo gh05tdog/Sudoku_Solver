@@ -535,7 +535,7 @@ public class SudokuGame {
 
         gameboard.setInitialBoard(deepCopyBoard(gameboard.getGameBoard()));
 
-        numbers = new NumberHub(n, 40) {
+        numbers = new NumberHub(n, 200/n) {
         };
         getNumbersBoard().update();
         board.update();

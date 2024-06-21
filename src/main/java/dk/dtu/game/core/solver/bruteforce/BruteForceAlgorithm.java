@@ -5,8 +5,7 @@ import dk.dtu.game.core.solver.SolverAlgorithm;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class BruteForceAlgorithm {
-
+public class BruteForceAlgorithm { // outdatex solver, heuristic solver and algorithmX is used instead
     static Random rand = new Random();
     static Logger logger = Logger.getLogger(BruteForceAlgorithm.class.getName());
     private static int[][] solvedBoard;
@@ -17,46 +16,46 @@ public class BruteForceAlgorithm {
         throw new IllegalStateException("Utility class");
     }
 
-    public static void createSudoku(Board board) {
-        n = board.getN();
-        int[][] sudokuBoard = fillBoard(board);
-        solvedBoard = deepCopy(sudokuBoard);
-        sudokuBoard = removeNumsRecursive(sudokuBoard);
-        board.setInitialBoard(sudokuBoard);
-        board.setBoard(sudokuBoard);
-        board.setSolvedBoard(solvedBoard);
+    public static void createSudoku(Board board) { // Create a playable sudoku game with a unique solution
+        n = board.getN(); // Get the size N (length of a subgrid)
+        int[][] sudokuBoard = fillBoard(board); // fill out the board with a solution
+        solvedBoard = deepCopy(sudokuBoard); // deep copy the board to store the solution
+        sudokuBoard = removeNumsRecursive(sudokuBoard); // remove numbers from the board
+        board.setInitialBoard(sudokuBoard); // set the board to the playable board
+        board.setBoard(sudokuBoard); // set the board to the playable board
+        board.setSolvedBoard(solvedBoard); // set the solved board to the board
     }
 
-    public static boolean sudoku(int[][] board) {
+    public static boolean sudoku(int[][] board) { // Recursive method to solve the sudoku board
 
-        if (!isValidSudoku(board)) {
+        if (!isValidSudoku(board)) { // Check if the board is valid
             return false;
         }
 
-        if (emptyCellCount(board) > 0) {
-            int[] chosenCells = pickCell(board);
+        if (emptyCellCount(board) > 0) { // Check if there are empty cells
+            int[] chosenCells = pickCell(board); // pick which cell to fill
             assert chosenCells != null;
-            int row = chosenCells[0];
-            int col = chosenCells[1];
+            int row = chosenCells[0]; // get the row
+            int col = chosenCells[1]; // get the column
 
             for (int c = 1; c <= n*n; c++) {
-                if (SolverAlgorithm.checkBoard(board, row, col, c, n)) {
+                if (SolverAlgorithm.checkBoard(board, row, col, c, n)) { // Check if the inserted number is valid with the given constraints
 
                     board[row][col] = c;
-                    if (sudoku(board)) {
-                        return true;
+                    if (sudoku(board)) { // Recursive call to solve the board
+                        return true; // board is solved
                     } else {
-                        board[row][col] = 0;
+                        board[row][col] = 0; // if the board is not solved, reset the cell
                     }
                 }
             }
-            return false;
+            return false; // if no number can be inserted, return false
         } else {
             return true; // board is solved
         }
     }
 
-    public static int[] pickCell(int[][] arr) {
+    public static int[] pickCell(int[][] arr) { // Method to pick the cell with the least possible values
         ArrayList<int[]> possibleCells = new ArrayList<>();
         int lowestPossibleValue = Integer.MAX_VALUE;
         for (int i = 0; i < arr.length; i++) {
