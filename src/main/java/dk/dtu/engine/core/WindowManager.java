@@ -315,7 +315,7 @@ public class WindowManager {
     public void addProgressBar(JProgressBar progressBar, int yPos) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = yPos; // Position set based on yPos
+        gbc.gridy = yPos;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 0, 10, 0);
