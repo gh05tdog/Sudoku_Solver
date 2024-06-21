@@ -416,7 +416,7 @@ public class StartMenu {
 
         // Prompt user for an IP address
         String serverAddress =
-                showInputDialog(null);
+                showInputDialog();
 
         // Check if the dialog was canceled
         if (serverAddress == null) {
@@ -474,8 +474,8 @@ public class StartMenu {
         }
     }
 
-    private String showInputDialog(Frame parent) {
-        final JDialog dialog = new JDialog(parent, "Join Game", true);
+    private String showInputDialog() {
+        final JDialog dialog = new JDialog(new JFrame(), "Join Game", true);
         final JTextField textField = new JTextField(20);
         final JButton okButton = new JButton("OK");
         final boolean[] okPressed = {false};
@@ -489,7 +489,7 @@ public class StartMenu {
         dialog.add(panel, BorderLayout.SOUTH);
 
         dialog.pack();
-        dialog.setLocationRelativeTo(parent);
+        dialog.setLocationRelativeTo(null);
 
         okButton.addActionListener(
                 e -> {
