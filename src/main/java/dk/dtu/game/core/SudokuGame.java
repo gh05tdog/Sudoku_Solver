@@ -563,7 +563,7 @@ public class SudokuGame {
         double smallCageProbability =
                 switch (Config.getDifficulty()) {
                     case "medium" -> 0.9; // 90% chance to create smaller cages
-                    case "hard" -> 0.7; // 50% chance to create smaller cages
+                    case "hard" -> 0.7; // 70% chance to create smaller cages
                     case "extreme" -> 0.5; // 50% chance to create smaller cages
                     default -> 1.0; // 100% chance to create smaller cages for other difficulties
                 };
@@ -840,7 +840,7 @@ public class SudokuGame {
             fillHintList();
         } else {
             gameboard.setGameBoard(
-                    deepCopyBoard(gameboard.getInitialBoard())); // Reset to custom board
+                    deepCopyBoard(gameboard.getInitialBoard()));
             moveList.clear();
             wrongMoveList.clear();
             windowManager.setHeart();
@@ -870,7 +870,7 @@ public class SudokuGame {
     private JButton createButton(String text, int height) {
         JButton button = new JButton(text);
         button.setMaximumSize(new Dimension(100, height));
-        button.setAlignmentX(Component.CENTER_ALIGNMENT); // Align buttons for BoxLayout
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Create a margin around the button
         int topBottomMargin = 5; // Space above and below the button
@@ -1172,7 +1172,7 @@ public class SudokuGame {
 
     // The styling of the buttons visual look
     private void applyButtonStyles(JButton[] buttons) {
-        int padding = 5; // Adjust the padding as desired
+        int padding = 5;
         for (JButton button : buttons) {
             button.setBackground(backgroundColor);
             button.setForeground(accentColor);
