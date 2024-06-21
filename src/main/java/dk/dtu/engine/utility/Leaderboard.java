@@ -73,5 +73,13 @@ public class Leaderboard {
                     + sizeK
                     + '}';
         }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getDifficulty() {
+            return difficulty;
+        }
     }
 }
