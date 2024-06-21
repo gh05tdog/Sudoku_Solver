@@ -2,6 +2,7 @@ package dk.dtu.core;
 
 import dk.dtu.engine.utility.DatabaseSetup;
 import dk.dtu.engine.utility.Leaderboard;
+import dk.dtu.engine.utility.SavedGame;
 import dk.dtu.engine.utility.UpdateLeaderboard;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +13,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class LeaderboardTest {
+class DatabaseTest {
 
     private static final String DB_URL = "jdbc:sqlite:test_sudoku.db";
 
@@ -33,6 +33,7 @@ class LeaderboardTest {
             Statement stmt = conn.createStatement();
             stmt.execute("DROP TABLE IF EXISTS game");
             stmt.execute("DROP TABLE IF EXISTS leaderboard");
+            stmt.execute("DROP TABLE IF EXISTS saved_games");
             conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -74,11 +75,63 @@ class LeaderboardTest {
         // Test that the leaderboard can be updated
         DatabaseSetup.setup(DB_URL);
 
-        UpdateLeaderboard.addScore( DB_URL, "TEST", "easy", 100, 3, 3);
+        UpdateLeaderboard.addScore(DB_URL, "TEST", "easy", 100, 3, 3);
         List<Leaderboard.LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard("jdbc:sqlite:test_sudoku.db");
 
         assertEquals(1, leaderboard.size(), "Leaderboard should contain 1 entry");
-        assertEquals("TEST", leaderboard.getFirst().username(), "Username should be TEST");
-        assertEquals("easy", leaderboard.getFirst().difficulty(), "Difficulty should be easy");
+        assertEquals("TEST", leaderboard.getFirst().getUsername(), "Username should be TEST");
+        assertEquals("easy", leaderboard.getFirst().getDifficulty(), "Difficulty should be easy");
+    }
+
+    @Test
+    void updateSavedGames(){
+        // Test that the saved games can be updated
+        DatabaseSetup.setup(DB_URL);
+
+        int[][] board = {
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0}
+        };
+        int[] usedLifeLines = {0, 0, 0};
+        int[][] cages = {
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0}
+        };
+
+        SavedGame.saveGame(
+                DB_URL,
+                "test_game",
+                board,
+                board,
+                100,
+                usedLifeLines,
+                true,
+                3,
+                3,
+                cages,
+                false,
+                "notes",
+                "easy"
+        );
+
+        List<SavedGame.SavedGameData> savedGames = SavedGame.loadSavedGames(DB_URL);
+
+        assertEquals(1, savedGames.size(), "There should be 1 saved game");
+        assertEquals("test_game", savedGames.getFirst().getName(), "The saved game name should be 'test_game'");
+        assertEquals(100, savedGames.getFirst().getTime(), "The time should be 100");
     }
 }
