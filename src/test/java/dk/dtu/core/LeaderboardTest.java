@@ -58,9 +58,9 @@ class LeaderboardTest {
         // Act
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement()) {
-            stmt.execute("INSERT INTO leaderboard (username, difficulty, time) VALUES ('user1', 'easy', 100)");
-            stmt.execute("INSERT INTO leaderboard (username, difficulty, time) VALUES ('user2', 'medium', 200)");
-            stmt.execute("INSERT INTO leaderboard (username, difficulty, time) VALUES ('user3', 'hard', 300)");
+            stmt.execute("INSERT INTO leaderboard (username, difficulty, time, sizeN, sizeK) VALUES ('user1', 'easy', 100, 3, 3)");
+            stmt.execute("INSERT INTO leaderboard (username, difficulty, time, sizeN, sizeK) VALUES ('user2', 'medium', 200, 3, 3)");
+            stmt.execute("INSERT INTO leaderboard (username, difficulty, time, sizeN, sizeK) VALUES ('user3', 'hard', 300, 3, 3)");
         } catch (SQLException e) {
             fail("An error occurred while inserting leaderboard entries: " + e.getMessage());
         }
@@ -72,12 +72,11 @@ class LeaderboardTest {
     @Test
     void updateLeaderboard(){
         // Test that the leaderboard can be updated
-        // Arrange
         DatabaseSetup.setup(DB_URL);
-        // Act
-        UpdateLeaderboard.addScore( DB_URL, "TEST", "easy", 100);
+
+        UpdateLeaderboard.addScore( DB_URL, "TEST", "easy", 100, 3, 3);
         List<Leaderboard.LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard("jdbc:sqlite:test_sudoku.db");
-        // Assert
+
         assertEquals(1, leaderboard.size(), "Leaderboard should contain 1 entry");
         assertEquals("TEST", leaderboard.getFirst().username(), "Username should be TEST");
         assertEquals("easy", leaderboard.getFirst().difficulty(), "Difficulty should be easy");

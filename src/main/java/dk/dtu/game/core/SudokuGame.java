@@ -1030,7 +1030,7 @@ public class SudokuGame {
             pref.put("username", username.trim());
             String difficulty = Config.getDifficulty();
             int time = timer.getTimeToInt();
-            UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db", username, difficulty, time);
+            UpdateLeaderboard.addScore("jdbc:sqlite:sudoku.db", username, difficulty, time, Config.getN(), Config.getK());
         }
     }
 

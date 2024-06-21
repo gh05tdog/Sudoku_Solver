@@ -28,7 +28,9 @@ public class DatabaseSetup {
                         + "username TEXT NOT NULL,"
                         + "difficulty TEXT NOT NULL,"
                         + "time INTEGER NOT NULL,"
-                        + "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP"
+                        + "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,"
+                        + "sizeN INTEGER NOT NULL,"
+                        + "sizeK INTEGER NOT NULL"
                         + ");";
 
         String createSavedGamesTable =

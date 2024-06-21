@@ -34,7 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the start menu of the game. This is where you can choose difficulty, size, load game, show leader board etc.
+ * This is the start menu of the game.
+ * This is where you can choose difficulty, size, load game, show leader board, etc.
  * It is also where you can choose the game rules.
  */
 public class StartMenu {
@@ -416,7 +417,7 @@ public class StartMenu {
         String serverAddress =
                 showInputDialog(null);
 
-        // Check if the dialog was cancelled
+        // Check if the dialog was canceled
         if (serverAddress == null) {
             joinGameButton.setEnabled(true);
             createGameButton.setEnabled(true);
@@ -557,7 +558,7 @@ public class StartMenu {
 
     private void onShowLeaderboard(ActionEvent e) {
         // Column names for the leaderboard table
-        String[] columnNames = {"Username", "Difficulty", "Time", "Timestamp"};
+        String[] columnNames = {"Username", "Difficulty", "Time", "Timestamp", "Size N", "Size K"};
 
         // Fetch leaderboard data
         List<LeaderboardEntry> leaderboard = Leaderboard.loadLeaderboard("jdbc:sqlite:sudoku.db");
@@ -570,7 +571,10 @@ public class StartMenu {
                         String.format(
                                 "%02d:%02d:%02d",
                                 entry.time() / 3600, (entry.time() % 3600) / 60, entry.time() % 60),
-                        entry.timestamp()
+                        entry.timestamp(),
+                        String.valueOf(entry.sizeN()),
+                        String.valueOf(entry.sizeK())
+
                     });
         }
 
@@ -606,13 +610,13 @@ public class StartMenu {
 
         JDialog leaderboardDialog = new JDialog();
         leaderboardDialog.setTitle("Leaderboard");
-        leaderboardDialog.setSize(600, 400);
+        leaderboardDialog.setSize(700, 400);
         leaderboardDialog.setLocationRelativeTo(null);
         leaderboardDialog.add(leaderboardScrollPane);
         leaderboardDialog.setVisible(true);
     }
 
-    // This method adds listeners for the input fiels that make up the custom board, allowing
+    // This method adds listeners for the input fields that make up the custom board, allowing
     // different configurations of game boards
     private void addChangeListenerToField(JTextField field) {
         // This method adds a document listener to the input fields, so that the board & config is
@@ -764,7 +768,7 @@ public class StartMenu {
         }
     }
 
-    // This method takes in a list of strings by reading a file and then it spits out a game board
+    // This method takes in a list of strings by reading a file, and then it spits out a game board
     // represented as a 2D int array
     public int[][] importSudokuFromFile(List<String> lines)
             throws IOException, Board.BoardNotCreatable {

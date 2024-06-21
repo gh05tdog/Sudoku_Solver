@@ -20,14 +20,16 @@ public class UpdateLeaderboard {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateLeaderboard.class);
 
-    public static void addScore(String url, String username, String difficulty, int time) {
-        String sql = "INSERT INTO leaderboard(username, difficulty, time) VALUES(?, ?, ?)";
+    public static void addScore(String url, String username, String difficulty, int time, int sizeN, int sizeK) {
+        String sql = "INSERT INTO leaderboard(username, difficulty, time, sizeN, sizeK) VALUES(?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(url);
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, difficulty);
             stmt.setInt(3, time);
+            stmt.setInt(4, sizeN);
+            stmt.setInt(5, sizeK);
             stmt.executeUpdate();
             logger.info("Score added to leaderboard");
         } catch (SQLException e) {
